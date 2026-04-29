@@ -71,6 +71,7 @@ const EventSkeleton = () => (
     </div>
   </div>
 );
+export const dynamic = 'force-dynamic';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
