@@ -40,4 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# AI Agents
+.agents/
+.gemini/
+skills-lock.json

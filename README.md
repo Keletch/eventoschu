@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Giras Hyenuk Chu - Sistema de Registro de Inversores
 
-## Getting Started
+Este es un sistema de registro de alta fidelidad diseñado para gestionar la asistencia a las giras y eventos de **Hyenuk Chu**. La aplicación se centra en ofrecer una experiencia de usuario premium, minimalista y extremadamente segura, permitiendo a los inversores registrarse en múltiples sedes de forma fluida.
 
-First, run the development server:
+## 🚀 Características Principales
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Diseño Premium & Dinámico:** Interfaz de usuario de alta fidelidad con micro-animaciones en GSAP, incluyendo un encabezado animado con efecto de rotación y *motion blur*.
+- **Gestión de Estados Granulares:** Sistema de estados independiente para cada evento seleccionado (Revisando cupo, Confirmado, Cancelado), permitiendo una gestión precisa de la disponibilidad.
+- **Sincronización Inteligente con Keap:** Integración profunda con Keap (Infusionsoft) que añade o elimina etiquetas automáticamente en función del estado de registro de cada ciudad.
+- **Silent Re-validation:** Sistema de persistencia que re-valida automáticamente los datos del usuario contra Supabase en segundo plano al recargar la página, garantizando información siempre fresca.
+- **Registro Multi-Evento:** Lógica inteligente que permite registrarse en múltiples sedes simultáneamente, con un sistema de fusión (merge) que actualiza los datos del usuario sin crear duplicados.
+- **Protección Anti-Bots:** Integración con **Cloudflare Turnstile** para prevenir spam y ataques automatizados.
+- **Admin Dashboard Pro:** Panel administrativo avanzado con filtros, edición de estados por ciudad y visualización de "Multi-Estado" para una gestión eficiente.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Stack Tecnológico
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework:** [Next.js](https://nextjs.org/) (App Router) - Arquitectura moderna y Server Components.
+- **Lenguaje:** [TypeScript](https://www.typescriptlang.org/) - Tipado estricto para mayor robustez.
+- **Base de Datos:** [Supabase](https://supabase.com/) - Gestión de datos en tiempo real y almacenamiento seguro.
+- **Caché de Alto Rendimiento:** [Upstash Redis](https://upstash.com/) - Reducción drástica de latencia en la carga de eventos.
+- **CRM Integration:** [Keap (Infusionsoft)](https://keap.com/) - Automatización de marketing mediante sincronización de etiquetas.
+- **Animaciones:** [GSAP](https://greensock.com/gsap/) - El estándar de oro para animaciones web premium.
+- **Estilos:** [Tailwind CSS](https://tailwindcss.com/) & [Shadcn/UI](https://ui.shadcn.com/) - Estética minimalista y responsiva.
+- **Seguridad:** [Zod](https://zod.dev/) para validación de esquemas y Server Actions para protección de secretos.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔒 Seguridad y Optimización
 
-## Learn More
+- **Zero-Friction UX:** Sistema de verificación de registro que autocompleta datos de usuarios conocidos.
+- **Integridad de Datos:** Validación multicapa (cliente/servidor) y protección contra inyecciones.
+- **Responsive Design:** Adaptabilidad total desde dispositivos móviles hasta monitores 4K.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+© 2026 Eventos Chu. Desarrollado con enfoque en excelencia técnica y experiencia de usuario premium.
