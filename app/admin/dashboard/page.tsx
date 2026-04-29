@@ -462,18 +462,40 @@ export default function AdminDashboard() {
                           </Popover>
                         </div>
 
-                        <div className="col-span-2 flex items-center justify-between p-5 bg-neutral-50 rounded-2xl border border-neutral-100">
-                          <div className="space-y-0.5"><Label className="font-bold">¿Evento Activo?</Label><p className="text-xs text-neutral-500">Visible inmediatamente en la web.</p></div>
-                          <Switch checked={newEvent.active} onCheckedChange={(val) => setNewEvent({...newEvent, active: val})} />
+                         <div className="col-span-2 flex items-center justify-between p-6 bg-blue-50/50 rounded-[28px] border border-blue-100/50 transition-all">
+                          <div className="space-y-1">
+                            <Label className="font-bold text-blue-900 text-base">¿Evento Activo?</Label>
+                            <p className="text-xs text-blue-700/70">Si está apagado, la gira no aparecerá en la web principal.</p>
+                          </div>
+                          <Switch 
+                            checked={newEvent.active} 
+                            onCheckedChange={(val) => setNewEvent({...newEvent, active: val})}
+                            className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-neutral-200"
+                          />
                         </div>
 
-                        <DialogFooter className="col-span-2 pt-6">
-                          <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl">Cancelar</Button>
-                          <Button type="submit" className="bg-blue-700 px-10 h-12 rounded-xl shadow-lg shadow-blue-700/20" disabled={isSubmitting}>
-                            {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            {(newEvent as any).id ? "Actualizar Gira" : "Publicar Gira"}
+                        <div className="col-span-2 pt-8 mt-4 border-t border-neutral-100 flex flex-col gap-3">
+                          <Button 
+                            type="submit" 
+                            className="w-full bg-[#3154DC] hover:bg-[#2845c4] h-14 rounded-2xl font-bold text-white shadow-xl shadow-[#3154DC]/20 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer order-1" 
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? (
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <Check className="w-5 h-5 stroke-[3]" />
+                            )}
+                            {(newEvent as any).id ? "Actualizar Datos de la Gira" : "Publicar Nueva Gira"}
                           </Button>
-                        </DialogFooter>
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            onClick={() => setIsDialogOpen(false)} 
+                            className="w-full rounded-2xl h-14 font-bold text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 transition-all cursor-pointer order-2"
+                          >
+                            Cancelar y Volver
+                          </Button>
+                        </div>
                       </form>
                     </div>
                   </DialogContent>
@@ -494,7 +516,10 @@ export default function AdminDashboard() {
                   <TableBody>
                     {isLoading ? [1,2,3].map(i => <TableRow key={i}><TableCell colSpan={5} className="p-6"><Skeleton className="h-16 w-full rounded-2xl" /></TableCell></TableRow>) : 
                       events.length > 0 ? events.map((event) => {
-                        const regCount = registrations.filter(r => r.selected_events?.includes(event.id)).length;
+                        const regCount = registrations.filter(r => 
+                          r.selected_events?.includes(event.id) && 
+                          (r.event_statuses?.[event.id] === 'confirmed')
+                        ).length;
                         return (
                           <TableRow key={event.id} className="hover:bg-neutral-50/50 transition-colors group">
                             <TableCell className="py-5 px-6">
