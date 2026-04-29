@@ -344,9 +344,12 @@ export default function AdminDashboard() {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-black text-gray-900">Gestión de Giras</h2>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <Button onClick={handleNewEvent} className="bg-blue-700 hover:bg-blue-800 rounded-2xl px-6 h-12 font-bold shadow-lg shadow-blue-700/20">
-                    <Plus className="w-5 h-5 mr-2" /> 
-                    Crear Gira
+                  <Button 
+                    onClick={handleNewEvent} 
+                    className="bg-[#3154DC] hover:bg-[#2845c4] text-white rounded-2xl px-8 h-12 font-bold shadow-xl shadow-[#3154DC]/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer border-none"
+                  >
+                    <Plus className="w-5 h-5 stroke-[3]" /> 
+                    Crear Nueva Gira
                   </Button>
                   <DialogContent className="max-w-2xl rounded-[40px] p-0 overflow-hidden bg-white no-scrollbar border-none">
                     <div className="p-10 max-h-[85vh] overflow-y-auto no-scrollbar">
@@ -565,7 +568,6 @@ export default function AdminDashboard() {
                             <Label className="font-bold">País de Residencia</Label>
                             <Input value={editingReg.residence_country || ""} onChange={(e) => setEditingReg({...editingReg, residence_country: e.target.value})} className="rounded-xl h-12" />
                           </div>
-                          {/* Global Status Removed */}
 
                           <div className="col-span-2 space-y-4">
                             <Label className="font-bold">Giras y Estados</Label>
@@ -594,35 +596,54 @@ export default function AdminDashboard() {
                                         <div className="text-[10px] text-neutral-500 uppercase">{ev.country}</div>
                                       </div>
                                     </div>
-
                                     {isSelected && (
-                                      <Select 
-                                        value={currentStatus} 
-                                        onValueChange={(val) => updateRegEventStatus(ev.id, val)}
-                                      >
-                                        <SelectTrigger className="w-[140px] h-9 rounded-xl text-xs font-bold">
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-xl">
-                                          <SelectItem value="pending">Pendiente</SelectItem>
-                                          <SelectItem value="confirmed">Confirmado</SelectItem>
-                                          <SelectItem value="cancelled">Cancelado</SelectItem>
-                                        </SelectContent>
-                                      </Select>
+                                      <div className="flex-1 max-w-[160px]">
+                                        <Select 
+                                          value={currentStatus} 
+                                          onValueChange={(val) => updateRegEventStatus(ev.id, val)}
+                                        >
+                                          <SelectTrigger className="w-full h-10 rounded-xl text-xs font-bold bg-white border-neutral-200 hover:border-blue-400 transition-all cursor-pointer flex items-center justify-center relative px-8">
+                                            <SelectValue>
+                                              {currentStatus === 'confirmed' ? 'Confirmado' : 
+                                               currentStatus === 'cancelled' ? 'Cancelado' : 'Pendiente'}
+                                            </SelectValue>
+                                          </SelectTrigger>
+                                          <SelectContent className="rounded-xl z-[9999]">
+                                            <SelectItem value="pending" className="text-amber-600 font-bold">Pendiente</SelectItem>
+                                            <SelectItem value="confirmed" className="text-green-600 font-bold">Confirmado</SelectItem>
+                                            <SelectItem value="cancelled" className="text-red-600 font-bold">Cancelado</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
                                     )}
                                   </div>
                                 );
                               })}
                             </div>
                           </div>
-
-                          <DialogFooter className="col-span-2 pt-6">
-                            <Button type="button" variant="ghost" onClick={() => setIsRegDialogOpen(false)} className="rounded-xl">Cancelar</Button>
-                            <Button type="submit" className="bg-blue-700 px-10 h-12 rounded-xl shadow-lg shadow-blue-700/20" disabled={isSubmitting}>
-                              {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+ 
+                          <div className="col-span-2 pt-8 mt-6 border-t border-neutral-100 flex flex-col gap-3">
+                            <Button 
+                              type="submit" 
+                              className="w-full bg-[#3154DC] hover:bg-[#2845c4] h-14 rounded-2xl font-bold text-white shadow-xl shadow-[#3154DC]/20 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer order-1" 
+                              disabled={isSubmitting}
+                            >
+                              {isSubmitting ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                              ) : (
+                                <Check className="w-5 h-5 stroke-[3]" />
+                              )}
                               Guardar Cambios
                             </Button>
-                          </DialogFooter>
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              onClick={() => setIsRegDialogOpen(false)} 
+                              className="w-full rounded-2xl h-14 font-bold text-neutral-400 hover:bg-neutral-50 hover:text-neutral-600 transition-all cursor-pointer order-2"
+                            >
+                              Cancelar y Cerrar
+                            </Button>
+                          </div>
                         </form>
                       )}
                     </div>
@@ -648,7 +669,7 @@ export default function AdminDashboard() {
                         <TableCell className="py-5 px-6 font-bold">{reg.first_name} {reg.last_name}</TableCell>
                         <TableCell className="text-sm">
                           <div className="font-medium text-gray-900">{reg.email}</div>
-                          <div className="text-xs text-neutral-500">+{reg.phone_code} {reg.phone}</div>
+                          <div className="text-xs text-neutral-500">{reg.phone_code} {reg.phone}</div>
                           {reg.residence_country && (
                             <div className="text-[10px] text-neutral-400 mt-1 flex items-center gap-1">
                               <MapPin className="w-2.5 h-2.5" /> {reg.residence_country}
@@ -731,7 +752,7 @@ export default function AdminDashboard() {
                               <TooltipContent>Enviar Email</TooltipContent>
                             </Tooltip>
                             <Tooltip>
-                              <TooltipTrigger render={<Button variant="ghost" size="icon" onClick={() => window.open(`https://wa.me/${reg.phone_code}${reg.phone}`)} className="text-green-600 hover:bg-green-50 rounded-xl"><MessageCircle className="w-4 h-4" /></Button>} />
+                              <TooltipTrigger render={<Button variant="ghost" size="icon" onClick={() => window.open(`https://wa.me/${(reg.phone_code + reg.phone).replace(/\D/g, '')}`)} className="text-green-600 hover:bg-green-50 rounded-xl"><MessageCircle className="w-4 h-4" /></Button>} />
                               <TooltipContent>Enviar WhatsApp</TooltipContent>
                             </Tooltip>
                             <div className="w-px h-8 bg-neutral-200 mx-1 self-center" />

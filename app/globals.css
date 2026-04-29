@@ -109,6 +109,19 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Global Cursor Fix for Interactive Elements */
+  button, 
+  [role="button"],
+  select,
+  input[type="submit"],
+  input[type="button"],
+  input[type="checkbox"],
+  input[type="radio"],
+  .cursor-pointer,
+  label[for] {
+    cursor: pointer !important;
+  }
 }
 
 @layer utilities {
