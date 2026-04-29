@@ -71,7 +71,6 @@ const EventSkeleton = () => (
     </div>
   </div>
 );
-export const dynamic = 'force-dynamic';
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -91,53 +90,49 @@ export default function Home() {
   const [eventStatuses, setEventStatuses] = useState<Record<string, string>>({});
   const [selectedCityId, setSelectedCityId] = useState<string>("");
 
-  // Initial Data Fetch & Page Load Listener
+  // 1. Initial Load & Data Fetching
   useEffect(() => {
-    async function fetchEvents() {
-      setIsLoadingEvents(true);
+    // Set page as ready immediately to trigger static animations
+    setIsPageReady(true);
+
+    const fetchData = async () => {
       try {
+        // Fetch events in background
         const result = await getEvents();
-        
         if (result.success && result.data) {
-          const data = result.data;
-          setEvents(data);
-          if (data && data.length > 0) {
-            const firstDate = new Date(data[0].start_date);
+          setEvents(result.data);
+          if (result.data.length > 0) {
+            const firstDate = new Date(result.data[0].start_date);
             const firstMonth = firstDate.toLocaleDateString('es-ES', { month: 'long' });
             setActiveMonth(firstMonth.charAt(0).toUpperCase() + firstMonth.slice(1));
           }
-        } else {
-          throw new Error(result.error || "Error al cargar eventos");
+        }
+
+        // Check local storage & Silent re-validation
+        const saved = localStorage.getItem('chu_registration');
+        if (saved) {
+          const { userData: savedData } = JSON.parse(saved);
+          if (savedData?.email) {
+            const revalidation = await checkRegistration(savedData.email);
+            if (revalidation.success) {
+              setUserData(revalidation.data);
+              setSelectedEvents(revalidation.selectedEvents);
+              setEventStatuses((revalidation as any).eventStatuses || {});
+              if (revalidation.selectedEvents?.length > 0) {
+                setSelectedCityId(revalidation.selectedEvents[0]);
+              }
+              setStep(2);
+            }
+          }
         }
       } catch (err) {
-        console.error('Error fetching events:', err);
-        toast.error("Error de conexión al cargar los eventos");
+        console.error('Fetch error:', err);
       } finally {
         setIsLoadingEvents(false);
       }
-    }
+    };
 
-    const handlePageLoad = () => setIsPageReady(true);
-
-    // Safety timeout: If the page takes more than 2s to fire 'load', 
-    // we force it to ready to prevent a blank screen.
-    const safetyTimeout = setTimeout(() => {
-      if (!isPageReady) {
-        handlePageLoad();
-      }
-    }, 1200);
-
-    if (document.readyState === 'complete') {
-      handlePageLoad();
-    } else {
-      window.addEventListener('load', handlePageLoad);
-      return () => {
-        window.removeEventListener('load', handlePageLoad);
-        clearTimeout(safetyTimeout);
-      };
-    }
-
-    fetchEvents();
+    fetchData();
   }, []); 
 
   // Stabilized Month Calculation
@@ -156,9 +151,9 @@ export default function Home() {
       const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
       
       tl.to(".hero-badge", { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.7)" })
-        .to(".hero-title", { opacity: 1, y: 0, duration: 1.2 }, "-=0.5")
-        .to(".hero-desc", { opacity: 1, y: 0, duration: 1 }, "-=0.8")
-        .to(".hero-check", { opacity: 1, y: 0, duration: 1 }, "-=0.8");
+        .to(".hero-title", { opacity: 1, y: 0, duration: 1.2 }, "-=0.6")
+        .to(".hero-desc", { opacity: 1, y: 0, duration: 1 }, "-=1")
+        .to(".hero-check", { opacity: 1, y: 0, duration: 1 }, "-=1");
 
       // Word Rotator Logic
       const words = ["Giras", "Eventos", "Talleres", "Reuniones"];
