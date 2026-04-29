@@ -322,17 +322,19 @@ export default function AdminDashboard() {
               <h1 className="text-xl font-bold text-black border-l border-neutral-200 pl-4">Panel de Administración</h1>
             </div>
                 <Tooltip>
-                  <TooltipTrigger>
-                    <Button 
-                      variant="outline" 
-                      onClick={handleManualRefresh}
-                      disabled={isTagsLoading}
-                      className="rounded-xl border-neutral-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all gap-2"
-                    >
-                      <RefreshCw className={cn("w-4 h-4", isTagsLoading && "animate-spin")} />
-                      <span className="hidden md:inline">Refrescar Web</span>
-                    </Button>
-                  </TooltipTrigger>
+                  <TooltipTrigger
+                    render={
+                      <Button 
+                        variant="outline" 
+                        onClick={handleManualRefresh}
+                        disabled={isTagsLoading}
+                        className="rounded-xl border-neutral-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all gap-2"
+                      >
+                        <RefreshCw className={cn("w-4 h-4", isTagsLoading && "animate-spin")} />
+                        <span className="hidden md:inline">Refrescar Web</span>
+                      </Button>
+                    }
+                  />
                   <TooltipContent>
                     Fuerza la actualización inmediata de los datos en la página principal.
                   </TooltipContent>
