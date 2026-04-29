@@ -100,6 +100,32 @@ export async function getRegistrations() {
     return { success: false, error: err.message };
   }
 }
+
+export async function getRegistrationsCount() {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('registrations')
+      .select('selected_events, event_statuses');
+
+    if (error) throw error;
+
+    const counts: Record<string, number> = {};
+    data.forEach(reg => {
+      if (reg.selected_events && reg.event_statuses) {
+        reg.selected_events.forEach((id: string) => {
+          if (reg.event_statuses[id] === 'confirmed') {
+            counts[id] = (counts[id] || 0) + 1;
+          }
+        });
+      }
+    });
+
+    return { success: true, data: counts };
+  } catch (err: any) {
+    console.error("Error counts:", err);
+    return { success: false, error: err.message };
+  }
+}
 export async function checkRegistration(email: string) {
   try {
     const { data, error } = await supabaseAdmin
@@ -215,19 +241,19 @@ export async function updateRegistration(id: string, data: any) {
         .in('id', allEventIds);
 
       if (eventDetails) {
-        // Old tags: events that were selected AND were not cancelled
+        // Old tags: events that were selected AND were confirmed
         const oldTags = oldEvents
-          .filter((id: string) => oldStatuses[id] !== 'cancelled')
+          .filter((id: string) => oldStatuses[id] === 'confirmed')
           .map((id: string) => eventDetails.find(e => e.id === id)?.keap_tag_id)
           .filter(Boolean);
 
-        // New tags: events that are now selected AND are not cancelled
+        // New tags: events that are now selected AND are confirmed
         const newTags = newEvents
-          .filter((id: string) => newStatuses[id] !== 'cancelled')
+          .filter((id: string) => newStatuses[id] === 'confirmed')
           .map((id: string) => eventDetails.find(e => e.id === id)?.keap_tag_id)
           .filter(Boolean);
 
-        // syncKeapTags will handle adding new ones and removing those no longer in the list
+        // syncKeapTags handles finding/creating the contact and adding/removing tags
         await syncKeapTags({ email: data.email || currentReg.email }, oldTags, newTags);
       }
     }

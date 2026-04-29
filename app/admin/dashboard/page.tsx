@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { getKeapTags } from "@/app/actions/keap";
+import { clearEventsCache } from "@/app/actions/events";
 import { getRegistrations, deleteRegistration, updateRegistration } from "@/app/actions/registrations";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -142,6 +143,18 @@ export default function AdminDashboard() {
     router.push("/admin/login");
   };
 
+  const handleManualRefresh = async () => {
+    setIsTagsLoading(true);
+    try {
+      await clearEventsCache();
+      toast.success("¡Web principal actualizada con éxito!");
+    } catch (err) {
+      toast.error("Error al refrescar el caché");
+    } finally {
+      setIsTagsLoading(false);
+    }
+  };
+
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -152,6 +165,7 @@ export default function AdminDashboard() {
         : await supabase.from('events').insert([payload]);
 
       if (error) throw error;
+      await clearEventsCache();
       toast.success(id ? "Evento actualizado" : "Evento creado");
       setIsDialogOpen(false);
       fetchData();
@@ -196,6 +210,7 @@ export default function AdminDashboard() {
     try {
       const { error } = await supabase.from('events').delete().eq('id', id);
       if (error) throw error;
+      await clearEventsCache();
       toast.success("Evento eliminado");
       fetchData();
     } catch (err) {
@@ -207,6 +222,7 @@ export default function AdminDashboard() {
     try {
       const { error } = await supabase.from('events').update({ active: !currentStatus }).eq('id', id);
       if (error) throw error;
+      await clearEventsCache();
       fetchData();
     } catch (err) {
       toast.error("Error al actualizar");
@@ -305,7 +321,24 @@ export default function AdminDashboard() {
               <div className="text-sky-950 font-black text-2xl tracking-tighter">CDI</div>
               <h1 className="text-xl font-bold text-black border-l border-neutral-200 pl-4">Panel de Administración</h1>
             </div>
-            <Button variant="ghost" onClick={handleLogout} className="text-red-500 hover:bg-red-50 rounded-xl">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleManualRefresh}
+                      disabled={isTagsLoading}
+                      className="rounded-xl border-neutral-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all gap-2"
+                    >
+                      <RefreshCw className={cn("w-4 h-4", isTagsLoading && "animate-spin")} />
+                      <span className="hidden md:inline">Refrescar Web</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Fuerza la actualización inmediata de los datos en la página principal.
+                  </TooltipContent>
+                </Tooltip>
+
+                <Button variant="outline" onClick={handleLogout} className="rounded-xl border-neutral-200 hover:bg-neutral-50 hover:text-red-600 hover:border-red-200 transition-all gap-2">
               <LogOut className="w-5 h-5 mr-2" /> Salir
             </Button>
           </div>

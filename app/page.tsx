@@ -7,7 +7,7 @@ import { RegistrationForm } from "@/components/registration-form";
 import { Check, Loader2, Edit3 } from "lucide-react";
 import { getEvents } from "@/app/actions/events";
 import { registerInKeap } from "@/app/actions/keap";
-import { createRegistration, checkRegistration } from "@/app/actions/registrations";
+import { createRegistration, checkRegistration, getRegistrationsCount } from "@/app/actions/registrations";
 import { validateTurnstileToken } from "@/app/actions/turnstile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
@@ -89,6 +89,7 @@ export default function Home() {
   const [isCheckMode, setIsCheckMode] = useState(false);
   const [eventStatuses, setEventStatuses] = useState<Record<string, string>>({});
   const [selectedCityId, setSelectedCityId] = useState<string>("");
+  const [eventCounts, setEventCounts] = useState<Record<string, number>>({});
 
   // 1. Initial Load & Data Fetching
   useEffect(() => {
@@ -106,6 +107,12 @@ export default function Home() {
             const firstMonth = firstDate.toLocaleDateString('es-ES', { month: 'long' });
             setActiveMonth(firstMonth.charAt(0).toUpperCase() + firstMonth.slice(1));
           }
+        }
+
+        // Fetch confirmed counts
+        const countsResult = await getRegistrationsCount();
+        if (countsResult.success && countsResult.data) {
+          setEventCounts(countsResult.data);
         }
 
         // Check local storage & Silent re-validation
@@ -365,10 +372,7 @@ export default function Home() {
         }, 50);
       }});
 
-      // 5. Run Keap in background (Non-blocking)
-      registerInKeap(data, tagIds).catch(err => {
-        console.error("Delayed Keap Error:", err);
-      });
+      // 5. Keap integration removed from public registration (Only triggers on Admin Confirmation)
 
     } catch (error: any) {
       toast.error(error.message || "Error al procesar el registro");
@@ -595,6 +599,8 @@ export default function Home() {
                                     price={event.price}
                                     bgClass={event.bg_class}
                                     selected={selectedEvents.includes(event.id)}
+                                    confirmedCount={eventCounts[event.id] || 0}
+                                    capacity={event.capacity || 25}
                                     onSelect={handleSelectEvent}
                                   />
                                 </div>

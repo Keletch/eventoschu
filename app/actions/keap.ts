@@ -147,13 +147,32 @@ export async function syncKeapTags(userData: any, oldTagIds: string[], newTagIds
   if (!apiKey) return { success: false };
 
   try {
-    // Find contact ID
+    // 1. Find or Create contact ID
     const searchRes = await fetch(`https://api.infusionsoft.com/crm/rest/v1/contacts?email=${encodeURIComponent(userData.email)}`, {
       headers: { "X-Keap-API-Key": apiKey }
     });
     const searchData = await searchRes.json();
-    if (!searchData.contacts || searchData.contacts.length === 0) return { success: false };
-    const contactId = searchData.contacts[0].id;
+    
+    let contactId = null;
+
+    if (searchData.contacts && searchData.contacts.length > 0) {
+      contactId = searchData.contacts[0].id;
+    } else {
+      // Contact doesn't exist. Let's create it.
+      // We need to fetch the registration data from Supabase to get full details if userData is incomplete
+      const createRes = await registerInKeap({
+        email: userData.email,
+        firstName: userData.first_name || userData.firstName || "Inscrito",
+        lastName: userData.last_name || userData.lastName || "Chu",
+        phone: userData.phone || "",
+        phoneCode: userData.phone_code || ""
+      }, []); // Empty tags initially, we sync them below
+      
+      if (!createRes.success) return { success: false, error: "Failed to create contact in Keap" };
+      contactId = createRes.contactId;
+    }
+
+    if (!contactId) return { success: false };
 
     // Tags to add (present in new but not in old)
     const toAdd = newTagIds.filter(id => !oldTagIds.includes(id));
