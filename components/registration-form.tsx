@@ -4,10 +4,13 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, Edit3, Info } from "lucide-react";
 import Turnstile from "react-turnstile";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useUser, useClerk, SignInButton } from "@clerk/nextjs";
+import { useEffect, useCallback } from "react";
+import { checkRegistration } from "@/app/actions/registrations";
 
 import {
   Select,
@@ -19,6 +22,7 @@ import {
 
 interface RegistrationFormProps {
   onSubmit: (data: any, turnstileToken: string) => void;
+  onCheckRegistration: (data: any) => void;
   isLoading?: boolean;
 }
 
@@ -45,7 +49,14 @@ const COUNTRY_CODES = [
   { code: "+1", country: "Puerto Rico", flag: "🇵🇷" },
 ];
 
-export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps) {
+export function RegistrationForm({ 
+  onSubmit, 
+  onCheckRegistration,
+  isLoading = false 
+}: RegistrationFormProps) {
+  const { user, isSignedIn } = useUser();
+  const { openSignIn } = useClerk();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -54,10 +65,61 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
     phoneCode: "+51",
     phone: "",
   });
+  const [isOtherCountry, setIsOtherCountry] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>("");
+
+  const fetchSupabaseData = useCallback(async (email: string) => {
+    try {
+      const result = await checkRegistration(email, user?.id);
+      if (result.success && result.userData) {
+        setFormData(prev => ({
+          ...prev,
+          phone: result.userData.phone || prev.phone,
+          phoneCode: result.userData.phoneCode || prev.phoneCode,
+          country: result.userData.country || prev.country,
+        }));
+        if (result.userData.country && !COUNTRY_CODES.some(c => c.country === result.userData.country)) {
+          setIsOtherCountry(true);
+        }
+        // Notify parent about found user data to enable Realtime listeners in Step 1
+        onCheckRegistration(result);
+      }
+    } catch (err) {
+      console.error("Error fetching user data from Supabase:", err);
+    }
+  }, [user?.id]);
+
+  // Pre-fill form from Clerk and Supabase when user logs in, OR clear when logs out
+  useEffect(() => {
+    if (isSignedIn && user) {
+      const email = user.primaryEmailAddress?.emailAddress || "";
+      setFormData(prev => ({
+        ...prev,
+        firstName: user.firstName || prev.firstName,
+        lastName: user.lastName || prev.lastName,
+        email: email || prev.email,
+      }));
+
+      if (email) {
+        fetchSupabaseData(email);
+      }
+    } else if (!isSignedIn) {
+      // Clear fields ONLY when user is NOT signed in (logged out)
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        country: "",
+        phoneCode: "+51",
+        phone: "",
+      });
+      setIsOtherCountry(false);
+    }
+  }, [isSignedIn, user, fetchSupabaseData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!turnstileToken) {
       toast.error("Por favor completa la verificación de seguridad.");
       return;
@@ -70,6 +132,17 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleCountryChange = (val: string | null) => {
+    const value = val || "";
+    if (value === "otro") {
+      setIsOtherCountry(true);
+      setFormData(prev => ({ ...prev, country: "" }));
+    } else {
+      setIsOtherCountry(false);
+      setFormData(prev => ({ ...prev, country: value }));
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-8 md:gap-12">
       {/* Row 1: Names and Email */}
@@ -78,12 +151,12 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
           <Label htmlFor="firstName" className="text-gray-900 font-bold px-1">
             Nombre <span className="text-red-500">*</span>
           </Label>
-          <Input 
-            id="firstName" 
-            name="firstName" 
-            placeholder="Escribe tu nombre" 
-            className="h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50" 
-            required 
+          <Input
+            id="firstName"
+            name="firstName"
+            placeholder="Escribe tu nombre"
+            className="h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50"
+            required
             value={formData.firstName}
             onChange={handleChange}
           />
@@ -92,12 +165,12 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
           <Label htmlFor="lastName" className="text-gray-900 font-bold px-1">
             Apellido <span className="text-red-500">*</span>
           </Label>
-          <Input 
-            id="lastName" 
-            name="lastName" 
-            placeholder="Escribe tu apellido" 
-            className="h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50" 
-            required 
+          <Input
+            id="lastName"
+            name="lastName"
+            placeholder="Escribe tu apellido"
+            className="h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50"
+            required
             value={formData.lastName}
             onChange={handleChange}
           />
@@ -106,15 +179,19 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
           <Label htmlFor="email" className="text-gray-900 font-bold px-1">
             Correo electrónico <span className="text-red-500">*</span>
           </Label>
-          <Input 
-            id="email" 
-            name="email" 
-            type="email" 
-            placeholder="tucorreo@ejemplo.com" 
-            className="h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50" 
-            required 
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="tucorreo@ejemplo.com"
+            className={cn(
+              "h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50",
+              isSignedIn && "bg-gray-100 cursor-not-allowed opacity-70"
+            )}
+            required
             value={formData.email}
             onChange={handleChange}
+            readOnly={isSignedIn}
           />
         </div>
       </div>
@@ -125,22 +202,59 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
           <Label htmlFor="country" className="text-gray-900 font-bold px-1">
             País de residencia <span className="text-neutral-400 font-normal">(opcional)</span>
           </Label>
-          <Input 
-            id="country" 
-            name="country" 
-            placeholder="Escribe tu país" 
-            className="h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50" 
-            value={formData.country}
-            onChange={handleChange}
-          />
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-3">
+              <Select
+                onValueChange={handleCountryChange}
+                value={isOtherCountry ? "otro" : formData.country}
+              >
+                <SelectTrigger className={cn(
+                  "h-12 md:h-14 px-2.5 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50 transition-all text-left",
+                  isOtherCountry ? "w-[110px] md:w-[140px]" : "w-full"
+                )}>
+                  <SelectValue>
+                    {isOtherCountry ? "Otro" : (formData.country || "Seleccionar")}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRY_CODES.map((item, idx) => (
+                    <SelectItem key={idx} value={item.country}>
+                      <span className="flex items-center gap-2">
+                        <span>{item.flag}</span>
+                        <span>{item.country}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="otro">
+                    <span className="flex items-center gap-2">
+                      <span>🌍</span>
+                      <span>Otro</span>
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              {isOtherCountry && (
+                <Input
+                  id="country-custom"
+                  name="country"
+                  placeholder="Nombre del país"
+                  className="flex-1 h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50 animate-in fade-in slide-in-from-left-2 duration-300"
+                  value={formData.country}
+                  onChange={handleChange}
+                  autoFocus
+                />
+              )}
+            </div>
+          </div>
         </div>
         <div className="flex flex-col gap-3 md:col-span-2">
           <Label htmlFor="phone" className="text-gray-900 font-bold px-1">
             Teléfono (WhatsApp) <span className="text-red-500">*</span>
           </Label>
           <div className="flex gap-3">
-            <Select 
-              value={formData.phoneCode} 
+            <Select
+              value={formData.phoneCode}
               onValueChange={(val: string | null) => setFormData(prev => ({ ...prev, phoneCode: val || "" }))}
             >
               <SelectTrigger className="w-[110px] md:w-[140px] h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50 flex items-center justify-between px-4">
@@ -158,11 +272,11 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
                 ))}
               </SelectContent>
             </Select>
-            <Input 
-              id="phone" 
-              name="phone" 
-              placeholder="987 654 321" 
-              className="flex-1 h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50" 
+            <Input
+              id="phone"
+              name="phone"
+              placeholder="987 654 321"
+              className="flex-1 h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50"
               required
               value={formData.phone}
               onChange={handleChange}
@@ -174,15 +288,15 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
       {/* Security and Submit */}
       <div className="flex flex-col items-center gap-8 pt-4">
         <div className="w-full flex justify-center scale-90 md:scale-100">
-          <Turnstile 
-            sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"} 
+          <Turnstile
+            sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
             onVerify={(token) => setTurnstileToken(token)}
             theme="light"
           />
         </div>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={isLoading || !turnstileToken}
           className={cn(
             "w-full h-16 bg-[#3154DC] hover:opacity-90 text-white font-bold rounded-3xl text-2xl flex items-center justify-center gap-3 shadow-xl shadow-[#3154DC]/20 transition-all active:scale-[0.98] mt-4",
@@ -198,6 +312,25 @@ export function RegistrationForm({ onSubmit, isLoading }: RegistrationFormProps)
             "¡Registrarme ahora!"
           )}
         </Button>
+
+        {!isSignedIn && (
+          <div className="flex flex-col items-center gap-2 mt-4 relative z-[100]">
+            <div
+              onClick={() => {
+                console.log("Clic detectado en el botón de edición");
+                openSignIn({});
+              }}
+              className="group flex items-center gap-2 text-blue-600 font-bold hover:text-blue-800 transition-colors cursor-pointer p-2 text-center"
+              role="button"
+            >
+              <Edit3 className="w-4 h-4 shrink-0" />
+              <span className="hover:underline leading-tight">¡Hazlo más fácil! Inicia sesión para autocompletar tus datos y asegurar tu lugar en segundos</span>
+            </div>
+            <p className="text-[11px] text-gray-500 font-medium text-center max-w-[400px]">
+              <span className="text-gray-600 font-bold">Ahorra tiempo </span>al unirte a nuestra comunidad de inversores.
+            </p>
+          </div>
+        )}
       </div>
     </form>
   );

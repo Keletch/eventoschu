@@ -37,6 +37,7 @@ export function EventCard({
   confirmedCount = 0,
   capacity = 25,
 }: EventCardProps) {
+  const timeToBeConfirmed = time === "Por confirmar";
   const isSoldOut = confirmedCount >= capacity;
   const FlagComponent = flag && (Flags as any)[flag.toUpperCase()] ? (Flags as any)[flag.toUpperCase()] : null;
 
@@ -98,7 +99,9 @@ export function EventCard({
           <p className="flex items-center gap-3">
             <Clock className="w-4 h-4 text-neutral-400 shrink-0" />
             <span className="font-bold shrink-0">Hora:</span> 
-            <span className="truncate">{time}</span>
+            <span className="truncate">
+              {time}
+            </span>
           </p>
           <p className="flex items-center gap-3">
             <Hourglass className="w-4 h-4 text-neutral-400 shrink-0" />

@@ -142,14 +142,15 @@
 
 /* Custom Elegant Global Scrollbar */
 html {
-  overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-gutter: stable;
+  overflow-y: auto;
+  height: auto;
 }
 
 body {
-  overflow: visible; 
-  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+  scrollbar-gutter: stable;
 }
 
 /* Scrollbar styles for Webkit (Chrome, Safari, Edge) */

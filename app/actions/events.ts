@@ -15,7 +15,7 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const EVENTS_CACHE_KEY = "events_list";
+const EVENTS_CACHE_KEY = "events_list_v2";
 const CACHE_TTL = 3600; // 1 hour in seconds
 
 /**
@@ -34,7 +34,7 @@ export async function getEvents() {
     // 2. If not in cache, fetch from Supabase
     const { data, error } = await supabaseAdmin
       .from('events')
-      .select('*')
+      .select('*, categories(name)')
       .eq('active', true)
       .order('start_date', { ascending: true });
 

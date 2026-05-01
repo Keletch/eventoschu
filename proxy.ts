@@ -1,10 +1,12 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
 /**
  * Next.js 16 Proxy (formerly Middleware)
+ * Merged with Clerk for CDI Eventos
  */
-export default async function proxy(request: NextRequest) {
+export default clerkMiddleware(async (auth, request) => {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -38,7 +40,7 @@ export default async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect /admin routes
+  // Protect /admin routes (Supabase)
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (request.nextUrl.pathname === '/admin/login') {
       if (user) {
@@ -53,10 +55,13 @@ export default async function proxy(request: NextRequest) {
   }
 
   return response
-}
+});
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
   ],
-}
+};

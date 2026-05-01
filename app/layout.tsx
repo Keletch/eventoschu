@@ -8,11 +8,16 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "Giras HyenUk Chu | Lista de Espera",
-  description: "Registro para las giras presenciales de HyenUk Chu.",
+  title: "Calendario HyenUk Chu | Lista de Espera",
+  description: "Calendario de eventos de HyenUk Chu.",
+  icons: {
+    icon: "/cdi-favicon.png",
+  },
 };
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ClerkProvider } from "@clerk/nextjs";
+import { esES } from "@clerk/localizations";
 
 export default function RootLayout({
   children,
@@ -20,12 +25,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${raleway.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">
-        <TooltipProvider>
-          {children}
-        </TooltipProvider>
-      </body>
-    </html>
+    <ClerkProvider localization={esES}>
+      <html lang="es" className={`${raleway.variable} antialiased`} suppressHydrationWarning>
+        <body className="flex flex-col font-sans">
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
