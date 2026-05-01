@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { esES } from "@clerk/localizations";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         <body className="flex flex-col font-sans">
           <TooltipProvider>
             {children}
+            <Toaster position="bottom-right" expand={true} richColors />
           </TooltipProvider>
         </body>
       </html>

@@ -1,53 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Loader2, Edit3, Info } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Loader2, Edit3 } from "lucide-react";
 import Turnstile from "react-turnstile";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useUser, useClerk, SignInButton } from "@clerk/nextjs";
-import { useEffect, useCallback } from "react";
-import { checkRegistration } from "@/app/actions/registrations";
+import { useUser, useClerk } from "@clerk/nextjs";
+import { checkRegistration } from "@/app/actions/user-registration";
+import { Button } from "@/components/ui/button";
+import { COUNTRY_CODES } from "@/lib/constants";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// Modular Components
+import { FormField } from "./registration/form-field";
+import { PhoneInput } from "./registration/phone-input";
+import { CountrySelector } from "./registration/country-selector";
 
 interface RegistrationFormProps {
   onSubmit: (data: any, turnstileToken: string) => void;
   onCheckRegistration: (data: any) => void;
   isLoading?: boolean;
 }
-
-const COUNTRY_CODES = [
-  { code: "+51", country: "Perú", flag: "🇵🇪" },
-  { code: "+52", country: "México", flag: "🇲🇽" },
-  { code: "+57", country: "Colombia", flag: "🇨🇴" },
-  { code: "+1", country: "USA / Canada", flag: "🇺🇸" },
-  { code: "+34", country: "España", flag: "🇪🇸" },
-  { code: "+54", country: "Argentina", flag: "🇦🇷" },
-  { code: "+56", country: "Chile", flag: "🇨🇱" },
-  { code: "+593", country: "Ecuador", flag: "🇪🇨" },
-  { code: "+58", country: "Venezuela", flag: "🇻🇪" },
-  { code: "+507", country: "Panamá", flag: "🇵🇦" },
-  { code: "+506", country: "Costa Rica", flag: "🇨🇷" },
-  { code: "+502", country: "Guatemala", flag: "🇬🇹" },
-  { code: "+591", country: "Bolivia", flag: "🇧🇴" },
-  { code: "+595", country: "Paraguay", flag: "🇵🇾" },
-  { code: "+598", country: "Uruguay", flag: "🇺🇾" },
-  { code: "+503", country: "El Salvador", flag: "🇸🇻" },
-  { code: "+504", country: "Honduras", flag: "🇭🇳" },
-  { code: "+505", country: "Nicaragua", flag: "🇳🇮" },
-  { code: "+1", country: "Rep. Dominicana", flag: "🇩🇴" },
-  { code: "+1", country: "Puerto Rico", flag: "🇵🇷" },
-];
 
 export function RegistrationForm({ 
   onSubmit, 
@@ -81,15 +53,13 @@ export function RegistrationForm({
         if (result.userData.country && !COUNTRY_CODES.some(c => c.country === result.userData.country)) {
           setIsOtherCountry(true);
         }
-        // Notify parent about found user data to enable Realtime listeners in Step 1
         onCheckRegistration(result);
       }
     } catch (err) {
       console.error("Error fetching user data from Supabase:", err);
     }
-  }, [user?.id]);
+  }, [user?.id, onCheckRegistration]);
 
-  // Pre-fill form from Clerk and Supabase when user logs in, OR clear when logs out
   useEffect(() => {
     if (isSignedIn && user) {
       const email = user.primaryEmailAddress?.emailAddress || "";
@@ -104,7 +74,6 @@ export function RegistrationForm({
         fetchSupabaseData(email);
       }
     } else if (!isSignedIn) {
-      // Clear fields ONLY when user is NOT signed in (logged out)
       setFormData({
         firstName: "",
         lastName: "",
@@ -119,7 +88,6 @@ export function RegistrationForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!turnstileToken) {
       toast.error("Por favor completa la verificación de seguridad.");
       return;
@@ -147,142 +115,52 @@ export function RegistrationForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-8 md:gap-12">
       {/* Row 1: Names and Email */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
-        <div className="flex flex-col gap-3">
-          <Label htmlFor="firstName" className="text-gray-900 font-bold px-1">
-            Nombre <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="firstName"
-            name="firstName"
-            placeholder="Escribe tu nombre"
-            className="h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50"
-            required
-            value={formData.firstName}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex flex-col gap-3">
-          <Label htmlFor="lastName" className="text-gray-900 font-bold px-1">
-            Apellido <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="lastName"
-            name="lastName"
-            placeholder="Escribe tu apellido"
-            className="h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50"
-            required
-            value={formData.lastName}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex flex-col gap-3 md:col-span-2 lg:col-span-1">
-          <Label htmlFor="email" className="text-gray-900 font-bold px-1">
-            Correo electrónico <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="tucorreo@ejemplo.com"
-            className={cn(
-              "h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50",
-              isSignedIn && "bg-gray-100 cursor-not-allowed opacity-70"
-            )}
-            required
-            value={formData.email}
-            onChange={handleChange}
-            readOnly={isSignedIn}
-          />
-        </div>
+        <FormField
+          id="firstName"
+          name="firstName"
+          label="Nombre"
+          placeholder="Escribe tu nombre"
+          required
+          value={formData.firstName}
+          onChange={handleChange}
+        />
+        <FormField
+          id="lastName"
+          name="lastName"
+          label="Apellido"
+          placeholder="Escribe tu apellido"
+          required
+          value={formData.lastName}
+          onChange={handleChange}
+        />
+        <FormField
+          id="email"
+          name="email"
+          label="Correo electrónico"
+          type="email"
+          placeholder="tucorreo@ejemplo.com"
+          required
+          readOnly={isSignedIn}
+          value={formData.email}
+          onChange={handleChange}
+          className="md:col-span-2 lg:col-span-1"
+        />
       </div>
 
       {/* Row 2: Country and Phone */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
-        <div className="flex flex-col gap-3">
-          <Label htmlFor="country" className="text-gray-900 font-bold px-1">
-            País de residencia <span className="text-neutral-400 font-normal">(opcional)</span>
-          </Label>
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-3">
-              <Select
-                onValueChange={handleCountryChange}
-                value={isOtherCountry ? "otro" : formData.country}
-              >
-                <SelectTrigger className={cn(
-                  "h-12 md:h-14 px-2.5 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50 transition-all text-left",
-                  isOtherCountry ? "w-[110px] md:w-[140px]" : "w-full"
-                )}>
-                  <SelectValue>
-                    {isOtherCountry ? "Otro" : (formData.country || "Seleccionar")}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRY_CODES.map((item, idx) => (
-                    <SelectItem key={idx} value={item.country}>
-                      <span className="flex items-center gap-2">
-                        <span>{item.flag}</span>
-                        <span>{item.country}</span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="otro">
-                    <span className="flex items-center gap-2">
-                      <span>🌍</span>
-                      <span>Otro</span>
-                    </span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-
-              {isOtherCountry && (
-                <Input
-                  id="country-custom"
-                  name="country"
-                  placeholder="Nombre del país"
-                  className="flex-1 h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50 animate-in fade-in slide-in-from-left-2 duration-300"
-                  value={formData.country}
-                  onChange={handleChange}
-                  autoFocus
-                />
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col gap-3 md:col-span-2">
-          <Label htmlFor="phone" className="text-gray-900 font-bold px-1">
-            Teléfono (WhatsApp) <span className="text-red-500">*</span>
-          </Label>
-          <div className="flex gap-3">
-            <Select
-              value={formData.phoneCode}
-              onValueChange={(val: string | null) => setFormData(prev => ({ ...prev, phoneCode: val || "" }))}
-            >
-              <SelectTrigger className="w-[110px] md:w-[140px] h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50 flex items-center justify-between px-4">
-                <SelectValue placeholder="+51" />
-              </SelectTrigger>
-              <SelectContent>
-                {COUNTRY_CODES.map((item, idx) => (
-                  <SelectItem key={idx} value={item.code}>
-                    <span className="flex items-center gap-2">
-                      <span className="text-lg">{item.flag}</span>
-                      <span className="font-bold">{item.code}</span>
-                      <span className="hidden md:inline text-xs text-neutral-400">({item.country})</span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Input
-              id="phone"
-              name="phone"
-              placeholder="987 654 321"
-              className="flex-1 h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50"
-              required
-              value={formData.phone}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
+        <CountrySelector 
+          value={formData.country}
+          isOther={isOtherCountry}
+          onSelect={handleCountryChange}
+          onCustomChange={handleChange}
+        />
+        <PhoneInput 
+          phoneCode={formData.phoneCode}
+          phone={formData.phone}
+          onPhoneCodeChange={(val) => setFormData(prev => ({ ...prev, phoneCode: val || "" }))}
+          onPhoneChange={handleChange}
+        />
       </div>
 
       {/* Security and Submit */}
@@ -315,17 +193,14 @@ export function RegistrationForm({
 
         {!isSignedIn && (
           <div className="flex flex-col items-center gap-2 mt-4 relative z-[100]">
-            <div
-              onClick={() => {
-                console.log("Clic detectado en el botón de edición");
-                openSignIn({});
-              }}
-              className="group flex items-center gap-2 text-blue-600 font-bold hover:text-blue-800 transition-colors cursor-pointer p-2 text-center"
-              role="button"
+            <button
+              type="button"
+              onClick={() => openSignIn({})}
+              className="group flex items-center gap-2 text-blue-600 font-bold hover:text-blue-800 transition-colors p-2 text-center"
             >
               <Edit3 className="w-4 h-4 shrink-0" />
               <span className="hover:underline leading-tight">¡Hazlo más fácil! Inicia sesión para autocompletar tus datos y asegurar tu lugar en segundos</span>
-            </div>
+            </button>
             <p className="text-[11px] text-gray-500 font-medium text-center max-w-[400px]">
               <span className="text-gray-600 font-bold">Ahorra tiempo </span>al unirte a nuestra comunidad de inversores.
             </p>

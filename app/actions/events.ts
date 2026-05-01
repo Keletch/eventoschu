@@ -3,35 +3,41 @@
 import { Redis } from "@upstash/redis";
 import { createClient } from "@supabase/supabase-js";
 
-// Upstash Redis setup - Using Vercel's standard KV environment variables
 const redis = new Redis({
   url: process.env.KV_REST_API_URL!,
   token: process.env.KV_REST_API_TOKEN!,
 });
 
-// Supabase Admin setup for server-side fetching
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
 const EVENTS_CACHE_KEY = "events_list_v2";
-const CACHE_TTL = 3600; // 1 hour in seconds
+const CACHE_TTL = 3600; // 1 hora
+
+export interface Event {
+  id: string;
+  title: string;
+  city: string;
+  country: string;
+  start_date: string;
+  active: boolean;
+  keap_tag_id?: string;
+  keap_pending_tag_id?: string;
+  categories?: { name: string } | { name: string }[];
+}
 
 /**
- * Fetches events with an intelligent caching layer using Redis.
- * This significantly reduces Supabase load and improves response times.
+ * 📅 Obtiene eventos con capa de caché inteligente en Redis
  */
 export async function getEvents() {
   try {
-    // 1. Try to get from Redis Cache first
-    const cachedEvents = await redis.get(EVENTS_CACHE_KEY);
-    
-    if (cachedEvents) {
-      return { success: true, data: cachedEvents as any[], source: "cache" };
-    }
+    // 1. Intentar desde Cache
+    const cached = await redis.get(EVENTS_CACHE_KEY);
+    if (cached) return { success: true, data: cached as Event[], source: "cache" };
 
-    // 2. If not in cache, fetch from Supabase
+    // 2. Si no hay cache, ir a Supabase
     const { data, error } = await supabaseAdmin
       .from('events')
       .select('*, categories(name)')
@@ -40,31 +46,31 @@ export async function getEvents() {
 
     if (error) throw error;
 
-    // 3. Store in Redis with TTL (1 hour)
+    // 3. Guardar en Cache
     if (data && data.length > 0) {
       await redis.set(EVENTS_CACHE_KEY, data, { ex: CACHE_TTL });
     }
 
-    return { success: true, data: data as any[], source: "supabase" };
+    return { success: true, data: data as Event[], source: "supabase" };
   } catch (error: any) {
-    console.error("Error fetching events:", error);
+    console.error("❌ getEvents Error:", error);
     
-    // Fallback: If Redis fails, try a direct Supabase fetch without throwing
+    // Fallback: Supabase directo sin cache
     try {
       const { data } = await supabaseAdmin
         .from('events')
-        .select('*')
+        .select('*, categories(name)')
         .eq('active', true)
         .order('start_date', { ascending: true });
-      return { success: true, data: data as any[], source: "fallback" };
+      return { success: true, data: data as Event[], source: "fallback" };
     } catch (e) {
-      return { success: false, error: error.message };
+      return { success: false, error: "Error al cargar eventos" };
     }
   }
 }
 
 /**
- * Utility to clear the events cache manually (e.g. after adding events in admin)
+ * 🧹 Limpia manualmente el caché de eventos
  */
 export async function clearEventsCache() {
   try {

@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { saveSurveyData } from "@/app/actions/registrations";
+import { saveSurveyData } from "@/app/actions/user-registration";
+import { SURVEY_QUESTIONS } from "@/lib/constants";
 
 interface SurveyModalProps {
   isOpen: boolean;
@@ -14,48 +15,6 @@ interface SurveyModalProps {
   email: string;
   onSuccess: (data: any) => void;
 }
-
-const QUESTIONS = [
-  {
-    id: "relationship",
-    label: "¿Cuál es tu relación actual con el Club de Inversionistas?",
-    options: [
-      { value: "nuevo", label: "Es mi primera vez con Hyenuk / El Club (Soy nuevo)." },
-      { value: "seguidor", label: "Sigo el contenido pero aún no soy alumno." },
-      { value: "alumno", label: "Ya soy (o he sido) alumno de un taller o membresía." },
-    ]
-  },
-  {
-    id: "topic",
-    label: "Si tuvieras que elegir UN solo tema para profundizar en el Meetup, ¿cuál sería?",
-    options: [
-      { value: "crecimiento", label: "Crecimiento personal: Mentalidad y hábitos para el éxito." },
-      { value: "inversiones", label: "Inversiones: Cómo poner a trabajar mi dinero a largo plazo." },
-      { value: "finanzas", label: "Finanzas: Cómo organizar mis cuentas y salir de deudas." },
-      { value: "trading", label: "Trading: Cómo entender los mercados." },
-    ]
-  },
-  {
-    id: "experience",
-    label: "¿Cuál es tu nivel de experiencia en el mundo de las inversiones?",
-    options: [
-      { value: "nivel0", label: "Nivel 0: Solo tengo curiosidad, no he empezado." },
-      { value: "nivel1", label: "Nivel 1: He estudiado pero aún no he puesto mi capital en marcha." },
-      { value: "nivel2", label: "Nivel 2: Ya invierto de forma activa por mi cuenta." },
-    ]
-  },
-  {
-    id: "hurdle",
-    label: "¿Qué es lo que más te detiene hoy para alcanzar tus objetivos financieros?",
-    options: [
-      { value: "dinero", label: "No tengo suficiente dinero para empezar" },
-      { value: "guia", label: "No sé por dónde empezar" },
-      { value: "miedo", label: "Me da miedo perder dinero" },
-      { value: "constancia", label: "Me cuesta ser constante" },
-      { value: "tiempo", label: "Tiempo" },
-    ]
-  }
-];
 
 export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,7 +52,7 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-12">
-            {QUESTIONS.map((q, idx) => (
+            {SURVEY_QUESTIONS.map((q, idx) => (
               <div key={q.id} className="space-y-4">
                 <label className="text-lg md:text-xl font-bold text-black flex gap-2">
                   <span className="text-gray-400 font-medium">{idx + 1}.</span> {q.label}
@@ -101,16 +60,15 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
                 <Select 
                   name={q.id} 
                   required 
-                  items={q.options}
                   value={answers[q.id] || ""}
                   onValueChange={(val) => setAnswers(prev => ({ ...prev, [q.id]: val ?? "" }))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-14 rounded-2xl border-neutral-200 bg-neutral-50/50">
                     <SelectValue placeholder="Seleccionar una opción" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-2xl border-neutral-200 shadow-xl">
                     {q.options.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
+                      <SelectItem key={opt.value} value={opt.value} className="rounded-xl">
                         {opt.label}
                       </SelectItem>
                     ))}

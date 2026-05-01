@@ -8,7 +8,9 @@ import { Footer } from "@/components/footer";
 import { Check, Loader2, Edit3, Info, Mail, LogOut, Ticket } from "lucide-react";
 import { getEvents } from "@/app/actions/events";
 import { registerInKeap } from "@/app/actions/keap";
-import { createRegistration, checkRegistration, getRegistrationsCount, updateEventSpecificData, updateUserEmail, linkClerkAccount } from "@/app/actions/registrations";
+import { createRegistration, checkRegistration, updateEventSpecificData } from "@/app/actions/user-registration";
+import { getRegistrationsCount } from "@/app/actions/admin-registration";
+import { updateUserEmail, linkClerkAccount } from "@/app/actions/auth-actions";
 import { validateTurnstileToken } from "@/app/actions/turnstile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SurveyModal } from "@/components/survey-modal";
@@ -105,18 +107,20 @@ export default function Home() {
   const [isCheckMode, setIsCheckMode] = useState(false);
   const [eventStatuses, setEventStatuses] = useState<Record<string, string>>({});
   const eventStatusesRef = useRef(eventStatuses);
-
-  // Keep ref in sync
-  useEffect(() => {
-    eventStatusesRef.current = eventStatuses;
-  }, [eventStatuses]);
   const [selectedCityId, setSelectedCityId] = useState<string>("");
   const [eventCounts, setEventCounts] = useState<Record<string, number>>({});
   const [eventDataMap, setEventDataMap] = useState<Record<string, any>>({});
+  const eventDataMapRef = useRef(eventDataMap);
   const [surveyData, setSurveyData] = useState<any>(null);
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
   const [showEmailSyncAlert, setShowEmailSyncAlert] = useState(false);
   const [syncedEmail, setSyncedEmail] = useState("");
+
+  // Keep refs in sync
+  useEffect(() => {
+    eventStatusesRef.current = eventStatuses;
+    eventDataMapRef.current = eventDataMap;
+  }, [eventStatuses, eventDataMap]);
 
   // Persistent Alert Check
   useEffect(() => {
@@ -135,56 +139,42 @@ export default function Home() {
 
   // 1. Initial Load & Data Fetching
   useEffect(() => {
-    // Set page as ready immediately to trigger static animations
     setIsPageReady(true);
 
     const fetchData = async () => {
       try {
-        // Fetch events in background
-        const result = await getEvents();
-        if (result.success && result.data) {
-          setEvents(result.data);
-          if (result.data.length > 0) {
-            const firstDate = new Date(result.data[0].start_date);
+        // Fetch events and counts in parallel
+        const [eventsRes, countsRes] = await Promise.all([
+          getEvents(),
+          getRegistrationsCount()
+        ]);
+
+        if (eventsRes.success && eventsRes.data) {
+          setEvents(eventsRes.data);
+          if (eventsRes.data.length > 0) {
+            const firstDate = new Date(eventsRes.data[0].start_date);
             const firstMonth = firstDate.toLocaleDateString('es-ES', { month: 'long' });
             setActiveMonth(firstMonth.charAt(0).toUpperCase() + firstMonth.slice(1));
           }
         }
-        // Fetch confirmed counts
-        const countsResult = await getRegistrationsCount();
-        if (countsResult.success && countsResult.data) {
-          setEventCounts(countsResult.data);
-        }
 
-        // Check local storage & Silent re-validation
-        const saved = localStorage.getItem('chu_registration');
-        if (saved) {
-          const { userData: savedData } = JSON.parse(saved);
-          if (savedData?.email) {
-            await revalidateStatus(savedData.email);
-          }
+        if (countsRes.success && countsRes.data) {
+          setEventCounts(countsRes.data);
         }
 
         // Handle referral link
         const params = new URLSearchParams(window.location.search);
         const cityId = params.get('city');
-        const eventsList = result.data as any[];
-
-        if (cityId && eventsList && eventsList.length > 0) {
-          const event = eventsList.find((e: any) => e.id === cityId);
+        if (cityId && eventsRes.data) {
+          const event = (eventsRes.data as any[]).find(e => e.id === cityId);
           if (event) {
             setSelectedCityId(cityId);
-            setSelectedEvents([cityId]); // Add this to actually check the box
+            setSelectedEvents([cityId]);
             const date = new Date(event.start_date);
             const month = date.toLocaleDateString('es-ES', { month: 'long' });
             setActiveMonth(month.charAt(0).toUpperCase() + month.slice(1));
-
-            // Scroll to the event section
             setTimeout(() => {
-              const element = document.getElementById(`event-${cityId}`);
-              if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
+              document.getElementById(`event-${cityId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 800);
           }
         }
@@ -199,11 +189,23 @@ export default function Home() {
   }, []);
 
   // 1.5 Realtime Listeners: Live status updates and global notifications
+  const eventsRef = useRef(events);
+  const userDataRef = useRef(userData);
+  const userRef = useRef(user);
+
+  useEffect(() => {
+    eventsRef.current = events;
+    userDataRef.current = userData;
+    userRef.current = user;
+  }, [events, userData, user]);
+
   useEffect(() => {
     if (!isPageReady) return;
 
     let lastToastTime = 0;
     const TOAST_DEBOUNCE = 5000; // 5 seconds between global notifications
+
+    console.log("🔌 Initializing Global Realtime Channel...");
 
     const channel = supabase
       .channel('schema-db-changes')
@@ -229,7 +231,6 @@ export default function Home() {
           // B. Global Notification: Someone was confirmed! (Strict check)
           if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
             const newStatuses = payload.new.event_statuses || {};
-            // For updates, we only care if event_statuses actually changed
             const statusChanged = payload.eventType === 'INSERT' || (payload.old && 'event_statuses' in payload.old);
 
             if (statusChanged) {
@@ -241,8 +242,8 @@ export default function Home() {
               if (confirmedEventId) {
                 const now = Date.now();
                 if (now - lastToastTime > TOAST_DEBOUNCE) {
-                  const cityName = events.find(e => e.id === confirmedEventId)?.city || "un evento";
-                  if (payload.new.email !== userData?.email) {
+                  const cityName = eventsRef.current.find(e => e.id === confirmedEventId)?.city || "un evento";
+                  if (payload.new.email !== userDataRef.current?.email) {
                     toast(`¡Nuevo cupo confirmado en ${cityName}! 🚀`, {
                       description: "La gira de HyenUk Chu se está llenando.",
                       duration: 4000
@@ -256,14 +257,13 @@ export default function Home() {
 
           // C. Personal Notification: Current user status updated!
           if (payload.eventType === 'UPDATE') {
-            const newEmail = payload.new.email.toLowerCase().trim();
-            const currentClerkId = user?.id;
+            const newEmail = payload.new.email?.toLowerCase().trim();
+            const currentClerkId = userRef.current?.id;
             
-            // If the update belongs to ME (by clerk_id) and the email changed
             if (currentClerkId && payload.new.clerk_id === currentClerkId) {
-              const oldEmail = userData?.email?.toLowerCase().trim();
+              const oldEmail = userDataRef.current?.email?.toLowerCase().trim();
               
-              if (oldEmail && newEmail !== oldEmail) {
+              if (oldEmail && newEmail && newEmail !== oldEmail) {
                 setSyncedEmail(payload.new.email);
                 setShowEmailSyncAlert(true);
                 localStorage.setItem('chu_email_sync_pending', payload.new.email);
@@ -272,17 +272,24 @@ export default function Home() {
               const newStatuses = payload.new.event_statuses || {};
               const newEventData = payload.new.event_data || {};
 
-              // Sync states immediately
-              setEventStatuses(newStatuses);
-              setEventDataMap(newEventData);
-              // Check if any event just got confirmed
-              // We compare with the REF to get the absolute latest state
+              // ONLY update if data is actually different to prevent render loops
+              const hasStatusesChanged = JSON.stringify(newStatuses) !== JSON.stringify(eventStatusesRef.current);
+              if (hasStatusesChanged) {
+                setEventStatuses(newStatuses);
+              }
+
+              // Check if event data changed (we need to track this in a ref too)
+              if (JSON.stringify(newEventData) !== JSON.stringify(eventDataMapRef.current)) {
+                setEventDataMap(newEventData);
+                eventDataMapRef.current = newEventData;
+              }
+              
               const newlyConfirmedId = Object.keys(newStatuses).find(id =>
                 newStatuses[id] === 'confirmed' && eventStatusesRef.current[id] !== 'confirmed'
               );
 
               if (newlyConfirmedId) {
-                const event = events.find(e => e.id === newlyConfirmedId);
+                const event = eventsRef.current.find(e => e.id === newlyConfirmedId);
                 let eventDisplay = "tu evento";
                 if (event) {
                   const d = new Date(event.start_date);
@@ -303,9 +310,10 @@ export default function Home() {
       .subscribe();
 
     return () => {
+      console.log("⚰️ Removing Global Realtime Channel...");
       supabase.removeChannel(channel);
     };
-  }, [isPageReady, events, userData]);
+  }, [isPageReady]);
 
   const revalidateStatus = async (email: string) => {
     setIsLoadingEvents(true);
@@ -438,64 +446,61 @@ export default function Home() {
     }
   }, { scope: containerRef, dependencies: [isLoadingEvents, isPageReady, events.length, step, isCheckMode] });
 
-  // Persistence: Check and RE-VALIDATE existing registration on mount
+  // Persistence & Clerk Auth Re-validation: SINGLE source of truth
   useEffect(() => {
-    const saved = localStorage.getItem('chu_registration');
-    if (saved) {
-      try {
-        const { userData: savedData, selectedEvents: savedEvents, eventStatuses: savedStatuses, eventDataMap: savedMap, surveyData: savedSurvey } = JSON.parse(saved);
+    if (!isLoaded) return;
 
-        // 1. Immediate load from cache for speed
-        setUserData(savedData);
-        setSelectedEvents(savedEvents);
-        if (savedStatuses) setEventStatuses(savedStatuses);
-        if (savedMap) setEventDataMap(savedMap);
-        if (savedSurvey) setSurveyData(savedSurvey);
-        if (savedEvents && savedEvents.length > 0) setSelectedCityId(savedEvents[0]);
-        setStep(2);
-
-        // 2. Silent background re-validation to get fresh data from Supabase
-        // CRITICAL: We MUST wait for Clerk to be ready to get the CURRENT email
-        if (isLoaded) {
-          const currentClerkEmail = user?.primaryEmailAddress?.emailAddress;
-          const emailToVerify = currentClerkEmail || savedData.email;
-
-          if (emailToVerify) {
-            checkRegistration(emailToVerify, user?.id).then(async (result) => {
-              if (result.success) {
-                // Detect email change and sync on mount from server flag
-                // (Handled by real-time listener now)
-
-                // Proactive Account Linking: Handled server-side by checkRegistration.
-
-                setUserData(result.userData);
-                setSelectedEvents(result.selectedEvents);
-                const freshStatuses = (result as any).eventStatuses || {};
-                setEventStatuses(freshStatuses);
-                setSurveyData((result as any).surveyData || null);
-
-                // Update cache with the freshest data
-                localStorage.setItem('chu_registration', JSON.stringify({
-                  userData: result.userData,
-                  selectedEvents: result.selectedEvents,
-                  eventStatuses: freshStatuses,
-                  surveyData: (result as any).surveyData || null
-                }));
-              } else {
-                // If user no longer exists (e.g. deleted by admin)
-                localStorage.removeItem('chu_registration');
-                setStep(1);
-                setUserData(null);
-                setSelectedEvents([]);
-                toast.error(result.error || "Tu registro ya no está disponible.");
-              }
-            });
-          }
-        }
-      } catch (e) {
-        console.error("Error parsing saved registration:", e);
+    const syncRegistration = async () => {
+      const saved = localStorage.getItem('chu_registration');
+      const clerkEmail = user?.primaryEmailAddress?.emailAddress;
+      
+      let emailToVerify = clerkEmail;
+      if (!emailToVerify && saved) {
+        try {
+          const { userData: savedData } = JSON.parse(saved);
+          emailToVerify = savedData?.email;
+        } catch (e) {}
       }
-    }
+
+      if (emailToVerify) {
+        try {
+          const result = await checkRegistration(emailToVerify, user?.id);
+          if (result.success) {
+            const statuses = (result as any).eventStatuses || {};
+            const dataMap = (result as any).eventData || {};
+            const survey = (result as any).surveyData || null;
+
+            setUserData(result.userData);
+            setSelectedEvents(result.selectedEvents);
+            setEventStatuses(statuses);
+            setEventDataMap(dataMap);
+            setSurveyData(survey);
+            
+            if (result.selectedEvents?.length > 0) {
+              setSelectedCityId(prev => prev || result.selectedEvents[0]);
+            }
+            setStep(2);
+
+            localStorage.setItem('chu_registration', JSON.stringify({
+              userData: result.userData,
+              selectedEvents: result.selectedEvents,
+              eventStatuses: statuses,
+              eventDataMap: dataMap,
+              surveyData: survey
+            }));
+          } else if (saved) {
+            localStorage.removeItem('chu_registration');
+            setStep(1);
+            setUserData(null);
+            setSelectedEvents([]);
+          }
+        } catch (err) {
+          console.error('Sync error:', err);
+        }
+      }
+    };
+
+    syncRegistration();
   }, [isLoaded, user?.id]);
 
   // 3. Individual Cards Animation (When activeMonth changes or events load)
@@ -567,7 +572,7 @@ export default function Home() {
 
       if (!regResult.success) throw new Error(regResult.error || "Error al guardar el registro");
 
-      const { isUpdate, mergedEvents, eventStatuses: regStatuses, eventData: regEventData, surveyData: regSurvey, message } = regResult;
+      const { isUpdate, mergedEvents, eventStatuses: regStatuses, eventData: regEventData, surveyData: regSurvey, message } = regResult as any;
 
       const finalSelectedEvents = (isUpdate && mergedEvents) ? mergedEvents : selectedEvents;
       const finalStatuses = (regStatuses as any) || {};

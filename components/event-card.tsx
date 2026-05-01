@@ -1,8 +1,13 @@
-import { Card } from "@/components/ui/card";
-import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass, Users } from "lucide-react";
-import { cn } from "@/lib/utils";
+"use client";
 
+import { Card } from "@/components/ui/card";
+import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass } from "lucide-react";
+import { cn } from "@/lib/utils";
 import * as Flags from 'country-flag-icons/react/3x2';
+
+// Modular Components
+import { EventProgressBar } from "./events/event-progress-bar";
+import { EventSoldOutOverlay } from "./events/event-sold-out-overlay";
 
 interface EventCardProps {
   id: string;
@@ -37,7 +42,6 @@ export function EventCard({
   confirmedCount = 0,
   capacity = 25,
 }: EventCardProps) {
-  const timeToBeConfirmed = time === "Por confirmar";
   const isSoldOut = confirmedCount >= capacity;
   const FlagComponent = flag && (Flags as any)[flag.toUpperCase()] ? (Flags as any)[flag.toUpperCase()] : null;
 
@@ -54,14 +58,7 @@ export function EventCard({
       )}
       onClick={() => !isSoldOut && onSelect(id)}
     >
-      {/* Sold Out Overlay Label */}
-      {isSoldOut && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/40 backdrop-blur-[2px]">
-          <div className="bg-red-600 text-white font-black text-2xl md:text-3xl px-8 py-3 rounded-2xl rotate-[-12deg] shadow-2xl border-4 border-white animate-in zoom-in-50 duration-500">
-            CUPO LLENO
-          </div>
-        </div>
-      )}
+      {isSoldOut && <EventSoldOutOverlay />}
 
       <div className="flex items-start justify-between mb-6 md:mb-8">
         <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
@@ -78,7 +75,6 @@ export function EventCard({
           <h3 className="text-xl md:text-2xl font-bold text-gray-950 truncate">{city}, {country}</h3>
         </div>
         
-        {/* Selection Marker */}
         {!isSoldOut && (
           <div className={cn(
             "w-6 h-6 md:w-7 md:h-7 rounded-[20px] border-2 flex items-center justify-center transition-all shrink-0",
@@ -91,59 +87,29 @@ export function EventCard({
 
       <div className="space-y-4 text-sm md:text-[16px] leading-relaxed text-neutral-700">
         <div className="space-y-3">
-          <p className="flex items-center gap-3">
-            <Calendar className="w-4 h-4 text-neutral-400 shrink-0" />
-            <span className="font-bold shrink-0">Fecha:</span> 
-            <span className="truncate">{date}</span>
-          </p>
-          <p className="flex items-center gap-3">
-            <Clock className="w-4 h-4 text-neutral-400 shrink-0" />
-            <span className="font-bold shrink-0">Hora:</span> 
-            <span className="truncate">
-              {time}
-            </span>
-          </p>
-          <p className="flex items-center gap-3">
-            <Hourglass className="w-4 h-4 text-neutral-400 shrink-0" />
-            <span className="font-bold shrink-0">Duración:</span> 
-            <span className="truncate">{duration}</span>
-          </p>
-          <p className="flex items-start gap-3">
-            <MapPin className="w-4 h-4 text-neutral-400 shrink-0 mt-1" />
-            <span className="font-bold shrink-0">Sitio:</span> 
-            <span className="leading-tight">{location}</span>
-          </p>
-          <p className="flex items-center gap-3">
-            <CircleDollarSign className="w-4 h-4 text-neutral-400 shrink-0" />
-            <span className="font-bold shrink-0">Precio:</span> 
-            <span className="truncate">{price}</span>
-          </p>
+          <EventDetailItem icon={<Calendar className="w-4 h-4 text-neutral-400 shrink-0" />} label="Fecha" value={date} />
+          <EventDetailItem icon={<Clock className="w-4 h-4 text-neutral-400 shrink-0" />} label="Hora" value={time} />
+          <EventDetailItem icon={<Hourglass className="w-4 h-4 text-neutral-400 shrink-0" />} label="Duración" value={duration} />
+          <EventDetailItem icon={<MapPin className="w-4 h-4 text-neutral-400 shrink-0 mt-1" />} label="Sitio" value={location} isMultiLine />
+          <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-neutral-400 shrink-0" />} label="Precio" value={price} />
         </div>
 
-        {/* Slot Progress Bar */}
-        <div className="pt-4 border-t border-neutral-100 space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold">
-            <div className="flex items-center gap-1.5 text-neutral-500">
-              <Users className="w-3.5 h-3.5" />
-              <span>Inscritos</span>
-            </div>
-            <span className={cn(
-              isSoldOut ? "text-red-600" : "text-blue-700"
-            )}>
-              {confirmedCount} / {capacity}
-            </span>
-          </div>
-          <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
-            <div 
-              className={cn(
-                "h-full transition-all duration-1000",
-                isSoldOut ? "bg-red-600" : "bg-blue-600"
-              )}
-              style={{ width: `${Math.min((confirmedCount / capacity) * 100, 100)}%` }}
-            />
-          </div>
-        </div>
+        <EventProgressBar 
+          confirmedCount={confirmedCount}
+          capacity={capacity}
+          isSoldOut={isSoldOut}
+        />
       </div>
     </Card>
+  );
+}
+
+function EventDetailItem({ icon, label, value, isMultiLine }: { icon: React.ReactNode, label: string, value: string, isMultiLine?: boolean }) {
+  return (
+    <p className={cn("flex gap-3", isMultiLine ? "items-start" : "items-center")}>
+      {icon}
+      <span className="font-bold shrink-0">{label}:</span> 
+      <span className={cn(isMultiLine ? "leading-tight" : "truncate")}>{value}</span>
+    </p>
   );
 }

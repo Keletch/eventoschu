@@ -1,102 +1,92 @@
 "use server";
 
 /**
- * Server Action to integrate with Keap (Infusionsoft) API
- * This keeps your API Key safe on the server.
+ * 🛠️ Cliente interno para Keap API
+ * Evita la repetición de headers y URL base.
  */
-export async function registerInKeap(userData: any, eventTagIds: string[]) {
+async function keapFetch(endpoint: string, options: RequestInit = {}) {
   const apiKey = process.env.KEAP_API_KEY;
+  if (!apiKey) throw new Error("KEAP_API_KEY missing");
 
-  if (!apiKey) {
-    console.error("KEAP_API_KEY is missing in environment variables");
-    return { success: false, error: "Configuration error" };
+  const response = await fetch(`https://api.infusionsoft.com/crm/rest/v1/${endpoint}`, {
+    ...options,
+    headers: {
+      "X-Keap-API-Key": apiKey,
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok && response.status !== 404) {
+    const errorData = await response.json().catch(() => ({}));
+    console.error(`❌ Keap API Error [${endpoint}]:`, errorData);
   }
 
+  return response;
+}
+
+/**
+ * 👤 Crea o recupera un contacto en Keap por email
+ */
+export async function getOrCreateContact(userData: any) {
   try {
-    // 1. Search for existing contact by email FIRST
-    const searchResponse = await fetch(`https://api.infusionsoft.com/crm/rest/v1/contacts?email=${encodeURIComponent(userData.email)}`, {
-      headers: { "X-Keap-API-Key": apiKey }
-    });
-    const searchData = await searchResponse.json();
+    const searchRes = await keapFetch(`contacts?email=${encodeURIComponent(userData.email)}`);
+    const searchData = await searchRes.json();
     
-    let contactId = null;
-
     if (searchData.contacts && searchData.contacts.length > 0) {
-      // Contact exists! We use the existing ID and skip creation
-      contactId = searchData.contacts[0].id;
-    } else {
-      // Contact doesn't exist. Let's create it.
-      const fullPhone = `${userData.phoneCode}${userData.phone}`.replace(/\s+/g, '');
-      const createResponse = await fetch("https://api.infusionsoft.com/crm/rest/v1/contacts", {
-        method: "POST",
-        headers: {
-          "X-Keap-API-Key": apiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email_addresses: [{ email: userData.email, field: "EMAIL1" }],
-          given_name: userData.firstName,
-          family_name: userData.lastName,
-          phone_numbers: [{ number: fullPhone, field: "PHONE1" }],
-        }),
-      });
-
-      const newContact = await createResponse.json();
-      contactId = newContact.id;
+      return { success: true, contactId: searchData.contacts[0].id };
     }
 
-    if (!contactId) {
-      throw new Error("Failed to find or create contact in Keap");
-    }
+    const fullPhone = `${userData.phoneCode || userData.phone_code || ""}${userData.phone || ""}`.replace(/\s+/g, '');
+    const createRes = await keapFetch("contacts", {
+      method: "POST",
+      body: JSON.stringify({
+        email_addresses: [{ email: userData.email, field: "EMAIL1" }],
+        given_name: userData.firstName || userData.first_name || "Inscrito",
+        family_name: userData.lastName || userData.last_name || "Chu",
+        phone_numbers: [{ number: fullPhone, field: "PHONE1" }],
+      }),
+    });
 
-    // 2. Apply all selected Tags
-    // We do this sequentially or in parallel for all selected events
-    const tagPromises = eventTagIds.map(tagId => 
-      fetch(`https://api.infusionsoft.com/crm/rest/v1/contacts/${contactId}/tags`, {
-        method: "POST",
-        headers: {
-          "X-Keap-API-Key": apiKey,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          tagIds: [parseInt(tagId)]
-        }),
-      })
-    );
-
-    await Promise.all(tagPromises);
-
-    return { success: true, contactId: contactId };
+    const newContact = await createRes.json();
+    return { success: true, contactId: newContact.id };
   } catch (error: any) {
-    console.error("Keap Integration Error:", error);
     return { success: false, error: error.message };
   }
 }
 
 /**
- * Fetches all tags from Keap account.
+ * 🚀 Registro simplificado en Keap (Legacy Wrapper)
+ */
+export async function registerInKeap(userData: any, eventTagIds: string[]) {
+  try {
+    const { success, contactId, error } = await getOrCreateContact(userData);
+    if (!success || !contactId) throw new Error(error);
+
+    const tagPromises = eventTagIds.map(tagId => 
+      keapFetch(`contacts/${contactId}/tags`, {
+        method: "POST",
+        body: JSON.stringify({ tagIds: [parseInt(tagId)] })
+      })
+    );
+
+    await Promise.all(tagPromises);
+    return { success: true, contactId };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * 🏷️ Obtiene todos los tags de la cuenta
  */
 export async function getKeapTags() {
-  const apiKey = process.env.KEAP_API_KEY;
-
-  if (!apiKey) {
-    return { success: false, error: "KEAP_API_KEY missing" };
-  }
-
   try {
-    const response = await fetch("https://api.infusionsoft.com/crm/rest/v1/tags?limit=1000", {
-      headers: {
-        "X-Keap-API-Key": apiKey,
-      },
-    });
-
-    const data = await response.json();
+    const res = await keapFetch("tags?limit=1000");
+    const data = await res.json();
     
-    if (!data.tags) {
-      throw new Error("No tags found or API error");
-    }
+    if (!data.tags) throw new Error("No tags found");
 
-    // Format tags for the UI
     const formattedTags = data.tags.map((tag: any) => ({
       id: tag.id.toString(),
       name: tag.name,
@@ -105,33 +95,31 @@ export async function getKeapTags() {
 
     return { success: true, tags: formattedTags };
   } catch (error: any) {
-    console.error("Error fetching Keap tags:", error);
     return { success: false, error: error.message };
   }
 }
 
 /**
- * Removes a specific tag from a contact in Keap.
+ * 🔄 Sincronización inteligente de Tags
  */
-export async function removeTagFromContact(email: string, tagId: string) {
-  const apiKey = process.env.KEAP_API_KEY;
-  if (!apiKey) return { success: false };
-
+export async function syncKeapTags(userData: any, oldTagIds: string[], newTagIds: string[]) {
   try {
-    // 1. Find contact by email to get ID
-    const searchRes = await fetch(`https://api.infusionsoft.com/crm/rest/v1/contacts?email=${encodeURIComponent(email)}`, {
-      headers: { "X-Keap-API-Key": apiKey }
-    });
-    const searchData = await searchRes.json();
-    if (!searchData.contacts || searchData.contacts.length === 0) return { success: false };
-    
-    const contactId = searchData.contacts[0].id;
+    const { success, contactId } = await getOrCreateContact(userData);
+    if (!success || !contactId) return { success: false };
 
-    // 2. Delete the tag
-    await fetch(`https://api.infusionsoft.com/crm/rest/v1/contacts/${contactId}/tags/${tagId}`, {
-      method: "DELETE",
-      headers: { "X-Keap-API-Key": apiKey }
-    });
+    const toAdd = newTagIds.filter(id => !oldTagIds.includes(id));
+    const toRemove = oldTagIds.filter(id => !newTagIds.includes(id));
+
+    for (const tagId of toAdd) {
+      await keapFetch(`contacts/${contactId}/tags`, {
+        method: "POST",
+        body: JSON.stringify({ tagIds: [parseInt(tagId)] }),
+      });
+    }
+
+    for (const tagId of toRemove) {
+      await keapFetch(`contacts/${contactId}/tags/${tagId}`, { method: "DELETE" });
+    }
 
     return { success: true };
   } catch (error) {
@@ -140,64 +128,37 @@ export async function removeTagFromContact(email: string, tagId: string) {
 }
 
 /**
- * Intelligent sync: Compares old and new tags and applies changes in Keap.
+ * 🛠️ Orquestador de transiciones de estado para Keap
  */
-export async function syncKeapTags(userData: any, oldTagIds: string[], newTagIds: string[]) {
-  const apiKey = process.env.KEAP_API_KEY;
-  if (!apiKey) return { success: false };
+export async function processKeapStatusTransitions(
+  userData: any,
+  currentReg: any,
+  updatedStatuses: Record<string, string>,
+  allRelevantEventIds: string[],
+  eventDetails: any[]
+) {
+  const tagsToRemove: string[] = [];
+  const tagsToAdd: string[] = [];
 
-  try {
-    // 1. Find or Create contact ID
-    const searchRes = await fetch(`https://api.infusionsoft.com/crm/rest/v1/contacts?email=${encodeURIComponent(userData.email)}`, {
-      headers: { "X-Keap-API-Key": apiKey }
-    });
-    const searchData = await searchRes.json();
-    
-    let contactId = null;
+  allRelevantEventIds.forEach(eventId => {
+    const details = eventDetails.find((e: any) => e.id === eventId);
+    if (!details) return;
 
-    if (searchData.contacts && searchData.contacts.length > 0) {
-      contactId = searchData.contacts[0].id;
-    } else {
-      // Contact doesn't exist. Let's create it.
-      // We need to fetch the registration data from Supabase to get full details if userData is incomplete
-      const createRes = await registerInKeap({
-        email: userData.email,
-        firstName: userData.first_name || userData.firstName || "Inscrito",
-        lastName: userData.last_name || userData.lastName || "Chu",
-        phone: userData.phone || "",
-        phoneCode: userData.phone_code || ""
-      }, []); // Empty tags initially, we sync them below
-      
-      if (!createRes.success) return { success: false, error: "Failed to create contact in Keap" };
-      contactId = createRes.contactId;
+    const oldStatus = currentReg.event_statuses?.[eventId];
+    const newStatus = updatedStatuses[eventId];
+
+    if (oldStatus !== newStatus) {
+      if (oldStatus === 'pending' && details.keap_pending_tag_id) tagsToRemove.push(details.keap_pending_tag_id);
+      if (oldStatus === 'confirmed' && details.keap_tag_id) tagsToRemove.push(details.keap_tag_id);
+
+      if (newStatus === 'pending' && details.keap_pending_tag_id) tagsToAdd.push(details.keap_pending_tag_id);
+      if (newStatus === 'confirmed' && details.keap_tag_id) tagsToAdd.push(details.keap_tag_id);
     }
+  });
 
-    if (!contactId) return { success: false };
-
-    // Tags to add (present in new but not in old)
-    const toAdd = newTagIds.filter(id => !oldTagIds.includes(id));
-    // Tags to remove (present in old but not in new)
-    const toRemove = oldTagIds.filter(id => !newTagIds.includes(id));
-
-    // Execute additions
-    for (const tagId of toAdd) {
-      await fetch(`https://api.infusionsoft.com/crm/rest/v1/contacts/${contactId}/tags`, {
-        method: "POST",
-        headers: { "X-Keap-API-Key": apiKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ tagIds: [parseInt(tagId)] }),
-      });
-    }
-
-    // Execute removals
-    for (const tagId of toRemove) {
-      await fetch(`https://api.infusionsoft.com/crm/rest/v1/contacts/${contactId}/tags/${tagId}`, {
-        method: "DELETE",
-        headers: { "X-Keap-API-Key": apiKey }
-      });
-    }
-
-    return { success: true };
-  } catch (error) {
-    return { success: false };
+  if (tagsToRemove.length > 0 || tagsToAdd.length > 0) {
+    return await syncKeapTags(userData, tagsToRemove, tagsToAdd);
   }
+  
+  return { success: true };
 }
