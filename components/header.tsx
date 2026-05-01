@@ -8,6 +8,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Menu, ExternalLink } from "lucide-react";
+import { NotificationBell } from "@/components/notification-bell";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -24,7 +25,7 @@ import {
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userId } = useAuth();
 
   return (
     <header className="w-full flex justify-center pt-6 md:pt-8 px-4 md:px-8 lg:px-12 relative z-50">
@@ -176,6 +177,7 @@ export function Header() {
         </button>
 
         <div className="flex items-center gap-3">
+          {isSignedIn && <NotificationBell userId={userId ?? undefined} />}
           {!isSignedIn ? (
             <SignInButton mode="modal">
               <Button variant="ghost" className="hidden sm:flex text-gray-500 font-bold hover:text-blue-700 rounded-xl px-4 transition-colors">

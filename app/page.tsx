@@ -288,7 +288,7 @@ export default function Home() {
                   const d = new Date(event.start_date);
                   const dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
                   const catName = event.categories?.name || "Evento";
-                  eventDisplay = `${event.city}, ${event.country} (${dateStr}) - ${catName}`;
+                  eventDisplay = `\n• ${catName} ${event.country} (${dateStr})`;
                 }
 
                 toast.success(`¡Buenas noticias, ${payload.new.first_name}!`, {
@@ -1335,8 +1335,9 @@ export default function Home() {
                       onClick={() => {
                         const baseUrl = window.location.origin;
                         const link = `${baseUrl}?city=${selectedCityId}`;
-                        navigator.clipboard.writeText(link);
-                        alert('Link copiado al portapapeles');
+                        navigator.clipboard.writeText(link).then(() => {
+                          toast.success('¡Enlace copiado al portapapeles!');
+                        });
                       }}
                       className="h-14 px-10 rounded-2xl bg-[#3154DC] text-white font-bold text-lg md:text-xl hover:bg-[#3154DC]/90 w-full sm:w-auto"
                     >

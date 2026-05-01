@@ -16,8 +16,10 @@ import { Badge } from "@/components/ui/badge";
 import {
   Loader2, Plus, Users, Calendar, LogOut, Trash2, Edit,
   MapPin, Tag, RefreshCw, Check, ChevronsUpDown, Copy,
-  Mail, MessageCircle, Info, ClipboardCheck
+  Mail, MessageCircle, Info, ClipboardCheck, Search, Ticket
 } from "lucide-react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import * as Flags from 'country-flag-icons/react/3x2';
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -60,9 +62,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { NotificationBell } from "@/components/notification-bell";
 import { cn } from "@/lib/utils";
 
 // Helper to fix date timezone issues
+// Shared Design Tokens for Admin Filters
+const FILTER_BASE_CLASSES = "h-11 rounded-xl bg-white border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-500/10 transition-all duration-200 shadow-sm";
+const FILTER_TEXT_CLASSES = "text-sm font-bold text-neutral-600";
+const FILTER_ICON_CLASSES = "w-4 h-4 text-neutral-400";
+const PLACEHOLDER_STYLE = "placeholder:text-xs placeholder:font-medium placeholder:text-neutral-400";
+
 const formatSafeDate = (dateStr: string) => {
   if (!dateStr) return null;
   try {
@@ -89,26 +98,95 @@ export default function AdminDashboard() {
   const [categories, setCategories] = useState<any[]>([]);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const registrationsRef = useRef(registrations);
+  const eventsRef = useRef(events);
 
-  // Keep ref in sync for Realtime listeners
+  // Keep refs in sync for Realtime listeners
   useEffect(() => {
     registrationsRef.current = registrations;
-  }, [registrations]);
+    eventsRef.current = events;
+  }, [registrations, events]);
   const [keapTags, setKeapTags] = useState<any[]>([]);
   const [isTagsLoading, setIsTagsLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagPopoverOpen, setTagPopoverOpen] = useState(false);
+  const [pendingTagPopoverOpen, setPendingTagPopoverOpen] = useState(false);
   const router = useRouter();
+
+  // Search & Filter States
+  const [eventsSearch, setEventsSearch] = useState("");
+  const [eventsStatusFilter, setEventsStatusFilter] = useState("all");
+  const [eventsCategoryFilter, setEventsCategoryFilter] = useState("all");
+  
+  const [regsSearch, setRegsSearch] = useState("");
+  const [regsEventFilter, setRegsEventFilter] = useState("all");
+  const [regsStatusFilter, setRegsStatusFilter] = useState("all");
+  const [regsCategoryFilter, setRegsCategoryFilter] = useState("all");
+
+  const [eventPickerOpen, setEventPickerOpen] = useState(false);
+  const [catPickerOpen, setCatPickerOpen] = useState(false);
+  const [eventTabCatPickerOpen, setEventTabCatPickerOpen] = useState(false);
+  const [eventStatusPickerOpen, setEventStatusPickerOpen] = useState(false);
+  const [regStatusPickerOpen, setRegStatusPickerOpen] = useState(false);
 
   const [newEvent, setNewEvent] = useState({
     title: "", city: "", country: "", category_id: "", start_date: "",
     time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
-    price: "30 USD", capacity: 50, keap_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true
+    price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true
   });
 
   const [isRegDialogOpen, setIsRegDialogOpen] = useState(false);
   const [editingReg, setEditingReg] = useState<any>(null);
+
+  // GSAP Animations for Dialogs
+  useGSAP(() => {
+    if (isDialogOpen) {
+      gsap.from(".dialog-content-anim", {
+        y: 20,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power4.out",
+        stagger: 0.05
+      });
+    }
+  }, [isDialogOpen]);
+
+  useGSAP(() => {
+    if (isRegDialogOpen) {
+      gsap.from(".reg-dialog-anim", {
+        scale: 0.98,
+        opacity: 0,
+        y: 10,
+        duration: 0.4,
+        ease: "back.out(1.7)"
+      });
+    }
+  }, [isRegDialogOpen]);
+
+  useGSAP(() => {
+    if (eventPickerOpen || catPickerOpen || eventTabCatPickerOpen || eventStatusPickerOpen || regStatusPickerOpen) {
+      gsap.from(".picker-anim", {
+        y: -10,
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    }
+  }, [eventPickerOpen, catPickerOpen, eventTabCatPickerOpen, eventStatusPickerOpen, regStatusPickerOpen]);
+
+  // GSAP Animations for Tables
+  useGSAP(() => {
+    if (!isLoading && (events.length > 0 || registrations.length > 0)) {
+      gsap.from(".table-row-anim", {
+        opacity: 0,
+        x: -10,
+        stagger: 0.02,
+        duration: 0.5,
+        ease: "power2.out",
+        clearProps: "all"
+      });
+    }
+  }, [isLoading, events.length, registrations.length, eventsSearch, regsSearch]);
 
 
 
@@ -130,12 +208,72 @@ export default function AdminDashboard() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'registrations' },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            toast.info(`¡Nuevo inscrito! ${payload.new.first_name} ${payload.new.last_name}`, {
-              description: "Revisa la pestaña de inscritos para ver los detalles.",
-              duration: 5000
-            });
+        (payload: any) => {
+          // Intelligent Notifications
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            const newReg = payload.new;
+            const oldReg = payload.old || {};
+            
+            // 1. Detect Email Change
+            if (payload.eventType === 'UPDATE' && oldReg.email && newReg.email && oldReg.email.toLowerCase() !== newReg.email.toLowerCase()) {
+              toast.warning(`¡Cambio de Email detectado!`, {
+                description: `${oldReg.email} ha cambiado a ${newReg.email} vía Clerk.`,
+                duration: 8000
+              });
+            }
+
+            // 2. Detect New Event Registrations
+            const newEvents = newReg.selected_events || [];
+            const newlyAddedIds = payload.eventType === 'INSERT' 
+              ? newEvents 
+              : newEvents.filter((id: string) => !oldReg.selected_events?.includes(id));
+
+            if (newlyAddedIds.length > 0) {
+              newlyAddedIds.forEach((id: string) => {
+                const event = eventsRef.current.find((e: any) => e.id === id);
+                if (event) {
+                  const d = new Date(event.start_date);
+                  const dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+                  const catName = event.categories?.name || "Evento";
+                  toast.info(`¡Nuevo registro en evento!`, {
+                    description: `${newReg.email} se ha inscrito a ${catName} ${event.country} (${dateStr})`,
+                    duration: 6000
+                  });
+                }
+              });
+            }
+
+            // 3. Detect Granular Data Changes in Event Snapshots
+            if (payload.eventType === 'UPDATE') {
+              const oldData = oldReg.event_data || {};
+              const newData = newReg.event_data || {};
+              
+              Object.keys(newData).forEach(eventId => {
+                const oldSnap = oldData[eventId];
+                const newSnap = newData[eventId];
+                
+                if (oldSnap && newSnap) {
+                  const fieldsToWatch = [
+                    { key: 'first_name', label: 'nombre' },
+                    { key: 'last_name', label: 'apellido' },
+                    { key: 'phone', label: 'teléfono' },
+                    { key: 'residence_country', label: 'país' }
+                  ];
+
+                  fieldsToWatch.forEach(field => {
+                    if (oldSnap[field.key] !== newSnap[field.key]) {
+                      const event = eventsRef.current.find((e: any) => e.id === eventId);
+                      const eventLabel = event ? `${event.categories?.name || "Evento"} ${event.country}` : "un evento";
+                      
+                      toast.info(`¡Dato actualizado!`, {
+                        description: `${newReg.email} cambió su ${field.label} de "${oldSnap[field.key] || 'vacío'}" a "${newSnap[field.key]}" en ${eventLabel}.`,
+                        duration: 8000
+                      });
+                    }
+                  });
+                }
+              });
+            }
           }
 
           // Detect survey completion (Robust check using local ref)
@@ -234,7 +372,7 @@ export default function AdminDashboard() {
     setNewEvent({
       title: "", city: "", country: "", category_id: categories?.[0]?.id?.toString() || "", start_date: "",
       time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
-      price: "30 USD", capacity: 50, keap_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true
+      price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true
     });
     setIsDialogOpen(true);
   };
@@ -371,6 +509,13 @@ export default function AdminDashboard() {
       };
     });
   };
+  const totalInscriptions = registrations.reduce((acc, r) => acc + (r.selected_events?.length || 0), 0);
+  const pendingCount = registrations.reduce((acc, r) => {
+    return acc + Object.values(r.event_statuses || {}).filter(s => s === 'pending').length;
+  }, 0);
+  const approvedCount = registrations.reduce((acc, r) => {
+    return acc + Object.values(r.event_statuses || {}).filter(s => s === 'confirmed').length;
+  }, 0);
 
   return (
     <div className="min-h-screen bg-neutral-50 pb-20">
@@ -398,50 +543,84 @@ export default function AdminDashboard() {
               </Link>
               <h1 className="text-xl font-bold text-black border-l border-neutral-200 pl-4">Panel de Administración</h1>
             </div>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <Button
-                    variant="outline"
-                    onClick={handleManualRefresh}
-                    disabled={isTagsLoading}
-                    className="rounded-xl border-neutral-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all gap-2"
-                  >
-                    <RefreshCw className={cn("w-4 h-4", isTagsLoading && "animate-spin")} />
-                    <span className="hidden md:inline">Refrescar Web</span>
-                  </Button>
-                }
-              />
-              <TooltipContent>
-                Fuerza la actualización inmediata de los datos en la página principal.
-              </TooltipContent>
-            </Tooltip>
-
-            <Button variant="outline" onClick={handleLogout} className="rounded-xl border-neutral-200 hover:bg-neutral-50 hover:text-red-600 hover:border-red-200 transition-all gap-2">
-              <LogOut className="w-5 h-5 mr-2" /> Salir
-            </Button>
+              <div className="flex items-center gap-3">
+                <NotificationBell isAdmin={true} />
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        variant="outline"
+                        onClick={handleManualRefresh}
+                        disabled={isTagsLoading}
+                        className="rounded-xl border-neutral-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all gap-2"
+                      >
+                        <RefreshCw className={cn("w-4 h-4", isTagsLoading && "animate-spin")} />
+                        <span className="hidden md:inline">Refrescar Web</span>
+                      </Button>
+                    }
+                  />
+                  <TooltipContent>
+                    Fuerza la actualización inmediata de los datos en la página principal.
+                  </TooltipContent>
+                </Tooltip>
+                
+                <Button variant="outline" onClick={handleLogout} className="rounded-xl border-neutral-200 hover:bg-neutral-50 hover:text-red-600 hover:border-red-200 transition-all gap-2">
+                  <LogOut className="w-5 h-5 mr-2" /> Salir
+                </Button>
+              </div>
           </div>
         </header>
 
         <main className="max-w-7xl mx-auto px-6 space-y-8">
           {/* Stats Summary */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="rounded-3xl border-none shadow-sm bg-white p-6">
-              <div className="flex justify-between items-start">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <Card className="rounded-3xl border-none shadow-sm bg-white py-3 px-4">
+              <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-sm text-neutral-500 font-bold uppercase tracking-wider">Total Inscritos</p>
-                  <h3 className="text-3xl font-black mt-1">{registrations.length}</h3>
+                  <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Usuarios</p>
+                  <h3 className="text-2xl font-black mt-0.5 text-blue-600">{registrations.length}</h3>
                 </div>
-                <div className="bg-blue-50 p-3 rounded-2xl text-blue-700"><Users className="w-6 h-6" /></div>
+                <div className="bg-blue-50 p-2 rounded-xl text-blue-600"><Users className="w-4 h-4" /></div>
               </div>
             </Card>
-            <Card className="rounded-3xl border-none shadow-sm bg-white p-6">
-              <div className="flex justify-between items-start">
+
+            <Card className="rounded-3xl border-none shadow-sm bg-white py-3 px-4">
+              <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-sm text-neutral-500 font-bold uppercase tracking-wider">Eventos Activos</p>
-                  <h3 className="text-3xl font-black mt-1">{events.filter(e => e.active).length}</h3>
+                  <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Inscripciones</p>
+                  <h3 className="text-2xl font-black mt-0.5 text-neutral-600">{totalInscriptions}</h3>
                 </div>
-                <div className="bg-green-50 p-3 rounded-2xl text-green-600"><Calendar className="w-6 h-6" /></div>
+                <div className="bg-neutral-50 p-2 rounded-xl text-neutral-400"><Ticket className="w-4 h-4" /></div>
+              </div>
+            </Card>
+
+            <Card className="rounded-3xl border-none shadow-sm bg-white py-3 px-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Pendientes</p>
+                  <h3 className="text-2xl font-black mt-0.5 text-amber-600">{pendingCount}</h3>
+                </div>
+                <div className="bg-amber-50 p-2 rounded-xl text-amber-600"><RefreshCw className="w-4 h-4" /></div>
+              </div>
+            </Card>
+
+            <Card className="rounded-3xl border-none shadow-sm bg-white py-3 px-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Aprobadas</p>
+                  <h3 className="text-2xl font-black mt-0.5 text-emerald-600">{approvedCount}</h3>
+                </div>
+                <div className="bg-emerald-50 p-2 rounded-xl text-emerald-600"><ClipboardCheck className="w-4 h-4" /></div>
+              </div>
+            </Card>
+
+            <Card className="rounded-3xl border-none shadow-sm bg-white py-3 px-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Activos</p>
+                  <h3 className="text-2xl font-black mt-0.5 text-indigo-600">{events.filter(e => e.active).length}</h3>
+                </div>
+                <div className="bg-indigo-50 p-2 rounded-xl text-indigo-600"><Calendar className="w-4 h-4" /></div>
               </div>
             </Card>
           </div>
@@ -449,25 +628,137 @@ export default function AdminDashboard() {
           <Tabs defaultValue="events" className="space-y-6">
             <TabsList className="bg-white p-1 rounded-2xl border border-neutral-200 h-auto">
               <TabsTrigger value="events" className="rounded-xl px-8 py-2.5 data-[state=active]:bg-blue-700 data-[state=active]:text-white font-bold transition-all cursor-pointer">Eventos</TabsTrigger>
-              <TabsTrigger value="registrations" className="rounded-xl px-8 py-2.5 data-[state=active]:bg-blue-700 data-[state=active]:text-white font-bold transition-all cursor-pointer">Inscritos</TabsTrigger>
+              <TabsTrigger value="registrations" className="rounded-xl px-8 py-2.5 data-[state=active]:bg-blue-700 data-[state=active]:text-white font-bold transition-all cursor-pointer">Gestión de Usuarios</TabsTrigger>
             </TabsList>
 
             <TabsContent value="events" className="space-y-4">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-black text-gray-900">Gestión de Giras</h2>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <Button
-                    onClick={handleNewEvent}
-                    className="bg-[#3154DC] hover:bg-[#2845c4] text-white rounded-2xl px-8 h-12 font-bold shadow-xl shadow-[#3154DC]/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-2 cursor-pointer border-none"
-                  >
-                    <Plus className="w-5 h-5 stroke-[3]" />
-                    Crear Nueva Gira
-                  </Button>
-                  <DialogContent className="max-w-2xl rounded-[40px] p-0 overflow-hidden bg-white no-scrollbar border-none">
-                    <div className="p-10 max-h-[85vh] overflow-y-auto no-scrollbar">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-black text-gray-900">Gestión de Eventos</h2>
+                  <p className="text-sm text-neutral-500">Administra el calendario y los detalles de cada evento.</p>
+                </div>
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                  <div className="relative flex-1 md:w-64">
+                    <Tooltip>
+                      <TooltipTrigger render={
+                        <div className="relative">
+                          <Input 
+                            placeholder="Buscar evento, ciudad..." 
+                            value={eventsSearch}
+                            onChange={(e) => setEventsSearch(e.target.value)}
+                            className={cn(FILTER_BASE_CLASSES, FILTER_TEXT_CLASSES, PLACEHOLDER_STYLE, "pl-10 w-full")}
+                          />
+                          <Search className={cn("absolute left-3 top-1/2 -translate-y-1/2", FILTER_ICON_CLASSES)} />
+                        </div>
+                      } />
+                      <TooltipContent side="bottom" className="p-4 rounded-2xl shadow-2xl bg-white border border-neutral-200 max-w-xs z-[100]">
+                        <div className="space-y-1">
+                          <p className="font-black text-blue-700 text-sm">Búsqueda Inteligente</p>
+                          <p className="text-[11px] text-neutral-600 leading-relaxed font-medium">
+                            Puedes buscar por <span className="text-blue-600">título</span>, 
+                            <span className="text-blue-600"> ciudad</span> o <span className="text-blue-600">país</span>.
+                          </p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <Popover open={eventStatusPickerOpen} onOpenChange={setEventStatusPickerOpen}>
+                    <PopoverTrigger render={
+                      <Button variant="outline" className={cn(FILTER_BASE_CLASSES, FILTER_TEXT_CLASSES, "w-40 justify-between px-4")}>
+                        <span className="truncate">
+                          {eventsStatusFilter === 'all' ? 'Todos los Estados' : 
+                           eventsStatusFilter === 'active' ? 'Activos' : 'Inactivos'}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
+                      </Button>
+                    } />
+                    <PopoverContent className="w-44 p-0 rounded-2xl shadow-2xl border-neutral-100 overflow-hidden picker-anim" align="start">
+                      <Command>
+                        <CommandList>
+                          <CommandGroup>
+                            <CommandItem
+                              value="all"
+                              onSelect={() => { setEventsStatusFilter("all"); setEventStatusPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", eventsStatusFilter === "all" ? "opacity-100" : "opacity-0")} />
+                              Todos los Estados
+                            </CommandItem>
+                            <CommandItem
+                              value="active"
+                              onSelect={() => { setEventsStatusFilter("active"); setEventStatusPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", eventsStatusFilter === "active" ? "opacity-100" : "opacity-0")} />
+                              Activos
+                            </CommandItem>
+                            <CommandItem
+                              value="inactive"
+                              onSelect={() => { setEventsStatusFilter("inactive"); setEventStatusPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", eventsStatusFilter === "inactive" ? "opacity-100" : "opacity-0")} />
+                              Inactivos
+                            </CommandItem>
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
+                  <Popover open={eventTabCatPickerOpen} onOpenChange={setEventTabCatPickerOpen}>
+                    <PopoverTrigger render={
+                      <Button variant="outline" className={cn(FILTER_BASE_CLASSES, FILTER_TEXT_CLASSES, "w-44 justify-between px-4")}>
+                        <span className="truncate">
+                          {eventsCategoryFilter === 'all' ? 'Categorías' : categories.find(c => c.id.toString() === eventsCategoryFilter)?.name}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
+                      </Button>
+                    } />
+                    <PopoverContent className="w-56 p-0 rounded-2xl shadow-2xl border-neutral-100 overflow-hidden picker-anim" align="start">
+                      <Command>
+                        <CommandInput placeholder="Buscar categoría..." className="h-10 border-none focus:ring-0 text-xs" />
+                        <CommandList>
+                          <CommandEmpty className="p-4 text-[10px] text-neutral-400 text-center">No hay resultados.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              value="all"
+                              onSelect={() => { setEventsCategoryFilter("all"); setEventTabCatPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", eventsCategoryFilter === "all" ? "opacity-100" : "opacity-0")} />
+                              Todas las Categorías
+                            </CommandItem>
+                            {categories.map((cat) => (
+                              <CommandItem
+                                key={cat.id}
+                                value={cat.name}
+                                onSelect={() => { setEventsCategoryFilter(cat.id.toString()); setEventTabCatPickerOpen(false); }}
+                                className="cursor-pointer py-2 text-xs"
+                              >
+                                <Check className={cn("mr-2 h-3 w-3", eventsCategoryFilter === cat.id.toString() ? "opacity-100" : "opacity-0")} />
+                                {cat.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <Button
+                      onClick={handleNewEvent}
+                      className="bg-[#3154DC] hover:bg-[#2845c4] text-white rounded-xl px-6 h-11 font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 cursor-pointer border-none"
+                    >
+                      <Plus className="w-4 h-4 stroke-[3]" />
+                      <span className="hidden sm:inline">Crear Nuevo Evento</span>
+                    </Button>
+                    <DialogContent className="max-w-2xl rounded-[40px] p-0 overflow-hidden bg-white no-scrollbar border-none shadow-2xl">
+                    <div className="p-10 max-h-[85vh] overflow-y-auto no-scrollbar dialog-content-anim">
                       <DialogHeader>
-                        <DialogTitle className="text-2xl font-black text-gray-900">{(newEvent as any).id ? "Editar Gira" : "Nueva Gira"}</DialogTitle>
-                        <DialogDescription>Completa todos los detalles para publicar la gira en el calendario.</DialogDescription>
+                        <DialogTitle className="text-2xl font-black text-gray-900">{(newEvent as any).id ? "Editar Evento" : "Nuevo Evento"}</DialogTitle>
+                        <DialogDescription>Completa todos los detalles para publicar el evento en el calendario.</DialogDescription>
                       </DialogHeader>
 
                       <form onSubmit={handleCreateEvent} className="grid grid-cols-2 gap-6 mt-8">
@@ -581,33 +872,53 @@ export default function AdminDashboard() {
                           </Select>
                         </div>
 
-                        {/* Fila 7: Keap Tag (Full Width) */}
-                        <div className="col-span-2 space-y-2 pt-2">
-                          <div className="flex items-center justify-between">
-                            <Label className="font-bold text-gray-700">Etiqueta Keap (Tag)</Label>
-                            <Tooltip>
-                              <TooltipTrigger render={<Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-blue-600 hover:bg-blue-50" onClick={fetchTags} disabled={isTagsLoading}><RefreshCw className={cn("h-3 w-3", isTagsLoading && "animate-spin")} /></Button>} />
-                              <TooltipContent>Sincronizar tags</TooltipContent>
-                            </Tooltip>
+                        {/* Fila 7: Keap Tags (Two Columns) */}
+                        <div className="col-span-2 grid grid-cols-2 gap-4 pt-2">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="font-bold text-gray-700">Tag: Pendiente</Label>
+                              <Tooltip>
+                                <TooltipTrigger render={<Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-blue-600 hover:bg-blue-50" onClick={fetchTags} disabled={isTagsLoading}><RefreshCw className={cn("h-3 w-3", isTagsLoading && "animate-spin")} /></Button>} />
+                                <TooltipContent>Sincronizar tags</TooltipContent>
+                              </Tooltip>
+                            </div>
+                            <Popover open={pendingTagPopoverOpen} onOpenChange={setPendingTagPopoverOpen}>
+                              <PopoverTrigger render={<Button variant="outline" className="w-full justify-between rounded-xl h-12 font-normal bg-neutral-50/50 border-neutral-200 text-xs">{newEvent.keap_pending_tag_id ? keapTags.find(t => t.id === newEvent.keap_pending_tag_id)?.name : "Seleccionar..."}<ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" /></Button>} />
+                              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-xl shadow-2xl border-neutral-200">
+                                <Command className="rounded-xl">
+                                  <CommandInput placeholder="Buscar tag..." className="h-11" />
+                                  <CommandList className="max-h-[250px]">
+                                    <CommandEmpty>No hay tags.</CommandEmpty>
+                                    <CommandGroup>{keapTags.map(tag => (<CommandItem key={tag.id} onSelect={() => { setNewEvent({ ...newEvent, keap_pending_tag_id: tag.id }); setPendingTagPopoverOpen(false); }} className="cursor-pointer">{tag.name}</CommandItem>))}</CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
                           </div>
-                          <Popover open={tagPopoverOpen} onOpenChange={setTagPopoverOpen}>
-                            <PopoverTrigger render={<Button variant="outline" className="w-full justify-between rounded-xl h-12 font-normal bg-neutral-50/50 border-neutral-200">{newEvent.keap_tag_id ? keapTags.find(t => t.id === newEvent.keap_tag_id)?.name : "Seleccionar tag..."}<ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" /></Button>} />
-                            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-xl shadow-2xl border-neutral-200">
-                              <Command className="rounded-xl">
-                                <CommandInput placeholder="Buscar tag..." className="h-11" />
-                                <CommandList className="max-h-[250px]">
-                                  <CommandEmpty>No hay tags.</CommandEmpty>
-                                  <CommandGroup>{keapTags.map(tag => (<CommandItem key={tag.id} onSelect={() => { setNewEvent({ ...newEvent, keap_tag_id: tag.id }); setTagPopoverOpen(false); }} className="cursor-pointer">{tag.name}</CommandItem>))}</CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="font-bold text-gray-700">Tag: Confirmado</Label>
+                            </div>
+                            <Popover open={tagPopoverOpen} onOpenChange={setTagPopoverOpen}>
+                              <PopoverTrigger render={<Button variant="outline" className="w-full justify-between rounded-xl h-12 font-normal bg-neutral-50/50 border-neutral-200 text-xs">{newEvent.keap_tag_id ? keapTags.find(t => t.id === newEvent.keap_tag_id)?.name : "Seleccionar..."}<ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" /></Button>} />
+                              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 rounded-xl shadow-2xl border-neutral-200">
+                                <Command className="rounded-xl">
+                                  <CommandInput placeholder="Buscar tag..." className="h-11" />
+                                  <CommandList className="max-h-[250px]">
+                                    <CommandEmpty>No hay tags.</CommandEmpty>
+                                    <CommandGroup>{keapTags.map(tag => (<CommandItem key={tag.id} onSelect={() => { setNewEvent({ ...newEvent, keap_tag_id: tag.id }); setTagPopoverOpen(false); }} className="cursor-pointer">{tag.name}</CommandItem>))}</CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          </div>
                         </div>
 
                         <div className="col-span-2 flex items-center justify-between p-6 bg-blue-50/50 rounded-[28px] border border-blue-100/50 transition-all">
                           <div className="space-y-1">
                             <Label className="font-bold text-blue-900 text-base">¿Evento Activo?</Label>
-                            <p className="text-xs text-blue-700/70">Si está apagado, la gira no aparecerá en la web principal.</p>
+                            <p className="text-xs text-blue-700/70">Si está apagado, el evento no aparecerá en la web principal.</p>
                           </div>
                           <Switch
                             checked={!!newEvent.active}
@@ -627,7 +938,7 @@ export default function AdminDashboard() {
                             ) : (
                               <Check className="w-5 h-5 stroke-[3]" />
                             )}
-                            {(newEvent as any).id ? "Actualizar Datos de la Gira" : "Publicar Nueva Gira"}
+                            {(newEvent as any).id ? "Actualizar Datos del Evento" : "Publicar Nuevo Evento"}
                           </Button>
                           <Button
                             type="button"
@@ -643,12 +954,13 @@ export default function AdminDashboard() {
                   </DialogContent>
                 </Dialog>
               </div>
+            </div>
 
               <Card className="rounded-[32px] border-none shadow-sm overflow-hidden bg-white">
                 <Table>
                   <TableHeader className="bg-neutral-50">
                     <TableRow>
-                      <TableHead className="font-bold py-5 px-6">Gira</TableHead>
+                      <TableHead className="font-bold py-5 px-6">Evento</TableHead>
                       <TableHead className="font-bold">Fecha</TableHead>
                       <TableHead className="font-bold text-center">Inscritos</TableHead>
                       <TableHead className="font-bold text-center">Activo</TableHead>
@@ -657,13 +969,35 @@ export default function AdminDashboard() {
                   </TableHeader>
                   <TableBody>
                     {isLoading ? [1, 2, 3].map(i => <TableRow key={i}><TableCell colSpan={5} className="p-6"><Skeleton className="h-16 w-full rounded-2xl" /></TableCell></TableRow>) :
-                      events.length > 0 ? events.map((event) => {
+                      events
+                      .filter(e => {
+                        const matchesSearch = e.title.toLowerCase().includes(eventsSearch.toLowerCase()) || 
+                                           e.city.toLowerCase().includes(eventsSearch.toLowerCase()) ||
+                                           e.country.toLowerCase().includes(eventsSearch.toLowerCase());
+                        const matchesStatus = eventsStatusFilter === 'all' ? true :
+                                           eventsStatusFilter === 'active' ? e.active : !e.active;
+                        const matchesCategory = eventsCategoryFilter === 'all' ? true :
+                                             e.category_id?.toString() === eventsCategoryFilter;
+                        return matchesSearch && matchesStatus && matchesCategory;
+                      })
+                      .length > 0 ? events
+                      .filter(e => {
+                        const matchesSearch = e.title.toLowerCase().includes(eventsSearch.toLowerCase()) || 
+                                           e.city.toLowerCase().includes(eventsSearch.toLowerCase()) ||
+                                           e.country.toLowerCase().includes(eventsSearch.toLowerCase());
+                        const matchesStatus = eventsStatusFilter === 'all' ? true :
+                                           eventsStatusFilter === 'active' ? e.active : !e.active;
+                        const matchesCategory = eventsCategoryFilter === 'all' ? true :
+                                             e.category_id?.toString() === eventsCategoryFilter;
+                        return matchesSearch && matchesStatus && matchesCategory;
+                      })
+                      .map((event) => {
                         const regCount = registrations.filter(r =>
                           r.selected_events?.includes(event.id) &&
                           (r.event_statuses?.[event.id] === 'confirmed')
                         ).length;
                         return (
-                          <TableRow key={event.id} className="hover:bg-neutral-50/50 transition-colors group">
+                          <TableRow key={event.id} className="hover:bg-neutral-50/50 transition-colors group table-row-anim">
                             <TableCell className="py-5 px-6">
                               <div className="flex items-center gap-3">
                                 <div className="size-12 bg-neutral-100 rounded-2xl flex items-center justify-center overflow-hidden p-2">
@@ -691,19 +1025,186 @@ export default function AdminDashboard() {
                             </TableCell>
                           </TableRow>
                         )
-                      }) : <TableRow><TableCell colSpan={5} className="h-40 text-center text-neutral-400">No hay giras publicadas todavía.</TableCell></TableRow>
+                      }) : <TableRow><TableCell colSpan={5} className="h-40 text-center text-neutral-400">No se encontraron eventos con esos filtros.</TableCell></TableRow>
                     }
                   </TableBody>
                 </Table>
               </Card>
             </TabsContent>
 
-            <TabsContent value="registrations">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-black text-gray-900">Inscritos a Giras</h2>
+            <TabsContent value="registrations" className="space-y-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-black text-gray-900">Gestión de Usuarios</h2>
+                  <p className="text-sm text-neutral-500">Administra todos los registrados en los eventos.</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                  <div className="relative flex-1 min-w-[200px]">
+                    <Tooltip>
+                      <TooltipTrigger render={
+                        <div className="relative">
+                          <Input 
+                            placeholder="Buscar por nombre, email o teléfono..." 
+                            value={regsSearch}
+                            onChange={(e) => setRegsSearch(e.target.value)}
+                            className={cn(FILTER_BASE_CLASSES, FILTER_TEXT_CLASSES, PLACEHOLDER_STYLE, "pl-10 w-full")}
+                          />
+                          <Search className={cn("absolute left-3 top-1/2 -translate-y-1/2", FILTER_ICON_CLASSES)} />
+                        </div>
+                      } />
+                      <TooltipContent side="bottom" className="p-4 rounded-2xl shadow-2xl bg-white border border-neutral-200 max-w-xs z-[100]">
+                        <div className="space-y-1">
+                          <p className="font-black text-blue-700 text-sm">Búsqueda de Usuarios</p>
+                          <p className="text-[11px] text-neutral-600 leading-relaxed font-medium">
+                            Filtra por <span className="text-blue-600">nombre</span>, 
+                            <span className="text-blue-600"> email</span> o 
+                            <span className="text-blue-600"> teléfono</span>.
+                          </p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+
+                  <Popover open={catPickerOpen} onOpenChange={setCatPickerOpen}>
+                    <PopoverTrigger render={
+                      <Button variant="outline" className={cn(FILTER_BASE_CLASSES, FILTER_TEXT_CLASSES, "w-44 justify-between px-4")}>
+                        <span className="truncate">
+                          {regsCategoryFilter === 'all' ? 'Categorías' : categories.find(c => c.id.toString() === regsCategoryFilter)?.name}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
+                      </Button>
+                    } />
+                    <PopoverContent className="w-56 p-0 rounded-2xl shadow-2xl border-neutral-100 overflow-hidden picker-anim" align="start">
+                      <Command>
+                        <CommandInput placeholder="Buscar categoría..." className="h-10 border-none focus:ring-0 text-xs" />
+                        <CommandList>
+                          <CommandEmpty className="p-4 text-[10px] text-neutral-400 text-center">No hay resultados.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              value="all"
+                              onSelect={() => { setRegsCategoryFilter("all"); setCatPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", regsCategoryFilter === "all" ? "opacity-100" : "opacity-0")} />
+                              Todas las Categorías
+                            </CommandItem>
+                            {categories.map((cat) => (
+                              <CommandItem
+                                key={cat.id}
+                                value={cat.name}
+                                onSelect={() => { setRegsCategoryFilter(cat.id.toString()); setCatPickerOpen(false); }}
+                                className="cursor-pointer py-2 text-xs"
+                              >
+                                <Check className={cn("mr-2 h-3 w-3", regsCategoryFilter === cat.id.toString() ? "opacity-100" : "opacity-0")} />
+                                {cat.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  
+                  <Popover open={eventPickerOpen} onOpenChange={setEventPickerOpen}>
+                    <PopoverTrigger render={
+                      <Button variant="outline" className={cn(FILTER_BASE_CLASSES, FILTER_TEXT_CLASSES, "min-w-[220px] justify-between px-4")}>
+                        <span className="truncate">
+                          {regsEventFilter === 'all' ? 'Todos los Eventos' : 
+                            events.find(e => e.id.toString() === regsEventFilter) ? 
+                            `${events.find(e => e.id.toString() === regsEventFilter).city} - ${events.find(e => e.id.toString() === regsEventFilter).categories?.name}` : 
+                            'Evento no encontrado'}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
+                      </Button>
+                    } />
+                    <PopoverContent className="w-64 p-0 rounded-2xl shadow-2xl border-neutral-100 overflow-hidden picker-anim" align="start">
+                      <Command>
+                        <CommandInput placeholder="Buscar evento por ciudad..." className="h-10 border-none focus:ring-0 text-xs" />
+                        <CommandList>
+                          <CommandEmpty className="p-4 text-[10px] text-neutral-400 text-center">No hay resultados.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              value="all"
+                              onSelect={() => { setRegsEventFilter("all"); setEventPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", regsEventFilter === "all" ? "opacity-100" : "opacity-0")} />
+                              Todos los Eventos
+                            </CommandItem>
+                            {events.map((e) => (
+                              <CommandItem
+                                key={e.id}
+                                value={`${e.city} ${e.categories?.name}`}
+                                onSelect={() => { setRegsEventFilter(e.id.toString()); setEventPickerOpen(false); }}
+                                className="cursor-pointer py-2 text-xs"
+                              >
+                                <Check className={cn("mr-2 h-3 w-3", regsEventFilter === e.id.toString() ? "opacity-100" : "opacity-0")} />
+                                {e.city} - {e.categories?.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
+                  <Popover open={regStatusPickerOpen} onOpenChange={setRegStatusPickerOpen}>
+                    <PopoverTrigger render={
+                      <Button variant="outline" className={cn(FILTER_BASE_CLASSES, FILTER_TEXT_CLASSES, "w-40 justify-between px-4")}>
+                        <span className="truncate">
+                          {regsStatusFilter === 'all' ? 'Estados' : 
+                           regsStatusFilter === 'pending' ? 'Pendientes' : 
+                           regsStatusFilter === 'confirmed' ? 'Confirmados' : 'Cancelados'}
+                        </span>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
+                      </Button>
+                    } />
+                    <PopoverContent className="w-44 p-0 rounded-2xl shadow-2xl border-neutral-100 overflow-hidden picker-anim" align="start">
+                      <Command>
+                        <CommandList>
+                          <CommandGroup>
+                            <CommandItem
+                              value="all"
+                              onSelect={() => { setRegsStatusFilter("all"); setRegStatusPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", regsStatusFilter === "all" ? "opacity-100" : "opacity-0")} />
+                              Todos los Estados
+                            </CommandItem>
+                            <CommandItem
+                              value="pending"
+                              onSelect={() => { setRegsStatusFilter("pending"); setRegStatusPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", regsStatusFilter === "pending" ? "opacity-100" : "opacity-0")} />
+                              Pendientes
+                            </CommandItem>
+                            <CommandItem
+                              value="confirmed"
+                              onSelect={() => { setRegsStatusFilter("confirmed"); setRegStatusPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", regsStatusFilter === "confirmed" ? "opacity-100" : "opacity-0")} />
+                              Confirmados
+                            </CommandItem>
+                            <CommandItem
+                              value="cancelled"
+                              onSelect={() => { setRegsStatusFilter("cancelled"); setRegStatusPickerOpen(false); }}
+                              className="cursor-pointer py-2 text-xs"
+                            >
+                              <Check className={cn("mr-2 h-3 w-3", regsStatusFilter === "cancelled" ? "opacity-100" : "opacity-0")} />
+                              Cancelados
+                            </CommandItem>
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
                 <Dialog open={isRegDialogOpen} onOpenChange={setIsRegDialogOpen}>
                   <DialogContent className="max-w-[1100px] w-[95vw] p-0 overflow-hidden border-none rounded-[48px] shadow-2xl">
-                    <div className="p-10 max-h-[85vh] overflow-y-auto no-scrollbar">
+                    <div className="p-10 max-h-[85vh] overflow-y-auto no-scrollbar reg-dialog-anim">
                       <DialogHeader>
                         <DialogTitle className="text-2xl font-black text-gray-900">Editar Inscripción</DialogTitle>
                         <DialogDescription>Modifica los datos del usuario o gestiona sus eventos seleccionados.</DialogDescription>
@@ -737,7 +1238,7 @@ export default function AdminDashboard() {
                           </div>
 
                           <div className="col-span-2 space-y-4">
-                            <Label className="font-bold">Giras y Estados</Label>
+                            <Label className="font-bold">Eventos y Estados</Label>
                             <div className="space-y-3">
                               {events.map((ev) => {
                                 const isSelected = editingReg.selected_events?.includes(ev.id);
@@ -768,7 +1269,7 @@ export default function AdminDashboard() {
                                         <div className="flex-1 max-w-[160px]">
                                           <Select
                                             value={currentStatus}
-                                            onValueChange={(val) => updateRegEventStatus(ev.id, val || 'pending')}
+                                            onValueChange={(val: string | null) => updateRegEventStatus(ev.id, val || 'pending')}
                                           >
                                             <SelectTrigger className="w-full h-10 rounded-xl text-xs font-bold bg-white border-neutral-200 hover:border-blue-400 transition-all cursor-pointer flex items-center justify-center relative px-8">
                                               <SelectValue>
@@ -932,7 +1433,6 @@ export default function AdminDashboard() {
                     </div>
                   </DialogContent>
                 </Dialog>
-              </div>
 
               <Card className="rounded-[32px] border-none shadow-sm overflow-hidden bg-white">
                 <Table>
@@ -947,8 +1447,54 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {registrations.length > 0 ? registrations.map((reg) => (
-                      <TableRow key={reg.id} className="hover:bg-neutral-50/50 transition-colors">
+                    {registrations
+                      .filter(reg => {
+                        // 1. Search filter
+                        const searchLower = regsSearch.toLowerCase();
+                        const matchesSearch = 
+                          (reg.first_name + " " + reg.last_name).toLowerCase().includes(searchLower) ||
+                          reg.email.toLowerCase().includes(searchLower) ||
+                          reg.phone?.includes(searchLower);
+
+                        // 2. Event filter
+                        const matchesEvent = regsEventFilter === 'all' ? true : 
+                                          reg.selected_events?.includes(regsEventFilter);
+
+                        // 3. Status filter
+                        const statuses = Object.values(reg.event_statuses || {});
+                        const matchesStatus = regsStatusFilter === 'all' ? true :
+                                           statuses.includes(regsStatusFilter);
+
+                        // 4. Category filter
+                        const matchesCategory = regsCategoryFilter === 'all' ? true :
+                                             reg.selected_events?.some((eId: string) => {
+                                               const ev = events.find(e => e.id === eId);
+                                               return ev?.category_id?.toString() === regsCategoryFilter;
+                                             });
+
+                        return matchesSearch && matchesEvent && matchesStatus && matchesCategory;
+                      })
+                      .length > 0 ? registrations
+                      .filter(reg => {
+                        const searchLower = regsSearch.toLowerCase();
+                        const matchesSearch = 
+                          (reg.first_name + " " + reg.last_name).toLowerCase().includes(searchLower) ||
+                          reg.email.toLowerCase().includes(searchLower) ||
+                          reg.phone?.includes(searchLower);
+                        const matchesEvent = regsEventFilter === 'all' ? true : 
+                                          reg.selected_events?.includes(regsEventFilter);
+                        const statuses = Object.values(reg.event_statuses || {});
+                        const matchesStatus = regsStatusFilter === 'all' ? true :
+                                           statuses.includes(regsStatusFilter);
+                        const matchesCategory = regsCategoryFilter === 'all' ? true :
+                                             reg.selected_events?.some((eId: string) => {
+                                               const ev = events.find(e => e.id === eId);
+                                               return ev?.category_id?.toString() === regsCategoryFilter;
+                                             });
+                        return matchesSearch && matchesEvent && matchesStatus && matchesCategory;
+                      })
+                      .map((reg) => (
+                      <TableRow key={reg.id} className="hover:bg-neutral-50/50 transition-colors table-row-anim">
                         <TableCell className="py-5 px-6 font-bold">{reg.first_name} {reg.last_name}</TableCell>
                         <TableCell className="text-sm">
                           <div className="font-medium text-gray-900">{reg.email}</div>
@@ -986,7 +1532,7 @@ export default function AdminDashboard() {
                                             "bg-amber-50 text-amber-700 border-amber-100"
                                       )}
                                     >
-                                      {ev?.city || 'Gira'}
+                                      {ev?.city || 'Evento'}
                                       {reg.event_data?.[eId] && <Info className="w-2.5 h-2.5 ml-1 opacity-50" />}
                                     </Badge>
                                   </TooltipTrigger>
