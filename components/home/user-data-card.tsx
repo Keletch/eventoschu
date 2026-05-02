@@ -16,8 +16,10 @@ interface UserDataCardProps {
     phone: string;
     phoneCode: string;
     country: string;
+    city: string;
   };
   status: string;
+  eventTitle: string;
   isLoadingEvents: boolean;
   isEditing: boolean;
   editFormData: any;
@@ -32,6 +34,7 @@ interface UserDataCardProps {
 export function UserDataCard({
   displayData,
   status,
+  eventTitle,
   isLoadingEvents,
   isEditing,
   editFormData,
@@ -65,8 +68,29 @@ export function UserDataCard({
         )}
       </div>
 
-      {/* Grid de datos del usuario */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-8 lg:gap-y-12 pt-4 md:pt-24">
+      {/* Información del Evento — esquina superior izquierda */}
+      <div className="mb-8 md:mb-12">
+        {isLoadingEvents ? (
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-32 bg-neutral-200/50" />
+            <Skeleton className="h-8 w-64 bg-neutral-200/30" />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600/80">Inscripción activa</span>
+            <h2 className="text-3xl md:text-4xl font-black text-neutral-900 leading-tight">
+              {eventTitle || "Evento"}
+            </h2>
+            <div className="flex items-center gap-2 text-slate-400 font-bold text-sm md:text-base">
+               <span className="text-slate-900">{displayData.city}</span>
+               <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+               <span>{displayData.country}</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-8 lg:gap-y-12 pt-4">
         {isLoadingEvents ? (
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="space-y-3">

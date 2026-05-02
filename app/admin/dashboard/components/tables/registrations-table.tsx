@@ -37,7 +37,7 @@ interface RegistrationsTableProps {
   isLoading: boolean;
   events: any[];
   handleEditReg: (reg: any) => void;
-  handleDeleteReg: (id: string) => void;
+  handleDeleteReg: (reg: any) => void;
 }
 
 export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
@@ -204,7 +204,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      onClick={() => handleDeleteReg(reg.id)}
+                      onClick={() => handleDeleteReg(reg)}
                       className="text-red-500 hover:bg-red-50 rounded-xl cursor-pointer"
                       title="Eliminar"
                     >

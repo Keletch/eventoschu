@@ -35,7 +35,7 @@ export function PurgeUserDialog({
     onOpenChange(false);
   };
 
-  const isInvalid = confirmEmail.toLowerCase() !== userEmail.toLowerCase();
+  const isInvalid = !confirmEmail || confirmEmail.toLowerCase() !== userEmail.toLowerCase();
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

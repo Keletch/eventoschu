@@ -82,6 +82,7 @@ export function RegisteredView({
       <UserDataCard
         displayData={displayData}
         status={currentStatus}
+        eventTitle={events.find(e => e.id === selectedCityId)?.title || "Evento"}
         isLoadingEvents={isLoadingEvents}
         isEditing={isEditing}
         editFormData={editFormData}

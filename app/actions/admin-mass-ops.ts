@@ -212,8 +212,8 @@ export async function purgeEvent(eventId: string) {
           try {
             await syncKeapTags(
               { email: reg.email, firstName: reg.first_name, lastName: reg.last_name },
-              [], // tagsToAdd
-              tagsToRemove // tagsToRemove
+              tagsToRemove, // oldTagIds (quitar)
+              [] // newTagIds (poner)
             );
           } catch (keapErr) {
             console.error(`⚠️ Error quitando tags Keap para ${reg.email}:`, keapErr);
@@ -316,8 +316,8 @@ export async function massUpdateRegistrationStatus(eventId: string, newStatus: '
 
         await syncKeapTags(
           { email: reg.email, firstName: reg.first_name, lastName: reg.last_name },
-          tagsToAdd.filter(Boolean) as string[],
-          tagsToRemove.filter(Boolean) as string[]
+          tagsToRemove.filter(Boolean) as string[], // oldTagIds (quitar)
+          tagsToAdd.filter(Boolean) as string[] // newTagIds (poner)
         );
 
         affectedEmails.push(reg.email);
@@ -365,8 +365,8 @@ export async function deleteRegistration(id: string) {
         if (tagsToRemove.length > 0) {
           await syncKeapTags(
             { email: reg.email, firstName: reg.first_name, lastName: reg.last_name }, 
-            [], // tagsToAdd
-            tagsToRemove // tagsToRemove
+            tagsToRemove, // oldTagIds (quitar)
+            [] // newTagIds (poner)
           );
         }
       }
@@ -471,8 +471,8 @@ export async function adminAddEventToUser(registrationId: string, eventId: strin
     if (event.keap_pending_tag_id) {
       await syncKeapTags(
         { email: reg.email, firstName: reg.first_name, lastName: reg.last_name },
-        [event.keap_pending_tag_id], // tagsToAdd
-        [] // tagsToRemove
+        [], // oldTagIds (quitar)
+        [event.keap_pending_tag_id] // newTagIds (poner)
       );
     }
 
@@ -522,8 +522,8 @@ export async function adminRemoveEventFromUser(registrationId: string, eventId: 
     if (tagsToRemove.length > 0) {
       await syncKeapTags(
         { email: reg.email, firstName: reg.first_name, lastName: reg.last_name },
-        [], // tagsToAdd
-        tagsToRemove // tagsToRemove
+        tagsToRemove, // oldTagIds (quitar)
+        [] // newTagIds (poner)
       );
     }
 

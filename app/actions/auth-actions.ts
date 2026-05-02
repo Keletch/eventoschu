@@ -98,19 +98,24 @@ export async function updateUserEmail(clerkId: string, newEmail: string, fromWeb
 /**
  * 🔗 Vincula una cuenta de Clerk con un registro de Supabase existente por email
  */
-export async function linkClerkAccount(email: string, clerkId: string) {
+export async function linkClerkAccount(email: string, clerkId: string, fromWebhook = false) {
   try {
-    const { userId } = await auth();
-    if (!userId || userId !== clerkId) throw new Error("No autorizado");
+    if (!fromWebhook) {
+      const { userId } = await auth();
+      if (!userId || userId !== clerkId) throw new Error("No autorizado");
+    }
 
-    await supabaseAdmin.from('registrations').update({
+    const { error } = await supabaseAdmin.from('registrations').update({
       clerk_id: clerkId,
       updated_at: new Date().toISOString()
     }).eq('email', email.toLowerCase().trim()).is('clerk_id', null);
 
+    if (error) throw error;
+
     await notifyAdminAccountLinked(email);
     return { success: true };
   } catch (err: any) {
+    console.error("❌ Error en linkClerkAccount:", err.message);
     return { success: false, error: err.message };
   }
 }

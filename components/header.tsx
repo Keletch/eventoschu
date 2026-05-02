@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { useUserNotifications } from "@/hooks/user/use-user-notifications";
 
@@ -16,6 +16,7 @@ interface HeaderProps {
 
 export function Header({ registrationId }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const { 
     notifications, 
     unreadCount, 

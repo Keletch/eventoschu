@@ -284,19 +284,26 @@ export function useHomeLogic() {
       const finalSurvey = (regResult as any).surveyData || null;
       const finalSelectedEvents = (regResult as any).mergedEvents || selectedEvents;
 
-      setUserData(data);
+      const newUser = {
+        ...data,
+        id: (regResult as any).id
+      };
+      
+      setUserData(newUser);
       setEventStatuses(finalStatuses);
       setEventDataMap(finalEventData);
       setSurveyData(finalSurvey);
       if (finalSelectedEvents.length > 0) setSelectedCityId(finalSelectedEvents[0]);
 
       localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
-        userData: data,
+        userData: newUser,
         selectedEvents: finalSelectedEvents,
         eventStatuses: finalStatuses,
         eventDataMap: finalEventData,
         surveyData: finalSurvey
       }));
+
+      window.dispatchEvent(new Event('registration-success'));
 
       return { success: true }; 
     } catch (error: any) {

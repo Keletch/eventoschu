@@ -141,8 +141,9 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                             bgClass="bg-white"
                           />
                           <div>
-                            <p className="font-bold text-neutral-800">{event?.city || 'Evento desconocido'}</p>
-                            <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tighter flex items-center gap-1">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-0.5">{event?.title || 'Evento'}</p>
+                            <p className="font-bold text-neutral-800 leading-tight">{event?.city || 'Evento desconocido'}</p>
+                            <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tighter flex items-center gap-1 mt-0.5">
                               <MapPin className="w-3 h-3" /> {event?.country || 'Ubicación pendiente'}
                             </p>
                           </div>

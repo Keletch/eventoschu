@@ -1,20 +1,25 @@
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
-import { updateUserEmail } from '@/app/actions/auth-actions';
+import { updateUserEmail, linkClerkAccount } from '@/app/actions/auth-actions';
 import { deleteRegistrationByClerkId } from '@/app/actions/admin-mass-ops';
 
 export async function POST(req: Request) {
-  // ... rest of the setup code remains the same ...
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-  if (!WEBHOOK_SECRET) return new Response('No secret', { status: 500 });
+
+  if (!WEBHOOK_SECRET) {
+    console.error("❌ CLERK_WEBHOOK_SECRET no configurado");
+    return new Response('No secret', { status: 500 });
+  }
 
   const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
 
-  if (!svix_id || !svix_timestamp || !svix_signature) return new Response('No headers', { status: 400 });
+  if (!svix_id || !svix_timestamp || !svix_signature) {
+    return new Response('No headers', { status: 400 });
+  }
 
   const payload = await req.json();
   const body = JSON.stringify(payload);
@@ -28,30 +33,48 @@ export async function POST(req: Request) {
       "svix-signature": svix_signature,
     }) as WebhookEvent;
   } catch (err) {
+    console.error("❌ Error verificando webhook:", err);
     return new Response('Invalid signature', { status: 400 });
   }
 
   const eventType = evt.type;
+  const { id: clerkId } = evt.data;
 
-  // 1. Cambio de Email Principal
-  if (eventType === 'user.updated') {
-    const { id: clerkId, email_addresses, primary_email_address_id } = evt.data;
-    const primaryEmailObj = email_addresses.find(e => e.id === primary_email_address_id);
-    const newEmail = primaryEmailObj?.email_address;
-
-    if (newEmail && clerkId) {
-      await updateUserEmail(clerkId, newEmail, true);
+  try {
+    // 1. Registro inicial (Vincular por email si existe)
+    if (eventType === 'user.created') {
+      const emailObj = evt.data.email_addresses?.[0];
+      const email = emailObj?.email_address;
+      if (email && clerkId) {
+        await linkClerkAccount(email, clerkId, true);
+      }
     }
-  }
 
-  // 2. Eliminación de Usuario
-  if (eventType === 'user.deleted') {
-    const { id: clerkId } = evt.data;
-    if (clerkId) {
+    // 2. Cambio de Email Principal
+    if (eventType === 'user.updated') {
+      const { email_addresses, primary_email_address_id } = evt.data;
+      const primaryEmailObj = (email_addresses as any[])?.find((e: any) => e.id === primary_email_address_id);
+      const newEmail = primaryEmailObj?.email_address;
 
-      await deleteRegistrationByClerkId(clerkId);
+      if (newEmail && clerkId) {
+        const result = await updateUserEmail(clerkId, newEmail, true);
+        if (!result.success) {
+          console.error("❌ Fallo al actualizar email en Supabase/Keap:", result.error);
+          return new Response(result.error, { status: 500 });
+        }
+      }
     }
-  }
 
-  return new Response('Webhook procesado', { status: 200 });
+    // 3. Eliminación de Usuario (Purga Total)
+    if (eventType === 'user.deleted') {
+      if (clerkId) {
+        await deleteRegistrationByClerkId(clerkId);
+      }
+    }
+
+    return new Response('Webhook procesado con éxito', { status: 200 });
+  } catch (error: any) {
+    console.error("❌ Error procesando webhook logic:", error.message);
+    return new Response(error.message, { status: 500 });
+  }
 }

@@ -144,19 +144,25 @@ export async function processKeapStatusTransitions(
     const details = eventDetails.find((e: any) => e.id === eventId);
     if (!details) return;
 
-    const oldStatus = currentReg.event_statuses?.[eventId];
     const newStatus = updatedStatuses[eventId];
 
-    if (oldStatus !== newStatus) {
-      if (oldStatus === 'pending' && details.keap_pending_tag_id) tagsToRemove.push(details.keap_pending_tag_id);
-      if (oldStatus === 'confirmed' && details.keap_tag_id) tagsToRemove.push(details.keap_tag_id);
-
-      if (newStatus === 'pending' && details.keap_pending_tag_id) tagsToAdd.push(details.keap_pending_tag_id);
-      if (newStatus === 'confirmed' && details.keap_tag_id) tagsToAdd.push(details.keap_tag_id);
+    // Lógica determinista: Asegurar el estado correcto borrando el opuesto
+    if (newStatus === 'confirmed') {
+      if (details.keap_tag_id) tagsToAdd.push(details.keap_tag_id);
+      if (details.keap_pending_tag_id) tagsToRemove.push(details.keap_pending_tag_id);
+    } 
+    else if (newStatus === 'pending') {
+      if (details.keap_pending_tag_id) tagsToAdd.push(details.keap_pending_tag_id);
+      if (details.keap_tag_id) tagsToRemove.push(details.keap_tag_id);
+    } 
+    else if (newStatus === 'cancelled') {
+      if (details.keap_tag_id) tagsToRemove.push(details.keap_tag_id);
+      if (details.keap_pending_tag_id) tagsToRemove.push(details.keap_pending_tag_id);
     }
   });
 
   if (tagsToRemove.length > 0 || tagsToAdd.length > 0) {
+    // syncKeapTags ya se encarga de no duplicar si el tag ya está (vía Keap API)
     return await syncKeapTags(userData, tagsToRemove, tagsToAdd);
   }
   

@@ -128,6 +128,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
     return { 
       success: true, 
       isUpdate: false, 
+      id: newRegId,
       message: "Registro completado con éxito.",
       mergedEvents: validatedData.selected_events,
       eventStatuses: initialStatuses,
