@@ -37,7 +37,11 @@ export function AuthSection({
           setIsOpen={setIsNotifOpen}
         />
       )}
-      {!isSignedIn ? (
+      {/* 
+          Solo mostrar el botón de Acceder si estamos SEGUROS de que no hay sesión.
+          Si es 'undefined', significa que Clerk aún está cargando el estado y no mostramos nada para evitar parpadeos.
+      */}
+      {isSignedIn === false && (
         <SignInButton mode="modal">
           <Button
             variant="ghost"
@@ -61,7 +65,9 @@ export function AuthSection({
             <span>Acceder</span>
           </Button>
         </SignInButton>
-      ) : (
+      )}
+
+      {isSignedIn === true && (
         <UserButton
           appearance={{
             elements: {

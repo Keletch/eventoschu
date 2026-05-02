@@ -33,6 +33,11 @@ export async function updateUserEmail(clerkId: string, newEmail: string, fromWeb
     if (!existing) throw new Error("Registro no encontrado");
     const oldEmail = existing.email;
 
+    // 🛑 Válvula de seguridad: Si el correo es el mismo, no procesar nada
+    if (oldEmail.toLowerCase().trim() === emailFormatted) {
+      return { success: true, message: "El correo ya está actualizado" };
+    }
+
     let updatedEventData = existing.event_data || {};
     if (existing.event_data) {
       Object.keys(updatedEventData).forEach(eventId => {
@@ -96,26 +101,54 @@ export async function updateUserEmail(clerkId: string, newEmail: string, fromWeb
 }
 
 /**
- * 🔗 Vincula una cuenta de Clerk con un registro de Supabase existente por email
+ * 👤 Asegura que un usuario de Clerk tenga su espejo en Supabase (con o sin eventos)
  */
-export async function linkClerkAccount(email: string, clerkId: string, fromWebhook = false) {
+export async function upsertClerkUser(data: { 
+  email: string, 
+  clerkId: string, 
+  firstName?: string | null, 
+  lastName?: string | null 
+}) {
   try {
-    if (!fromWebhook) {
-      const { userId } = await auth();
-      if (!userId || userId !== clerkId) throw new Error("No autorizado");
+    const emailFormatted = data.email.toLowerCase().trim();
+
+    // 1. Intentar vincular si existe (usando UPSERT para ser atómicos)
+    const { data: existing } = await supabaseAdmin
+      .from('registrations')
+      .select('id, clerk_id')
+      .eq('email', emailFormatted)
+      .single();
+
+    if (existing) {
+      // Si ya existe y no tiene clerkId, se lo ponemos
+      if (!existing.clerk_id) {
+        await supabaseAdmin.from('registrations').update({
+          clerk_id: data.clerkId,
+          updated_at: new Date().toISOString()
+        }).eq('id', existing.id);
+      }
+      return { success: true, linked: true };
     }
 
-    const { error } = await supabaseAdmin.from('registrations').update({
-      clerk_id: clerkId,
+    // 2. Si no existe, creamos el registro base "limpio"
+    const { error } = await supabaseAdmin.from('registrations').insert([{
+      email: emailFormatted,
+      clerk_id: data.clerkId,
+      first_name: data.firstName || '',
+      last_name: data.lastName || '',
+      selected_events: [],
+      event_statuses: {},
+      event_data: {},
+      created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
-    }).eq('email', email.toLowerCase().trim()).is('clerk_id', null);
+    }]);
 
     if (error) throw error;
 
-    await notifyAdminAccountLinked(email);
-    return { success: true };
+    await notifyAdminAccountLinked(emailFormatted);
+    return { success: true, created: true };
   } catch (err: any) {
-    console.error("❌ Error en linkClerkAccount:", err.message);
+    console.error("❌ Error en upsertClerkUser:", err.message);
     return { success: false, error: err.message };
   }
 }

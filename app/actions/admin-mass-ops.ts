@@ -392,7 +392,7 @@ export async function deleteRegistration(id: string) {
     // 5. Obtener detalles de eventos para la notificación (antes de borrar)
     const { data: eventsData } = await supabaseAdmin
       .from('events')
-      .select('title, city, country')
+      .select('title, city, country, start_date, categories(name)')
       .in('id', reg.selected_events || []);
 
     // 6. Notificar a los administradores
