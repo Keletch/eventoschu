@@ -1,6 +1,7 @@
 'use client';
+import React from 'react';
 
-import { Bell } from 'lucide-react';
+import { Bell, Search, X } from 'lucide-react';
 import { 
   Popover,
   PopoverContent,
@@ -29,8 +30,30 @@ export function NotificationBell({
   isOpen,
   setIsOpen
 }: NotificationBellProps) {
+  const [search, setSearch] = React.useState("");
+
+  const filteredNotifications = React.useMemo(() => {
+    if (!search.trim()) return notifications;
+    const q = search.toLowerCase();
+    
+    return notifications.filter(n => {
+      const titleMatch = n.title?.toLowerCase().includes(q);
+      const messageMatch = n.message?.toLowerCase().includes(q);
+      const dateMatch = new Date(n.created_at).toLocaleDateString('es-ES', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      }).toLowerCase().includes(q);
+      
+      return titleMatch || messageMatch || dateMatch;
+    });
+  }, [notifications, search]);
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={(open) => {
+      setIsOpen(open);
+      if (!open) setSearch(""); // Limpiar búsqueda al cerrar
+    }}>
       <PopoverTrigger className="relative inline-flex items-center justify-center rounded-xl size-10 hover:bg-slate-100 transition-all outline-none">
         <Bell className={cn("h-5 w-5 text-slate-600", unreadCount > 0 && "animate-pulse")} />
         {unreadCount > 0 && (
@@ -54,18 +77,42 @@ export function NotificationBell({
             </button>
           )}
         </div>
+
+        {/* Barra de Búsqueda */}
+        <div className="p-2 bg-white border-b border-slate-100">
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-sky-500 transition-colors" />
+            <input 
+              type="text"
+              placeholder="Filtrar por nombre, evento o fecha..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-9 pl-9 pr-4 bg-slate-50 border-none rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500/20 transition-all outline-none placeholder:text-slate-400"
+            />
+            {search && (
+              <button 
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
         
         <div className="max-h-[400px] overflow-y-auto no-scrollbar scroll-smooth">
-          {notifications.length === 0 ? (
+          {filteredNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[300px] text-slate-400 p-8 text-center">
               <div className="bg-slate-50 p-4 rounded-full mb-3">
-                <Bell className="h-8 w-8 opacity-20" />
+                {search ? <Search className="h-8 w-8 opacity-20" /> : <Bell className="h-8 w-8 opacity-20" />}
               </div>
-              <p className="text-sm">No tienes notificaciones por el momento.</p>
+              <p className="text-sm">
+                {search ? "No se encontraron resultados para tu búsqueda." : "No tienes notificaciones por el momento."}
+              </p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {notifications.map((notification) => (
+              {filteredNotifications.map((notification) => (
                 <NotificationItem 
                   key={notification.id}
                   notification={notification}
@@ -75,6 +122,7 @@ export function NotificationBell({
             </div>
           )}
         </div>
+
       </PopoverContent>
     </Popover>
   );

@@ -64,7 +64,12 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
                   onValueChange={(val) => setAnswers(prev => ({ ...prev, [q.id]: val ?? "" }))}
                 >
                   <SelectTrigger className="h-14 rounded-2xl border-neutral-200 bg-neutral-50/50">
-                    <SelectValue placeholder="Seleccionar una opción" />
+                    <SelectValue placeholder="Seleccionar una opción">
+                      {/* Base UI no refleja ItemText automáticamente — mapeamos el value a su label */}
+                      {answers[q.id]
+                        ? q.options.find((o) => o.value === answers[q.id])?.label ?? answers[q.id]
+                        : undefined}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl border-neutral-200 shadow-xl">
                     {q.options.map((opt) => (

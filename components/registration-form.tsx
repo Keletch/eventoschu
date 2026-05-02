@@ -44,13 +44,16 @@ export function RegistrationForm({
     try {
       const result = await checkRegistration(email, user?.id);
       if (result.success && result.userData) {
+        const dbData = result.userData;
         setFormData(prev => ({
           ...prev,
-          phone: result.userData.phone || prev.phone,
-          phoneCode: result.userData.phoneCode || prev.phoneCode,
-          country: result.userData.country || prev.country,
+          firstName: dbData.first_name || prev.firstName,
+          lastName: dbData.last_name || prev.lastName,
+          phone: dbData.phone || prev.phone,
+          phoneCode: dbData.phone_code || prev.phoneCode,
+          country: dbData.residence_country || prev.country,
         }));
-        if (result.userData.country && !COUNTRY_CODES.some(c => c.country === result.userData.country)) {
+        if (dbData.residence_country && !COUNTRY_CODES.some(c => c.country === dbData.residence_country)) {
           setIsOtherCountry(true);
         }
         onCheckRegistration(result);

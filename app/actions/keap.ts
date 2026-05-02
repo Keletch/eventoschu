@@ -4,7 +4,7 @@
  * 🛠️ Cliente interno para Keap API
  * Evita la repetición de headers y URL base.
  */
-async function keapFetch(endpoint: string, options: RequestInit = {}) {
+export async function keapFetch(endpoint: string, options: RequestInit = {}) {
   const apiKey = process.env.KEAP_API_KEY;
   if (!apiKey) throw new Error("KEAP_API_KEY missing");
 

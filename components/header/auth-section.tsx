@@ -6,6 +6,7 @@ import { NotificationBell } from "@/components/notification-bell";
 
 interface AuthSectionProps {
   isSignedIn: boolean | undefined;
+  userId: string | null | undefined;
   notifications: any[];
   unreadCount: number;
   handleMarkAsRead: (id: string) => void;
@@ -16,6 +17,7 @@ interface AuthSectionProps {
 
 export function AuthSection({
   isSignedIn,
+  userId,
   notifications,
   unreadCount,
   handleMarkAsRead,
@@ -25,7 +27,7 @@ export function AuthSection({
 }: AuthSectionProps) {
   return (
     <div className="flex items-center gap-3">
-      {isSignedIn && (
+      {userId && (
         <NotificationBell 
           notifications={notifications}
           unreadCount={unreadCount}

@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, ArrowLeft, ShieldCheck } from "lucide-react";
-import { Toaster } from "@/components/ui/sonner";
 import gsap from "gsap";
 
 export default function AdminLogin() {
@@ -26,31 +25,27 @@ export default function AdminLogin() {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Small delay to ensure hydration is complete and skeleton is seen briefly if load is too fast
-    const timer = setTimeout(() => {
-      setIsReady(true);
-    }, 500);
-
-    return () => clearTimeout(timer);
+    setIsReady(true);
   }, []);
-
+ 
   useEffect(() => {
-    if (isReady) {
+    if (isReady && cardRef.current) {
       const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-
-      tl.fromTo(containerRef.current, { opacity: 0 }, { opacity: 1, duration: 0.8 })
+ 
+      tl.to(containerRef.current, { opacity: 1, duration: 0.5 })
         .fromTo(cardRef.current,
           { y: 30, opacity: 0, scale: 0.98 },
           { y: 0, opacity: 1, scale: 1, duration: 1.2 },
-          "-=0.4"
+          "-=0.2"
         )
         .fromTo(".animate-item",
           { y: 15, opacity: 0 },
-          { y: 0, opacity: 1, stagger: 0.1, duration: 0.8 },
+          { y: 0, opacity: 1, stagger: 0.08, duration: 0.8 },
           "-=0.8"
         );
     }
   }, [isReady]);
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,14 +104,13 @@ export default function AdminLogin() {
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen flex items-center justify-center bg-[#F8FAFC] relative overflow-hidden px-4 selection:bg-sky-500/30 font-['Raleway']">
+    <div ref={containerRef} className="min-h-screen flex items-center justify-center bg-[#F8FAFC] relative overflow-hidden px-4 selection:bg-sky-500/30 font-['Raleway'] opacity-0">
       {/* Subtle Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full opacity-40 pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-sky-200/50 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-100/50 rounded-full blur-[120px]" />
       </div>
 
-      <Toaster position="top-right" richColors />
 
       <div className="w-full max-w-md relative z-10">
         {/* Back Link */}

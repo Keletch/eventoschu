@@ -1,13 +1,11 @@
 'use server';
 
 import { createClient } from "@supabase/supabase-js";
-import { currentUser } from "@clerk/nextjs/server";
-import { processKeapStatusTransitions, syncKeapTags } from "./keap";
-import { 
-  notifyUserConfirmed, 
-  notifyAdminRegistrationModified, 
-  notifyAdminRegistrationDeleted 
-} from "./notifications";
+import { createSupabaseServer } from "@/lib/supabase-server";
+
+import { processKeapStatusTransitions } from "./keap";
+import { notifyAdminRegistrationModified } from "./admin-notifications";
+import { notifyUserConfirmed } from "./user-notifications";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -64,8 +62,9 @@ export async function updateRegistration(id: string, data: any) {
     const { data: currentReg } = await supabaseAdmin.from('registrations').select('*').eq('id', id).single();
     if (!currentReg) throw new Error("Registro no encontrado");
 
-    const adminUser = await currentUser();
-    const adminEmail = adminUser?.emailAddresses[0]?.emailAddress || "un administrador";
+    const supabase = await createSupabaseServer();
+    const { data: { user } } = await supabase.auth.getUser();
+    const adminEmail = user?.email || "un administrador";
 
     // 1. Limpieza de estados y snapshots para eventos deseleccionados
     const updatedStatuses = { ...(data.event_statuses || {}) };
@@ -111,7 +110,7 @@ export async function updateRegistration(id: string, data: any) {
     const confirmedIds = allRelevantEventIds.filter(id => updatedStatuses[id] === 'confirmed' && currentReg.event_statuses?.[id] !== 'confirmed');
     if (confirmedIds.length > 0) {
       const { data: eventsInfo } = await supabaseAdmin.from('events').select('title, city, country, start_date, categories(name)').in('id', confirmedIds);
-      await notifyUserConfirmed(currentReg.clerk_id, eventsInfo || []);
+      await notifyUserConfirmed({ registrationId: currentReg.id, clerkId: currentReg.clerk_id }, eventsInfo || []);
     }
 
     const changedEventIds = allRelevantEventIds.filter(id => currentReg.event_statuses?.[id] !== updatedStatuses[id]);
@@ -129,31 +128,6 @@ export async function updateRegistration(id: string, data: any) {
   }
 }
 
-/**
- * 🗑️ Elimina un registro permanentemente
- */
-export async function deleteRegistration(id: string) {
-  try {
-    const { data: reg } = await supabaseAdmin.from('registrations').select('email, selected_events, first_name, last_name').eq('id', id).single();
-    if (!reg) throw new Error("Registro no encontrado");
 
-    // Quitar tags en Keap antes de borrar
-    if (reg.selected_events?.length > 0) {
-      const { data: events } = await supabaseAdmin.from('events').select('keap_tag_id').in('id', reg.selected_events);
-      if (events) {
-        const tagsToRemove = events.map(e => e.keap_tag_id).filter(Boolean);
-        await syncKeapTags({ email: reg.email, firstName: reg.first_name, lastName: reg.last_name }, tagsToRemove, []);
-      }
-    }
 
-    await supabaseAdmin.from('registrations').delete().eq('id', id);
 
-    const adminUser = await currentUser();
-    const adminEmail = adminUser?.emailAddresses[0]?.emailAddress || "un administrador";
-    await notifyAdminRegistrationDeleted(adminEmail, reg.email);
-
-    return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message };
-  }
-}

@@ -7,10 +7,10 @@ import { validateTurnstileToken } from "./turnstile";
 import { syncKeapTags } from "./keap";
 import { 
   notifyAdminNewRegistration, 
-  notifyUserRegistrationSuccess, 
   notifyAdminSurveyCompleted, 
   notifyAdminSpecificDataUpdate 
-} from "./notifications";
+} from "./admin-notifications";
+import { notifyUserRegistrationSuccess } from "./user-notifications";
 import { formatEventForNotification } from "./utils";
 
 const supabaseAdmin = createClient(
@@ -85,7 +85,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
         const pendingTags = newlyAddedEvents.map(e => e.keap_pending_tag_id).filter(Boolean);
         await syncKeapTags(validatedData, [], pendingTags);
         await notifyAdminNewRegistration(validatedData.email, newlyAddedEvents);
-        if (userId) await notifyUserRegistrationSuccess(userId, newlyAddedEvents, alreadyInEvents);
+        await notifyUserRegistrationSuccess({ registrationId: existing.id, clerkId: userId || existing.clerk_id }, newlyAddedEvents, alreadyInEvents);
       }
 
       return { 
@@ -115,14 +115,15 @@ export async function createRegistration(data: any, turnstileToken: string) {
     }]).select('id').single();
 
     if (insertError) throw insertError;
+    const newRegId = inserted?.id;
 
-    const { data: eventDetails } = await supabaseAdmin.from('events').select('title, city, country, start_date, keap_pending_tag_id, categories(name)').in('id', validatedData.selected_events);
-    if (eventDetails) {
-      const pendingTags = eventDetails.map(e => e.keap_pending_tag_id).filter(Boolean);
-      await syncKeapTags(validatedData, [], pendingTags);
-      await notifyAdminNewRegistration(validatedData.email, eventDetails);
-      if (userId) await notifyUserRegistrationSuccess(userId, eventDetails, []);
-    }
+      if (newRegId) {
+        const { data: newlyAddedEventsInfo } = await supabaseAdmin.from('events').select('id, title, city, country, start_date, keap_pending_tag_id, categories(name)').in('id', validatedData.selected_events);
+        const pendingTags = newlyAddedEventsInfo?.map(e => e.keap_pending_tag_id).filter(Boolean) || [];
+        await syncKeapTags(validatedData, [], pendingTags);
+        await notifyAdminNewRegistration(validatedData.email, newlyAddedEventsInfo || []);
+        await notifyUserRegistrationSuccess({ registrationId: newRegId, clerkId: userId || undefined }, newlyAddedEventsInfo || [], []);
+      }
 
     return { 
       success: true, 

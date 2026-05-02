@@ -7,14 +7,14 @@ import { Notification } from './use-notifications';
 
 interface RealtimeSyncProps {
   isAdmin?: boolean;
-  userId?: string;
+  ids?: { clerkId?: string, registrationId?: string };
   onNewNotification?: (notification: Notification) => void;
   onDataChange?: () => void;
 }
 
 export function useRealtimeSync({ 
   isAdmin = false, 
-  userId, 
+  ids, 
   onNewNotification, 
   onDataChange 
 }: RealtimeSyncProps) {
@@ -38,14 +38,12 @@ export function useRealtimeSync({
 
     const setupRealtime = async () => {
       // 1. Auth Setup for Supabase RLS
-      if (!isAdmin && getTokenRef.current) {
+      const currentUserId = ids?.registrationId || ids?.clerkId || 'guest';
+      
+      if (!isAdmin && getTokenRef.current && ids?.clerkId) {
         try {
-          // Check current session first to avoid redundant setSession calls
           const { data: { session: currentSession } } = await supabase.auth.getSession();
-          
-          // Only update if no session or different user
-          // Note: Clerk tokens are short-lived, but we only need to set it once per mount/user change
-          if (!currentSession || currentSession.user.id !== userId) {
+          if (!currentSession || currentSession.user.id !== ids.clerkId) {
             const token = await getTokenRef.current({ template: 'supabase' });
             if (token && isMounted) {
               await supabase.auth.setSession({ access_token: token, refresh_token: '' });
@@ -58,26 +56,42 @@ export function useRealtimeSync({
 
       if (!isMounted) return;
 
-      const subId = isAdmin ? 'admin' : (userId || 'guest');
-      const channelName = `rt-sync-${subId}`;
+      const subId = isAdmin ? 'admin' : currentUserId;
+      const channelName = isAdmin ? `rt-sync-${subId}` : `user-updates:${subId}`;
       
-      // If we already have a channel for this name, don't recreate it
       if (channelRef.current) return;
 
-      console.log(`🔌 Attempting Realtime connection for: ${subId}...`);
+
+
+      const tableName = isAdmin ? 'admin_notifications' : 'notifications';
 
       // 2. Subscribe to Notifications and Table Changes
       channel = supabase
         .channel(channelName)
         .on(
           'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'notifications' },
+          { event: 'INSERT', schema: 'public', table: tableName },
           (payload) => {
             if (!isMounted) return;
-            const newNotif = payload.new as Notification;
-            const isForMe = isAdmin ? (newNotif.is_admin === true) : (newNotif.user_id === userId);
+            const newNotif = payload.new as any;
+            
+            // Lógica de filtrado dual: coincide por clerk_id O por registration_id
+            const isForMe = isAdmin || 
+              (ids?.clerkId && newNotif.user_id === ids.clerkId) || 
+              (ids?.registrationId && newNotif.registration_id === ids.registrationId);
+            
             if (isForMe && onNewNotificationRef.current) {
-              onNewNotificationRef.current(newNotif);
+
+              onNewNotificationRef.current(newNotif as Notification);
+            }
+          }
+        )
+        .on(
+          'broadcast',
+          { event: 'new-notification' },
+          (payload) => {
+            if (isMounted && onNewNotificationRef.current) {
+              onNewNotificationRef.current(payload.payload as Notification);
             }
           }
         )
@@ -97,7 +111,7 @@ export function useRealtimeSync({
         )
         .subscribe((status) => {
           if (status === 'SUBSCRIBED' && isMounted) {
-            console.log(`✅ Realtime Sync Connected for: ${subId}`);
+
           }
         });
         
@@ -113,7 +127,7 @@ export function useRealtimeSync({
         channelRef.current = null;
       }
     };
-  }, [isAdmin, userId]);
+  }, [isAdmin, ids?.clerkId, ids?.registrationId]);
 
   return null; // This is a logic-only hook
 }

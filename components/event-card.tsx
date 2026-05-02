@@ -3,11 +3,11 @@
 import { Card } from "@/components/ui/card";
 import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass } from "lucide-react";
 import { cn } from "@/lib/utils";
-import * as Flags from 'country-flag-icons/react/3x2';
 
 // Modular Components
 import { EventProgressBar } from "./events/event-progress-bar";
 import { EventSoldOutOverlay } from "./events/event-sold-out-overlay";
+import { EventFlag } from "./ui/event-flag";
 
 interface EventCardProps {
   id: string;
@@ -43,7 +43,6 @@ export function EventCard({
   capacity = 25,
 }: EventCardProps) {
   const isSoldOut = confirmedCount >= capacity;
-  const FlagComponent = flag && (Flags as any)[flag.toUpperCase()] ? (Flags as any)[flag.toUpperCase()] : null;
 
   return (
     <Card 
@@ -62,16 +61,11 @@ export function EventCard({
 
       <div className="flex items-start justify-between mb-6 md:mb-8">
         <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
-          <div className={cn(
-            "size-12 md:size-14 rounded-[16px] md:rounded-[20px] flex items-center justify-center shrink-0 overflow-hidden p-2.5 md:p-3",
-            bgClass
-          )}>
-            {FlagComponent ? (
-              <FlagComponent className="w-full h-full object-contain drop-shadow-sm" />
-            ) : (
-              <span className="text-xl">📍</span>
-            )}
-          </div>
+          <EventFlag 
+            flag={flag} 
+            bgClass={bgClass} 
+            className="size-12 md:size-14 rounded-[16px] md:rounded-[20px] p-2.5 md:p-3" 
+          />
           <h3 className="text-xl md:text-2xl font-bold text-gray-950 truncate">{city}, {country}</h3>
         </div>
         

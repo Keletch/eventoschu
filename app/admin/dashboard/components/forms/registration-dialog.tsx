@@ -17,33 +17,82 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Mail, MapPin, User, Info, Phone } from "lucide-react";
+import { Loader2, Mail, MapPin, User, Info, Phone, Trash2, PlusCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { EventFlag } from "@/components/ui/event-flag";
+import { adminAddEventToUser, adminRemoveEventFromUser } from "@/app/actions/admin-mass-ops";
+import { toast } from "sonner";
+import { SearchablePicker } from "../filters/searchable-picker";
+
 
 interface RegistrationDialogProps {
   isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
+  onOpenChange: (open: boolean) => void;
   reg: any;
   setReg: (reg: any) => void;
   events: any[];
+  onUpdate: (e: React.FormEvent) => void;
   isSubmitting: boolean;
-  onSubmit: (e: React.FormEvent) => void;
+  onRefresh?: () => Promise<void>; // Para refrescar datos tras cambios rápidos
 }
 
 export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
   isOpen,
-  setIsOpen,
+  onOpenChange,
   reg,
   setReg,
   events,
+  onUpdate,
   isSubmitting,
-  onSubmit,
+  onRefresh
 }) => {
+  const [isProcessingEvent, setIsProcessingEvent] = React.useState<string | null>(null);
+  const [selectedEventToAdd, setSelectedEventToAdd] = React.useState<string>("");
+
   if (!reg) return null;
 
+  const availableEventsToAdd = events.filter(e => !reg.selected_events?.includes(e.id));
+
+  const handleAddEvent = async () => {
+    if (!selectedEventToAdd) return;
+    
+    setIsProcessingEvent('adding');
+    try {
+      const res = await adminAddEventToUser(reg.id, selectedEventToAdd);
+      if (res.success) {
+        toast.success("Evento agregado correctamente");
+        setSelectedEventToAdd(""); // Limpiar selección
+        if (onRefresh) await onRefresh();
+      } else {
+        toast.error(res.error || "Error al agregar evento");
+      }
+    } finally {
+      setIsProcessingEvent(null);
+    }
+  };
+
+
+  const handleRemoveEvent = async (eventId: string) => {
+    if (!confirm("¿Estás seguro de eliminar esta inscripción? Se borrarán los tags de Keap y datos de este evento.")) return;
+    
+    setIsProcessingEvent(eventId);
+    try {
+      const res = await adminRemoveEventFromUser(reg.id, eventId);
+      if (res.success) {
+        toast.success("Evento eliminado correctamente");
+        if (onRefresh) await onRefresh();
+      } else {
+        toast.error(res.error || "Error al eliminar evento");
+      }
+    } finally {
+      setIsProcessingEvent(null);
+    }
+  };
+
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden rounded-[40px] border-none shadow-2xl p-0 reg-dialog-anim">
         <div className="overflow-y-auto overflow-x-hidden max-h-[90vh] no-scrollbar">
         <DialogHeader className="p-10 bg-blue-700 text-white relative">
@@ -69,7 +118,7 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
           </div>
         </DialogHeader>
 
-        <form onSubmit={onSubmit} className="bg-white">
+        <form onSubmit={onUpdate} className="bg-white">
           <div className="p-10 space-y-8">
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-2">
@@ -86,9 +135,11 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                     <div key={eventId} className="flex flex-col gap-4 p-5 bg-neutral-50 rounded-[24px] border border-neutral-100 hover:border-blue-200 transition-all group">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                            {event?.flag || "🌍"}
-                          </div>
+                          <EventFlag 
+                            flag={event?.flag} 
+                            className="w-12 h-12 rounded-2xl bg-white group-hover:scale-110" 
+                            bgClass="bg-white"
+                          />
                           <div>
                             <p className="font-bold text-neutral-800">{event?.city || 'Evento desconocido'}</p>
                             <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-tighter flex items-center gap-1">
@@ -97,7 +148,7 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                           </div>
                         </div>
                         
-                        <div className="min-w-[140px]">
+                        <div className="flex items-center gap-2 min-w-[180px]">
                           <Select 
                             value={currentStatus} 
                             onValueChange={(val) => {
@@ -106,7 +157,7 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                             }}
                           >
                             <SelectTrigger className={cn(
-                              "rounded-xl border-none font-bold text-xs h-10 px-4 shadow-sm focus:ring-2 focus:ring-blue-500",
+                              "rounded-xl border-none font-bold text-xs h-10 px-4 shadow-sm focus:ring-2 focus:ring-blue-500 flex-1",
                               currentStatus === 'confirmed' ? "bg-emerald-500 text-white" :
                               currentStatus === 'cancelled' ? "bg-red-500 text-white" : "bg-amber-500 text-white"
                             )}>
@@ -121,6 +172,21 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                               <SelectItem value="cancelled" className="rounded-xl font-bold text-xs text-red-600">Cancelado</SelectItem>
                             </SelectContent>
                           </Select>
+
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveEvent(eventId)}
+                            disabled={isProcessingEvent !== null}
+                            className="h-10 w-10 rounded-xl text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          >
+                            {isProcessingEvent === eventId ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </Button>
                         </div>
                       </div>
 
@@ -193,6 +259,52 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                     </div>
                   );
                 })}
+
+                {/* Quick Add Event Selector */}
+                {availableEventsToAdd.length > 0 && (
+                  <div className="flex flex-col gap-4 p-5 bg-blue-50/50 rounded-[24px] border border-dashed border-blue-200 hover:border-blue-400 transition-all group">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-blue-400 shadow-sm">
+                          <PlusCircle className="w-6 h-6" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-blue-900">Agregar Inscripción</p>
+                          <p className="text-[10px] text-blue-400 font-bold uppercase tracking-tighter">
+                            Selecciona una gira para inscribir al usuario
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-3 min-w-[280px] flex-1">
+                        <SearchablePicker
+                          options={availableEventsToAdd.map(e => ({
+                            id: e.id,
+                            label: e.title
+                          }))}
+                          value={selectedEventToAdd}
+                          onSelect={(val) => setSelectedEventToAdd(val)}
+                          placeholder="Elegir evento..."
+                          triggerClassName="w-full h-10 border-blue-100"
+                        />
+
+                        <Button
+                          type="button"
+                          onClick={handleAddEvent}
+                          disabled={!selectedEventToAdd || isProcessingEvent !== null}
+                          className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-100 transition-all gap-2"
+                        >
+                          {isProcessingEvent === 'adding' ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <PlusCircle className="w-4 h-4" />
+                          )}
+                          Confirmar Inscripción
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -269,7 +381,7 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
           </div>
 
           <DialogFooter className="flex sm:justify-center items-center p-8 gap-4 sm:space-x-0 bg-neutral-50/50 border-t border-neutral-100">
-            <Button type="button" variant="ghost" onClick={() => setIsOpen(false)} className="rounded-2xl h-14 px-8 font-bold text-neutral-400 hover:text-neutral-600 transition-all">
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="rounded-2xl h-14 px-8 font-bold text-neutral-400 hover:text-neutral-600 transition-all">
               Cerrar sin guardar
             </Button>
             <Button 

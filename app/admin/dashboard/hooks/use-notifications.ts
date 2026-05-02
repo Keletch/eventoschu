@@ -18,16 +18,16 @@ export interface Notification {
   created_at: string;
 }
 
-export function useNotifications(isAdmin = true, userId?: string) {
+export function useNotifications(isAdmin = true, ids?: { clerkId?: string, registrationId?: string }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchNotifications = useCallback(async () => {
-    if (!userId && !isAdmin) return;
+    if (!ids?.clerkId && !ids?.registrationId && !isAdmin) return;
     setIsLoading(true);
     try {
-      const res = await getNotifications(userId || 'admin', isAdmin);
+      const res = await getNotifications(ids || {}, isAdmin);
       if (res.success && res.data) {
         setNotifications(res.data);
         setUnreadCount(res.data.filter((n: any) => !n.read).length);
@@ -35,10 +35,10 @@ export function useNotifications(isAdmin = true, userId?: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [userId, isAdmin]);
+  }, [ids?.clerkId, ids?.registrationId, isAdmin]);
 
   const handleMarkAsRead = async (id: string) => {
-    const res = await markAsRead(id);
+    const res = await markAsRead(id, isAdmin);
     if (res.success) {
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
       setUnreadCount(prev => Math.max(0, prev - 1));
@@ -47,7 +47,7 @@ export function useNotifications(isAdmin = true, userId?: string) {
   };
 
   const handleMarkAllRead = async () => {
-    const res = await markAllAsRead(userId || 'admin', isAdmin);
+    const res = await markAllAsRead(ids || {}, isAdmin);
     if (res.success) {
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
       setUnreadCount(0);

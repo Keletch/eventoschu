@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { 
   Table, 
@@ -12,25 +14,24 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, Copy, Edit, Trash2 } from "lucide-react";
-import * as Flags from "country-flag-icons/react/3x2";
 import { cn } from "@/lib/utils";
+import { formatSafeDate, formatDateToShort } from "@/lib/date-utils";
+import { EventFlag } from "@/components/ui/event-flag";
 
 interface EventsTableProps {
   events: any[];
   isLoading: boolean;
   registrations: any[];
-  formatSafeDate: (date: any) => Date | null;
-  toggleEventStatus: (id: string, currentStatus: boolean) => void;
+  toggleEventStatus: (event: any) => void;
   handleDuplicateEvent: (event: any) => void;
   handleEditEvent: (event: any) => void;
-  handleDeleteEvent: (id: string) => void;
+  handleDeleteEvent: (event: any) => void;
 }
 
 export const EventsTable: React.FC<EventsTableProps> = ({
   events,
   isLoading,
   registrations,
-  formatSafeDate,
   toggleEventStatus,
   handleDuplicateEvent,
   handleEditEvent,
@@ -55,26 +56,17 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                 r.selected_events?.includes(event.id) && r.event_statuses?.[event.id] === "confirmed"
               ).length;
               
-              const FlagIcon = event.flag && (Flags as any)[event.flag.toUpperCase()] 
-                ? (Flags as any)[event.flag.toUpperCase()] 
-                : null;
-                
-              let formattedDate = "Sin fecha";
-              if (event.start_date) {
-                const parts = event.start_date.split('-');
-                if (parts.length >= 3) {
-                  const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2].substring(0,2)));
-                  formattedDate = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-                }
-              }
+              const formattedDate = formatDateToShort(formatSafeDate(event.start_date));
 
               return (
                 <TableRow key={event.id} className="group border-neutral-100 hover:bg-neutral-50/50 transition-colors table-row-anim">
                   <TableCell className="pl-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-sm overflow-hidden p-2", event.bg_class || "bg-sky-100")}>
-                        {FlagIcon ? <FlagIcon className="w-full h-full object-contain" /> : <span className="text-xl">📍</span>}
-                      </div>
+                      <EventFlag 
+                        flag={event.flag} 
+                        bgClass={event.bg_class || "bg-sky-100"} 
+                        className="w-10 h-10"
+                      />
                       <div>
                         <div className="font-bold text-gray-900">{event.title}</div>
                         <div className="text-xs text-neutral-500 flex items-center gap-1">
@@ -94,7 +86,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                   <TableCell className="text-center">
                     <Switch
                       checked={event.active}
-                      onCheckedChange={() => toggleEventStatus(event.id, event.active)}
+                      onCheckedChange={() => toggleEventStatus(event)}
                     />
                   </TableCell>
                   <TableCell className="text-right pr-6">
@@ -120,7 +112,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDeleteEvent(event.id)}
+                        onClick={() => handleDeleteEvent(event)}
                         className="text-red-500 hover:bg-red-50 rounded-xl cursor-pointer"
                         title="Eliminar"
                       >

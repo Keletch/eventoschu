@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { 
   Table, 
@@ -18,7 +20,6 @@ import {
   Mail,
   MessageCircle
 } from "lucide-react";
-import * as Flags from "country-flag-icons/react/3x2";
 import { 
   Tooltip, 
   TooltipContent, 
@@ -26,14 +27,15 @@ import {
   TooltipTrigger 
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-
 import { toast } from "sonner";
+import { formatSafeDate, formatDateToShort } from "@/lib/date-utils";
+import { ADMIN_STATUS_CONFIGS, AdminRegistrationStatus } from "../../utils/admin-constants";
+import { EventFlag } from "@/components/ui/event-flag";
 
 interface RegistrationsTableProps {
   registrations: any[];
   isLoading: boolean;
   events: any[];
-  formatSafeDate: (date: any) => Date | null;
   handleEditReg: (reg: any) => void;
   handleDeleteReg: (id: string) => void;
 }
@@ -42,7 +44,6 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
   registrations,
   isLoading,
   events,
-  formatSafeDate,
   handleEditReg,
   handleDeleteReg,
 }) => {
@@ -53,7 +54,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
           <TableRow className="hover:bg-transparent border-neutral-200">
             <TableHead className="w-[340px] font-bold text-neutral-500 uppercase text-[10px] tracking-wider pl-6">Usuario / Contacto</TableHead>
             <TableHead className="font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Selección</TableHead>
-            <TableHead className="font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Estado</TableHead>
+            <TableHead className="font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Estado General</TableHead>
             <TableHead className="font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Registro</TableHead>
             <TableHead className="text-right pr-6 font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Acciones</TableHead>
           </TableRow>
@@ -78,52 +79,38 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                         </div>
                       )}
                     </div>
-                    <div className="pt-1">
-                      {reg.survey_data ? (
-                        <Badge variant="outline" className="text-[9px] bg-blue-50 text-blue-700 border-none uppercase font-black px-2 py-0.5">
-                          Formulario Recibido
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-[9px] bg-neutral-50 text-neutral-400 border-none uppercase font-black px-2 py-0.5">
-                          Sin Encuesta
-                        </Badge>
-                      )}
-                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1.5 max-w-[400px]">
                     {reg.selected_events?.map((eventId: string) => {
                       const event = events.find((e: any) => e.id === eventId);
-                      const status = reg.event_statuses?.[eventId] || 'pending';
-                      
-                      const FlagIcon = event?.flag && (Flags as any)[event.flag.toUpperCase()] 
-                        ? (Flags as any)[event.flag.toUpperCase()] 
-                        : null;
+                      const status = (reg.event_statuses?.[eventId] || 'pending') as AdminRegistrationStatus;
+                      const config = ADMIN_STATUS_CONFIGS[status] || ADMIN_STATUS_CONFIGS.pending;
 
                       return (
                         <TooltipProvider key={eventId}>
                           <Tooltip>
-                            <TooltipTrigger render={
+                            <TooltipTrigger>
                               <Badge 
                                 variant="outline" 
                                 className={cn(
-                                  "text-[10px] px-2 py-0.5 rounded-lg border-none flex items-center gap-1 cursor-help",
-                                  status === 'confirmed' ? "bg-emerald-50 text-emerald-700" :
-                                  status === 'cancelled' ? "bg-red-50 text-red-700" :
-                                  "bg-amber-50 text-amber-700"
+                                  "text-[10px] px-2 py-0.5 rounded-lg border-none flex items-center gap-1 cursor-help transition-all",
+                                  config.bg, config.text
                                 )}
                               >
                                 {event?.city || 'Evento'}
                                 <Info className="w-2.5 h-2.5 opacity-40" />
                               </Badge>
-                            } />
+                            </TooltipTrigger>
                             <TooltipContent side="top" className="p-3 rounded-xl shadow-xl bg-white border border-neutral-100 z-[100]">
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2 border-b border-neutral-50 pb-2 mb-1">
-                                  <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center text-lg text-neutral-900 font-medium overflow-hidden p-1.5">
-                                    {FlagIcon ? <FlagIcon className="w-full h-full object-contain" /> : "🌍"}
-                                  </div>
+                                  <EventFlag 
+                                    flag={event?.flag} 
+                                    className="w-8 h-8 rounded-lg" 
+                                    bgClass="bg-neutral-100" 
+                                  />
                                   <div>
                                     <p className="font-bold text-sm text-neutral-800">{event?.title}</p>
                                     <p className="text-[10px] text-neutral-400 flex items-center gap-1 uppercase font-bold tracking-tighter">
@@ -133,13 +120,8 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                                 </div>
                                 <div className="flex items-center justify-between gap-4">
                                   <span className="text-[10px] text-neutral-400 font-bold uppercase">Estado</span>
-                                  <Badge className={cn(
-                                    "text-[9px] uppercase font-black px-2 py-0 rounded-full",
-                                    status === 'confirmed' ? "bg-emerald-500 text-white" :
-                                    status === 'cancelled' ? "bg-red-500 text-white" :
-                                    "bg-amber-500 text-white"
-                                  )}>
-                                    {status === 'confirmed' ? 'Aprobado' : status === 'cancelled' ? 'Cancelado' : 'Pendiente'}
+                                  <Badge className={cn("text-[9px] uppercase font-black px-2 py-0 rounded-full text-white", config.text.replace('text-', 'bg-'))}>
+                                    {config.label}
                                   </Badge>
                                 </div>
                               </div>
@@ -157,35 +139,30 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                     const allConfirmed = statuses.length > 0 && statuses.every((s: string) => s === 'confirmed');
                     const allCancelled = statuses.length > 0 && statuses.every((s: string) => s === 'cancelled');
                     
-                    let badgeClasses = "bg-amber-50 text-amber-700";
-                    let statusText = "Revisión Pendiente";
+                    let config = ADMIN_STATUS_CONFIGS.pending;
+                    let label = "Revisión Pendiente";
 
                     if (allConfirmed) {
-                      badgeClasses = "bg-emerald-50 text-emerald-700";
-                      statusText = "Confirmado";
+                      config = ADMIN_STATUS_CONFIGS.confirmed;
+                      label = "Confirmado";
                     } else if (allCancelled) {
-                      badgeClasses = "bg-red-50 text-red-700";
-                      statusText = "Cancelado";
+                      config = ADMIN_STATUS_CONFIGS.cancelled;
+                      label = "Cancelado";
                     } else if (!hasPending) {
-                      badgeClasses = "bg-blue-50 text-blue-700";
-                      statusText = "Mixto";
+                      label = "Mixto";
+                      config = { ...ADMIN_STATUS_CONFIGS.confirmed, bg: "bg-blue-50", text: "text-blue-700" } as any;
                     }
 
                     return (
-                      <Badge variant="outline" className={cn("text-[10px] border-none uppercase font-bold px-2 py-1", badgeClasses)}>
-                        {statusText}
+                      <Badge variant="outline" className={cn("text-[10px] border-none uppercase font-bold px-2 py-1", config.bg, config.text)}>
+                        {label}
                       </Badge>
                     );
                   })()}
                 </TableCell>
                 <TableCell>
                   <div className="text-xs font-medium text-neutral-400">
-                    {formatSafeDate(reg.created_at)?.toLocaleDateString('es-ES', { 
-                      day: '2-digit', 
-                      month: '2-digit', 
-                      year: 'numeric',
-                      timeZone: 'UTC'
-                    })}
+                    {formatDateToShort(formatSafeDate(reg.created_at))}
                   </div>
                 </TableCell>
                 <TableCell className="text-right pr-6">
@@ -239,7 +216,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={4} className="h-40 text-center text-neutral-400">
+              <TableCell colSpan={5} className="h-40 text-center text-neutral-400">
                 {isLoading ? "Cargando usuarios..." : "No se encontraron usuarios."}
               </TableCell>
             </TableRow>

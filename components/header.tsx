@@ -10,7 +10,11 @@ import { DesktopNav } from "./header/desktop-nav";
 import { MobileNav } from "./header/mobile-nav";
 import { AuthSection } from "./header/auth-section";
 
-export function Header() {
+interface HeaderProps {
+  registrationId?: string | null;
+}
+
+export function Header({ registrationId }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { 
     notifications, 
@@ -19,8 +23,9 @@ export function Header() {
     handleMarkAllRead, 
     isOpen, 
     setIsOpen,
-    isSignedIn 
-  } = useUserNotifications();
+    isSignedIn,
+    userId 
+  } = useUserNotifications(registrationId);
 
   return (
     <header className="w-full flex justify-center pt-6 md:pt-8 px-4 md:px-8 lg:px-12 relative z-50">
@@ -39,6 +44,7 @@ export function Header() {
 
         <AuthSection 
           isSignedIn={isSignedIn}
+          userId={userId}
           notifications={notifications}
           unreadCount={unreadCount}
           handleMarkAsRead={handleMarkAsRead}

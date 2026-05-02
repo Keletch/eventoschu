@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import * as Flags from "country-flag-icons/react/3x2";
+import { EventFlag } from "@/components/ui/event-flag";
 import {
   Dialog,
   DialogContent,
@@ -60,9 +60,6 @@ export const EventDialog: React.FC<EventDialogProps> = ({
   onSubmit,
 }) => {
   const isTimeConfirm = event.time === "Por confirmar";
-  const FlagComp = event.flag && (Flags as any)[event.flag.toUpperCase()]
-    ? (Flags as any)[event.flag.toUpperCase()]
-    : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -127,12 +124,11 @@ export const EventDialog: React.FC<EventDialogProps> = ({
               <div className="space-y-2">
                 <Label className="text-xs font-black uppercase text-neutral-400">Código de Bandera (ISO)</Label>
                 <div className="flex gap-2 items-center">
-                  <div className="size-12 rounded-xl bg-neutral-100 border border-neutral-200 flex items-center justify-center overflow-hidden shrink-0 p-2">
-                    {FlagComp
-                      ? <FlagComp className="w-full h-full object-contain" />
-                      : <span className="text-xl">📍</span>
-                    }
-                  </div>
+                  <EventFlag 
+                    flag={event.flag} 
+                    className="size-12 rounded-xl" 
+                    bgClass="bg-neutral-100" 
+                  />
                   <Input
                     required
                     value={event.flag}

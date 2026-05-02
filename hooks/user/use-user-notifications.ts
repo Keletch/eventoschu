@@ -1,13 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useNotifications } from '@/app/admin/dashboard/hooks/use-notifications';
 import { useRealtimeSync } from '@/app/admin/dashboard/hooks/use-realtime-sync';
+import { getRegistrationId } from '@/app/actions/auth-actions';
 
-export function useUserNotifications() {
-  const { userId, isSignedIn } = useAuth();
+export function useUserNotifications(registrationId?: string | null) {
+  const { userId: clerkId, isSignedIn } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+
+  const ids = { 
+    clerkId: clerkId || undefined, 
+    registrationId: registrationId || undefined 
+  };
 
   const {
     notifications,
@@ -15,17 +21,15 @@ export function useUserNotifications() {
     handleMarkAsRead,
     handleMarkAllRead,
     addNotificationLocally
-  } = useNotifications(false, userId || undefined);
+  } = useNotifications(false, ids);
 
-  // Sync for users
+  // Sincronización Realtime (Dual)
   useRealtimeSync({
     isAdmin: false,
-    userId: userId || undefined,
+    ids,
     onNewNotification: (notif) => {
       addNotificationLocally(notif);
     }
-    // Users don't necessarily need a full data re-fetch on every registration change 
-    // unless they are on the "Already Registered" portal.
   });
 
   return {
@@ -36,6 +40,7 @@ export function useUserNotifications() {
     isOpen,
     setIsOpen,
     isSignedIn,
-    userId
+    userId: registrationId || clerkId
   };
 }
+

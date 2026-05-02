@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { Plus, LogOut, Loader2, BarChart3, Users, Calendar, CheckCircle2 } from "lucide-react";
+import { Plus, LogOut, Loader2, BarChart3, Users, Calendar, CheckCircle2, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +17,9 @@ import { EventsTable } from "./components/tables/events-table";
 import { RegistrationsTable } from "./components/tables/registrations-table";
 import { EventDialog } from "./components/forms/event-dialog";
 import { RegistrationDialog } from "./components/forms/registration-dialog";
+import { PurgeUserDialog } from "./components/forms/purge-user-dialog";
+import { DeleteEventDialog } from "./components/forms/delete-event-dialog";
+import { ToggleEventDialog } from "./components/forms/toggle-event-dialog";
 
 // Hooks
 import { useAdminDashboard } from "./hooks/use-admin-dashboard";
@@ -28,14 +31,19 @@ export default function AdminDashboard() {
     eventTabStatusFilter, setEventTabStatusFilter, regsSearch, setRegsSearch,
     regsCategoryFilter, setRegsCategoryFilter, regsEventFilter, setRegsEventFilter,
     regsStatusFilter, setRegsStatusFilter, isDialogOpen, setIsDialogOpen,
-    isRegDialogOpen, setIsRegDialogOpen, editingReg, setEditingReg,
+    isRegDialogOpen, setIsRegDialogOpen, isPurgeDialogOpen, setIsPurgeDialogOpen,
+    isDeleteEventDialogOpen, setIsDeleteEventDialogOpen,
+    isToggleDialogOpen, setIsToggleDialogOpen,
+    editingReg, setEditingReg, purgingReg, setPurgingReg,
+    deletingEvent, setDeletingEvent, togglingEvent,
     newEvent, setNewEvent, keapTags, isTagsLoading, fetchTags,
-    handleCreateEvent, handleDeleteEvent, handleDuplicateEvent,
-    toggleEventStatus, handleUpdateReg, handleDeleteReg, handleEditEvent,
-    handleEditReg, handleNewEvent, handleLogout, totalInscriptions,
+    handleCreateEvent, handleDeleteEvent, handleConfirmEventPurge, handleDuplicateEvent,
+    toggleEventStatus, handleConfirmToggleStatus, handleClearCache, isCacheRefreshing,
+    handleUpdateReg, handleDeleteReg, handleConfirmPurge, 
+    handleEditEvent, handleEditReg, handleNewEvent, handleLogout, totalInscriptions,
     pendingCount, approvedCount, filteredEvents, filteredRegs,
-    formatSafeDate, notifications, unreadCount, handleMarkAsRead,
-    handleMarkAllRead, isNotifOpen, setIsNotifOpen
+    notifications, unreadCount, handleMarkAsRead,
+    handleMarkAllRead, isNotifOpen, setIsNotifOpen, fetchData
   } = useAdminDashboard();
 
   const [isActuallyReady, setIsActuallyReady] = React.useState(false);
@@ -276,9 +284,22 @@ export default function AdminDashboard() {
                     triggerClassName="w-40"
                   />
                 </div>
-                <Button onClick={handleNewEvent} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl h-11 px-6 font-bold shadow-lg shadow-blue-200 transition-all gap-2 border-none">
-                  <Plus className="w-5 h-5" /> Nuevo Evento
-                </Button>
+                
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleClearCache} 
+                    disabled={isCacheRefreshing}
+                    className="rounded-xl h-11 px-4 text-neutral-500 hover:text-blue-600 border-neutral-200 gap-2 font-bold"
+                    title="Limpiar Caché de Redis"
+                  >
+                    {isCacheRefreshing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                    <span className="hidden lg:inline">Refrescar Web</span>
+                  </Button>
+                  <Button onClick={handleNewEvent} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl h-11 px-6 font-bold shadow-lg shadow-blue-200 transition-all gap-2 border-none">
+                    <Plus className="w-5 h-5" /> Nuevo Evento
+                  </Button>
+                </div>
               </div>
 
               <div className="tab-content-anim">
@@ -286,7 +307,6 @@ export default function AdminDashboard() {
                   events={filteredEvents}
                   isLoading={isDataLoading}
                   registrations={registrations}
-                  formatSafeDate={formatSafeDate}
                   toggleEventStatus={toggleEventStatus}
                   handleDuplicateEvent={handleDuplicateEvent}
                   handleEditEvent={handleEditEvent}
@@ -335,7 +355,6 @@ export default function AdminDashboard() {
                   registrations={filteredRegs}
                   isLoading={isDataLoading}
                   events={events}
-                  formatSafeDate={formatSafeDate}
                   handleEditReg={handleEditReg}
                   handleDeleteReg={handleDeleteReg}
                 />
@@ -359,12 +378,39 @@ export default function AdminDashboard() {
 
           <RegistrationDialog
             isOpen={isRegDialogOpen}
-            setIsOpen={setIsRegDialogOpen}
+            onOpenChange={setIsRegDialogOpen}
             reg={editingReg}
             setReg={setEditingReg}
             events={events}
+            onUpdate={handleUpdateReg}
             isSubmitting={isSubmitting}
-            onSubmit={handleUpdateReg}
+            onRefresh={fetchData}
+          />
+
+          <PurgeUserDialog 
+            isOpen={isPurgeDialogOpen}
+            onOpenChange={setIsPurgeDialogOpen}
+            userEmail={purgingReg?.email || ""}
+            onConfirm={handleConfirmPurge}
+            isSubmitting={isSubmitting}
+          />
+
+          <DeleteEventDialog
+            isOpen={isDeleteEventDialogOpen}
+            onOpenChange={isDeleteEventDialogOpen ? setIsDeleteEventDialogOpen : () => {}}
+            eventTitle={deletingEvent?.title || ""}
+            registrationsCount={registrations.filter(r => r.selected_events?.includes(deletingEvent?.id)).length}
+            onConfirm={handleConfirmEventPurge}
+            isSubmitting={isSubmitting}
+          />
+
+          <ToggleEventDialog
+            isOpen={isToggleDialogOpen}
+            onOpenChange={setIsToggleDialogOpen}
+            eventTitle={togglingEvent?.title || ""}
+            isActive={togglingEvent?.active || false}
+            onConfirm={handleConfirmToggleStatus}
+            isSubmitting={isSubmitting}
           />
         </main>
       </TooltipProvider>
