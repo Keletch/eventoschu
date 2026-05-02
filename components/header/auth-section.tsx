@@ -28,7 +28,7 @@ export function AuthSection({
   return (
     <div className="flex items-center gap-3">
       {userId && (
-        <NotificationBell 
+        <NotificationBell
           notifications={notifications}
           unreadCount={unreadCount}
           onMarkAsRead={handleMarkAsRead}
@@ -40,11 +40,11 @@ export function AuthSection({
       {!isSignedIn ? (
         <SignInButton mode="modal">
           <Button variant="ghost" className="hidden sm:flex text-gray-500 font-bold hover:text-blue-700 rounded-xl px-4 transition-colors">
-            Entrar
+            Inicia Sesión
           </Button>
         </SignInButton>
       ) : (
-        <UserButton 
+        <UserButton
           appearance={{
             elements: {
               avatarBox: "w-10 h-10 rounded-xl"
