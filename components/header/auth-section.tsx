@@ -39,8 +39,26 @@ export function AuthSection({
       )}
       {!isSignedIn ? (
         <SignInButton mode="modal">
-          <Button variant="ghost" className="hidden sm:flex text-gray-500 font-bold hover:text-blue-700 rounded-xl px-4 transition-colors">
-            Inicia Sesión
+          <Button
+            variant="ghost"
+            className="hidden sm:flex items-center gap-2 text-gray-600 font-bold hover:text-[#3154DC] hover:bg-blue-50/50 rounded-xl px-5 py-2.5 transition-all duration-300 border border-transparent hover:border-blue-100 group active:scale-95"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-70 group-hover:opacity-100 transition-opacity"
+            >
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span>Acceder</span>
           </Button>
         </SignInButton>
       ) : (
