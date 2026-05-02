@@ -73,7 +73,6 @@ export function useHomeLogic() {
 
   // --- Initial Data Fetching ---
   const fetchData = useCallback(async () => {
-    setIsPageReady(true);
     try {
       const [eventsRes, countsRes] = await Promise.all([
         getEvents(),
@@ -110,6 +109,7 @@ export function useHomeLogic() {
       console.error('Fetch error:', err);
     } finally {
       setIsLoadingEvents(false);
+      setIsPageReady(true);
     }
   }, [activeMonth]);
 
@@ -136,6 +136,9 @@ export function useHomeLogic() {
       } catch (e) {
         setStep(1);
       }
+    } else {
+      // Si no hay nada guardado, por defecto es Paso 1
+      setStep(1);
     }
   }, []);
 
@@ -217,6 +220,19 @@ export function useHomeLogic() {
   useEffect(() => {
     syncRegistration();
   }, [isLoaded, user?.id, syncRegistration]);
+
+  // Limpieza explícita al cerrar sesión
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      setUserData(null);
+      if (step === null || step === 2) setStep(1);
+      
+      // Forzamos un pequeño parpadeo del estado para que GSAP re-evalúe los targets
+      setIsPageReady(false);
+      const timer = setTimeout(() => setIsPageReady(true), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded, isSignedIn, step]);
 
   // --- Handlers ---
   const revalidateStatus = async (email: string) => {

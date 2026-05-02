@@ -12,9 +12,10 @@ import { AuthSection } from "./header/auth-section";
 
 interface HeaderProps {
   registrationId?: string | null;
+  step?: number | null;
 }
 
-export function Header({ registrationId }: HeaderProps) {
+export function Header({ registrationId, step }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { 
@@ -22,15 +23,20 @@ export function Header({ registrationId }: HeaderProps) {
     unreadCount, 
     handleMarkAsRead, 
     handleMarkAllRead, 
-    isOpen, 
+    isOpen: isNotifOpen, 
     setIsOpen,
-    isSignedIn,
+    isSignedIn: authSignedIn,
+    isLoaded,
     userId 
   } = useUserNotifications(registrationId);
 
+  // La campana solo vive en Paso 2 para anónimos, o siempre para logueados
+  const showBell = authSignedIn || step === 2;
+  const effectiveUserId = showBell ? userId : null;
+
   return (
-    <header className="w-full flex justify-center pt-6 md:pt-8 px-4 md:px-8 lg:px-12 relative z-50">
-      <div className="w-full max-w-[1440px] flex items-center justify-between gap-4">
+    <header className="w-full flex justify-center pt-6 md:pt-8 px-4 md:px-6 relative z-50">
+      <div className="w-full max-w-[1372px] bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-[32px] px-6 md:px-10 py-4 md:py-5 flex items-center justify-between transition-all duration-500 hover:shadow-[0_8px_40px_0_rgba(31,38,135,0.12)] hover:bg-white/90">
         <Logo />
 
         <DesktopNav />
@@ -44,20 +50,21 @@ export function Header({ registrationId }: HeaderProps) {
         </button>
 
         <AuthSection 
-          isSignedIn={isSignedIn}
-          userId={userId}
+          isSignedIn={authSignedIn}
+          isLoaded={isLoaded}
+          userId={effectiveUserId}
           notifications={notifications}
           unreadCount={unreadCount}
           handleMarkAsRead={handleMarkAsRead}
           handleMarkAllRead={handleMarkAllRead}
-          isNotifOpen={isOpen}
+          isNotifOpen={isNotifOpen}
           setIsNotifOpen={setIsOpen}
         />
       </div>
 
       <MobileNav 
         isOpen={isMobileMenuOpen} 
-        isSignedIn={isSignedIn} 
+        isSignedIn={authSignedIn} 
       />
     </header>
   );

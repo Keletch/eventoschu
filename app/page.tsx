@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 import { PublicView } from "@/components/home/public-view";
 import { RegisteredView } from "@/components/home/registered-view";
+import { HomeSkeleton } from "@/components/home/home-skeleton";
 import { useHomeSync } from "@/hooks/home/use-home-sync";
 import { useHomeLogic } from "@/hooks/home/use-home-logic";
 
@@ -96,7 +97,7 @@ export default function Home() {
   return (
     <main ref={containerRef} className="min-h-screen bg-[#F8F9FA] relative selection:bg-[#3154DC]/10">
       <TooltipProvider>
-        <Header registrationId={home.userData?.id} />
+        <Header registrationId={home.userData?.id} step={home.step} />
         
         {/* Progress Bar Loader (Thin, minimal) */}
         {home.step === null && (
@@ -106,8 +107,8 @@ export default function Home() {
         )}
 
         <div className="max-w-[1512px] mx-auto px-6 min-h-[80vh]">
-          {!home.isLoaded || home.step === null ? (
-            <div className="min-h-[80vh]" />
+          {!home.isPageReady || home.step === null ? (
+            <HomeSkeleton />
           ) : home.step === 1 ? (
             <div className="step-1 pt-8">
               <PublicView 

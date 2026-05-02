@@ -101,54 +101,26 @@ export async function updateUserEmail(clerkId: string, newEmail: string, fromWeb
 }
 
 /**
- * 👤 Asegura que un usuario de Clerk tenga su espejo en Supabase (con o sin eventos)
+ * 🔗 Vincula una cuenta de Clerk con un registro de Supabase existente por email
  */
-export async function upsertClerkUser(data: { 
-  email: string, 
-  clerkId: string, 
-  firstName?: string | null, 
-  lastName?: string | null 
-}) {
+export async function linkClerkAccount(email: string, clerkId: string, fromWebhook = false) {
   try {
-    const emailFormatted = data.email.toLowerCase().trim();
-
-    // 1. Intentar vincular si existe (usando UPSERT para ser atómicos)
-    const { data: existing } = await supabaseAdmin
-      .from('registrations')
-      .select('id, clerk_id')
-      .eq('email', emailFormatted)
-      .single();
-
-    if (existing) {
-      // Si ya existe y no tiene clerkId, se lo ponemos
-      if (!existing.clerk_id) {
-        await supabaseAdmin.from('registrations').update({
-          clerk_id: data.clerkId,
-          updated_at: new Date().toISOString()
-        }).eq('id', existing.id);
-      }
-      return { success: true, linked: true };
+    if (!fromWebhook) {
+      const { userId } = await auth();
+      if (!userId || userId !== clerkId) throw new Error("No autorizado");
     }
 
-    // 2. Si no existe, creamos el registro base "limpio"
-    const { error } = await supabaseAdmin.from('registrations').insert([{
-      email: emailFormatted,
-      clerk_id: data.clerkId,
-      first_name: data.firstName || '',
-      last_name: data.lastName || '',
-      selected_events: [],
-      event_statuses: {},
-      event_data: {},
-      created_at: new Date().toISOString(),
+    const { error } = await supabaseAdmin.from('registrations').update({
+      clerk_id: clerkId,
       updated_at: new Date().toISOString()
-    }]);
+    }).eq('email', email.toLowerCase().trim()).is('clerk_id', null);
 
     if (error) throw error;
 
-    await notifyAdminAccountLinked(emailFormatted);
-    return { success: true, created: true };
+    await notifyAdminAccountLinked(email);
+    return { success: true };
   } catch (err: any) {
-    console.error("❌ Error en upsertClerkUser:", err.message);
+    console.error("❌ Error en linkClerkAccount:", err.message);
     return { success: false, error: err.message };
   }
 }

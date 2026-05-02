@@ -1,7 +1,7 @@
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
-import { updateUserEmail, upsertClerkUser } from '@/app/actions/auth-actions';
+import { updateUserEmail, linkClerkAccount } from '@/app/actions/auth-actions';
 import { deleteRegistrationByClerkId } from '@/app/actions/admin-mass-ops';
 
 export async function POST(req: Request) {
@@ -41,19 +41,12 @@ export async function POST(req: Request) {
   const { id: clerkId } = evt.data;
 
   try {
-    // 1. Registro inicial (Vincular o Crear)
+    // 1. Registro inicial (Vincular por email si existe)
     if (eventType === 'user.created') {
       const emailObj = evt.data.email_addresses?.[0];
       const email = emailObj?.email_address;
-      const { first_name, last_name } = evt.data;
-
       if (email && clerkId) {
-        await upsertClerkUser({
-          email,
-          clerkId,
-          firstName: first_name,
-          lastName: last_name
-        });
+        await linkClerkAccount(email, clerkId, true);
       }
     }
 
