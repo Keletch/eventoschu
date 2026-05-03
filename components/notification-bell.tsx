@@ -112,7 +112,7 @@ export function NotificationBell({
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {filteredNotifications.map((notification) => (
+              {Array.from(new Map(filteredNotifications.map(n => [n.id, n])).values()).map((notification) => (
                 <NotificationItem 
                   key={notification.id}
                   notification={notification}

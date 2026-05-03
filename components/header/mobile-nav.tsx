@@ -7,13 +7,25 @@ import { ExternalLink } from "lucide-react";
 interface MobileNavProps {
   isOpen: boolean;
   isSignedIn: boolean | undefined;
+  onClose: () => void;
 }
 
-export function MobileNav({ isOpen, isSignedIn }: MobileNavProps) {
+export function MobileNav({ isOpen, isSignedIn, onClose }: MobileNavProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full left-4 right-4 mt-2 bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 flex flex-col gap-6 lg:hidden animate-in fade-in slide-in-from-top-4 duration-200 max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[100] lg:hidden">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
+      
+      <div className="absolute top-4 left-4 right-4 bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 flex flex-col gap-6 animate-in fade-in slide-in-from-top-4 duration-200 max-h-[90vh] overflow-y-auto">
+        {/* Header con botón de cierre */}
+        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Navegación</p>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
       {/* Mobile Auth */}
       <div className="flex flex-col gap-4 border-b border-gray-100 pb-6">
         {!isSignedIn ? (
@@ -103,6 +115,7 @@ export function MobileNav({ isOpen, isSignedIn }: MobileNavProps) {
       <a href="https://campus.elclubdeinversionistas.com/?utm_source=eventos_cdi&utm_medium=mobile_button&utm_campaign=ecosistema_cdi&utm_content=campus_cdi" target="_blank" className="w-full pt-2">
         <Button className="w-full bg-[#3154DC] text-white font-bold h-14 rounded-2xl shadow-xl shadow-[#3154DC]/20">Campus CDI</Button>
       </a>
+      </div>
     </div>
   );
 }

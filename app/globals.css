@@ -143,15 +143,14 @@
 /* Custom Elegant Global Scrollbar */
 html {
   overflow-x: hidden;
-  overflow-y: scroll; /* Forzar que la barra siempre exista para evitar saltos */
+  overflow-y: auto;
   height: auto;
-  scrollbar-gutter: stable; /* Reservar el espacio de forma permanente */
 }
 
 body {
   min-height: 100vh;
   overflow: visible;
-  padding-right: 0 !important; /* Bloquear el padding que inyectan los modales para evitar saltos */
+  scrollbar-gutter: stable;
 }
 
 /* Scrollbar styles for Webkit (Chrome, Safari, Edge) */
