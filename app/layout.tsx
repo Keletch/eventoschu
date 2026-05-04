@@ -20,6 +20,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { esES } from "@clerk/localizations";
 import { CustomScrollbar } from "@/components/ui/custom-scrollbar";
+import { VercelAnalytics } from "@/components/vercel-analytics";
 
 export default function RootLayout({
   children,
@@ -33,6 +34,7 @@ export default function RootLayout({
           <TooltipProvider>
             {children}
             <CustomScrollbar />
+            <VercelAnalytics />
             <Toaster position="bottom-right" expand={true} richColors />
           </TooltipProvider>
         </body>
