@@ -199,7 +199,7 @@ export default function Home() {
           </div>
         </div>
 
-        {home.isLoaded && home.isSignedIn && home.step === 2 && (
+        {home.isLoaded && home.step === 2 && (
           <SurveyModal
             isOpen={home.isSurveyOpen}
             onOpenChange={home.setIsSurveyOpen}

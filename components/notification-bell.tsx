@@ -62,7 +62,7 @@ export function NotificationBell({
           </span>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-80 sm:w-96 p-0 mr-4 shadow-xl border-slate-200 overflow-hidden" align="end">
+      <PopoverContent className="w-80 sm:w-96 p-0 mr-4 shadow-xl border-slate-200 overflow-hidden z-[100]" align="end" sideOffset={8}>
         <div className="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/50">
           <h4 className="font-bold text-slate-800 flex items-center gap-2">
             Notificaciones
