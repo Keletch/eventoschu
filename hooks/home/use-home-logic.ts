@@ -78,6 +78,17 @@ export function useHomeLogic() {
     return Array.from(new Set(months));
   }, [events]);
 
+  // 🔄 Efecto para sincronizar el estado de carga global con CustomEvents
+  useEffect(() => {
+    const isLoading = step === null || isLoadingEvents || isTransitioning || isSubmitting || isChecking;
+    
+    if (isLoading) {
+      window.dispatchEvent(new CustomEvent("app-loading-start"));
+    } else {
+      window.dispatchEvent(new CustomEvent("app-loading-stop"));
+    }
+  }, [step, isLoadingEvents, isTransitioning, isSubmitting, isChecking]);
+
   // --- Initial Data Fetching ---
   const fetchData = useCallback(async () => {
     setIsPageReady(true);
@@ -193,16 +204,27 @@ export function useHomeLogic() {
             ...result.userData
           };
 
-          setUserData(sanitizedUserData);
+          // Evitar actualizaciones si los datos son idénticos para prevenir ráfagas de carga
+          if (JSON.stringify(sanitizedUserData) !== JSON.stringify(userData)) {
+            setUserData(sanitizedUserData);
+          }
           
           // CRÍTICO: Solo pre-seleccionamos eventos si NO estamos en el Paso 1
           const activeStep = localStorage.getItem(HOME_STEP_KEY);
           
           if (activeStep !== '1') {
-            setSelectedEvents(result.selectedEvents || []);
-            setEventStatuses(statuses);
-            setEventDataMap(dataMap);
-            setSurveyData(survey);
+            if (JSON.stringify(result.selectedEvents) !== JSON.stringify(selectedEvents)) {
+              setSelectedEvents(result.selectedEvents || []);
+            }
+            if (JSON.stringify(statuses) !== JSON.stringify(eventStatuses)) {
+              setEventStatuses(statuses);
+            }
+            if (JSON.stringify(dataMap) !== JSON.stringify(eventDataMap)) {
+              setEventDataMap(dataMap);
+            }
+            if (JSON.stringify(survey) !== JSON.stringify(surveyData)) {
+              setSurveyData(survey);
+            }
             
             if (result.selectedEvents?.length > 0) {
               setSelectedCityId(prev => prev || result.selectedEvents[0]);
@@ -237,7 +259,7 @@ export function useHomeLogic() {
 
   // --- Handlers ---
   const revalidateStatus = async (email: string) => {
-    setIsLoadingEvents(true);
+    setIsChecking(true);
     setSurveyData(null);
     try {
       const revalidation = await checkRegistration(email, user?.id);
@@ -268,7 +290,7 @@ export function useHomeLogic() {
     } catch (err) {
       console.error('Revalidation error:', err);
     } finally {
-      setIsLoadingEvents(false);
+      setIsChecking(false);
     }
   };
 

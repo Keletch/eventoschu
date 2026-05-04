@@ -1,27 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { useAuth } from "@clerk/nextjs";
 import { useUserNotifications } from "@/hooks/user/use-user-notifications";
 
 // Modular Components
 import { Logo } from "./header/logo";
-import { DesktopNav } from "./header/desktop-nav";
-import { MobileNav } from "./header/mobile-nav";
 import { AuthSection } from "./header/auth-section";
 
 interface HeaderProps {
   registrationId?: string | null;
+  step?: number | null;
+  onToggleSidebar: () => void;
+  isSidebarOpen: boolean;
 }
 
-export function Header({ registrationId }: HeaderProps) {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isSignedIn } = useAuth();
+export function Header({ registrationId, step, onToggleSidebar, isSidebarOpen }: HeaderProps) {
+  const { isSignedIn, isLoaded } = useAuth();
 
   const { 
     notifications, 
     unreadCount, 
+    isLoading,
     handleMarkAsRead, 
     handleMarkAllRead, 
     isOpen, 
@@ -30,50 +30,42 @@ export function Header({ registrationId }: HeaderProps) {
   } = useUserNotifications(registrationId);
 
   return (
-    <header className="w-full flex justify-center pt-6 md:pt-8 px-4 md:px-8 lg:px-12 relative z-50">
-      <div className="w-full max-w-[1372px] grid grid-cols-[1fr_auto_1fr] items-center bg-white/70 backdrop-blur-md border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-[32px] px-6 py-3 md:py-4 transition-all duration-500 hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.12)]">
+    <header className="fixed top-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-center px-4 md:px-8 z-[60]">
+      <div className="w-full max-w-[1512px] flex items-center justify-between">
         
-        {/* 1. Logo (Izquierda) */}
-        <div className="flex justify-start min-w-[120px] md:min-w-[180px]">
-          <Logo />
-        </div>
-
-        {/* 2. Navegación (Centro - Absolutamente centrado) */}
-        <div className="flex justify-center">
-          <div className="hidden lg:block">
-            <DesktopNav />
-          </div>
-          
-          {/* Mobile Toggle (Solo visible en móviles) */}
+        {/* 1. Izquierda: Hamburguesa + Logo */}
+        <div className="flex items-center gap-4">
           <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+            onClick={onToggleSidebar}
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500"
           >
             <Menu className="w-6 h-6" />
           </button>
+          
+          <Logo onClick={onToggleSidebar} />
         </div>
 
-        {/* 3. Acciones/Auth (Derecha) */}
-        <div className="flex justify-end">
+        {/* 2. Centro: Espacio vacío (YouTube Style) */}
+        <div className="hidden md:flex flex-1 max-w-2xl mx-8">
+          {/* Aquí podría ir un SearchBar en el futuro */}
+        </div>
+
+        {/* 3. Derecha: AuthSection */}
+        <div className="flex items-center">
           <AuthSection 
-            isSignedIn={isSignedIn}
-            userId={userId}
+            isSignedIn={!!isSignedIn}
+            isLoaded={isLoaded}
+            userId={userId || undefined}
             notifications={notifications}
             unreadCount={unreadCount}
             handleMarkAsRead={handleMarkAsRead}
             handleMarkAllRead={handleMarkAllRead}
             isNotifOpen={isOpen}
             setIsNotifOpen={setIsOpen}
+            step={step || null}
           />
         </div>
       </div>
-
-      {/* Menú Móvil */}
-      <MobileNav 
-        isOpen={isMobileMenuOpen} 
-        onClose={() => setIsMobileMenuOpen(false)} 
-        isSignedIn={isSignedIn}
-      />
     </header>
   );
 }

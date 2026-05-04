@@ -1,11 +1,12 @@
-"use client";
-
-import { SignInButton, UserButton } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { NotificationBell } from "@/components/notification-bell";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { UserButton, SignInButton } from '@clerk/nextjs';
+import { NotificationBell } from '../notification-bell';
+import { UserIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface AuthSectionProps {
-  isSignedIn: boolean | undefined;
+  isSignedIn: boolean;
   userId: string | null | undefined;
   notifications: any[];
   unreadCount: number;
@@ -13,8 +14,14 @@ interface AuthSectionProps {
   handleMarkAllRead: () => void;
   isNotifOpen: boolean;
   setIsNotifOpen: (open: boolean) => void;
+  step: number | null;
+  isLoaded: boolean;
 }
 
+/**
+ * AuthSection (V6 - Sin GSAP para Pruebas)
+ * Eliminamos GSAP para verificar si es la causa de los parpadeos.
+ */
 export function AuthSection({
   isSignedIn,
   userId,
@@ -24,51 +31,73 @@ export function AuthSection({
   handleMarkAllRead,
   isNotifOpen,
   setIsNotifOpen,
+  step,
+  isLoaded
 }: AuthSectionProps) {
+  const [isFullyReady, setIsFullyReady] = useState(false);
+
+  // Sincronización de preparación: Esperamos a que Clerk se asiente
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => setIsFullyReady(true), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded]);
+
+  // Determinismo de la Campana
+  const shouldShowBell = isLoaded && (isSignedIn || step === 2);
+
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center gap-2 h-10">
+        <div className="size-10 rounded-xl bg-slate-50 animate-pulse" />
+        <div className="size-10 rounded-xl bg-slate-50 animate-pulse" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-3">
-      {userId && (
-        <NotificationBell
-          notifications={notifications}
-          unreadCount={unreadCount}
-          onMarkAsRead={handleMarkAsRead}
-          onMarkAllAsRead={handleMarkAllRead}
-          isOpen={isNotifOpen}
-          setIsOpen={setIsNotifOpen}
-        />
-      )}
-      {!isSignedIn ? (
-        <SignInButton mode="modal">
-          <Button
-            variant="ghost"
-            className="hidden sm:flex items-center gap-2 text-gray-600 font-bold hover:text-[#3154DC] hover:bg-blue-50/50 rounded-xl px-5 py-2.5 transition-all duration-300 border border-transparent hover:border-blue-100 group active:scale-95"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="opacity-70 group-hover:opacity-100 transition-opacity"
-            >
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </Button>
-        </SignInButton>
-      ) : (
-        <UserButton
-          appearance={{
-            elements: {
-              avatarBox: "w-10 h-10 rounded-xl"
-            }
-          }}
-        />
-      )}
+    <div className="flex items-center gap-2 h-10">
+      {/* Slot de Notificaciones */}
+      <div className="size-10 flex items-center justify-center">
+        {shouldShowBell && (
+          <div className="relative animate-in fade-in zoom-in duration-300">
+            <NotificationBell
+              notifications={notifications}
+              unreadCount={unreadCount}
+              onMarkAsRead={handleMarkAsRead}
+              onMarkAllAsRead={handleMarkAllRead}
+              isOpen={isNotifOpen}
+              setIsOpen={setIsNotifOpen}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Slot de Usuario */}
+      <div className="size-10 flex items-center justify-center">
+        <div className={cn(
+          "relative size-10 rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center transition-all duration-300",
+          !isFullyReady ? "opacity-0 scale-90" : "opacity-100 scale-100"
+        )}>
+          {isSignedIn ? (
+            <UserButton 
+              appearance={{
+                elements: {
+                  avatarBox: "size-10 rounded-xl",
+                  userButtonPopoverCard: "shadow-xl border border-slate-200"
+                }
+              }}
+            />
+          ) : (
+            <SignInButton mode="modal">
+              <button className="text-slate-400 hover:text-slate-600 transition-colors w-full h-full flex items-center justify-center cursor-pointer">
+                <UserIcon className="h-5 w-5" />
+              </button>
+            </SignInButton>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

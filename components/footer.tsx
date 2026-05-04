@@ -6,20 +6,20 @@ import { SocialIcon } from "./footer/social-icon";
 
 export function Footer() {
   return (
-    <footer className="w-full py-8 px-6 flex flex-col items-center gap-6 border-t border-gray-100 bg-white/50 backdrop-blur-sm mt-8">
-      <div className="flex items-center gap-4">
+    <footer className="w-full py-6 px-8 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/10 bg-[#3154dc]">
+      <div className="flex flex-col md:flex-row items-center gap-0.5 md:gap-3">
+        <p className="text-[10px] font-bold text-white tracking-[0.05em] uppercase opacity-80">
+          @elclubdeinversionistas | Todos los derechos reservados
+        </p>
+        <p className="text-[9px] font-medium text-white/40 italic">
+          Educación financiera y trading de alto nivel
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3">
         {SOCIAL_LINKS.map((social) => (
           <SocialIcon key={social.name} name={social.name} href={social.href} />
         ))}
-      </div>
-      
-      <div className="flex flex-col items-center gap-1 text-center">
-        <p className="text-[10px] font-bold text-gray-400 tracking-wide uppercase">
-          @elclubdeinversionistas | Todos los derechos reservados
-        </p>
-        <p className="text-[9px] font-medium text-gray-400 opacity-60">
-          Educación financiera y trading de alto nivel
-        </p>
       </div>
     </footer>
   );

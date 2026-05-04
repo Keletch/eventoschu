@@ -27,7 +27,7 @@ export function RegistrationTopBar({ status, startNewRegistration }: Registratio
       <Button
         onClick={startNewRegistration}
         variant="outline"
-        className="group flex items-center gap-2 border-neutral-200 text-gray-500 hover:text-[#3154DC] hover:border-[#3154DC] rounded-xl px-6 h-11 font-bold transition-all bg-white/50 backdrop-blur-sm shadow-sm"
+        className="group flex items-center gap-2 border-neutral-200 text-gray-500 hover:text-[#3154DC] hover:border-[#3154DC] rounded-xl px-6 h-11 font-bold transition-all bg-white shadow-sm"
       >
         <LogOut className="size-4 transition-transform group-hover:translate-x-1" />
         Nuevo registro / Salir
