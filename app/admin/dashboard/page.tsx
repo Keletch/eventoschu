@@ -43,7 +43,7 @@ export default function AdminDashboard() {
     handleEditEvent, handleEditReg, handleNewEvent, handleLogout, totalInscriptions,
     pendingCount, approvedCount, filteredEvents, filteredRegs,
     notifications, unreadCount, handleMarkAsRead,
-    handleMarkAllRead, isNotifOpen, setIsNotifOpen, fetchData
+    handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData
   } = useAdminDashboard();
 
   const [isActuallyReady, setIsActuallyReady] = React.useState(false);
@@ -220,6 +220,7 @@ export default function AdminDashboard() {
                   unreadCount={unreadCount}
                   onMarkAsRead={handleMarkAsRead}
                   onMarkAllAsRead={handleMarkAllRead}
+                  onDeleteNotification={handleDeleteNotification}
                   isOpen={isNotifOpen}
                   setIsOpen={setIsNotifOpen}
                 />

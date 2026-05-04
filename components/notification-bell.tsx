@@ -18,6 +18,7 @@ interface NotificationBellProps {
   unreadCount: number;
   onMarkAsRead: (id: string) => void;
   onMarkAllAsRead: () => void;
+  onDeleteNotification?: (id: string) => void;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 }
@@ -27,6 +28,7 @@ export function NotificationBell({
   unreadCount, 
   onMarkAsRead, 
   onMarkAllAsRead,
+  onDeleteNotification,
   isOpen,
   setIsOpen
 }: NotificationBellProps) {
@@ -117,6 +119,7 @@ export function NotificationBell({
                   key={notification.id}
                   notification={notification}
                   onMarkAsRead={onMarkAsRead}
+                  onDelete={onDeleteNotification}
                 />
               ))}
             </div>

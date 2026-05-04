@@ -157,3 +157,21 @@ export async function markAllAsRead(ids: { clerkId?: string, registrationId?: st
     return { success: false, error: err.message };
   }
 }
+
+/**
+ * 🗑️ Eliminar notificación
+ */
+export async function deleteNotification(notificationId: string, isAdmin = false) {
+  try {
+    const tableName = isAdmin ? 'admin_notifications' : 'notifications';
+    const { error } = await supabaseAdmin
+      .from(tableName)
+      .delete()
+      .eq('id', notificationId);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}

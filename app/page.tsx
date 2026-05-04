@@ -18,6 +18,7 @@ import { useHomeSync } from "@/hooks/home/use-home-sync";
 import { useHomeLogic } from "@/hooks/home/use-home-logic";
 import { Sidebar } from "@/components/header/sidebar";
 import { cn } from "@/lib/utils";
+import { EventJsonLd } from "@/components/seo/event-json-ld";
 
 
 export default function Home() {
@@ -111,6 +112,7 @@ export default function Home() {
 
   return (
     <main ref={containerRef} className="min-h-screen bg-[#F8F9FA] relative selection:bg-[#3154DC]/10">
+      <EventJsonLd events={home.events} />
       <TooltipProvider>
         <Header 
           registrationId={home.userData?.id} 

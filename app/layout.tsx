@@ -8,11 +8,31 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
-  title: "Calendario HyenUk Chu | Lista de Espera",
-  description: "Calendario de eventos de HyenUk Chu.",
+  title: "Calendario de Eventos HyenUk Chu | Club de Inversionistas",
+  description: "Reserva tu cupo para las giras y talleres presenciales de HyenUk Chu. Únete a la comunidad del Club de Inversionistas y fortalece tus conexiones.",
+  keywords: ["HyenUk Chu", "Club de Inversionistas", "Inversiones", "Eventos Presenciales", "Trading", "Talleres de Inversión"],
+  authors: [{ name: "HyenUk Chu" }],
+  creator: "Club de Inversionistas",
+  openGraph: {
+    title: "Calendario de Eventos HyenUk Chu | Club de Inversionistas",
+    description: "Espacio exclusivo para compartir y fortalecer conexiones con HyenUk Chu.",
+    url: "https://eventoschu.vercel.app",
+    siteName: "Calendario HyenUk Chu",
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Eventos Presenciales HyenUk Chu",
+    description: "Reserva tu cupo para los próximos eventos y talleres.",
+  },
   icons: {
     icon: "/cdi-favicon.png",
   },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 import { TooltipProvider } from "@/components/ui/tooltip";

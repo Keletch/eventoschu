@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { 
   getNotifications, 
   markAsRead, 
-  markAllAsRead 
+  markAllAsRead,
+  deleteNotification
 } from '@/app/actions/notifications';
 
 export interface Notification {
@@ -55,6 +56,21 @@ export function useNotifications(isAdmin = true, ids?: { clerkId?: string, regis
     return res;
   };
 
+  const handleDeleteNotification = async (id: string) => {
+    const res = await deleteNotification(id, isAdmin);
+    if (res.success) {
+      setNotifications(prev => {
+        const filtered = prev.filter(n => n.id !== id);
+        const removed = prev.find(n => n.id === id);
+        if (removed && !removed.read) {
+          setUnreadCount(c => Math.max(0, c - 1));
+        }
+        return filtered;
+      });
+    }
+    return res;
+  };
+
   const addNotificationLocally = useCallback((notification: Notification) => {
     setNotifications(prev => [notification, ...prev]);
     if (!notification.read) {
@@ -76,6 +92,7 @@ export function useNotifications(isAdmin = true, ids?: { clerkId?: string, regis
     fetchNotifications,
     handleMarkAsRead,
     handleMarkAllRead,
+    handleDeleteNotification,
     addNotificationLocally
   };
 }

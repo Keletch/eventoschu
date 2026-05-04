@@ -50,6 +50,7 @@ export function useAdminDashboard() {
     unreadCount, 
     handleMarkAsRead, 
     handleMarkAllRead, 
+    handleDeleteNotification,
     addNotificationLocally 
   } = useNotifications(true);
 
@@ -336,6 +337,6 @@ export function useAdminDashboard() {
       setIsDialogOpen(true);
     },
     handleLogout: async () => { await supabase.auth.signOut(); router.push("/admin/login"); },
-    handleMarkAsRead, handleMarkAllRead
+    handleMarkAsRead, handleMarkAllRead, handleDeleteNotification
   };
 }
