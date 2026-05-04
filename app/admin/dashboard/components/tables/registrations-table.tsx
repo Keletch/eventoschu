@@ -18,7 +18,9 @@ import {
   Trash2, 
   MapPin,
   Mail,
-  MessageCircle
+  MessageCircle,
+  ClipboardCheck,
+  CheckCircle2
 } from "lucide-react";
 import { 
   Tooltip, 
@@ -154,9 +156,26 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                     }
 
                     return (
-                      <Badge variant="outline" className={cn("text-[10px] border-none uppercase font-bold px-2 py-1", config.bg, config.text)}>
-                        {label}
-                      </Badge>
+                      <div className="flex flex-col gap-1.5 items-start">
+                        <Badge variant="outline" className={cn("text-[10px] border-none uppercase font-bold px-2 py-1", config.bg, config.text)}>
+                          {label}
+                        </Badge>
+                        {reg.survey_data && typeof reg.survey_data === 'object' && Object.keys(reg.survey_data).length > 0 && (
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 animate-in fade-in zoom-in duration-500 cursor-help">
+                                <span>Formulario</span>
+                                <CheckCircle2 className="w-3 h-3" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="bg-white border-neutral-100 shadow-xl p-2 rounded-xl z-[110]">
+                              <p className="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3" /> Este usuario ya contestó el formulario general
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </div>
                     );
                   })()}
                 </TableCell>

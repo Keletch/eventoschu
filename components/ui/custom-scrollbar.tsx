@@ -1,20 +1,24 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export function CustomScrollbar() {
+  const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement>(null);
   const dotsRef = useRef<(HTMLDivElement | null)[]>([]);
   const loadingTl = useRef<gsap.core.Timeline | null>(null);
   const [isCurrentlyLoading, setIsCurrentlyLoading] = useState(false);
 
+  const isAdmin = pathname?.startsWith("/admin");
   const dotCount = 30;
   const dotArray = Array.from({ length: dotCount });
 
   useGSAP(() => {
+    if (isAdmin) return;
     gsap.registerPlugin(ScrollTrigger);
     const dots = dotsRef.current.filter(Boolean) as HTMLDivElement[];
     
@@ -116,7 +120,9 @@ export function CustomScrollbar() {
       window.removeEventListener("app-loading-stop", stopLoadingWave);
       window.removeEventListener("scroll", onScroll);
     };
-  }, []); // Solo se ejecuta una vez al montar
+  }, [isAdmin]);
+
+  if (isAdmin) return null;
 
   return (
     <div 
