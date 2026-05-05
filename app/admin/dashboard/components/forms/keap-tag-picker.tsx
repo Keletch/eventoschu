@@ -42,22 +42,12 @@ export const KeapTagPicker: React.FC<KeapTagPickerProps> = ({
   const selectedTag = tags.find((t) => t.id === value);
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between min-h-6">
-        <Label className="text-xs font-black uppercase text-neutral-400">{label}</Label>
-        {showRefresh && onRefresh && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onRefresh}
-            disabled={isLoading}
-            className="h-6 w-6 text-blue-600 hover:bg-blue-50 rounded-lg shrink-0"
-          >
-            <RefreshCw className={cn("h-3 w-3", isLoading && "animate-spin")} />
-          </Button>
-        )}
-      </div>
+    <div className={cn(label ? "space-y-2" : "")}>
+      {label && (
+        <div className="flex items-center justify-between min-h-6">
+          <Label className="text-xs font-black uppercase text-neutral-400">{label}</Label>
+        </div>
+      )}
 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger render={

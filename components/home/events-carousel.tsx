@@ -3,6 +3,10 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { EventCard } from "@/components/event-card";
 import { cn } from "@/lib/utils";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ANIM_CONFIG, ANIM_SELECTORS } from "@/lib/animations";
 
 // Skeleton de carga de tarjeta de evento
 function EventSkeleton() {
@@ -29,7 +33,6 @@ interface EventsCarouselProps {
   handleSelectEvent: (id: string) => void;
   isLoadingEvents: boolean;
   eventCounts: Record<string, number>;
-  scrollProgress: number;
   handleScroll: (e: React.UIEvent<HTMLDivElement>) => void;
   availableMonths: string[];
   handleMonthChange: (month: string) => void;
@@ -44,27 +47,59 @@ export function EventsCarousel({
   handleSelectEvent,
   isLoadingEvents,
   eventCounts,
-  scrollProgress,
   handleScroll,
   availableMonths,
   handleMonthChange,
   formatSafeDate,
 }: EventsCarouselProps) {
-  // Filtrar eventos del mes activo
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+
+  // Filtrar eventos del mes activo (Soporta 2099 como Eventos Futuros)
   const monthEvents = events.filter((e) => {
-    const m = new Date(e.start_date).toLocaleDateString("es-ES", { month: "long" });
-    return m.charAt(0).toUpperCase() + m.slice(1) === activeMonth;
+    const d = new Date(e.start_date);
+    let label = "";
+    if (d.getFullYear() === 2099) {
+      label = "Eventos Futuros";
+    } else {
+      const m = d.toLocaleDateString("es-ES", { month: "long" });
+      label = m.charAt(0).toUpperCase() + m.slice(1);
+    }
+    return label === activeMonth;
   });
+
+  // Animación de entrada escalonada para las tarjetas
+  useGSAP(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (monthEvents.length > 0) {
+      gsap.fromTo(ANIM_SELECTORS.card, 
+        { opacity: 0, x: ANIM_CONFIG.offset.sweep, scale: 0.98 },
+        { 
+          opacity: 1, 
+          x: 0, 
+          scale: 1,
+          duration: ANIM_CONFIG.duration.fast, 
+          stagger: ANIM_CONFIG.offset.stagger, 
+          ease: ANIM_CONFIG.ease.out,
+          overwrite: "auto",
+          clearProps: "all"
+        }
+      );
+    }
+  }, { dependencies: [activeMonth, events.length], scope: cardsRef });
 
   return (
     <div className="space-y-12">
-      <h2 className="text-2xl md:text-3xl font-medium text-gray-950">
-        Elige el país en el que te gustaría asistir
+      <h2 className="text-2xl md:text-3xl font-normal text-black leading-tight">
+        Selecciona el evento al que quieres asistir
       </h2>
 
       {isLoadingEvents ? (
-        /* Estado de carga */
-        <div className="flex gap-8 overflow-hidden pb-4">
+        <div className="flex gap-8 overflow-hidden pb-4 min-h-[500px]">
           {[1, 2, 3].map((i) => (
             <div key={i} className="min-w-[320px] md:min-w-[420px]">
               <EventSkeleton />
@@ -76,47 +111,53 @@ export function EventsCarousel({
           {/* Carrusel de tarjetas */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-8 overflow-x-auto overflow-y-hidden py-10 px-4 -mx-4 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar"
+            className="flex gap-8 overflow-x-auto overflow-y-hidden py-10 px-4 -mx-4 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[500px]"
             onScroll={handleScroll}
           >
-            {monthEvents.map((event) => (
-              <div
-                key={event.id}
-                id={`event-${event.id}`}
-                className="event-card-wrapper min-w-[320px] md:min-w-[420px] snap-center"
-              >
-                <EventCard
-                  id={event.id}
-                  city={event.city}
-                  country={event.country}
-                  flag={event.flag}
-                  date={
-                    formatSafeDate(event.start_date)?.toLocaleDateString("es-ES", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    }) || ""
-                  }
-                  time={event.time}
-                  duration={event.duration}
-                  location={event.location}
-                  price={event.price}
-                  bgClass={event.bg_class}
-                  selected={selectedEvents.includes(event.id)}
-                  confirmedCount={eventCounts[event.id] || 0}
-                  capacity={event.capacity || 25}
-                  onSelect={handleSelectEvent}
-                />
-              </div>
-            ))}
+            <div ref={cardsRef} className="flex gap-8 min-h-[500px]">
+              {monthEvents.map((event) => (
+                <div
+                  key={event.id}
+                  id={`event-${event.id}`}
+                  className="event-card-wrapper min-w-[320px] md:min-w-[420px] snap-center will-change-transform"
+                >
+                  <EventCard
+                    id={event.id}
+                    title={event.title}
+                    city={event.city}
+                    country={event.country}
+                    flag={event.flag}
+                    date={
+                      new Date(event.start_date).getFullYear() === 2099
+                        ? "Por confirmar"
+                        : formatSafeDate(event.start_date)?.toLocaleDateString("es-ES", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          }) || ""
+                    }
+                    time={event.time}
+                    duration={event.duration}
+                    location={event.location}
+                    price={event.price}
+                    bgClass={event.bg_class}
+                    selected={selectedEvents.includes(event.id)}
+                    confirmedCount={eventCounts[event.id] || 0}
+                    capacity={event.capacity || 25}
+                    isOpenMode={event.initial_status === 'confirmed'}
+                    onSelect={handleSelectEvent}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Barra de progreso + dots de paginación */}
+          {/* Barra de progreso + dots de paginación (Restaurado) */}
           <div className="mt-8 flex items-center gap-4 px-4">
             <div className="h-[2px] flex-1 bg-neutral-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#3154DC] transition-all duration-300 ease-out rounded-full"
-                style={{ width: `${scrollProgress}%` }}
+                className="scroll-progress-fill h-full bg-[#3154DC] rounded-full"
+                style={{ width: '0%' }}
               />
             </div>
             <div className="flex gap-2.5 items-center">

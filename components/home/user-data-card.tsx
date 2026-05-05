@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SignInButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { STATUS_CONFIGS, RegistrationStatus } from "@/components/home/utils/home-constants";
+import { EventUIConfig } from "@/lib/event-config";
 
 interface UserDataCardProps {
   displayData: {
@@ -20,6 +21,8 @@ interface UserDataCardProps {
   };
   status: string;
   eventTitle: string;
+  eventCity: string;
+  eventCountry: string;
   isLoadingEvents: boolean;
   isEditing: boolean;
   editFormData: any;
@@ -29,12 +32,15 @@ interface UserDataCardProps {
   isSubmitting: boolean;
   handleUpdateRegistration: () => Promise<void>;
   isSignedIn: boolean | undefined;
+  eventConfig: EventUIConfig;
 }
 
 export function UserDataCard({
   displayData,
   status,
   eventTitle,
+  eventCity,
+  eventCountry,
   isLoadingEvents,
   isEditing,
   editFormData,
@@ -44,8 +50,12 @@ export function UserDataCard({
   isSubmitting,
   handleUpdateRegistration,
   isSignedIn,
+  eventConfig,
 }: UserDataCardProps) {
   const badgeConfig = STATUS_CONFIGS[(status as RegistrationStatus) || "pending"] ?? STATUS_CONFIGS.pending;
+
+  // 🧠 Obtener etiqueta desde la configuración centralizada
+  const displayLabel = eventConfig.statusLabels[status as RegistrationStatus] || badgeConfig.label;
 
   return (
     <div className="max-w-[1372px] mx-auto bg-white rounded-[32px] p-8 md:p-12 lg:p-16 relative user-data-container border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
@@ -57,7 +67,7 @@ export function UserDataCard({
           <div className="flex flex-col items-center md:items-end gap-2">
             <div className={cn("px-5 py-2 md:px-6 md:py-2 rounded-2xl font-bold text-base md:text-lg flex items-center gap-2 transition-all duration-500", badgeConfig.bg, badgeConfig.text)}>
               {badgeConfig.icon}
-              {badgeConfig.label}
+              {displayLabel}
             </div>
             {badgeConfig.description && (
               <p className={cn("text-[13px] font-medium animate-in fade-in slide-in-from-top-1", status === 'confirmed' ? 'text-emerald-600/80' : 'text-slate-500/80')}>
@@ -81,10 +91,10 @@ export function UserDataCard({
             <h2 className="text-3xl md:text-4xl font-black text-neutral-900 leading-tight">
               {eventTitle || "Evento"}
             </h2>
-            <div className="flex items-center gap-2 text-slate-400 font-bold text-sm md:text-base">
-               <span className="text-slate-900">{displayData.city}</span>
-               <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-               <span>{displayData.country}</span>
+            <div className="flex items-center gap-1.5 text-slate-400 font-bold text-sm md:text-base">
+               <span>{eventCity}</span>
+               <span className="w-1 h-1 rounded-full bg-slate-300 mx-1" />
+               <span>{eventCountry}</span>
             </div>
           </div>
         )}

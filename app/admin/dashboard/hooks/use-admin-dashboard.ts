@@ -40,7 +40,8 @@ export function useAdminDashboard() {
   const [newEvent, setNewEvent] = useState<any>({
     title: "", city: "", country: "", category_id: "", start_date: "",
     time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
-    price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true
+    price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true,
+    initial_status: "confirmed"
   });
 
   // Notification Management
@@ -322,7 +323,8 @@ export function useAdminDashboard() {
       setNewEvent({
         title: "", city: "", country: "", category_id: "", start_date: "",
         time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
-        price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true
+        price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true,
+        initial_status: "confirmed"
       });
       setIsDialogOpen(true);
     },

@@ -5,11 +5,15 @@
 export const formatEventForNotification = (event: any) => {
   if (!event) return "Evento desconocido";
   
-  // Formateo de fecha corto y elegante (ej: 16 may)
+  // Formateo de fecha corto y elegante (ej: 16 may) o "próximamente" para 2099
   let dateStr = 'Fecha pendiente';
   if (event.start_date) {
     const d = new Date(event.start_date);
-    dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '');
+    if (d.getFullYear() === 2099) {
+      dateStr = 'próximamente';
+    } else {
+      dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '');
+    }
   }
 
   const catData = event.categories as any;

@@ -13,9 +13,18 @@ interface HeaderProps {
   step?: number | null;
   onToggleSidebar: () => void;
   isSidebarOpen: boolean;
+  isSurveyMissing?: boolean;
+  setIsSurveyOpen?: (open: boolean) => void;
 }
 
-export function Header({ registrationId, step, onToggleSidebar, isSidebarOpen }: HeaderProps) {
+export function Header({ 
+  registrationId, 
+  step, 
+  onToggleSidebar, 
+  isSidebarOpen,
+  isSurveyMissing = false,
+  setIsSurveyOpen
+}: HeaderProps) {
   const { isSignedIn, isLoaded } = useAuth();
 
   const { 
@@ -63,6 +72,8 @@ export function Header({ registrationId, step, onToggleSidebar, isSidebarOpen }:
             isNotifOpen={isOpen}
             setIsNotifOpen={setIsOpen}
             step={step || null}
+            isSurveyMissing={isSurveyMissing}
+            setIsSurveyOpen={setIsSurveyOpen}
           />
         </div>
       </div>

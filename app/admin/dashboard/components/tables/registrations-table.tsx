@@ -101,7 +101,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                                   config.bg, config.text
                                 )}
                               >
-                                {event?.city || 'Evento'}
+                                {event?.title || 'Evento'}
                                 <Info className="w-2.5 h-2.5 opacity-40" />
                               </Badge>
                             </TooltipTrigger>
@@ -121,8 +121,8 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                                   </div>
                                 </div>
                                 <div className="flex items-center justify-between gap-4">
-                                  <span className="text-[10px] text-neutral-400 font-bold uppercase">Estado</span>
-                                  <Badge className={cn("text-[9px] uppercase font-black px-2 py-0 rounded-full text-white", config.text.replace('text-', 'bg-'))}>
+                                  <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">Estado</span>
+                                  <Badge className={cn("text-[9px] uppercase font-black px-2 py-0.5 rounded-full border-none", config.bg, config.text)}>
                                     {config.label}
                                   </Badge>
                                 </div>

@@ -8,15 +8,28 @@ import { formatEventForNotification } from "./utils";
  */
 
 export async function notifyAdminNewRegistration(email: string, events: any[]) {
-  const eventList = events.map(e => `\n• ${formatEventForNotification(e)}`).join('');
+  const isFuture = (e: any) => new Date(e.start_date).getFullYear() === 2099;
+  
+  const normalEvents = events.filter(e => !isFuture(e));
+  const futureEvents = events.filter(e => isFuture(e));
+  
+  const formatList = (evs: any[]) => evs.map(e => `\n• ${formatEventForNotification(e)}`).join('');
+  
+  let message = `El usuario ${email} se ha inscrito para:`;
+  if (normalEvents.length > 0) message += formatList(normalEvents);
+  if (futureEvents.length > 0) message += `\n\nPróximamente:${formatList(futureEvents)}`;
+
   return insertAdminNotification({
     title: "Nuevo Registro",
-    message: `El usuario ${email} se ha inscrito para:${eventList}`,
+    message,
     type: "info"
   });
 }
 
 export async function notifyAdminRegistrationModified(adminEmail: string, targetEmail: string, personalDataChanged: boolean, statusChanges: { event: any, status: string }[]) {
+  const isFuture = (e: any) => new Date(e.start_date).getFullYear() === 2099;
+  const formatList = (evs: any[]) => evs.map(e => `\n• ${formatEventForNotification(e)}`).join('');
+
   let message = `El administrador ${adminEmail} modificó el registro de ${targetEmail}.`;
   
   if (personalDataChanged) {
@@ -24,11 +37,20 @@ export async function notifyAdminRegistrationModified(adminEmail: string, target
   }
 
   if (statusChanges.length > 0) {
-    const statusSummary = statusChanges.map(change => {
+    const normalChanges = statusChanges.filter(c => !isFuture(c.event));
+    const futureChanges = statusChanges.filter(c => isFuture(c.event));
+
+    const formatChanges = (changes: typeof statusChanges) => changes.map(change => {
       const statusText = change.status === 'confirmed' ? 'Aprobado' : change.status === 'cancelled' ? 'Cancelado' : 'Pendiente';
       return `\n✅ ${formatEventForNotification(change.event)} → ${statusText}`;
     }).join('');
-    message += `\n\nCambios de estado en:${statusSummary}`;
+
+    if (normalChanges.length > 0) {
+      message += `\n\nCambios de estado en:${formatChanges(normalChanges)}`;
+    }
+    if (futureChanges.length > 0) {
+      message += `\n\nPróximamente:${formatChanges(futureChanges)}`;
+    }
   }
 
   return insertAdminNotification({
@@ -144,6 +166,16 @@ export async function notifyAdminEventRemovedFromUser(adminEmail: string, target
     title: "Evento Eliminado (Manual)",
     message: `El administrador ${adminEmail} ha eliminado permanentemente el evento:${eventDetail}\ndel registro de ${targetEmail}.`,
     type: "warning"
+  });
+}
+
+export async function notifyAdminWaitlistActivated(adminEmail: string, event: any, cancelledUserEmail: string, activatedUserEmail: string) {
+  const eventDetail = `\n• ${formatEventForNotification(event)}`;
+  return insertAdminNotification({
+    admin_email: adminEmail,
+    title: "Cupo Reasignado (Modo Abierto)",
+    message: `El administrador ${adminEmail} ha cancelado la entrada para:${eventDetail}\nal usuario ${cancelledUserEmail}.\n\nSe activó al usuario ${activatedUserEmail} de manera aleatoria desde la lista de espera.`,
+    type: "success"
   });
 }
 

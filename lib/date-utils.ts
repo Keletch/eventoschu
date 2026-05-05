@@ -20,6 +20,7 @@ export function formatSafeDate(dateStr: string | null | undefined): Date | null 
 
 export function formatDateToShort(date: Date | null): string {
   if (!date) return "Sin fecha";
+  if (date.getFullYear() === 2099) return "Por confirmar";
   return date.toLocaleDateString('es-ES', { 
     day: 'numeric', 
     month: 'short', 
@@ -29,6 +30,7 @@ export function formatDateToShort(date: Date | null): string {
 
 export function formatDateToLong(date: Date | null): string {
   if (!date) return "Sin fecha";
+  if (date.getFullYear() === 2099) return "Por confirmar";
   return date.toLocaleDateString('es-ES', { 
     day: 'numeric', 
     month: 'long', 

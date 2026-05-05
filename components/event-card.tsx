@@ -11,6 +11,7 @@ import { EventFlag } from "./ui/event-flag";
 
 interface EventCardProps {
   id: string;
+  title: string;
   city: string;
   country: string;
   flag: string;
@@ -24,10 +25,12 @@ interface EventCardProps {
   bgClass?: string;
   confirmedCount?: number;
   capacity?: number;
+  isOpenMode?: boolean;
 }
 
 export function EventCard({
   id,
+  title,
   city,
   country,
   flag,
@@ -41,6 +44,7 @@ export function EventCard({
   bgClass = "bg-sky-100",
   confirmedCount = 0,
   capacity = 25,
+  isOpenMode = true,
 }: EventCardProps) {
   const isSoldOut = confirmedCount >= capacity;
 
@@ -59,14 +63,26 @@ export function EventCard({
     >
       {isSoldOut && <EventSoldOutOverlay />}
 
-      <div className="flex items-start justify-between mb-6 md:mb-8">
-        <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
+      <div className="flex items-start justify-between mb-6 md:mb-8 gap-4">
+        <div className="flex items-start gap-3 md:gap-4 overflow-hidden">
           <EventFlag 
             flag={flag} 
             bgClass={bgClass} 
-            className="size-12 md:size-14 rounded-[16px] md:rounded-[20px] p-2.5 md:p-3" 
+            className="size-12 md:size-14 rounded-[16px] md:rounded-[20px] p-2.5 md:p-3 shrink-0" 
           />
-          <h3 className="text-xl md:text-2xl font-bold text-gray-950 truncate">{city}, {country}</h3>
+          <div className="flex flex-col gap-0.5 overflow-hidden">
+            <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-blue-600">
+              Evento Disponible
+            </span>
+            <h3 className="text-xl md:text-2xl font-bold text-gray-950 leading-tight truncate">
+              {title}
+            </h3>
+            <p className="text-sm md:text-base font-medium text-neutral-500 flex items-center gap-1.5 truncate">
+              <span>{city}</span>
+              <span className="w-1 h-1 rounded-full bg-neutral-300 mx-1" />
+              <span>{country}</span>
+            </p>
+          </div>
         </div>
         
         {!isSoldOut && (
@@ -92,6 +108,7 @@ export function EventCard({
           confirmedCount={confirmedCount}
           capacity={capacity}
           isSoldOut={isSoldOut}
+          isOpenMode={isOpenMode}
         />
       </div>
     </Card>

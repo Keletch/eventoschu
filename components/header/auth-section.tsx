@@ -4,6 +4,7 @@ import { UserButton, SignInButton } from '@clerk/nextjs';
 import { NotificationBell } from '../notification-bell';
 import { UserIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { HeaderAlerts } from './header-alerts';
 
 interface AuthSectionProps {
   isSignedIn: boolean;
@@ -16,6 +17,8 @@ interface AuthSectionProps {
   setIsNotifOpen: (open: boolean) => void;
   step: number | null;
   isLoaded: boolean;
+  isSurveyMissing?: boolean;
+  setIsSurveyOpen?: (open: boolean) => void;
 }
 
 /**
@@ -32,7 +35,9 @@ export function AuthSection({
   isNotifOpen,
   setIsNotifOpen,
   step,
-  isLoaded
+  isLoaded,
+  isSurveyMissing = false,
+  setIsSurveyOpen
 }: AuthSectionProps) {
   const [isFullyReady, setIsFullyReady] = useState(false);
 
@@ -58,6 +63,12 @@ export function AuthSection({
 
   return (
     <div className="flex items-center gap-2 h-10">
+      {/* Sistema de Alertas del Header (Modular) */}
+      <HeaderAlerts 
+        isSurveyMissing={isSurveyMissing} 
+        onOpenSurvey={() => setIsSurveyOpen?.(true)} 
+      />
+
       {/* Slot de Notificaciones */}
       <div className="size-10 flex items-center justify-center">
         {shouldShowBell && (

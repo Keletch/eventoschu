@@ -30,39 +30,68 @@ export async function createRegistration(data: any, turnstileToken: string) {
     const { userId } = await auth();
     const isAuthenticated = !!userId;
 
+    // 0. Obtener información de los eventos ANTES de decidir estados
+    const { data: allEventsInfo } = await supabaseAdmin
+      .from('events')
+      .select('id, title, city, country, start_date, capacity, keap_tag_id, keap_pending_tag_id, initial_status, categories(name)')
+      .in('id', validatedData.selected_events);
+
+    const eventInfoMap: Record<string, any> = {};
+    allEventsInfo?.forEach(e => { eventInfoMap[e.id] = e; });
+
     // 1. Buscar registro existente (por Clerk ID o Email)
     let existing = null;
     if (isAuthenticated) {
-      const { data: byId } = await supabaseAdmin.from('registrations').select('*').eq('clerk_id', userId).single();
+      const { data: byId } = await supabaseAdmin.from('registrations').select('*').eq('clerk_id', userId).maybeSingle();
       existing = byId;
     }
     
     if (!existing) {
-      const { data: byEmail } = await supabaseAdmin.from('registrations').select('*').eq('email', validatedData.email).single();
+      const { data: byEmail } = await supabaseAdmin.from('registrations').select('*').eq('email', validatedData.email).maybeSingle();
       existing = byEmail;
       if (existing && isAuthenticated && !existing.clerk_id) {
         await supabaseAdmin.from('registrations').update({ clerk_id: userId }).eq('id', existing.id);
       }
     }
 
+    // Sincronización de conteos para Modo Abierto
+    const { data: currentCounts } = await supabaseAdmin.from('registrations').select('selected_events, event_statuses');
+    const countsMap: Record<string, number> = {};
+    currentCounts?.forEach(reg => {
+      reg.selected_events?.forEach((id: string) => {
+        if (reg.event_statuses?.[id] === 'confirmed') countsMap[id] = (countsMap[id] || 0) + 1;
+      });
+    });
+
     // 2. Lógica de Actualización vs Creación
     if (existing) {
-      const alreadyRegisteredIds = validatedData.selected_events.filter(id => existing.selected_events.includes(id));
+      const alreadyRegisteredIds = validatedData.selected_events.filter(id => (existing.selected_events || []).includes(id));
+      
       if (alreadyRegisteredIds.length === validatedData.selected_events.length) {
         const { data: events } = await supabaseAdmin.from('events').select('title, city, country, start_date, categories(name)').in('id', alreadyRegisteredIds);
         const eventNames = events?.map(e => `\n• ${formatEventForNotification(e)}`).join('') || '';
         return { success: false, error: `Ya estás registrado en:${eventNames}` };
       }
 
-      const mergedEvents = Array.from(new Set([...existing.selected_events, ...validatedData.selected_events]));
-      const newlyAddedIds = validatedData.selected_events.filter(id => !existing.selected_events.includes(id));
-      
+      const newlyAddedIds = validatedData.selected_events.filter(id => !(existing.selected_events || []).includes(id));
+      const mergedEvents = Array.from(new Set([...(existing.selected_events || []), ...validatedData.selected_events]));
       const updatedStatuses = { ...(existing.event_statuses || {}) };
       const updatedEventData = { ...(existing.event_data || {}) };
 
       validatedData.selected_events.forEach(id => {
-        updatedStatuses[id] = 'pending';
-        if (!existing.selected_events.includes(id)) {
+        const ev = eventInfoMap[id];
+        if (!(existing.selected_events || []).includes(id)) {
+          // Lógica de "Modo Abierto" vs "Cerrado"
+          const isModeOpen = ev?.initial_status === 'confirmed';
+          const currentConfirmed = countsMap[id] || 0;
+          const capacity = ev?.capacity || 25;
+
+          if (isModeOpen && currentConfirmed < capacity) {
+            updatedStatuses[id] = 'confirmed';
+          } else {
+            updatedStatuses[id] = 'pending';
+          }
+          
           updatedEventData[id] = { ...validatedData };
         }
       });
@@ -77,13 +106,18 @@ export async function createRegistration(data: any, turnstileToken: string) {
       if (updateError) throw updateError;
 
       // Sincronización de Tags (Keap) y Notificaciones
-      const { data: allEventsInfo } = await supabaseAdmin.from('events').select('id, title, city, country, start_date, keap_pending_tag_id, categories(name)').in('id', mergedEvents);
       const newlyAddedEvents = allEventsInfo?.filter(e => newlyAddedIds.includes(e.id)) || [];
-      const alreadyInEvents = allEventsInfo?.filter(e => alreadyRegisteredIds.includes(e.id)) || [];
+      const alreadyInEvents = allEventsInfo?.filter(e => (existing.selected_events || []).includes(e.id)) || [];
 
       if (newlyAddedEvents.length > 0) {
-        const pendingTags = newlyAddedEvents.map(e => e.keap_pending_tag_id).filter(Boolean);
-        await syncKeapTags(validatedData, [], pendingTags);
+        const tagsToAdd: string[] = [];
+        newlyAddedEvents.forEach(e => {
+          const status = updatedStatuses[e.id];
+          const tag = status === 'pending' ? e.keap_pending_tag_id : e.keap_tag_id;
+          if (tag) tagsToAdd.push(tag);
+        });
+
+        await syncKeapTags(validatedData, [], tagsToAdd);
         await notifyAdminNewRegistration(validatedData.email, newlyAddedEvents);
         await notifyUserRegistrationSuccess({ registrationId: existing.id, clerkId: userId || existing.clerk_id }, newlyAddedEvents, alreadyInEvents);
       }
@@ -91,7 +125,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
       return { 
         success: true, 
         isUpdate: true, 
-        message: "Registro actualizado con éxito.",
+        message: "Registro completado con éxito.",
         mergedEvents: mergedEvents,
         eventStatuses: updatedStatuses,
         eventData: updatedEventData,
@@ -103,7 +137,17 @@ export async function createRegistration(data: any, turnstileToken: string) {
     const initialStatuses: Record<string, string> = {};
     const initialEventData: Record<string, any> = {};
     validatedData.selected_events.forEach(id => {
-      initialStatuses[id] = 'pending';
+      const ev = eventInfoMap[id];
+      const isModeOpen = ev?.initial_status === 'confirmed';
+      const currentConfirmed = countsMap[id] || 0;
+      const capacity = ev?.capacity || 25;
+
+      if (isModeOpen && currentConfirmed < capacity) {
+        initialStatuses[id] = 'confirmed';
+      } else {
+        initialStatuses[id] = 'pending';
+      }
+      
       initialEventData[id] = { ...validatedData };
     });
 
@@ -117,17 +161,23 @@ export async function createRegistration(data: any, turnstileToken: string) {
     if (insertError) throw insertError;
     const newRegId = inserted?.id;
 
-      if (newRegId) {
-        const { data: newlyAddedEventsInfo } = await supabaseAdmin.from('events').select('id, title, city, country, start_date, keap_pending_tag_id, categories(name)').in('id', validatedData.selected_events);
-        const pendingTags = newlyAddedEventsInfo?.map(e => e.keap_pending_tag_id).filter(Boolean) || [];
-        await syncKeapTags(validatedData, [], pendingTags);
-        await notifyAdminNewRegistration(validatedData.email, newlyAddedEventsInfo || []);
-        await notifyUserRegistrationSuccess({ registrationId: newRegId, clerkId: userId || undefined }, newlyAddedEventsInfo || [], []);
-      }
+    if (newRegId) {
+      // Sincronización inteligente para nuevo registro
+      const tagsToAdd: string[] = [];
+      allEventsInfo?.forEach(e => {
+        const status = e.initial_status || 'confirmed';
+        const tag = status === 'pending' ? e.keap_pending_tag_id : e.keap_tag_id;
+        if (tag) tagsToAdd.push(tag);
+      });
+
+      await syncKeapTags(validatedData, [], tagsToAdd);
+      await notifyAdminNewRegistration(validatedData.email, allEventsInfo || []);
+      await notifyUserRegistrationSuccess({ registrationId: newRegId, clerkId: userId || undefined }, allEventsInfo || [], []);
+    }
 
     return { 
       success: true, 
-      isUpdate: false, 
+      isNew: true, 
       id: newRegId,
       message: "Registro completado con éxito.",
       mergedEvents: validatedData.selected_events,

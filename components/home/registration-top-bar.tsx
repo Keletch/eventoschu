@@ -4,14 +4,19 @@ import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { STATUS_CONFIGS, RegistrationStatus } from "@/components/home/utils/home-constants";
+import { EventUIConfig } from "@/lib/event-config";
 
 interface RegistrationTopBarProps {
   status: string;
   startNewRegistration: () => void;
+  eventConfig: EventUIConfig;
 }
 
-export function RegistrationTopBar({ status, startNewRegistration }: RegistrationTopBarProps) {
+export function RegistrationTopBar({ status, startNewRegistration, eventConfig }: RegistrationTopBarProps) {
   const config = STATUS_CONFIGS[(status as RegistrationStatus) ?? "pending"] ?? STATUS_CONFIGS.pending;
+  
+  // 🧠 Obtener etiqueta desde la configuración centralizada
+  const displayLabel = eventConfig.statusLabels[status as RegistrationStatus] || config.label;
 
   return (
     <div className="max-w-[1372px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6 px-4">
@@ -19,7 +24,7 @@ export function RegistrationTopBar({ status, startNewRegistration }: Registratio
       <div className="city-status-badge">
         <div className={cn("inline-flex items-center gap-3 px-6 py-2 rounded-full border transition-all duration-500", config.bg, config.border)}>
           <div className={cn("size-2 rounded-full", config.dot)} />
-          <span className={cn("font-semibold text-base", config.text)}>{config.label}</span>
+          <span className={cn("font-semibold text-base", config.text)}>{displayLabel}</span>
         </div>
       </div>
 

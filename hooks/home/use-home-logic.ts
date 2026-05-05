@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { getEvents } from "@/app/actions/events";
 import { getRegistrationsCount } from "@/app/actions/admin-registration";
 import { createRegistration, checkRegistration, updateEventSpecificData } from "@/app/actions/user-registration";
+import { getEventUIConfig } from "@/lib/event-config";
 
 import { getDisplayData } from "@/components/home/utils/home-constants";
 
@@ -23,10 +24,10 @@ export function useHomeLogic() {
   const [userData, setUserData] = useState<any>(null);
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [activeMonth, setActiveMonth] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPageReady, setIsPageReady] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [isChecking, setIsChecking] = useState(false);
   const [isCheckMode, setIsCheckMode] = useState(false);
   const [eventStatuses, setEventStatuses] = useState<Record<string, string>>({});
@@ -69,14 +70,49 @@ export function useHomeLogic() {
     }
   }, [step]);
 
-  const availableMonths = useMemo(() => {
-    const months = events.map(e => {
-      const d = new Date(e.start_date);
-      const m = d.toLocaleDateString('es-ES', { month: 'long' });
-      return m.charAt(0).toUpperCase() + m.slice(1);
-    });
-    return Array.from(new Set(months));
+  // --- Memos de Filtrado ---
+  const availableCategories = useMemo(() => {
+    const cats = events.map(e => e.categories?.name).filter(Boolean);
+    return ["Todos", ...Array.from(new Set(cats))];
   }, [events]);
+
+  const filteredEventsByCategory = useMemo(() => {
+    if (activeCategory === "Todos") return events;
+    return events.filter(e => e.categories?.name === activeCategory);
+  }, [events, activeCategory]);
+
+  const availableMonths = useMemo(() => {
+    const monthsSet = new Set<string>();
+    let hasFutureEvents = false;
+
+    filteredEventsByCategory.forEach(e => {
+      const d = new Date(e.start_date);
+      if (d.getFullYear() === 2099) {
+        hasFutureEvents = true;
+      } else {
+        const m = d.toLocaleDateString('es-ES', { month: 'long' });
+        monthsSet.add(m.charAt(0).toUpperCase() + m.slice(1));
+      }
+    });
+
+    const months = Array.from(monthsSet);
+    if (hasFutureEvents) {
+      months.push("Eventos Futuros");
+    }
+    return months;
+  }, [filteredEventsByCategory]);
+
+  // Reset active month when category changes
+  useEffect(() => {
+    if (availableMonths.length > 0) {
+      // Intentar mantener el mes si existe en la nueva categoría, si no, ir al primero
+      if (!availableMonths.includes(activeMonth)) {
+        setActiveMonth(availableMonths[0]);
+      }
+    } else {
+      setActiveMonth("");
+    }
+  }, [activeCategory, availableMonths]);
 
   // 🔄 Efecto para sincronizar el estado de carga global con CustomEvents
   useEffect(() => {
@@ -286,6 +322,8 @@ export function useHomeLogic() {
           setSelectedCityId(prev => prev || revalidation.selectedEvents[0]);
         }
         changeStep(2);
+      } else {
+        toast.error("No encontramos registros activos vinculados a tu cuenta.");
       }
     } catch (err) {
       console.error('Revalidation error:', err);
@@ -316,7 +354,15 @@ export function useHomeLogic() {
         throw new Error(regResult.error);
       }
 
-      toast.success(regResult.isUpdate ? "¡Registro actualizado!" : "¡Bienvenido a bordo!");
+      // 🧠 Usar el orquestador de eventos para el mensaje de éxito
+      const firstEventId = selectedEvents[0];
+      const eventInfo = events.find(e => e.id === firstEventId);
+      const eventConfig = getEventUIConfig(eventInfo);
+
+      toast.success(eventConfig.registrationToast.title(data.firstName), {
+        description: eventConfig.registrationToast.description,
+        duration: 6000
+      });
       
       const finalStatuses = (regResult as any).eventStatuses || {};
       const finalEventData = (regResult as any).eventData || {};
@@ -450,7 +496,6 @@ export function useHomeLogic() {
     activeMonth, setActiveMonth,
     isTransitioning, setIsTransitioning,
     isPageReady,
-    scrollProgress, setScrollProgress,
     isChecking,
     isCheckMode, setIsCheckMode,
     eventStatuses, setEventStatuses,
@@ -475,6 +520,10 @@ export function useHomeLogic() {
     handleCheckRegistration,
     startNewRegistration,
     handleUpdateRegistration,
-    availableMonths
+    availableMonths,
+    activeCategory,
+    setActiveCategory,
+    availableCategories,
+    filteredEvents: filteredEventsByCategory
   };
 }

@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { KeapTagPicker } from "./keap-tag-picker";
 
@@ -60,6 +60,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
   onSubmit,
 }) => {
   const isTimeConfirm = event.time === "Por confirmar";
+  const isDateConfirm = event.start_date?.startsWith("2099");
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -184,12 +185,30 @@ export const EventDialog: React.FC<EventDialogProps> = ({
               <div className="space-y-2">
                 <Label className="text-xs font-black uppercase text-neutral-400">Fecha de Inicio</Label>
                 <Input
-                  type="date"
-                  required
-                  value={event.start_date}
+                  type={isDateConfirm ? "text" : "date"}
+                  required={!isDateConfirm}
+                  value={isDateConfirm ? "Por confirmar" : event.start_date}
                   onChange={(e) => setEvent({ ...event, start_date: e.target.value })}
-                  className="rounded-xl border-neutral-100 bg-neutral-50 h-12"
+                  disabled={isDateConfirm}
+                  className={cn(
+                    "rounded-xl h-12 transition-all border-neutral-100",
+                    isDateConfirm
+                      ? "bg-neutral-100 text-neutral-400 opacity-60 border-dashed"
+                      : "bg-neutral-50"
+                  )}
                 />
+                <div className="flex items-center justify-end gap-2">
+                  <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
+                    ¿Por confirmar?
+                  </span>
+                  <Switch
+                    checked={isDateConfirm}
+                    onCheckedChange={(val) =>
+                      setEvent({ ...event, start_date: val ? "2099-12-31" : "" })
+                    }
+                    className="scale-[0.75] data-[state=checked]:bg-blue-600"
+                  />
+                </div>
               </div>
 
               {/* Hora con toggle "Por confirmar" */}
@@ -295,39 +314,128 @@ export const EventDialog: React.FC<EventDialogProps> = ({
 
           {/* ── Sección 5: Integración Keap ── */}
           <section className="space-y-4">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-neutral-400 border-b border-neutral-100 pb-2">
-              Integración Keap CRM
-            </h3>
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-2">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                Integración Keap CRM
+              </h3>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onRefreshTags}
+                disabled={isTagsLoading}
+                className="h-6 gap-2 text-blue-600 hover:bg-blue-50 rounded-lg px-2"
+              >
+                <RefreshCw className={cn("h-3 w-3", isTagsLoading && "animate-spin")} />
+                <span className="text-[10px] font-bold uppercase">Sincronizar Tags</span>
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <KeapTagPicker
-                label="Tag: Pendiente"
-                value={event.keap_pending_tag_id}
-                onChange={(id) => setEvent({ ...event, keap_pending_tag_id: id })}
-                tags={keapTags}
-                isLoading={isTagsLoading}
-                onRefresh={onRefreshTags}
-                showRefresh
-              />
-              <KeapTagPicker
-                label="Tag: Confirmado"
-                value={event.keap_tag_id}
-                onChange={(id) => setEvent({ ...event, keap_tag_id: id })}
-                tags={keapTags}
-                isLoading={isTagsLoading}
-              />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-1">
+                  <Label className="text-xs font-black uppercase text-neutral-400">
+                    Tag: Pendiente {event.initial_status === "pending" && <span className="text-red-500">*</span>}
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
+                      {event.initial_status === "pending" ? "Obligatorio" : "Habilitar"}
+                    </span>
+                    <Switch
+                      checked={!!event.keap_pending_tag_id || event.keap_pending_tag_id === ""}
+                      disabled={event.initial_status === "pending"}
+                      onCheckedChange={(val) => {
+                        if (!val) setEvent({ ...event, keap_pending_tag_id: null });
+                        else setEvent({ ...event, keap_pending_tag_id: "" });
+                      }}
+                      className="scale-[0.7] data-[state=checked]:bg-amber-500"
+                    />
+                  </div>
+                </div>
+                {event.keap_pending_tag_id !== null && (
+                  <KeapTagPicker
+                    label=""
+                    value={event.keap_pending_tag_id}
+                    onChange={(id) => setEvent({ ...event, keap_pending_tag_id: id })}
+                    tags={keapTags}
+                    isLoading={isTagsLoading}
+                  />
+                )}
+                {event.keap_pending_tag_id === null && (
+                  <div className="h-12 flex items-center justify-center border border-dashed border-neutral-200 rounded-xl bg-neutral-50">
+                    <span className="text-xs text-neutral-400 italic">Tag de pendiente deshabilitado</span>
+                  </div>
+                )}
+                {event.initial_status === "pending" && !event.keap_pending_tag_id && (
+                  <p className="text-[10px] text-red-500 font-bold animate-pulse px-1">Debes seleccionar un tag para el modo cerrado</p>
+                )}
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center min-h-[24px] px-1">
+                  <Label className="text-xs font-black uppercase text-neutral-400">Tag: Confirmado <span className="text-red-500">*</span></Label>
+                </div>
+                <KeapTagPicker
+                  label=""
+                  value={event.keap_tag_id}
+                  onChange={(id) => setEvent({ ...event, keap_tag_id: id })}
+                  tags={keapTags}
+                  isLoading={isTagsLoading}
+                />
+              </div>
             </div>
           </section>
 
-          {/* ── Sección 6: Estado ── */}
-          <div className="flex items-center justify-between p-4 bg-neutral-50 rounded-2xl border border-neutral-100">
-            <div>
-              <Label className="text-sm font-bold text-neutral-800">Evento Activo</Label>
-              <p className="text-xs text-neutral-500">¿Deseas que este evento sea visible en la web?</p>
+          {/* ── Sección 6: Estado y Prioridad ── */}
+          <div className="space-y-6 p-6 bg-neutral-50 rounded-[32px] border border-neutral-100">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-1">
+                <div className="size-2 rounded-full bg-blue-500" />
+                <Label className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Método de Captura</Label>
+              </div>
+              <Select
+                value={event.initial_status || "confirmed"}
+                onValueChange={(v) => {
+                  const updates: any = { initial_status: v };
+                  if (v === "pending" && event.keap_pending_tag_id === null) {
+                    updates.keap_pending_tag_id = "";
+                  } else if (v === "confirmed") {
+                    updates.keap_pending_tag_id = null;
+                  }
+                  setEvent({ ...event, ...updates });
+                }}
+              >
+                <SelectTrigger className="rounded-xl border-neutral-200 bg-white h-12 shadow-sm">
+                  <SelectValue placeholder="Seleccionar método">
+                    {event.initial_status === "pending" ? "Evento Cerrado" : "Evento Abierto"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-neutral-100 shadow-xl">
+                  <SelectItem value="confirmed" className="rounded-lg cursor-pointer py-3">
+                    <div className="flex flex-col">
+                      <span className="font-bold text-emerald-600">Evento Abierto</span>
+                      <span className="text-[10px] text-neutral-500">Confirmación automática hasta límite de cupo</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="pending" className="rounded-lg cursor-pointer py-3">
+                    <div className="flex flex-col">
+                      <span className="font-bold text-amber-600">Evento Cerrado</span>
+                      <span className="text-[10px] text-neutral-500">Lista de espera y validación manual</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Switch
-              checked={event.active}
-              onCheckedChange={(v) => setEvent({ ...event, active: v })}
-            />
+            
+            <div className="flex items-center justify-between pt-4 border-t border-neutral-200/60">
+              <div>
+                <Label className="text-sm font-bold text-neutral-800">Visibilidad del Evento</Label>
+                <p className="text-xs text-neutral-500 italic">¿Deseas que este evento sea visible en la web?</p>
+              </div>
+              <Switch
+                checked={event.active}
+                onCheckedChange={(v) => setEvent({ ...event, active: v })}
+                className="data-[state=checked]:bg-emerald-500"
+              />
+            </div>
           </div>
 
           <DialogFooter className="pt-2 gap-3">
@@ -341,7 +449,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || (event.initial_status === "pending" && !event.keap_pending_tag_id) || !event.keap_tag_id}
               className="rounded-xl h-12 px-8 bg-blue-700 hover:bg-blue-800 text-white font-black shadow-lg shadow-blue-200 transition-all gap-2"
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
