@@ -116,19 +116,19 @@ export function RegistrationForm({
       return;
     }
 
-    console.log("🚀 [Form-Submit] Iniciando envío con token:", turnstileToken.substring(0, 10) + "...");
+
     // Ejecutar el onSubmit del padre (que es asíncrono)
     const result = await (onSubmit as any)(formData, turnstileToken);
     
-    console.log("📥 [Form-Submit] Respuesta recibida:", result);
+
 
     // Si el registro falló, reseteamos el token de Turnstile cambiando la key
     if (result && !result.success) {
-      console.log("🔄 [Turnstile] Registro fallido, reseteando widget para nuevo intento.");
+
       setTurnstileToken("");
       setTurnstileKey(prev => prev + 1);
     } else if (result && result.success) {
-      console.log("✨ [Form-Submit] Registro exitoso.");
+
     } else if (result === undefined) {
       console.warn("⚠️ [Form-Submit] ADVERTENCIA: La función onSubmit no devolvió ningún resultado. El reseteo de Turnstile podría no funcionar.");
     }

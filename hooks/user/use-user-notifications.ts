@@ -76,9 +76,7 @@ export function useUserNotifications(propRegistrationId?: string | null) {
   };
 
   useEffect(() => {
-    if (ids.clerkId || ids.registrationId) {
-      console.log(`[useUserNotifications] 🎯 IDs Estables detectados:`, ids);
-    }
+
   }, [ids.clerkId, ids.registrationId]);
 
   const {
@@ -103,7 +101,7 @@ export function useUserNotifications(propRegistrationId?: string | null) {
     userId: [stableUserId, clerkId, email].filter(Boolean) as string[],
     onUpdate: () => {}, 
     onNotification: (notif: any) => {
-      console.log(`[useUserNotifications] 🔔 Notificación recibida vía RT:`, notif);
+
       addNotificationLocally(notif);
     }
   });

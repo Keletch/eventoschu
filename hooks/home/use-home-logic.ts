@@ -256,7 +256,6 @@ export function useHomeLogic() {
             const activeStep = localStorage.getItem(HOME_STEP_KEY);
             
             if (activeStep === '1') {
-              console.log("[useHomeLogic] 🛡️ Respetando Paso 1 solicitado por el usuario. No redirigiendo.");
               // Aún así sincronizamos los datos en segundo plano para que el State sea correcto
               if (JSON.stringify(sanitizedUserData) !== JSON.stringify(userData)) setUserData(sanitizedUserData);
               return; 
@@ -527,18 +526,15 @@ export function useHomeLogic() {
    */
   const syncRegistrationData = useCallback((payload: any) => {
     if (!payload) return;
-    console.log("[useHomeLogic] 🔄 Sincronizando datos Realtime:", payload);
 
     // A. Manejo de Purga o Usuario sin eventos
     if (payload.selected_events && payload.selected_events.length === 0) {
-      console.log("[useHomeLogic] 🧹 Purgando registro por señal del servidor.");
       startNewRegistration();
       return;
     }
 
     // B. Sincronización de lista de eventos y carrusel
     if (payload.selected_events) {
-      console.log("[useHomeLogic] 📍 Actualizando eventos seleccionados:", payload.selected_events);
       setSelectedEvents(payload.selected_events);
       if (!payload.selected_events.includes(selectedCityId)) {
         setSelectedCityId(payload.selected_events[0]);
@@ -547,19 +543,16 @@ export function useHomeLogic() {
 
     // C. Sincronización de Estados (Pendiente/Confirmado)
     if (payload.event_statuses) {
-      console.log("[useHomeLogic] 📊 Actualizando estados de eventos:", payload.event_statuses);
       setEventStatuses(prev => ({ ...prev, ...payload.event_statuses }));
     }
 
     // D. Sincronización de Datos Específicos
     if (payload.event_data) {
-      console.log("[useHomeLogic] 📝 Actualizando datos específicos de eventos.");
       setEventDataMap(prev => ({ ...prev, ...payload.event_data }));
     }
 
     // E. Actualización de Datos de Usuario (Perfil)
     if (payload.userData || payload.email) {
-      console.log("[useHomeLogic] 👤 Actualizando datos de perfil.");
       setUserData((prev: any) => ({ ...prev, ...(payload.userData || payload) }));
     }
 

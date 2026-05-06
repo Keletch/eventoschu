@@ -43,7 +43,7 @@ export function usePersonalRealtime({ userId, onUpdate, onNotification }: Person
 
     if (cleanIds.length === 0) return;
 
-    console.log(`[Realtime-Client] 🚀 Iniciando suscripción estable para:`, cleanIds);
+
 
     const channels = cleanIds.map(id => {
       const channelName = `user-private:${id}`;
@@ -55,7 +55,7 @@ export function usePersonalRealtime({ userId, onUpdate, onNotification }: Person
           { event: 'personal-update' },
           (payload) => {
             const data = payload.payload;
-            console.log(`[Realtime-Client] 🔄 Update recibido [${channelName}]:`, data);
+
             
             if (data.msg_id && data.msg_id === lastProcessedId.current) return;
             if (data.msg_id) lastProcessedId.current = data.msg_id;
@@ -68,13 +68,13 @@ export function usePersonalRealtime({ userId, onUpdate, onNotification }: Person
           { event: 'new-notification' },
           (payload) => {
             const data = payload.payload;
-            console.log(`[Realtime-Client] 🔔 Notificación recibida [${channelName}]:`, data);
+
             if (onNotificationRef.current) onNotificationRef.current(data);
           }
         );
 
       channel.subscribe((status) => {
-        console.log(`[Realtime-Client] 🔌 Estatus canal ${channelName}: ${status}`);
+
       });
       
       return channel;

@@ -19,7 +19,7 @@ export async function dispatchSignal(
   options: SignalOptions = {}
 ) {
   const { targetIds, adminSignal = false, metadata = {}, realtimePayload = {} } = options;
-  console.log(`[SignalDispatcher] 🚀 Dispatching: ${templateId}`, { targetIds, adminSignal });
+
   
   // 1. Obtener la plantilla
   const registry = adminSignal ? ADMIN_TEMPLATES : USER_TEMPLATES;
@@ -44,7 +44,7 @@ export async function dispatchSignal(
     };
 
     if (adminSignal) {
-      console.log(`[SignalDispatcher] 💾 Persistiendo en admin_notifications...`);
+
       const { error } = await supabaseAdmin.from('admin_notifications').insert([{
         title,
         message,
@@ -62,7 +62,7 @@ export async function dispatchSignal(
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         const regId = cleanIds.find(id => uuidRegex.test(id));
         
-        console.log(`[SignalDispatcher] 💾 Persistiendo en notifications:`, { regId, clerkId, title });
+
 
         const { error: insError } = await supabaseAdmin.from('notifications').insert([{
           registration_id: regId || null,
@@ -93,7 +93,7 @@ export async function dispatchSignal(
     };
 
     if (adminSignal) {
-      console.log(`[SignalDispatcher] 📡 Broadcasting to admins...`);
+
       await broadcastToAdmins(broadcastPayload);
     } else if (targetIds || metadata.email) {
       const finalTargetIds = Array.from(new Set([
@@ -101,13 +101,12 @@ export async function dispatchSignal(
         metadata.email
       ])).filter(Boolean) as string[];
 
-      console.log(`[SignalDispatcher] 📡 Broadcasting to user channels...`, finalTargetIds);
+
       await broadcastToUser(finalTargetIds, broadcastPayload);
     }
 
     // Siempre notificamos al público si la acción afecta disponibilidad
     if (template.action === 'REFRESH_UI' || templateId.includes('REGISTRATION')) {
-      console.log(`[SignalDispatcher] 📡 Broadcasting to public...`);
       await broadcastToPublic();
     }
 

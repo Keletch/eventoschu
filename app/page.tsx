@@ -48,25 +48,16 @@ export default function Home() {
 
   // B. Canal Privado (Estado del Usuario)
   const userIds = [home.userData?.id, home.user?.id, home.userData?.email].filter(Boolean) as string[];
-  
-  useEffect(() => {
-    console.log("[Home] 🔑 Estado de Identidad:", {
-      uuid: home.userData?.id,
-      clerkId: home.user?.id,
-      email: home.userData?.email,
-      totalIds: userIds.length
-    });
-  }, [home.userData?.id, home.user?.id, home.userData?.email]);
 
   usePersonalRealtime({
     userId: userIds,
     onUpdate: (payload: any) => {
-      console.log("[Home] 📥 Update recibido por Realtime:", payload);
+
       if (!payload) return;
       home.syncRegistrationData(payload);
     },
     onNotification: (notif: any) => {
-      console.log("[Home] 🔔 Notificación recibida por Realtime:", notif);
+
       if (!notif) return;
 
       // 1. Sincronizar estados y datos si vienen en la notificación
