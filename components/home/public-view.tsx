@@ -6,7 +6,6 @@ import { HeroSection } from "@/components/home/hero-section";
 import { CheckRegistrationPanel } from "@/components/home/check-registration-panel";
 import { MonthTabs } from "@/components/home/month-tabs";
 import { EventsCarousel } from "@/components/home/events-carousel";
-
 import { CategoryTabs } from "./category-tabs";
  
  interface PublicViewProps {
@@ -34,7 +33,7 @@ import { CategoryTabs } from "./category-tabs";
    isLoadingEvents: boolean;
    eventCounts: Record<string, number>;
    handleScroll: (e: React.UIEvent<HTMLDivElement>) => void;
-   handleRegistration: (data: any, turnstileToken: string) => Promise<void>;
+   handleRegistration: (data: any, turnstileToken: string) => Promise<{ success: boolean }>;
    isSubmitting: boolean;
    formatSafeDate: (dateStr: string) => Date | null;
    isTransitioning: boolean;
@@ -106,42 +105,40 @@ import { CategoryTabs } from "./category-tabs";
                   availableMonths={availableMonths}
                   activeMonth={activeMonth}
                   handleMonthChange={handleMonthChange}
-                  events={filteredEvents}
+                  events={events}
                   selectedEvents={selectedEvents}
                 />
               </div>
  
-             <div className="events-section relative z-10 bg-white rounded-[48px] rounded-tl-none p-10 md:p-16 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px]">
-               {/* Carrusel de eventos (Usa solo los eventos filtrados por categoría) */}
-               <EventsCarousel
-                 scrollContainerRef={scrollContainerRef}
-                 events={filteredEvents}
-                 activeMonth={activeMonth}
-                 selectedEvents={selectedEvents}
-                 handleSelectEvent={handleSelectEvent}
-                 isLoadingEvents={isLoadingEvents}
-                 eventCounts={eventCounts}
-                 handleScroll={handleScroll}
-                 availableMonths={availableMonths}
-                 handleMonthChange={handleMonthChange}
-                 formatSafeDate={formatSafeDate}
-               />
+              <div className="events-section relative z-10 bg-white rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px] p-10 md:p-16 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px]">
+                {/* Carrusel de eventos (Usa solo los eventos filtrados por categoría) */}
+                <EventsCarousel
+                  scrollContainerRef={scrollContainerRef}
+                  events={filteredEvents}
+                  activeMonth={activeMonth}
+                  selectedEvents={selectedEvents}
+                  handleSelectEvent={handleSelectEvent}
+                  isLoadingEvents={isLoadingEvents}
+                  eventCounts={eventCounts}
+                  handleScroll={handleScroll}
+                  availableMonths={availableMonths}
+                  handleMonthChange={handleMonthChange}
+                  formatSafeDate={formatSafeDate}
+                />
  
-               {/* ── Formulario de registro ──────────────────── */}
-               <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-10 pt-10 border-t border-neutral-200">
-                 <h2 className="text-2xl md:text-3xl font-medium text-gray-950">Registro</h2>
-                 <div className="bg-white rounded-[32px] p-8 md:p-16 shadow-lg">
-                   <RegistrationForm
-                     onSubmit={handleRegistration}
-                     isLoading={isSubmitting}
-                     onCheckRegistration={() => {
-                       // La revalidación la maneja el padre (page.tsx)
-                     }}
-                   />
-                 </div>
-               </div>
-             </div>
-           </div>
+                {/* ── Formulario de registro ──────────────────── */}
+                <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-10 pt-10 border-t border-neutral-200">
+                  <h2 className="text-2xl md:text-3xl font-medium text-gray-950">Registro</h2>
+                  <div className="bg-white rounded-[32px] p-8 md:p-16 shadow-lg">
+                    <RegistrationForm
+                      onSubmit={handleRegistration}
+                      isLoading={isSubmitting}
+                      onCheckRegistration={revalidateStatus} 
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
          )}
        </div>
      </div>

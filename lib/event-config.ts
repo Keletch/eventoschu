@@ -7,6 +7,9 @@ export type EventType = 'OPEN' | 'CLOSED';
 
 export interface EventUIConfig {
   type: EventType;
+  // Comportamiento de Cupo
+  showFullCapacityOverlay: boolean;
+  allowOverCapacityRegistration: boolean;
   // Toasters
   registrationToast: {
     title: (name: string) => string;
@@ -29,6 +32,8 @@ export interface EventUIConfig {
 const CONFIGS: Record<EventType, EventUIConfig> = {
   OPEN: {
     type: 'OPEN',
+    showFullCapacityOverlay: false,
+    allowOverCapacityRegistration: true,
     registrationToast: {
       title: (name) => `¡Buenas noticias, ${name}!`,
       description: "Has sido registrado a la lista de espera."
@@ -46,6 +51,8 @@ const CONFIGS: Record<EventType, EventUIConfig> = {
   },
   CLOSED: {
     type: 'CLOSED',
+    showFullCapacityOverlay: true,
+    allowOverCapacityRegistration: false,
     registrationToast: {
       title: () => "¡Bienvenido a bordo!",
       description: "Tu registro se ha procesado correctamente."

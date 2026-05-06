@@ -3,10 +3,11 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { EventCard } from "@/components/event-card";
 import { cn } from "@/lib/utils";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ANIM_CONFIG, ANIM_SELECTORS } from "@/lib/animations";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // Skeleton de carga de tarjeta de evento
 function EventSkeleton() {
@@ -54,41 +55,80 @@ export function EventsCarousel({
 }: EventsCarouselProps) {
   const cardsRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Filtrar eventos del mes activo (Soporta 2099 como Eventos Futuros)
-  const monthEvents = events.filter((e) => {
+  // Filtrar eventos del mes activo
+  const monthEvents = events.filter((e: any) => {
     const d = new Date(e.start_date);
     let label = "";
-    if (d.getFullYear() === 2099) {
-      label = "Eventos Futuros";
-    } else {
+    if (d.getFullYear() === 2099) label = "Eventos Futuros";
+    else {
       const m = d.toLocaleDateString("es-ES", { month: "long" });
       label = m.charAt(0).toUpperCase() + m.slice(1);
     }
     return label === activeMonth;
   });
 
-  // Animación de entrada escalonada para las tarjetas
-  useGSAP(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
+  // Verificar límites de scroll
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 10);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
+  };
 
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [monthEvents]);
+
+  const onScrollInternal = (e: React.UIEvent<HTMLDivElement>) => {
+    handleScroll(e);
+    checkScroll();
+  };
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const amount = direction === 'left' ? -450 : 450;
+      scrollContainerRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+  };
+
+  // Animaciones
+  useGSAP(() => {
     if (monthEvents.length > 0) {
-      gsap.fromTo(ANIM_SELECTORS.card, 
-        { opacity: 0, x: ANIM_CONFIG.offset.sweep, scale: 0.98 },
-        { 
-          opacity: 1, 
-          x: 0, 
+      const tl = gsap.timeline();
+
+      // Animación de entrada
+      tl.fromTo(ANIM_SELECTORS.card,
+        { opacity: 0, x: 40, scale: 0.95 },
+        {
+          opacity: 1,
+          x: 0,
           scale: 1,
-          duration: ANIM_CONFIG.duration.fast, 
-          stagger: ANIM_CONFIG.offset.stagger, 
-          ease: ANIM_CONFIG.ease.out,
-          overwrite: "auto",
-          clearProps: "all"
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out"
         }
       );
+
+      // Micro-nudge inicial para sugerir scroll (solo la primera vez)
+      if (isFirstRender.current && monthEvents.length > 1) {
+        isFirstRender.current = false;
+        tl.to(scrollContainerRef.current, {
+          scrollLeft: 40,
+          duration: 0.4,
+          delay: 0.2,
+          ease: "power2.inOut"
+        }).to(scrollContainerRef.current, {
+          scrollLeft: 0,
+          duration: 0.6,
+          ease: "elastic.out(1, 0.5)"
+        });
+      }
     }
   }, { dependencies: [activeMonth, events.length], scope: cardsRef });
 
@@ -99,7 +139,7 @@ export function EventsCarousel({
       </h2>
 
       {isLoadingEvents ? (
-        <div className="flex gap-8 overflow-hidden pb-4 min-h-[500px]">
+        <div className="flex gap-8 overflow-hidden pb-4 min-h-[380px] md:min-h-[450px]">
           {[1, 2, 3].map((i) => (
             <div key={i} className="min-w-[320px] md:min-w-[420px]">
               <EventSkeleton />
@@ -107,15 +147,25 @@ export function EventsCarousel({
           ))}
         </div>
       ) : (
-        <div className="relative group">
+        <div className="relative group/carousel">
+          {/* Fading Edges Discretos */}
+          <div className={cn(
+            "absolute left-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-r from-white to-transparent pointer-events-none transition-opacity duration-500",
+            canScrollLeft ? "opacity-100" : "opacity-0"
+          )} />
+          <div className={cn(
+            "absolute right-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-l from-white to-transparent pointer-events-none transition-opacity duration-500",
+            canScrollRight ? "opacity-100" : "opacity-0"
+          )} />
+
           {/* Carrusel de tarjetas */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-8 overflow-x-auto overflow-y-hidden py-10 px-4 -mx-4 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[500px]"
-            onScroll={handleScroll}
+            className="flex gap-8 overflow-x-auto overflow-y-hidden py-10 px-4 -mx-4 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[380px] md:min-h-[450px]"
+            onScroll={onScrollInternal}
           >
-            <div ref={cardsRef} className="flex gap-8 min-h-[500px]">
-              {monthEvents.map((event) => (
+            <div ref={cardsRef} className="flex gap-8 min-h-[380px] md:min-h-[450px]">
+              {monthEvents.map((event: any) => (
                 <div
                   key={event.id}
                   id={`event-${event.id}`}
@@ -131,10 +181,10 @@ export function EventsCarousel({
                       new Date(event.start_date).getFullYear() === 2099
                         ? "Por confirmar"
                         : formatSafeDate(event.start_date)?.toLocaleDateString("es-ES", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          }) || ""
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        }) || ""
                     }
                     time={event.time}
                     duration={event.duration}
@@ -144,7 +194,7 @@ export function EventsCarousel({
                     selected={selectedEvents.includes(event.id)}
                     confirmedCount={eventCounts[event.id] || 0}
                     capacity={event.capacity || 25}
-                    isOpenMode={event.initial_status === 'confirmed'}
+                    initialStatus={event.initial_status}
                     onSelect={handleSelectEvent}
                   />
                 </div>
@@ -152,23 +202,50 @@ export function EventsCarousel({
             </div>
           </div>
 
-          {/* Barra de progreso + dots de paginación (Restaurado) */}
-          <div className="mt-8 flex items-center gap-4 px-4">
-            <div className="h-[2px] flex-1 bg-neutral-200 rounded-full overflow-hidden">
-              <div
-                className="scroll-progress-fill h-full bg-[#3154DC] rounded-full"
-                style={{ width: '0%' }}
-              />
+          {/* Barra de progreso + Controles de Navegación (NUEVO POSICIONAMIENTO) */}
+          <div className="mt-8 flex flex-col md:flex-row items-center gap-6 px-4">
+            <div className="flex items-center gap-4 flex-1 w-full">
+              <button
+                onClick={() => scroll('left')}
+                className={cn(
+                  "size-10 rounded-full bg-white border border-neutral-200 shadow-sm flex items-center justify-center transition-all duration-300",
+                  "hover:bg-neutral-50 hover:scale-105 active:scale-95 text-neutral-600",
+                  !canScrollLeft && "opacity-30 cursor-not-allowed grayscale"
+                )}
+                disabled={!canScrollLeft}
+              >
+                <ChevronLeft className="size-5" />
+              </button>
+
+              <div className="h-[2px] flex-1 bg-neutral-100 rounded-full overflow-hidden">
+                <div
+                  className="scroll-progress-fill h-full bg-[#3154DC] rounded-full transition-all duration-300"
+                  style={{ width: '0%' }}
+                />
+              </div>
+
+              <button
+                onClick={() => scroll('right')}
+                className={cn(
+                  "size-10 rounded-full bg-white border border-neutral-200 shadow-sm flex items-center justify-center transition-all duration-300",
+                  "hover:bg-neutral-50 hover:scale-105 active:scale-95 text-neutral-600",
+                  !canScrollRight && "opacity-30 cursor-not-allowed grayscale"
+                )}
+                disabled={!canScrollRight}
+              >
+                <ChevronRight className="size-5" />
+              </button>
             </div>
-            <div className="flex gap-2.5 items-center">
-              {availableMonths.map((month, idx) => (
+
+            <div className="flex gap-2.5 items-center bg-neutral-50/50 px-4 py-2 rounded-full border border-neutral-100">
+              {availableMonths.map((month: string, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => handleMonthChange(month)}
                   className={cn(
-                    "size-1.5 rounded-full transition-all duration-300 hover:bg-[#3154DC]/50 cursor-pointer",
+                    "size-2 rounded-full transition-all duration-300 hover:bg-[#3154DC]/50 cursor-pointer",
                     activeMonth === month
-                      ? "bg-[#3154DC] scale-125 shadow-sm"
+                      ? "bg-[#3154DC] scale-125 shadow-[0_0_8px_rgba(49,84,220,0.4)]"
                       : "bg-neutral-300 scale-100"
                   )}
                   aria-label={`Ir a ${month}`}

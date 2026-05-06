@@ -15,7 +15,8 @@ import { toast } from "sonner";
 
 import { PublicView } from "@/components/home/public-view";
 import { RegisteredView } from "@/components/home/registered-view";
-import { useHomeSync } from "@/hooks/home/use-home-sync";
+import { usePublicRealtime } from "../hooks/realtime/use-public-realtime";
+import { usePersonalRealtime } from "../hooks/realtime/use-personal-realtime";
 import { useHomeLogic } from "@/hooks/home/use-home-logic";
 import { Sidebar } from "@/components/header/sidebar";
 import { cn } from "@/lib/utils";
@@ -34,40 +35,49 @@ export default function Home() {
   // Orquestador de animaciones seguro
   const { contextSafe } = useGSAP({ scope: containerRef });
 
-  // 2. Realtime Synchronizer
-  useHomeSync({
-    isPageReady: home.isPageReady,
-    onEventsUpdate: () => {
-      getEvents().then(res => { if (res?.success) home.setEvents(res.data || []); });
-    },
-    onCountsUpdate: () => {
-      getRegistrationsCount().then(res => { if (res?.success && res.data) home.setEventCounts(res.data); });
-    },
-    onPersonalUpdate: (payload) => {
-      const newEmail = payload.new.email?.toLowerCase().trim();
-      const currentEmail = home.userData?.email?.toLowerCase().trim();
-      const currentClerkId = home.user?.id;
-      const isMyRecord = (currentClerkId && payload.new.clerk_id === currentClerkId) || (currentEmail && newEmail === currentEmail);
-      
-      if (isMyRecord) {
-        const newStatuses = payload.new.event_statuses || {};
-        const newEventData = payload.new.event_data || {};
-        if (JSON.stringify(newStatuses) !== JSON.stringify(home.eventStatusesRef.current)) home.setEventStatuses(newStatuses);
-        if (JSON.stringify(newEventData) !== JSON.stringify(home.eventDataMapRef.current)) home.setEventDataMap(newEventData);
-        
-        const newlyConfirmedId = Object.keys(newStatuses).find(id => newStatuses[id] === 'confirmed' && home.eventStatusesRef.current[id] !== 'confirmed');
-        if (newlyConfirmedId) {
-          // 🧠 Consultar al orquestador si este tipo de evento debe mostrar toast de confirmación
-          const eventInfo = home.events.find(e => e.id === newlyConfirmedId);
-          const eventConfig = getEventUIConfig(eventInfo);
+  // 2. Realtime Synchronizers (Arquitectura SOLID)
+  // A. Canal Público (Disponibilidad)
+  usePublicRealtime(() => {
+    getRegistrationsCount().then(res => { 
+      if (res?.success && res.data) home.setEventCounts(res.data); 
+    });
+    getEvents().then(res => { 
+      if (res?.success) home.setEvents(res.data || []); 
+    });
+  });
 
-          if (eventConfig.showSyncConfirmationToast) {
-            toast.success(`¡Buenas noticias, ${payload.new.first_name}!`, {
-              description: `Tu cupo para un evento ha sido confirmado.`,
-              duration: 6000
-            });
-          }
+  // B. Canal Privado (Estado del Usuario)
+  usePersonalRealtime({
+    userId: home.userData?.id || home.user?.id,
+    onUpdate: (payload: any) => {
+      if (!payload) return;
+      
+      // 🛡️ Blindaje: Solo actualizamos si el payload trae información de estados
+      const newStatuses = payload.event_statuses;
+      const newEventData = payload.event_data;
+      
+      if (newStatuses) {
+        if (JSON.stringify(newStatuses) !== JSON.stringify(home.eventStatusesRef.current)) {
+          home.setEventStatuses(newStatuses);
         }
+      }
+
+      if (newEventData) {
+        if (JSON.stringify(newEventData) !== JSON.stringify(home.eventDataMapRef.current)) {
+          home.setEventDataMap(newEventData);
+        }
+      }
+      
+      // 💡 NOTA: El toast de confirmación ahora se maneja centralizadamente en onNotification
+      // para evitar duplicados y mantener la lógica limpia (SOLID).
+    },
+    onNotification: (notif: any) => {
+      // 🚀 Mostrar toaster PREMIUM en tiempo real para cualquier notificación nueva
+      if (notif && notif.title) {
+        toast.success(notif.title, {
+          description: notif.message,
+          duration: 8000,
+        });
       }
     }
   });
@@ -91,6 +101,7 @@ export default function Home() {
         }
       });
     }
+    return res;
   });
 
   const handleBackToStep1 = contextSafe(() => {

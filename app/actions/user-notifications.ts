@@ -53,14 +53,15 @@ export async function notifyUserRegistrationSuccess(ids: { registrationId: strin
   });
 }
 
-export async function notifyUserConfirmed(ids: { registrationId: string, clerkId?: string }, confirmedEvents: any[]) {
+export async function notifyUserConfirmed(ids: { registrationId: string, clerkId?: string }, confirmedEvents: any[], eventStatuses?: Record<string, string>) {
   const eventList = confirmedEvents.map(e => `\n• ${formatEventForNotification(e)}`).join('');
   return insertNotification({
     registration_id: ids.registrationId,
     user_id: ids.clerkId,
     title: "¡Cupo Confirmado!",
     message: `¡Buenas noticias! Tu cupo ha sido confirmado para:${eventList}`,
-    type: "success"
+    type: "success",
+    event_statuses: eventStatuses // 🚀 Pasamos los estados para que el tiempo real actualice los indicadores
   });
 }
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { HelpCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 
@@ -17,11 +17,10 @@ export function HeaderAlerts({ isSurveyMissing, onOpenSurvey }: HeaderAlertsProp
   if (!isSurveyMissing) return null;
 
   return (
-    <div className="flex items-center gap-1 animate-in fade-in zoom-in duration-500">
+    <>
       <SurveyReminderNudge onClick={onOpenSurvey} />
-      
-      {/* 💡 Futuros slots para otros anuncios pueden ir aquí */}
-    </div>
+      {/* 💡 Futuros slots para otros anuncios pueden ir aquí (envolver en fragment o div si son varios) */}
+    </>
   );
 }
 
@@ -32,12 +31,12 @@ function SurveyReminderNudge({ onClick }: { onClick: () => void }) {
   return (
     <TooltipProvider delay={0}>
       <Tooltip>
-        <TooltipTrigger 
+        <TooltipTrigger
           onClick={onClick}
           className="group relative size-10 flex items-center justify-center rounded-xl hover:bg-amber-50 transition-all duration-300 cursor-pointer border-none bg-transparent"
         >
-          <HelpCircle className="h-6 w-6 text-amber-500 animate-pulse-gentle" />
-          <span className="absolute top-2 right-2 size-2 bg-amber-400 rounded-full animate-ping opacity-75" />
+          <AlertCircle className="h-5.5 w-5.5 text-amber-500 animate-pulse-gentle" />
+          <span className="absolute top-1 right-1 size-2 bg-amber-400 rounded-full animate-ping opacity-75" />
         </TooltipTrigger>
         <TooltipContent side="bottom" align="end" className="p-4 rounded-2xl shadow-2xl bg-white border-neutral-100 z-[150] max-w-[280px]">
           <div className="space-y-3">
@@ -47,7 +46,7 @@ function SurveyReminderNudge({ onClick }: { onClick: () => void }) {
                 Nos encantaría saber más sobre tus intereses para brindarte la mejor experiencia posible.
               </p>
             </div>
-            <Button 
+            <Button
               onClick={onClick}
               className="w-full h-9 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-lg shadow-amber-500/20"
             >

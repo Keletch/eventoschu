@@ -12,6 +12,7 @@ import {
   notifyUserConfirmed,
   notifyUserRemovedFromEvent
 } from "./user-notifications";
+import { broadcastToUser } from "./utils-realtime";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -158,8 +159,8 @@ export async function updateRegistration(id: string, data: any) {
               }, [evInfo.keap_pending_tag_id].filter(Boolean), [evInfo.keap_tag_id]);
             }
 
-            // Notificaciones
-            await notifyUserConfirmed({ registrationId: luckyUser.id, clerkId: luckyUser.clerk_id }, [evInfo]);
+            // Notificaciones con estados actualizados para tiempo real
+            await notifyUserConfirmed({ registrationId: luckyUser.id, clerkId: luckyUser.clerk_id }, [evInfo], luckyStatuses);
             await notifyAdminWaitlistActivated(adminEmail, evInfo, data.email || currentReg.email, luckyUser.email);
           }
         }
@@ -170,16 +171,26 @@ export async function updateRegistration(id: string, data: any) {
     const confirmedIds = allRelevantEventIds.filter(id => updatedStatuses[id] === 'confirmed' && currentReg.event_statuses?.[id] !== 'confirmed');
     if (confirmedIds.length > 0) {
       const { data: eventsInfo } = await supabaseAdmin.from('events').select('title, city, country, start_date, categories(name)').in('id', confirmedIds);
-      await notifyUserConfirmed({ registrationId: currentReg.id, clerkId: currentReg.clerk_id }, eventsInfo || []);
+      await notifyUserConfirmed({ registrationId: currentReg.id, clerkId: currentReg.clerk_id }, eventsInfo || [], updatedStatuses);
     }
 
+    // 6. Sincronización Realtime (Indicadores y Estados)
     const changedEventIds = allRelevantEventIds.filter(id => currentReg.event_statuses?.[id] !== updatedStatuses[id]);
     const personalDataChanged = currentReg.first_name !== data.first_name || currentReg.last_name !== data.last_name;
 
     if (personalDataChanged || changedEventIds.length > 0) {
       const { data: changedEventsInfo } = await supabaseAdmin.from('events').select('id, title, city, country, start_date, categories(name)').in('id', changedEventIds);
       const statusChanges = (changedEventsInfo || []).map(e => ({ event: e, status: updatedStatuses[e.id] }));
+      
+      // Notificar al administrador del cambio
       await notifyAdminRegistrationModified(adminEmail, data.email || currentReg.email, personalDataChanged, statusChanges);
+      
+      // 📢 Notificar al usuario (Sincronización de Indicadores en tiempo real)
+      await broadcastToUser(currentReg.id, {
+        id: currentReg.id,
+        event_statuses: updatedStatuses,
+        event_data: currentReg.event_data // Mantener datos extra
+      });
     }
 
     return { success: true };

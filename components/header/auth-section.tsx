@@ -62,8 +62,8 @@ export function AuthSection({
   }
 
   return (
-    <div className="flex items-center gap-2 h-10">
-      {/* Sistema de Alertas del Header (Modular) */}
+    <div className="flex items-center gap-1.5 h-10">
+      {/* Slot de Alertas (Modular) */}
       <HeaderAlerts 
         isSurveyMissing={isSurveyMissing} 
         onOpenSurvey={() => setIsSurveyOpen?.(true)} 

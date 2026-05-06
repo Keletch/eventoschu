@@ -9,6 +9,8 @@ import { EventProgressBar } from "./events/event-progress-bar";
 import { EventSoldOutOverlay } from "./events/event-sold-out-overlay";
 import { EventFlag } from "./ui/event-flag";
 
+import { getEventUIConfig } from "@/lib/event-config";
+
 interface EventCardProps {
   id: string;
   title: string;
@@ -25,7 +27,7 @@ interface EventCardProps {
   bgClass?: string;
   confirmedCount?: number;
   capacity?: number;
-  isOpenMode?: boolean;
+  initialStatus?: string; // Cambiamos isOpenMode por initialStatus para que el config decida
 }
 
 export function EventCard({
@@ -44,9 +46,12 @@ export function EventCard({
   bgClass = "bg-sky-100",
   confirmedCount = 0,
   capacity = 25,
-  isOpenMode = true,
+  initialStatus = 'confirmed',
 }: EventCardProps) {
-  const isSoldOut = confirmedCount >= capacity;
+  // 🧠 Consultar al orquestador central
+  const eventConfig = getEventUIConfig({ initial_status: initialStatus });
+  const isFull = confirmedCount >= capacity;
+  const isSoldOut = eventConfig.showFullCapacityOverlay && isFull;
 
   return (
     <Card 
@@ -108,7 +113,7 @@ export function EventCard({
           confirmedCount={confirmedCount}
           capacity={capacity}
           isSoldOut={isSoldOut}
-          isOpenMode={isOpenMode}
+          isOpenMode={eventConfig.type === 'OPEN'}
         />
       </div>
     </Card>

@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from "@supabase/supabase-js";
+import { broadcastToAdmins, broadcastToUser } from "./utils-realtime";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,14 +19,20 @@ export async function insertAdminNotification(data: {
   metadata?: any;
 }) {
   try {
-    await supabaseAdmin.from('admin_notifications').insert([{
+    const { data: newNotif, error } = await supabaseAdmin.from('admin_notifications').insert([{
       title: data.title,
       message: data.message,
       type: data.type || 'info',
       admin_email: data.admin_email,
       metadata: data.metadata || {},
       read: false
-    }]);
+    }]).select().single();
+
+    if (error) throw error;
+
+    // 📢 Notificar en tiempo real (Canal Administrativo)
+    await broadcastToAdmins(newNotif);
+
   } catch (err) {
     console.error("❌ Admin Notification Error:", err);
   }
@@ -40,6 +47,7 @@ export async function insertNotification(data: {
   title: string;
   message: string;
   type?: 'info' | 'success' | 'warning';
+  event_statuses?: any; // 🚀 Estados opcionales para sincronización RT
 }) {
   try {
     const { data: newNotif, error } = await supabaseAdmin.from('notifications').insert([{
@@ -54,19 +62,12 @@ export async function insertNotification(data: {
 
     if (error) throw error;
 
-    // --- TIEMPO REAL SEGURO (BROADCAST) ---
-    const targetId = data.registration_id || data.user_id;
-    if (targetId && newNotif) {
-      const channel = supabaseAdmin.channel(`user-updates:${targetId}`);
-      await channel.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.send({
-            type: 'broadcast',
-            event: 'new-notification',
-            payload: newNotif,
-          });
-          supabaseAdmin.removeChannel(channel);
-        }
+    // 📢 Notificar en tiempo real (Canal Privado de Usuario)
+    const targets = [data.registration_id, data.user_id].filter(Boolean) as string[];
+    if (targets.length > 0) {
+      await broadcastToUser(targets, { 
+        ...newNotif, 
+        event_statuses: data.event_statuses // 💡 Adjuntamos los estados al broadcast
       });
     }
 

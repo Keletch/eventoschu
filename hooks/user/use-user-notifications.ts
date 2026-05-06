@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useNotifications } from '@/app/admin/dashboard/hooks/use-notifications';
-import { useRealtimeSync } from '@/app/admin/dashboard/hooks/use-realtime-sync';
+import { usePersonalRealtime } from '../realtime/use-personal-realtime';
 
 export function useUserNotifications(propRegistrationId?: string | null) {
   const { userId: clerkId, isSignedIn, isLoaded } = useAuth();
@@ -46,9 +46,9 @@ export function useUserNotifications(propRegistrationId?: string | null) {
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          // Solo lo usamos si NO es de un usuario que debería estar logueado
-          if (!parsed.userData?.clerk_id) {
-            setStableUserId(parsed.userData?.id);
+          // Usamos el ID de registro para mantener la sincronización aunque no haya sesión
+          if (parsed.userData?.id) {
+            setStableUserId(parsed.userData.id);
           }
         } catch (e) {}
       }
@@ -84,11 +84,11 @@ export function useUserNotifications(propRegistrationId?: string | null) {
     addNotificationLocally
   } = useNotifications(false, ids);
 
-  // Sincronización Realtime (Solo si tenemos un ID estable)
-  useRealtimeSync({
-    isAdmin: false,
-    ids,
-    onNewNotification: (notif) => {
+  // Sincronización Realtime (Canal Privado)
+  usePersonalRealtime({
+    userId: stableUserId || clerkId || undefined,
+    onUpdate: () => {}, // En este componente solo nos interesan las notificaciones
+    onNotification: (notif: any) => {
       addNotificationLocally(notif);
     }
   });

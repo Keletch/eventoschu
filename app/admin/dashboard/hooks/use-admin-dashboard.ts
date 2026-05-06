@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { getKeapTags } from "@/app/actions/keap";
-import { updateRegistration } from "@/app/actions/admin-registration";
+import { updateRegistration, getRegistrations } from "@/app/actions/admin-registration";
 import { clearEventsCache } from "@/app/actions/events";
 import { syncMassTagsByEvent, migrateEventTags, purgeEvent, deleteRegistration } from "@/app/actions/admin-mass-ops";
 import { notifyAdminEventStatusChanged, notifyAdminTagsMigrated } from "@/app/actions/admin-notifications";
 import { useNotifications } from "./use-notifications";
-import { useRealtimeSync } from "./use-realtime-sync";
+import { useAdminRealtime } from "./use-realtime-sync";
 import { useDashboardFilters } from "./use-dashboard-filters";
 import { formatDateForInput } from "@/lib/date-utils";
 
@@ -62,14 +62,17 @@ export function useAdminDashboard() {
   const fetchData = useCallback(async () => {
     if (events.length === 0) setIsLoading(true);
     try {
-      const [{ data: eventsData }, { data: regsData }, { data: catsData }] = await Promise.all([
+      const [{ data: eventsData }, { data: catsData }, regsResult] = await Promise.all([
         supabase.from("events").select("*, categories:category_id(name)").order("start_date", { ascending: true }),
-        supabase.from("registrations").select("*").order("created_at", { ascending: false }),
-        supabase.from("categories").select("*").order("name")
+        supabase.from("categories").select("*").order("name"),
+        getRegistrations()
       ]);
+
       if (eventsData) setEvents(eventsData);
-      if (regsData) setRegistrations(regsData);
       if (catsData) setCategories(catsData);
+      if (regsResult.success && regsResult.data) {
+        setRegistrations(regsResult.data);
+      }
     } catch (error) {
       toast.error("Error al sincronizar datos");
     } finally {
@@ -89,11 +92,10 @@ export function useAdminDashboard() {
     }
   };
 
-  // Realtime Sync Engine
-  useRealtimeSync({
-    isAdmin: true,
-    onNewNotification: addNotificationLocally,
-    onDataChange: fetchData
+  // Realtime Sync Engine (Arquitectura SOLID)
+  useAdminRealtime({
+    onRefresh: fetchData,
+    onNewNotification: addNotificationLocally
   });
 
   useEffect(() => {

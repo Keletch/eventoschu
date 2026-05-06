@@ -227,11 +227,15 @@ export function useHomeLogic() {
           const dataMap = (result as any).eventData || {};
           const survey = (result as any).surveyData || null;
 
+          // PRIORIDAD: El nombre de Clerk manda sobre el de Supabase para mantenerlo actualizado
+          const finalFirstName = user?.firstName || result.userData.first_name;
+          const finalLastName = user?.lastName || result.userData.last_name;
+
           // Mapeo profesional de datos para el formulario y el sistema de notificaciones
           const sanitizedUserData = {
             id: result.userData.id,
-            firstName: result.userData.first_name,
-            lastName: result.userData.last_name,
+            firstName: finalFirstName,
+            lastName: finalLastName,
             email: result.userData.email,
             phone: result.userData.phone,
             phoneCode: result.userData.phone_code,
@@ -294,13 +298,20 @@ export function useHomeLogic() {
   }, [isLoaded, user?.id, syncRegistration]);
 
   // --- Handlers ---
-  const revalidateStatus = async (email: string) => {
+  const revalidateStatus = useCallback(async (email: string) => {
     setIsChecking(true);
     setSurveyData(null);
     try {
       const revalidation = await checkRegistration(email, user?.id);
       if (revalidation.success) {
-        setUserData(revalidation.userData);
+        // Mantener prioridad de Clerk
+        const finalUserData = {
+          ...revalidation.userData,
+          firstName: user?.firstName || revalidation.userData.first_name,
+          lastName: user?.lastName || revalidation.userData.last_name,
+        };
+
+        setUserData(finalUserData);
         setSelectedEvents(revalidation.selectedEvents);
         setEventStatuses((revalidation as any).eventStatuses || {});
         setEventDataMap((revalidation as any).eventData || {});
@@ -330,7 +341,7 @@ export function useHomeLogic() {
     } finally {
       setIsChecking(false);
     }
-  };
+  }, [user?.id, user?.firstName, user?.lastName, changeStep]);
 
   const handleRegistration = async (data: any, turnstileToken: string): Promise<{ success: boolean }> => {
     if (selectedEvents.length === 0) {

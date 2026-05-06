@@ -6,10 +6,17 @@ import { toast } from "sonner";
 interface ShareSectionProps {
   selectedCityId: string;
   cityName: string;
+  userId?: string;
 }
 
-export function ShareSection({ selectedCityId, cityName }: ShareSectionProps) {
-  const getShareLink = () => `${window.location.origin}?city=${selectedCityId}`;
+export function ShareSection({ selectedCityId, cityName, userId }: ShareSectionProps) {
+  const getShareLink = () => {
+    let link = `${window.location.origin}?city=${selectedCityId}`;
+    if (userId) {
+      link += `&ref=${userId}`;
+    }
+    return link;
+  };
 
   const handleWhatsapp = () => {
     const link = getShareLink();

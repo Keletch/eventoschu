@@ -117,6 +117,7 @@ export function RegisteredView({
       <ShareSection
         selectedCityId={selectedCityId}
         cityName={cityName}
+        userId={userData?.user_id || userData?.id}
       />
 
       {/* ── Contacto de soporte ─────────────────────────── */}

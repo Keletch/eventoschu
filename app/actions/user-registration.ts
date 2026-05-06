@@ -12,6 +12,7 @@ import {
 } from "./admin-notifications";
 import { notifyUserRegistrationSuccess } from "./user-notifications";
 import { formatEventForNotification } from "./utils";
+import { broadcastToAdmins, broadcastToUser, broadcastToPublic } from "./utils-realtime";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -122,6 +123,14 @@ export async function createRegistration(data: any, turnstileToken: string) {
         await notifyUserRegistrationSuccess({ registrationId: existing.id, clerkId: userId || existing.clerk_id }, newlyAddedEvents, alreadyInEvents);
       }
 
+      // 📢 Sincronización Realtime (Arquitectura SOLID)
+      const targets = [existing.id, existing.clerk_id, userId].filter(Boolean) as string[];
+      await Promise.all([
+        broadcastToAdmins(null),
+        broadcastToUser(targets, null),
+        broadcastToPublic()
+      ]);
+
       return { 
         success: true, 
         isUpdate: true, 
@@ -174,6 +183,14 @@ export async function createRegistration(data: any, turnstileToken: string) {
       await notifyAdminNewRegistration(validatedData.email, allEventsInfo || []);
       await notifyUserRegistrationSuccess({ registrationId: newRegId, clerkId: userId || undefined }, allEventsInfo || [], []);
     }
+
+    // 📢 Sincronización Realtime (Arquitectura SOLID)
+    const targets = [newRegId, userId].filter(Boolean) as string[];
+    await Promise.all([
+      broadcastToAdmins(null),
+      broadcastToUser(targets, null),
+      broadcastToPublic()
+    ]);
 
     return { 
       success: true, 
@@ -235,6 +252,15 @@ export async function saveSurveyData(email: string, surveyData: any) {
 
     await supabaseAdmin.from('registrations').update({ survey_data: surveyData }).eq('email', email.toLowerCase().trim());
     await notifyAdminSurveyCompleted(email);
+    
+    // 📢 Sincronización Realtime (Arquitectura SOLID)
+    const targetId = userId || reg?.clerk_id;
+    await Promise.all([
+      broadcastToAdmins(null),
+      targetId ? broadcastToUser(targetId, null) : Promise.resolve(),
+      broadcastToPublic()
+    ]);
+
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -260,6 +286,14 @@ export async function updateEventSpecificData(email: string, eventId: string, ne
     
     const { data: eventInfo } = await supabaseAdmin.from('events').select('title, city, country, start_date, categories(name)').eq('id', eventId).single();
     await notifyAdminSpecificDataUpdate(email, eventInfo);
+
+    // 📢 Sincronización Realtime (Arquitectura SOLID)
+    const targetId = userId || existing?.clerk_id;
+    await Promise.all([
+      broadcastToAdmins(null),
+      targetId ? broadcastToUser(targetId, null) : Promise.resolve(),
+      broadcastToPublic()
+    ]);
 
     return { success: true };
   } catch (err: any) {
