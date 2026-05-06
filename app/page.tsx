@@ -52,9 +52,9 @@ export default function Home() {
     onUpdate: (payload: any) => {
       if (!payload) return;
       
-      // 🛡️ Blindaje: Solo actualizamos si el payload trae información de estados
       const newStatuses = payload.event_statuses;
       const newEventData = payload.event_data;
+      const newSelectedEvents = payload.selected_events; // 🚀 Nueva lista de eventos
       
       if (newStatuses) {
         if (JSON.stringify(newStatuses) !== JSON.stringify(home.eventStatusesRef.current)) {
@@ -67,12 +67,26 @@ export default function Home() {
           home.setEventDataMap(newEventData);
         }
       }
-      
-      // 💡 NOTA: El toast de confirmación ahora se maneja centralizadamente en onNotification
-      // para evitar duplicados y mantener la lógica limpia (SOLID).
+
+      if (newSelectedEvents) {
+        // 🛡️ Sincronizar el carrusel y validar selección al instante
+        home.syncRegistrationState(newSelectedEvents);
+      }
     },
     onNotification: (notif: any) => {
-      // 🚀 Mostrar toaster PREMIUM en tiempo real para cualquier notificación nueva
+      // 🚀 1. Actualizar indicadores y carrusel si la notificación trae datos nuevos
+      if (notif && notif.event_statuses) {
+        if (JSON.stringify(notif.event_statuses) !== JSON.stringify(home.eventStatusesRef.current)) {
+          home.setEventStatuses(notif.event_statuses);
+        }
+      }
+
+      if (notif && notif.selected_events) {
+        // 🛡️ Si el administrador borró o añadió un evento, refrescamos y validamos
+        home.syncRegistrationState(notif.selected_events);
+      }
+
+      // 🚀 2. Mostrar toaster PREMIUM en tiempo real
       if (notif && notif.title) {
         toast.success(notif.title, {
           description: notif.message,

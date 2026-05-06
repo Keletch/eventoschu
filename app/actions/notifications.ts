@@ -48,6 +48,7 @@ export async function insertNotification(data: {
   message: string;
   type?: 'info' | 'success' | 'warning';
   event_statuses?: any; // 🚀 Estados opcionales para sincronización RT
+  selected_events?: string[]; // 🚀 Lista de eventos actualizada
 }) {
   try {
     const { data: newNotif, error } = await supabaseAdmin.from('notifications').insert([{
@@ -67,7 +68,8 @@ export async function insertNotification(data: {
     if (targets.length > 0) {
       await broadcastToUser(targets, { 
         ...newNotif, 
-        event_statuses: data.event_statuses // 💡 Adjuntamos los estados al broadcast
+        event_statuses: data.event_statuses, // 💡 Adjuntamos los estados al broadcast
+        selected_events: data.selected_events // 💡 Adjuntamos la lista de eventos actualizada
       });
     }
 

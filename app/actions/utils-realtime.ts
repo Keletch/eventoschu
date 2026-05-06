@@ -14,91 +14,92 @@ const supabaseAdmin = createClient(
 
 // 1. CANAL ADMINISTRATIVO: Solo para la gestión del panel
 export async function broadcastToAdmins(payload: any) {
-  const channel = supabaseAdmin.channel('admin-updates');
-  await channel.subscribe(async (status) => {
-    if (status === 'SUBSCRIBED') {
-      // Enviamos el refresh general
-      await channel.send({
-        type: 'broadcast',
-        event: 'admin-refresh',
-        payload: { ...payload, timestamp: new Date().toISOString() }
-      });
-      
-      // Si hay un payload detallado (una notificación), la enviamos específicamente
-      if (payload && payload.title) {
-        await channel.send({
-          type: 'broadcast',
-          event: 'new-notification',
-          payload: payload
-        });
-      }
-      
-      setTimeout(() => supabaseAdmin.removeChannel(channel), 1000);
-    }
-  });
-}
+  const channelName = 'admin-updates';
+  const channel = supabaseAdmin.channel(channelName);
 
-// 2. CANAL PRIVADO DE USUARIO: Para Toasts, tags y cambios de estado personales
-export async function broadcastToUser(targetIds: string | string[], payload: any) {
-  const ids = Array.isArray(targetIds) ? targetIds : [targetIds];
-  console.log(`📡 [Realtime-Server] Iniciando broadcast para ${ids.length} usuarios...`);
-  
-  for (const id of ids) {
-    if (!id || id === 'guest') continue;
-    const channelName = `user-private:${id}`;
-    const channel = supabaseAdmin.channel(channelName);
-    
-    console.log(`🔌 [Realtime-Server] Intentando suscribir a: ${channelName}`);
-    
-    await channel.subscribe(async (status) => {
-      console.log(`📡 [Realtime-Server] Estado del canal ${channelName}: ${status}`);
-      
-      if (status === 'SUBSCRIBED') {
-        console.log(`🚀 [Realtime-Server] Emitiendo datos a ${channelName}...`);
-        
-        // 1. Enviamos actualización de datos (Estados, Indicators, etc)
+  channel.subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      try {
+        // 1. Enviamos el refresh general
         await channel.send({
           type: 'broadcast',
-          event: 'personal-update',
-          payload: { 
-            ...payload, 
-            timestamp: new Date().toISOString() 
-          }
+          event: 'admin-refresh',
+          payload: { ...payload, timestamp: new Date().toISOString() }
         });
         
-        // 2. Si el payload tiene estructura de notificación, activamos la campana
-        if (payload && (payload.title || payload.type === 'notification')) {
-          console.log(`🔔 [Realtime-Server] Emitiendo notificación a ${channelName}`);
+        // 2. Si hay un payload detallado (una notificación), la enviamos
+        if (payload && payload.title) {
           await channel.send({
             type: 'broadcast',
             event: 'new-notification',
             payload: payload
           });
         }
-        
-        // Limpieza con retraso para asegurar entrega
-        setTimeout(() => {
+      } finally {
+        supabaseAdmin.removeChannel(channel);
+      }
+    }
+  });
+  return { success: true };
+}
+
+// 2. CANAL PRIVADO DE USUARIO: Para Toasts, tags y cambios de estado personales
+export async function broadcastToUser(targetIds: string | string[], payload: any) {
+  const ids = Array.isArray(targetIds) ? targetIds : [targetIds];
+  
+  // 🚀 Optimizamos: Enviamos y cerramos rápido sin bloquear el hilo principal del servidor
+  for (const id of ids) {
+    if (!id || id === 'guest') continue;
+    
+    const channelName = `user-private:${id}`;
+    const channel = supabaseAdmin.channel(channelName);
+    
+    channel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        try {
+          // Enviamos actualización y notificación en un solo envío si es posible
+          await channel.send({
+            type: 'broadcast',
+            event: 'personal-update',
+            payload: { ...payload, timestamp: new Date().toISOString() }
+          });
+          
+          if (payload && (payload.title || payload.type === 'notification')) {
+            await channel.send({
+              type: 'broadcast',
+              event: 'new-notification',
+              payload: payload
+            });
+          }
+        } finally {
           supabaseAdmin.removeChannel(channel);
-          console.log(`🔌 [Realtime-Server] Canal ${channelName} cerrado.`);
-        }, 3000);
+        }
       }
     });
   }
+  // Devolvemos éxito de inmediato para no secuestrar la promesa del servidor
+  return { success: true };
 }
 
 // 3. CANAL PÚBLICO GLOBAL: Solo para disponibilidad y eventos (Barras de progreso)
 export async function broadcastToPublic() {
-  const channel = supabaseAdmin.channel('global-counts');
-  await channel.subscribe(async (status) => {
+  const channelName = 'global-counts';
+  const channel = supabaseAdmin.channel(channelName);
+
+  channel.subscribe(async (status) => {
     if (status === 'SUBSCRIBED') {
-      await channel.send({
-        type: 'broadcast',
-        event: 'counts-updated',
-        payload: { timestamp: new Date().toISOString() }
-      });
-      setTimeout(() => supabaseAdmin.removeChannel(channel), 1000);
+      try {
+        await channel.send({
+          type: 'broadcast',
+          event: 'counts-updated',
+          payload: { timestamp: new Date().toISOString() }
+        });
+      } finally {
+        supabaseAdmin.removeChannel(channel);
+      }
     }
   });
+  return { success: true };
 }
 
 // Función legacy para compatibilidad mientras migramos el resto (Deprecada)

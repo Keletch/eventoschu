@@ -120,16 +120,22 @@ export async function createRegistration(data: any, turnstileToken: string) {
 
         await syncKeapTags(validatedData, [], tagsToAdd);
         await notifyAdminNewRegistration(validatedData.email, newlyAddedEvents);
-        await notifyUserRegistrationSuccess({ registrationId: existing.id, clerkId: userId || existing.clerk_id }, newlyAddedEvents, alreadyInEvents);
+        await notifyUserRegistrationSuccess(
+          { registrationId: existing.id, clerkId: userId || existing.clerk_id }, 
+          newlyAddedEvents, 
+          alreadyInEvents,
+          mergedEvents,
+          validatedData.first_name
+        );
       }
 
-      // 📢 Sincronización Realtime (Arquitectura SOLID)
+      // 📢 Sincronización Realtime (No bloqueante para el usuario)
       const targets = [existing.id, existing.clerk_id, userId].filter(Boolean) as string[];
-      await Promise.all([
+      Promise.all([
         broadcastToAdmins(null),
         broadcastToUser(targets, null),
         broadcastToPublic()
-      ]);
+      ]).catch(err => console.error("Realtime sync error:", err));
 
       return { 
         success: true, 
@@ -181,16 +187,22 @@ export async function createRegistration(data: any, turnstileToken: string) {
 
       await syncKeapTags(validatedData, [], tagsToAdd);
       await notifyAdminNewRegistration(validatedData.email, allEventsInfo || []);
-      await notifyUserRegistrationSuccess({ registrationId: newRegId, clerkId: userId || undefined }, allEventsInfo || [], []);
+      await notifyUserRegistrationSuccess(
+        { registrationId: newRegId, clerkId: userId || undefined }, 
+        allEventsInfo || [], 
+        [],
+        validatedData.selected_events,
+        validatedData.first_name // 🚀 Nombre para el saludo
+      );
     }
 
-    // 📢 Sincronización Realtime (Arquitectura SOLID)
+    // 📢 Sincronización Realtime (No bloqueante para el usuario)
     const targets = [newRegId, userId].filter(Boolean) as string[];
-    await Promise.all([
+    Promise.all([
       broadcastToAdmins(null),
       broadcastToUser(targets, null),
       broadcastToPublic()
-    ]);
+    ]).catch(err => console.error("Realtime sync error:", err));
 
     return { 
       success: true, 
@@ -225,6 +237,11 @@ export async function checkRegistration(email: string, clerkId?: string) {
     }
 
     if (!data) return { success: false, error: "No se encontró registro." };
+
+    // 🛡️ Blindaje: Si el registro existe pero no tiene eventos, lo tratamos como "No registrado"
+    if (!data.selected_events || data.selected_events.length === 0) {
+      return { success: false, error: "No tienes eventos registrados actualmente." };
+    }
 
     return {
       success: true,

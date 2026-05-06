@@ -23,15 +23,12 @@ export function useAdminRealtime({ onRefresh, onNewNotification }: AdminRealtime
   }, [onRefresh, onNewNotification]);
 
   useEffect(() => {
-    console.log("🔌 Admin Realtime: Conectando a 'admin-updates'...");
-    
     const channel = supabase
       .channel('admin-updates')
       .on(
         'broadcast',
         { event: 'admin-refresh' },
-        (payload) => {
-          console.log("🔄 Admin Realtime: Recibido admin-refresh", payload);
+        () => {
           onRefreshRef.current();
         }
       )
@@ -39,7 +36,6 @@ export function useAdminRealtime({ onRefresh, onNewNotification }: AdminRealtime
         'broadcast',
         { event: 'new-notification' },
         (payload) => {
-          console.log("🔔 Admin Realtime: Recibida nueva notificación", payload);
           const data = payload.payload || payload;
           if (data && onNewNotificationRef.current) {
             onNewNotificationRef.current(data);
@@ -50,16 +46,12 @@ export function useAdminRealtime({ onRefresh, onNewNotification }: AdminRealtime
         'postgres_changes',
         { event: '*', schema: 'public', table: 'events' },
         () => {
-          console.log("📅 Admin Realtime: Cambio detectado en tabla 'events'");
           onRefreshRef.current();
         }
       )
-      .subscribe((status) => {
-        console.log(`📡 Admin Realtime: Estado: ${status}`);
-      });
+      .subscribe();
 
     return () => {
-      console.log("🔌 Admin Realtime: Desconectando...");
       supabase.removeChannel(channel);
     };
   }, []);

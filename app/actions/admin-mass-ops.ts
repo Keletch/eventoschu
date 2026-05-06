@@ -11,6 +11,8 @@ import {
   notifyAdminEventAddedToUser,
   notifyAdminEventRemovedFromUser
 } from "./admin-notifications";
+import { notifyUserRemovedFromEvent, notifyUserConfirmed } from "./user-notifications";
+import { broadcastToUser } from "./utils-realtime";
 import { clearEventsCache } from "./events";
 
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
@@ -401,6 +403,14 @@ export async function deleteRegistration(id: string) {
     const adminEmail = user?.email || "un administrador";
     await notifyAdminRegistrationDeleted(adminEmail, reg.email, eventsData || []);
 
+    // 7. 📢 Notificar al Usuario en TIEMPO REAL (Reset completo)
+    await broadcastToUser([id, reg.clerk_id].filter(Boolean) as string[], {
+      type: 'notification',
+      title: "Registro Removido",
+      message: "Tu registro ha sido eliminado por un administrador.",
+      selected_events: [] // 🚀 Esto activará el reset en el cliente
+    });
+
     return { success: true };
   } catch (err: any) {
     console.error("❌ Error en Purga de Usuario:", err);
@@ -479,6 +489,14 @@ export async function adminAddEventToUser(registrationId: string, eventId: strin
     // 4. Notificar Auditoría
     await notifyAdminEventAddedToUser(adminEmail, reg.email, event);
 
+    // 5. 📢 Notificar al Usuario en TIEMPO REAL (Actualizar carrusel e indicadores)
+    await notifyUserConfirmed(
+      { registrationId: reg.id, clerkId: reg.clerk_id }, 
+      [event], 
+      updatedStatuses,
+      updatedEvents
+    );
+
     return { success: true };
   } catch (err: any) {
     console.error("❌ adminAddEventToUser Error:", err);
@@ -529,6 +547,14 @@ export async function adminRemoveEventFromUser(registrationId: string, eventId: 
 
     // 4. Notificar Auditoría
     await notifyAdminEventRemovedFromUser(adminEmail, reg.email, event);
+
+    // 5. 📢 Notificar al Usuario en TIEMPO REAL (Actualizar carrusel e indicadores)
+    await notifyUserRemovedFromEvent(
+      { registrationId: reg.id, clerkId: reg.clerk_id }, 
+      event, 
+      updatedStatuses,
+      updatedEvents
+    );
 
     return { success: true };
   } catch (err: any) {

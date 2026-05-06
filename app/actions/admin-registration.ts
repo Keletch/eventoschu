@@ -186,11 +186,15 @@ export async function updateRegistration(id: string, data: any) {
       await notifyAdminRegistrationModified(adminEmail, data.email || currentReg.email, personalDataChanged, statusChanges);
       
       // 📢 Notificar al usuario (Sincronización de Indicadores en tiempo real)
-      await broadcastToUser(currentReg.id, {
-        id: currentReg.id,
-        event_statuses: updatedStatuses,
-        event_data: currentReg.event_data // Mantener datos extra
-      });
+      // Enviamos a ambos IDs (UUID y Clerk ID) para asegurar que llegue a todos los hooks del cliente
+      const targets = [currentReg.id, currentReg.clerk_id].filter(Boolean) as string[];
+      if (targets.length > 0) {
+        await broadcastToUser(targets, {
+          id: currentReg.id,
+          event_statuses: updatedStatuses,
+          event_data: currentReg.event_data // Mantener datos extra
+        });
+      }
     }
 
     return { success: true };

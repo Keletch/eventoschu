@@ -370,10 +370,8 @@ export function useHomeLogic() {
       const eventInfo = events.find(e => e.id === firstEventId);
       const eventConfig = getEventUIConfig(eventInfo);
 
-      toast.success(eventConfig.registrationToast.title(data.firstName), {
-        description: eventConfig.registrationToast.description,
-        duration: 6000
-      });
+      // 💡 NOTA: El toast de éxito ahora se maneja centralizadamente vía Realtime/Notification
+      // para evitar duplicidad y mantener consistencia con el sistema premium.
       
       const finalStatuses = (regResult as any).eventStatuses || {};
       const finalEventData = (regResult as any).eventData || {};
@@ -384,12 +382,17 @@ export function useHomeLogic() {
         ...data,
         id: (regResult as any).id
       };
-      
+
+      // 🎯 Inteligencia de selección: Priorizar el evento que se acaba de añadir
+      const oldSelectedEvents = userData?.selectedEvents || [];
+      const newlyAddedId = selectedEvents.find(id => !oldSelectedEvents.includes(id));
+      const idToSelect = newlyAddedId || finalSelectedEvents[0];
+
       setUserData(newUser);
       setEventStatuses(finalStatuses);
       setEventDataMap(finalEventData);
       setSurveyData(finalSurvey);
-      if (finalSelectedEvents.length > 0) setSelectedCityId(finalSelectedEvents[0]);
+      if (idToSelect) setSelectedCityId(idToSelect);
 
       localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
         userData: newUser,
@@ -442,6 +445,8 @@ export function useHomeLogic() {
         changeStep(2);
         toast.success("Registro encontrado");
       } else {
+        // 🛡️ Si falla o no tiene eventos, limpiamos por seguridad
+        startNewRegistration();
         toast.error(result.error || "No se encontró registro.");
       }
     } catch (error: any) {
@@ -496,6 +501,36 @@ export function useHomeLogic() {
     }
   };
 
+  /**
+   * 🔄 Sincronizador de Estado de Registro (Realtime)
+   * Asegura que la selección de eventos sea válida tras cambios administrativos.
+   */
+  const syncRegistrationState = useCallback((newSelectedEvents: string[]) => {
+    if (!newSelectedEvents || newSelectedEvents.length === 0) {
+      // 🚨 Si ya no hay eventos, limpiamos y volvemos al inicio
+      // Silenciamos este toast porque ya se envía una notificación premium específica (verde)
+      startNewRegistration();
+      return;
+    }
+
+    // 1. Actualizar la lista de eventos
+    setSelectedEvents(newSelectedEvents);
+
+    // 2. Verificar si el evento actual sigue siendo válido
+    const isCurrentValid = newSelectedEvents.includes(selectedCityId);
+    if (!isCurrentValid) {
+      // 🎯 Si el actual ya no existe, seleccionamos el primero de la nueva lista
+      setSelectedCityId(newSelectedEvents[0]);
+    }
+
+    // 3. Sincronizar LocalStorage para persistencia
+    const current = JSON.parse(localStorage.getItem(HOME_STORAGE_KEY) || '{}');
+    localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
+      ...current,
+      selectedEvents: newSelectedEvents
+    }));
+  }, [selectedCityId, startNewRegistration]);
+
   return {
     // States
     step, setStep: changeStep,
@@ -527,6 +562,7 @@ export function useHomeLogic() {
     // Handlers
     fetchData,
     revalidateStatus,
+    syncRegistrationState, // 🚀 Expuesto para sincronización RT
     handleRegistration,
     handleCheckRegistration,
     startNewRegistration,

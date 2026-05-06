@@ -89,8 +89,9 @@ export function CitySelector({
                 onClick={() => handleCityClick(e.id)}
                 className={cn(
                   "event-select-btn group flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all duration-300 border-2 cursor-pointer",
+                  "transform-gpu backface-hidden will-change-transform", // 🚀 Blindaje contra artifacts
                   isActive
-                    ? "bg-white border-[#3154DC] shadow-md scale-105 z-10"
+                    ? "bg-white border-[#3154DC] shadow-[0_4px_12px_rgba(49,84,220,0.15)] scale-105 z-10"
                     : "bg-transparent border-transparent hover:bg-white/50 text-gray-400"
                 )}
               >
