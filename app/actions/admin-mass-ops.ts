@@ -1,7 +1,6 @@
 "use server";
 
-import { createClient } from "@supabase/supabase-js";
-import { createClerkClient } from "@clerk/nextjs/server";
+import { auth, createClerkClient } from "@clerk/nextjs/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { getOrCreateContact, syncKeapTags, keapFetch } from "./keap";
 import { 
@@ -11,18 +10,17 @@ import {
   notifyAdminEventAddedToUser,
   notifyAdminEventRemovedFromUser
 } from "./admin-notifications";
-import { notifyUserRemovedFromEvent, notifyUserConfirmed } from "./user-notifications";
-import { broadcastToUser } from "./utils-realtime";
+import { formatEventForNotification } from "./utils";
+import { broadcastToUser, broadcastToPublic, broadcastToAdmins } from "./utils-realtime";
+import { dispatchSignal } from "@/lib/services/signal-dispatcher";
 import { clearEventsCache } from "./events";
+import { verifyAdminPermission } from "./admin-check";
 
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 
 
@@ -32,6 +30,9 @@ const supabaseAdmin = createClient(
  * @param action 'activate' | 'deactivate'
  */
 export async function syncMassTagsByEvent(eventId: string, action: 'activate' | 'deactivate') {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     // 1. Obtener detalles del evento (especialmente los IDs de Tags)
     const { data: event, error: eventError } = await supabaseAdmin
@@ -186,6 +187,9 @@ export async function migrateEventTags(data: {
  * 🧹 Purga un evento en cascada (Limpia Keap, Registros y Caché)
  */
 export async function purgeEvent(eventId: string) {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     // 1. Obtener detalles del evento (Tags)
     const { data: event } = await supabaseAdmin
@@ -265,6 +269,9 @@ export async function purgeEvent(eventId: string) {
  * 🚀 Actualización Masiva de Estados (Confirmar/Cancelar todos los de un evento)
  */
 export async function massUpdateRegistrationStatus(eventId: string, newStatus: 'confirmed' | 'pending' | 'cancelled') {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     const supabase = await createSupabaseServer();
     const { data: { user } } = await supabase.auth.getUser();
@@ -322,6 +329,24 @@ export async function massUpdateRegistrationStatus(eventId: string, newStatus: '
           tagsToAdd.filter(Boolean) as string[] // newTagIds (poner)
         );
 
+        // 🚀 SEÑAL ATÓMICA USANDO EL NUEVO DISPATCHER
+        const eventDetail = formatEventForNotification(event);
+        const wasConfirmed = reg.event_statuses?.[eventId] === 'confirmed';
+
+        await dispatchSignal(newStatus === 'confirmed' ? 'EVENT_CONFIRMED' : 'EVENT_REMOVED', {
+          targetIds: [reg.id, reg.clerk_id],
+          metadata: {
+            email: reg.email, // 🚀 Canal de emergencia
+            eventNames: eventDetail,
+            status: newStatus,
+            context: wasConfirmed ? "del registro del evento" : "de la lista de espera del evento"
+          },
+          realtimePayload: {
+            event_statuses: updatedStatuses,
+            selected_events: reg.selected_events
+          }
+        });
+
         affectedEmails.push(reg.email);
       } catch (err) {
         console.error(`❌ Error en actualización masiva para ${reg.email}:`, err);
@@ -342,6 +367,9 @@ export async function massUpdateRegistrationStatus(eventId: string, newStatus: '
  * 🗑️ Elimina un registro permanentemente (Purga Selectiva)
  */
 export async function deleteRegistration(id: string) {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     const { data: reg } = await supabaseAdmin
       .from('registrations')
@@ -404,7 +432,7 @@ export async function deleteRegistration(id: string) {
     await notifyAdminRegistrationDeleted(adminEmail, reg.email, eventsData || []);
 
     // 7. 📢 Notificar al Usuario en TIEMPO REAL (Reset completo)
-    await broadcastToUser([id, reg.clerk_id].filter(Boolean) as string[], {
+    await broadcastToUser([id, reg.clerk_id, reg.email].filter(Boolean) as string[], {
       type: 'notification',
       title: "Registro Removido",
       message: "Tu registro ha sido eliminado por un administrador.",
@@ -489,13 +517,19 @@ export async function adminAddEventToUser(registrationId: string, eventId: strin
     // 4. Notificar Auditoría
     await notifyAdminEventAddedToUser(adminEmail, reg.email, event);
 
-    // 5. 📢 Notificar al Usuario en TIEMPO REAL (Actualizar carrusel e indicadores)
-    await notifyUserConfirmed(
-      { registrationId: reg.id, clerkId: reg.clerk_id }, 
-      [event], 
-      updatedStatuses,
-      updatedEvents
-    );
+    // 5. 📢 Notificar al Usuario en TIEMPO REAL (Uso del nuevo Dispatcher)
+    const eventDetail = formatEventForNotification(event);
+    await dispatchSignal('EVENT_CONFIRMED', {
+      targetIds: [reg.id, reg.clerk_id],
+      metadata: { 
+        email: reg.email, // 🚀 Canal de emergencia
+        eventNames: eventDetail 
+      },
+      realtimePayload: {
+        event_statuses: updatedStatuses,
+        selected_events: updatedEvents
+      }
+    });
 
     return { success: true };
   } catch (err: any) {
@@ -548,13 +582,23 @@ export async function adminRemoveEventFromUser(registrationId: string, eventId: 
     // 4. Notificar Auditoría
     await notifyAdminEventRemovedFromUser(adminEmail, reg.email, event);
 
-    // 5. 📢 Notificar al Usuario en TIEMPO REAL (Actualizar carrusel e indicadores)
-    await notifyUserRemovedFromEvent(
-      { registrationId: reg.id, clerkId: reg.clerk_id }, 
-      event, 
-      updatedStatuses,
-      updatedEvents
-    );
+    // 5. 📢 Notificar al Usuario en TIEMPO REAL (Uso del nuevo Dispatcher)
+    const eventDetail = formatEventForNotification(event);
+    const wasConfirmed = reg.event_statuses?.[eventId] === 'confirmed';
+
+    await dispatchSignal('EVENT_REMOVED', {
+      targetIds: [reg.id, reg.clerk_id],
+      metadata: {
+        email: reg.email, // 🚀 Canal de emergencia
+        eventNames: eventDetail,
+        context: wasConfirmed ? "del registro del evento" : "de la lista de espera del evento"
+      },
+      realtimePayload: {
+        event_statuses: updatedStatuses,
+        selected_events: updatedEvents,
+        event_data: updatedEventData
+      }
+    });
 
     return { success: true };
   } catch (err: any) {

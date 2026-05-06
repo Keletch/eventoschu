@@ -49,13 +49,13 @@ export function ShareSection({ selectedCityId, cityName, userId }: ShareSectionP
           <Button
             onClick={handleWhatsapp}
             variant="outline"
-            className="h-14 px-10 rounded-2xl border-[#3154DC] text-[#3154DC] font-bold text-lg md:text-xl hover:bg-[#3154DC]/10 w-full sm:w-auto"
+            className="h-14 px-10 rounded-2xl border-[#3154DC] text-[#3154DC] font-bold text-lg md:text-xl hover:bg-[#3154DC]/10 w-full sm:w-auto transform backface-visibility-hidden antialiased"
           >
             Enviar por whatsapp
           </Button>
           <Button
             onClick={handleCopyLink}
-            className="h-14 px-10 rounded-2xl bg-[#3154DC] text-white font-bold text-lg md:text-xl hover:bg-[#3154DC]/90 w-full sm:w-auto"
+            className="h-14 px-10 rounded-2xl bg-[#3154DC] text-white font-bold text-lg md:text-xl hover:bg-[#3154DC]/90 w-full sm:w-auto transform backface-visibility-hidden antialiased shadow-lg shadow-[#3154DC]/10"
           >
             Copiar link
           </Button>

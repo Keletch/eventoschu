@@ -186,8 +186,8 @@ export function useHomeLogic() {
       }
     }
 
-    if (activeStep === '1') {
-      setStep(1);
+    if (activeStep) {
+      setStep(parseInt(activeStep));
     } else if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -200,6 +200,8 @@ export function useHomeLogic() {
       } catch (e) {
         setStep(1);
       }
+    } else {
+      setStep(1);
     }
   }, []);
 
@@ -249,28 +251,40 @@ export function useHomeLogic() {
             setUserData(sanitizedUserData);
           }
           
-          // CRÍTICO: Solo pre-seleccionamos eventos si NO estamos en el Paso 1
-          const activeStep = localStorage.getItem(HOME_STEP_KEY);
-          
-          if (activeStep !== '1') {
-            if (JSON.stringify(result.selectedEvents) !== JSON.stringify(selectedEvents)) {
-              setSelectedEvents(result.selectedEvents || []);
-            }
-            if (JSON.stringify(statuses) !== JSON.stringify(eventStatuses)) {
-              setEventStatuses(statuses);
-            }
-            if (JSON.stringify(dataMap) !== JSON.stringify(eventDataMap)) {
-              setEventDataMap(dataMap);
-            }
-            if (JSON.stringify(survey) !== JSON.stringify(surveyData)) {
-              setSurveyData(survey);
-            }
+            // 🛡️ BLINDAJE TOTAL: Si el usuario está en el Paso 1, RESPETARLO.
+            // No importa si Clerk dice que ya está registrado, si él quiere estar en el 1, se queda en el 1.
+            const activeStep = localStorage.getItem(HOME_STEP_KEY);
             
-            if (result.selectedEvents?.length > 0) {
-              setSelectedCityId(prev => prev || result.selectedEvents[0]);
+            if (activeStep === '1') {
+              console.log("[useHomeLogic] 🛡️ Respetando Paso 1 solicitado por el usuario. No redirigiendo.");
+              // Aún así sincronizamos los datos en segundo plano para que el State sea correcto
+              if (JSON.stringify(sanitizedUserData) !== JSON.stringify(userData)) setUserData(sanitizedUserData);
+              return; 
             }
-            changeStep(2);
-          }
+
+            if (result.selectedEvents?.length > 0) {
+              if (JSON.stringify(result.selectedEvents) !== JSON.stringify(selectedEvents)) {
+                setSelectedEvents(result.selectedEvents || []);
+              }
+              if (JSON.stringify(statuses) !== JSON.stringify(eventStatuses)) {
+                setEventStatuses(statuses);
+              }
+              if (JSON.stringify(dataMap) !== JSON.stringify(eventDataMap)) {
+                setEventDataMap(dataMap);
+              }
+              if (JSON.stringify(survey) !== JSON.stringify(surveyData)) {
+                setSurveyData(survey);
+              }
+              
+              if (result.selectedEvents?.length > 0) {
+                setSelectedCityId(prev => prev || result.selectedEvents[0]);
+              }
+              
+              // Solo forzamos Paso 2 si NO hay un paso definido o si estamos en el 2
+              if (!activeStep || activeStep === '2') {
+                changeStep(2);
+              }
+            }
 
           localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
             userData: sanitizedUserData,
@@ -386,13 +400,19 @@ export function useHomeLogic() {
       // 🎯 Inteligencia de selección: Priorizar el evento que se acaba de añadir
       const oldSelectedEvents = userData?.selectedEvents || [];
       const newlyAddedId = selectedEvents.find(id => !oldSelectedEvents.includes(id));
-      const idToSelect = newlyAddedId || finalSelectedEvents[0];
+      
+      // Si es un registro nuevo (invitado), seleccionamos el primero de su lista
+      // Si es una actualización, seleccionamos específicamente el NUEVO
+      const idToSelect = newlyAddedId || selectedEvents[0] || finalSelectedEvents[0];
 
       setUserData(newUser);
       setEventStatuses(finalStatuses);
       setEventDataMap(finalEventData);
       setSurveyData(finalSurvey);
-      if (idToSelect) setSelectedCityId(idToSelect);
+      
+      if (idToSelect) {
+        setSelectedCityId(idToSelect);
+      }
 
       localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
         userData: newUser,
@@ -458,12 +478,13 @@ export function useHomeLogic() {
 
   const startNewRegistration = () => {
     localStorage.removeItem(HOME_STORAGE_KEY);
+    // 🎯 En lugar de remover el paso, lo fijamos en 1 para que sea persistente tras recarga
+    changeStep(1); 
     setUserData(null);
     setSelectedEvents([]);
     setEventStatuses({});
     setEventDataMap({});
     setSelectedCityId("");
-    changeStep(1);
     setIsCheckMode(false);
   };
 
@@ -502,33 +523,60 @@ export function useHomeLogic() {
   };
 
   /**
-   * 🔄 Sincronizador de Estado de Registro (Realtime)
-   * Asegura que la selección de eventos sea válida tras cambios administrativos.
+   * 🔄 Orquestador de Sincronización Realtime (Full State)
    */
-  const syncRegistrationState = useCallback((newSelectedEvents: string[]) => {
-    if (!newSelectedEvents || newSelectedEvents.length === 0) {
-      // 🚨 Si ya no hay eventos, limpiamos y volvemos al inicio
-      // Silenciamos este toast porque ya se envía una notificación premium específica (verde)
+  const syncRegistrationData = useCallback((payload: any) => {
+    if (!payload) return;
+    console.log("[useHomeLogic] 🔄 Sincronizando datos Realtime:", payload);
+
+    // A. Manejo de Purga o Usuario sin eventos
+    if (payload.selected_events && payload.selected_events.length === 0) {
+      console.log("[useHomeLogic] 🧹 Purgando registro por señal del servidor.");
       startNewRegistration();
       return;
     }
 
-    // 1. Actualizar la lista de eventos
-    setSelectedEvents(newSelectedEvents);
-
-    // 2. Verificar si el evento actual sigue siendo válido
-    const isCurrentValid = newSelectedEvents.includes(selectedCityId);
-    if (!isCurrentValid) {
-      // 🎯 Si el actual ya no existe, seleccionamos el primero de la nueva lista
-      setSelectedCityId(newSelectedEvents[0]);
+    // B. Sincronización de lista de eventos y carrusel
+    if (payload.selected_events) {
+      console.log("[useHomeLogic] 📍 Actualizando eventos seleccionados:", payload.selected_events);
+      setSelectedEvents(payload.selected_events);
+      if (!payload.selected_events.includes(selectedCityId)) {
+        setSelectedCityId(payload.selected_events[0]);
+      }
     }
 
-    // 3. Sincronizar LocalStorage para persistencia
-    const current = JSON.parse(localStorage.getItem(HOME_STORAGE_KEY) || '{}');
-    localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
-      ...current,
-      selectedEvents: newSelectedEvents
-    }));
+    // C. Sincronización de Estados (Pendiente/Confirmado)
+    if (payload.event_statuses) {
+      console.log("[useHomeLogic] 📊 Actualizando estados de eventos:", payload.event_statuses);
+      setEventStatuses(prev => ({ ...prev, ...payload.event_statuses }));
+    }
+
+    // D. Sincronización de Datos Específicos
+    if (payload.event_data) {
+      console.log("[useHomeLogic] 📝 Actualizando datos específicos de eventos.");
+      setEventDataMap(prev => ({ ...prev, ...payload.event_data }));
+    }
+
+    // E. Actualización de Datos de Usuario (Perfil)
+    if (payload.userData || payload.email) {
+      console.log("[useHomeLogic] 👤 Actualizando datos de perfil.");
+      setUserData((prev: any) => ({ ...prev, ...(payload.userData || payload) }));
+    }
+
+    // F. Persistencia en LocalStorage para consistencia
+    const saved = localStorage.getItem(HOME_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
+          ...parsed,
+          selectedEvents: payload.selected_events || parsed.selectedEvents,
+          eventStatuses: payload.event_statuses ? { ...parsed.eventStatuses, ...payload.event_statuses } : parsed.eventStatuses,
+          eventDataMap: payload.event_data ? { ...parsed.eventDataMap, ...payload.event_data } : parsed.eventDataMap,
+          userData: (payload.userData || payload.email) ? { ...parsed.userData, ...(payload.userData || payload) } : parsed.userData
+        }));
+      } catch (e) {}
+    }
   }, [selectedCityId, startNewRegistration]);
 
   return {
@@ -562,7 +610,7 @@ export function useHomeLogic() {
     // Handlers
     fetchData,
     revalidateStatus,
-    syncRegistrationState, // 🚀 Expuesto para sincronización RT
+    syncRegistrationData, // 🚀 Orquestador robusto expuesto para RT
     handleRegistration,
     handleCheckRegistration,
     startNewRegistration,

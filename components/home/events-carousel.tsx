@@ -169,7 +169,7 @@ export function EventsCarousel({
                 <div
                   key={event.id}
                   id={`event-${event.id}`}
-                  className="event-card-wrapper min-w-[320px] md:min-w-[420px] snap-center will-change-transform"
+                  className="event-card-wrapper min-w-[320px] md:min-w-[420px] snap-center transform backface-visibility-hidden"
                 >
                   <EventCard
                     id={event.id}

@@ -1,12 +1,7 @@
 'use server';
 
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { broadcastToAdmins, broadcastToUser } from "./utils-realtime";
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 /**
  * 🏢 Base para insertar en la tabla de admin_notifications (Auditoría)
@@ -93,21 +88,31 @@ export async function getNotifications(ids: { clerkId?: string, registrationId?:
       .limit(30);
 
     if (!isAdmin) {
-      if (ids.clerkId && ids.registrationId) {
-        query = query.or(`user_id.eq.${ids.clerkId},registration_id.eq.${ids.registrationId}`);
-      } else if (ids.clerkId) {
-        query = query.eq('user_id', ids.clerkId);
-      } else if (ids.registrationId) {
-        query = query.eq('registration_id', ids.registrationId);
-      } else {
+      const conditions = [];
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+      if (ids.clerkId) {
+        conditions.push(`user_id.eq.${ids.clerkId}`);
+      }
+      
+      if (ids.registrationId && uuidRegex.test(ids.registrationId)) {
+        conditions.push(`registration_id.eq.${ids.registrationId}`);
+      }
+
+      if (conditions.length > 0) {
+        query = query.or(conditions.join(','));
+      } else if (!ids.clerkId && !ids.registrationId) {
+        // Si no hay IDs en modo usuario, devolvemos vacío por seguridad
         return { success: true, data: [] };
       }
     }
 
     const { data, error } = await query;
     if (error) throw error;
-    return { success: true, data };
+    
+    return { success: true, data: data || [] };
   } catch (err: any) {
+    console.error(`❌ Error fetching notifications [${isAdmin ? 'ADMIN' : 'USER'}]:`, err);
     return { success: false, error: err.message };
   }
 }
@@ -142,11 +147,15 @@ export async function markAllAsRead(ids: { clerkId?: string, registrationId?: st
       .eq('read', false);
 
     if (!isAdmin) {
-      if (ids.clerkId && ids.registrationId) {
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const hasValidClerk = !!ids.clerkId;
+      const hasValidUUID = ids.registrationId && uuidRegex.test(ids.registrationId);
+
+      if (hasValidClerk && hasValidUUID) {
         query = query.or(`user_id.eq.${ids.clerkId},registration_id.eq.${ids.registrationId}`);
-      } else if (ids.clerkId) {
+      } else if (hasValidClerk) {
         query = query.eq('user_id', ids.clerkId);
-      } else if (ids.registrationId) {
+      } else if (hasValidUUID) {
         query = query.eq('registration_id', ids.registrationId);
       } else {
         return { success: true };

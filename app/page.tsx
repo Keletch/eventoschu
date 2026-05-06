@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { getEvents } from "@/app/actions/events";
@@ -47,48 +47,41 @@ export default function Home() {
   });
 
   // B. Canal Privado (Estado del Usuario)
+  const userIds = [home.userData?.id, home.user?.id, home.userData?.email].filter(Boolean) as string[];
+  
+  useEffect(() => {
+    console.log("[Home] 🔑 Estado de Identidad:", {
+      uuid: home.userData?.id,
+      clerkId: home.user?.id,
+      email: home.userData?.email,
+      totalIds: userIds.length
+    });
+  }, [home.userData?.id, home.user?.id, home.userData?.email]);
+
   usePersonalRealtime({
-    userId: home.userData?.id || home.user?.id,
+    userId: userIds,
     onUpdate: (payload: any) => {
+      console.log("[Home] 📥 Update recibido por Realtime:", payload);
       if (!payload) return;
-      
-      const newStatuses = payload.event_statuses;
-      const newEventData = payload.event_data;
-      const newSelectedEvents = payload.selected_events; // 🚀 Nueva lista de eventos
-      
-      if (newStatuses) {
-        if (JSON.stringify(newStatuses) !== JSON.stringify(home.eventStatusesRef.current)) {
-          home.setEventStatuses(newStatuses);
-        }
-      }
-
-      if (newEventData) {
-        if (JSON.stringify(newEventData) !== JSON.stringify(home.eventDataMapRef.current)) {
-          home.setEventDataMap(newEventData);
-        }
-      }
-
-      if (newSelectedEvents) {
-        // 🛡️ Sincronizar el carrusel y validar selección al instante
-        home.syncRegistrationState(newSelectedEvents);
-      }
+      home.syncRegistrationData(payload);
     },
     onNotification: (notif: any) => {
-      // 🚀 1. Actualizar indicadores y carrusel si la notificación trae datos nuevos
-      if (notif && notif.event_statuses) {
-        if (JSON.stringify(notif.event_statuses) !== JSON.stringify(home.eventStatusesRef.current)) {
-          home.setEventStatuses(notif.event_statuses);
-        }
+      console.log("[Home] 🔔 Notificación recibida por Realtime:", notif);
+      if (!notif) return;
+
+      // 1. Sincronizar estados y datos si vienen en la notificación
+      home.syncRegistrationData(notif);
+
+      // 2. Transición automática si es necesario
+      if (notif.selected_events && notif.selected_events.length === 0) {
+        home.setStep(1);
       }
 
-      if (notif && notif.selected_events) {
-        // 🛡️ Si el administrador borró o añadió un evento, refrescamos y validamos
-        home.syncRegistrationState(notif.selected_events);
-      }
-
-      // 🚀 2. Mostrar toaster PREMIUM en tiempo real
-      if (notif && notif.title) {
-        toast.success(notif.title, {
+      // 3. Mostrar toaster PREMIUM
+      if (notif.is_notification || notif.title) {
+        const toastFn = (toast as any)[notif.type] || toast.success;
+        toastFn(notif.title || "Notificación", {
+          id: notif.id ? `notif-${notif.id}` : undefined,
           description: notif.message,
           duration: 8000,
         });
@@ -96,9 +89,25 @@ export default function Home() {
     }
   });
 
+  // 🚀 REACCIÓN AL CAMBIO DE PASO (Admin Purge / Sync)
+  useEffect(() => {
+    if (home.step === 1) {
+      gsap.to(ANIM_SELECTORS.step2, { opacity: 0, duration: 0.3 });
+      gsap.to(ANIM_SELECTORS.step1, { opacity: 1, duration: 0.3 });
+    }
+  }, [home.step]);
+
   const handleRegistrationSubmit = contextSafe(async (data: any, token: string) => {
     const res = await home.handleRegistration(data, token);
     if (res.success) {
+      // 🚀 Lanzar Toast manual para invitados (evita perder la señal por tiempos de suscripción)
+      if (!home.isSignedIn) {
+        toast.success("¡Registro Exitoso!", {
+          description: "Tu solicitud ha sido recibida correctamente.",
+          duration: 8000,
+        });
+      }
+
       gsap.to(ANIM_SELECTORS.step1, { 
         opacity: 0, 
         y: -ANIM_CONFIG.offset.sweep, 

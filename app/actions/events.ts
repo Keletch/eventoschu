@@ -1,17 +1,13 @@
 "use server";
 
 import { Redis } from "@upstash/redis";
-import { createClient } from "@supabase/supabase-js";
 
 const redis = new Redis({
   url: process.env.KV_REST_API_URL!,
   token: process.env.KV_REST_API_TOKEN!,
 });
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const EVENTS_CACHE_KEY = "events_list_v2";
 const CACHE_TTL = 3600; // 1 hora

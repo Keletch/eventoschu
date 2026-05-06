@@ -65,15 +65,18 @@ export function CategoryTabs({
               key={category}
               onClick={() => setActiveCategory(category)}
               className={cn(
-                "category-tab-btn px-6 py-2.5 rounded-2xl text-sm font-bold transition-all duration-500 relative overflow-hidden group border whitespace-nowrap will-change-transform transform-gpu backface-visibility-hidden",
+                "category-tab-btn px-7 py-3 rounded-[18px] text-sm font-bold transition-all duration-500 relative group border whitespace-nowrap",
+                "transform backface-visibility-hidden antialiased subpixel-antialiased select-none", 
                 isActive
-                  ? "bg-black text-white border-black shadow-md shadow-black/20 scale-[1.03] z-10"
-                  : "bg-white text-gray-500 hover:text-black border-gray-100 hover:border-gray-200 scale-100"
+                  ? "bg-black text-white border-black shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5),0_4px_10px_-5px_rgba(0,0,0,0.3)] scale-[1.05] z-10"
+                  : "bg-white text-gray-500 hover:text-black border-gray-100 hover:border-gray-200 hover:shadow-[0_8px_20px_-10px_rgba(0,0,0,0.1)] scale-100"
               )}
             >
-              <span className="relative z-10 antialiased">{category}</span>
+              <span className="relative z-10">{category}</span>
               {isActive && (
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <div className="absolute inset-0 rounded-[18px] overflow-hidden pointer-events-none">
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                </div>
               )}
             </button>
           );

@@ -48,7 +48,7 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
           {notification.message}
         </p>
         <p className="text-[10px] text-slate-400 font-medium">
-          {formatRelativeTime(notification.created_at)}
+          {formatRelativeTime(notification.created_at || (notification as any).metadata?.dispatched_at || new Date().toISOString())}
         </p>
       </div>
       <div className="absolute right-2 top-4 flex flex-col gap-1">

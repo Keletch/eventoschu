@@ -1,15 +1,11 @@
 'use server';
 
-import { createClient } from "@supabase/supabase-js";
 import { auth } from "@clerk/nextjs/server";
 import { syncKeapTags } from "./keap";
 import { notifyAdminEmailSynced, notifyAdminAccountLinked } from "./admin-notifications";
-import { notifyUserEmailChanged } from "./user-notifications";
+import { dispatchSignal } from "@/lib/services/signal-dispatcher";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 /**
  * 📧 Sincroniza el cambio de email de Clerk hacia Supabase y Keap
@@ -92,7 +88,10 @@ export async function updateUserEmail(clerkId: string, newEmail: string, fromWeb
 
     // 4. Notificaciones
     await notifyAdminEmailSynced(oldEmail, emailFormatted);
-    await notifyUserEmailChanged({ registrationId: existing.id, clerkId }, oldEmail, emailFormatted);
+    await dispatchSignal('EMAIL_UPDATED', {
+      targetIds: [existing.id, clerkId],
+      metadata: { newEmail: emailFormatted }
+    });
     
     return { success: true };
   } catch (err: any) {

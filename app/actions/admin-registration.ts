@@ -1,28 +1,25 @@
 'use server';
 
-import { createClient } from "@supabase/supabase-js";
 import { createSupabaseServer } from "@/lib/supabase-server";
-
-import { processKeapStatusTransitions } from "./keap";
+import { processKeapStatusTransitions, syncKeapTags } from "./keap";
 import { 
   notifyAdminRegistrationModified, 
   notifyAdminWaitlistActivated 
 } from "./admin-notifications";
-import { 
-  notifyUserConfirmed,
-  notifyUserRemovedFromEvent
-} from "./user-notifications";
-import { broadcastToUser } from "./utils-realtime";
+import { formatEventForNotification } from "./utils";
+import { broadcastToUser, broadcastToPublic } from "./utils-realtime";
+import { dispatchSignal } from "@/lib/services/signal-dispatcher";
+import { verifyAdminPermission } from "./admin-check";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 /**
  * 📋 Obtiene todos los registros para el dashboard
  */
 export async function getRegistrations() {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     const { data, error } = await supabaseAdmin
       .from('registrations')
@@ -65,6 +62,9 @@ export async function getRegistrationsCount() {
  * 🛠️ Actualiza un registro desde el Panel de Administración (Gestión de Estados)
  */
 export async function updateRegistration(id: string, data: any) {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     const { data: currentReg } = await supabaseAdmin.from('registrations').select('*').eq('id', id).single();
     if (!currentReg) throw new Error("Registro no encontrado");
@@ -124,8 +124,8 @@ export async function updateRegistration(id: string, data: any) {
         const evInfo = eventDetails.find(e => e.id === eventId);
         // Si el evento es Modo Abierto (initial_status === confirmed)
         if (evInfo && evInfo.initial_status === 'confirmed') {
-          // Notificar al usuario removido
-          await notifyUserRemovedFromEvent({ registrationId: id, clerkId: currentReg.clerk_id }, evInfo);
+          // 🚀 SEÑAL CONSOLIDADA: Ya no notificamos aquí individualmente al usuario editado.
+          // El bloque "5. Notificación Consolidada" al final se encarga de enviarle UN solo mensaje.
 
           // Buscar usuarios en espera para este evento
           const { data: waitlist } = await supabaseAdmin
@@ -133,7 +133,7 @@ export async function updateRegistration(id: string, data: any) {
             .select('*')
             .contains('selected_events', [eventId]);
           
-          const pendingUsers = (waitlist || []).filter(r => r.id !== id && r.event_statuses?.[eventId] === 'pending');
+          const pendingUsers = (waitlist || []).filter(r => r.id !== (id as string) && r.event_statuses?.[eventId] === 'pending');
 
           if (pendingUsers.length > 0) {
             // Selección aleatoria
@@ -149,7 +149,6 @@ export async function updateRegistration(id: string, data: any) {
 
             // Sincronizar Keap para el afortunado
             if (evInfo.keap_tag_id) {
-              const { syncKeapTags } = await import("./keap");
               await syncKeapTags({
                 email: luckyUser.email,
                 firstName: luckyUser.first_name,
@@ -159,46 +158,73 @@ export async function updateRegistration(id: string, data: any) {
               }, [evInfo.keap_pending_tag_id].filter(Boolean), [evInfo.keap_tag_id]);
             }
 
-            // Notificaciones con estados actualizados para tiempo real
-            await notifyUserConfirmed({ registrationId: luckyUser.id, clerkId: luckyUser.clerk_id }, [evInfo], luckyStatuses);
+            // 📢 Notificación con el nuevo Dispatcher
+            await dispatchSignal('EVENT_CONFIRMED', {
+              targetIds: [luckyUser.id, luckyUser.clerk_id],
+              metadata: { eventNames: formatEventForNotification(evInfo) },
+              realtimePayload: {
+                event_statuses: luckyStatuses,
+                selected_events: luckyUser.selected_events
+              }
+            });
             await notifyAdminWaitlistActivated(adminEmail, evInfo, data.email || currentReg.email, luckyUser.email);
           }
         }
       }
     }
 
-    // 5. Notificaciones de la acción original
-    const confirmedIds = allRelevantEventIds.filter(id => updatedStatuses[id] === 'confirmed' && currentReg.event_statuses?.[id] !== 'confirmed');
-    if (confirmedIds.length > 0) {
-      const { data: eventsInfo } = await supabaseAdmin.from('events').select('title, city, country, start_date, categories(name)').in('id', confirmedIds);
-      await notifyUserConfirmed({ registrationId: currentReg.id, clerkId: currentReg.clerk_id }, eventsInfo || [], updatedStatuses);
-    }
+    // 5. Notificación Consolidada al Usuario (Single Atomic Signal)
+    const confirmedIds = allRelevantEventIds.filter((id: string) => updatedStatuses[id] === 'confirmed' && currentReg.event_statuses?.[id] !== 'confirmed');
+    const removedIds = allRelevantEventIds.filter((id: string) => currentReg.event_statuses?.[id] === 'confirmed' && updatedStatuses[id] !== 'confirmed');
+    
+    // 📢 Caso especial: Si el administrador ELIMINÓ eventos físicamente (purga)
+    const purgedIds = (currentReg.selected_events || []).filter((id: string) => !allRelevantEventIds.includes(id));
+    const allRemovals = Array.from(new Set([...removedIds, ...purgedIds]));
 
-    // 6. Sincronización Realtime (Indicadores y Estados)
-    const changedEventIds = allRelevantEventIds.filter(id => currentReg.event_statuses?.[id] !== updatedStatuses[id]);
+    const changedEventIds = allRelevantEventIds.filter((id: string) => currentReg.event_statuses?.[id] !== updatedStatuses[id]);
     const personalDataChanged = currentReg.first_name !== data.first_name || currentReg.last_name !== data.last_name;
 
-    if (personalDataChanged || changedEventIds.length > 0) {
-      const { data: changedEventsInfo } = await supabaseAdmin.from('events').select('id, title, city, country, start_date, categories(name)').in('id', changedEventIds);
-      const statusChanges = (changedEventsInfo || []).map(e => ({ event: e, status: updatedStatuses[e.id] }));
-      
-      // Notificar al administrador del cambio
-      await notifyAdminRegistrationModified(adminEmail, data.email || currentReg.email, personalDataChanged, statusChanges);
-      
-      // 📢 Notificar al usuario (Sincronización de Indicadores en tiempo real)
-      // Enviamos a ambos IDs (UUID y Clerk ID) para asegurar que llegue a todos los hooks del cliente
+    if (confirmedIds.length > 0 || allRemovals.length > 0 || personalDataChanged) {
+      // 🎯 Obtenemos info de eventos para el mensaje (incluyendo los purgados si es posible)
+      const { data: eventsInfo } = await supabaseAdmin.from('events').select('*, categories(name)').in('id', Array.from(new Set([...allRelevantEventIds, ...purgedIds])));
       const targets = [currentReg.id, currentReg.clerk_id].filter(Boolean) as string[];
-      if (targets.length > 0) {
+
+      if (confirmedIds.length > 0 || allRemovals.length > 0) {
+        const removalDetails = eventsInfo?.filter(e => allRemovals.includes(e.id)).map(e => formatEventForNotification(e)).join(', ');
+        const confirmationDetails = eventsInfo?.filter(e => confirmedIds.includes(e.id)).map(e => formatEventForNotification(e)).join(', ');
+
+        // 🚀 Despacho de Señal Atómica (Templates centralizados)
+        await dispatchSignal(allRemovals.length > 0 ? 'EVENT_REMOVED' : 'EVENT_CONFIRMED', {
+          targetIds: targets,
+          metadata: {
+            eventNames: allRemovals.length > 0 ? removalDetails : confirmationDetails,
+            context: allRemovals.length > 0 ? "del registro" : ""
+          },
+          realtimePayload: {
+            event_statuses: updatedStatuses,
+            selected_events: allRelevantEventIds,
+            event_data: updatedEventData
+          }
+        });
+      } else {
+        // B. Actualización Silenciosa (Solo Datos/UI)
         await broadcastToUser(targets, {
-          id: currentReg.id,
+          msg_id: globalThis.crypto.randomUUID(),
           event_statuses: updatedStatuses,
-          event_data: currentReg.event_data // Mantener datos extra
+          selected_events: allRelevantEventIds,
+          event_data: updatedEventData
         });
       }
+
+      // C. Notificar al Admin (Auditoría)
+      const statusChanges = (eventsInfo || []).filter(e => changedEventIds.includes(e.id)).map(e => ({ event: e, status: updatedStatuses[e.id] }));
+      await notifyAdminRegistrationModified(adminEmail, data.email || currentReg.email, personalDataChanged, statusChanges);
     }
+    await broadcastToPublic();
 
     return { success: true };
   } catch (err: any) {
+    console.error("❌ Error en updateRegistration:", err);
     return { success: false, error: err.message };
   }
 }

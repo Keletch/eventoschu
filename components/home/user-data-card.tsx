@@ -58,14 +58,14 @@ export function UserDataCard({
   const displayLabel = eventConfig.statusLabels[status as RegistrationStatus] || badgeConfig.label;
 
   return (
-    <div className="max-w-[1372px] mx-auto bg-white rounded-[32px] p-8 md:p-12 lg:p-16 relative user-data-container border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+    <div className="max-w-[1372px] mx-auto bg-white rounded-[32px] p-8 md:p-12 lg:p-16 relative user-data-container border border-neutral-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] transform backface-visibility-hidden antialiased">
       {/* Badge de estado — esquina superior derecha en md+ */}
       <div className="md:absolute md:top-10 md:right-10 mb-8 md:mb-0 flex justify-center md:justify-end">
         {isLoadingEvents ? (
           <Skeleton className="h-10 w-32 md:w-40 rounded-2xl bg-neutral-200/50" />
         ) : (
           <div className="flex flex-col items-center md:items-end gap-2">
-            <div className={cn("px-5 py-2 md:px-6 md:py-2 rounded-2xl font-bold text-base md:text-lg flex items-center gap-2 transition-all duration-500", badgeConfig.bg, badgeConfig.text)}>
+            <div className={cn("px-5 py-2 md:px-6 md:py-2 rounded-2xl font-bold text-base md:text-lg flex items-center gap-2 transition-all duration-500 transform backface-visibility-hidden", badgeConfig.bg, badgeConfig.text)}>
               {badgeConfig.icon}
               {displayLabel}
             </div>

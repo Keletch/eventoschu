@@ -52,12 +52,24 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+
+      // 🛡️ VERIFICACIÓN DE LISTA BLANCA (NUEVO)
+      const { data: adminData, error: adminError } = await supabase
+        .from('admins')
+        .select('email')
+        .eq('email', email.toLowerCase().trim())
+        .single();
+
+      if (adminError || !adminData) {
+        await supabase.auth.signOut();
+        throw new Error("No tienes permisos de administrador. Contacta al propietario.");
+      }
 
       toast.success("Bienvenido al panel de control");
 

@@ -75,6 +75,12 @@ export function useUserNotifications(propRegistrationId?: string | null) {
     registrationId: stableUserId 
   };
 
+  useEffect(() => {
+    if (ids.clerkId || ids.registrationId) {
+      console.log(`[useUserNotifications] 🎯 IDs Estables detectados:`, ids);
+    }
+  }, [ids.clerkId, ids.registrationId]);
+
   const {
     notifications,
     unreadCount,
@@ -84,11 +90,20 @@ export function useUserNotifications(propRegistrationId?: string | null) {
     addNotificationLocally
   } = useNotifications(false, ids);
 
-  // Sincronización Realtime (Canal Privado)
+  // 3. Sincronización Realtime (Canal Privado Multicanal)
+  // Obtenemos el email disponible para escuchar el canal de emergencia
+  const email = typeof window !== 'undefined' ? (function() {
+    try {
+      const saved = localStorage.getItem('chu_registration');
+      return saved ? JSON.parse(saved).userData?.email : null;
+    } catch (e) { return null; }
+  })() : null;
+
   usePersonalRealtime({
-    userId: stableUserId || clerkId || undefined,
-    onUpdate: () => {}, // En este componente solo nos interesan las notificaciones
+    userId: [stableUserId, clerkId, email].filter(Boolean) as string[],
+    onUpdate: () => {}, 
     onNotification: (notif: any) => {
+      console.log(`[useUserNotifications] 🔔 Notificación recibida vía RT:`, notif);
       addNotificationLocally(notif);
     }
   });

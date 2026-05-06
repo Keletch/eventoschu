@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { supabase } from "@/lib/supabase";
 
 interface PersonalRealtimeProps {
-  userId?: string; // UUID o ClerkID
+  userId?: string | string[]; // UUID o ClerkID (ahora soporta múltiples)
   onUpdate: (payload: any) => void;
   onNotification?: (notification: any) => void;
 }
@@ -17,6 +17,9 @@ interface PersonalRealtimeProps {
 export function usePersonalRealtime({ userId, onUpdate, onNotification }: PersonalRealtimeProps) {
   const onUpdateRef = useRef(onUpdate);
   const onNotificationRef = useRef(onNotification);
+  const lastProcessedId = useRef<string | null>(null);
+  const activeChannels = useRef<any[]>([]);
+  const currentIdsJson = useRef<string>("");
 
   useEffect(() => {
     onUpdateRef.current = onUpdate;
@@ -24,28 +27,64 @@ export function usePersonalRealtime({ userId, onUpdate, onNotification }: Person
   }, [onUpdate, onNotification]);
 
   useEffect(() => {
-    if (!userId || userId === 'guest') return;
+    const ids = Array.isArray(userId) ? userId : [userId];
+    const cleanIds = Array.from(new Set(ids.filter(id => id && id !== 'guest'))) as string[];
+    const newIdsJson = JSON.stringify(cleanIds.sort());
+    
+    // 🛡️ Solo reconectar si los IDs cambiaron de verdad
+    if (newIdsJson === currentIdsJson.current && activeChannels.current.length > 0) {
+      return;
+    }
 
-    const channel = supabase
-      .channel(`user-private:${userId}`)
-      .on(
-        'broadcast',
-        { event: 'personal-update' },
-        (payload) => {
-          if (onUpdateRef.current) onUpdateRef.current(payload.payload);
-        }
-      )
-      .on(
-        'broadcast',
-        { event: 'new-notification' },
-        (payload) => {
-          if (onNotificationRef.current) onNotificationRef.current(payload.payload);
-        }
-      )
-      .subscribe();
+    // 🧹 Limpiar canales anteriores antes de abrir nuevos
+    activeChannels.current.forEach(ch => supabase.removeChannel(ch));
+    activeChannels.current = [];
+    currentIdsJson.current = newIdsJson;
+
+    if (cleanIds.length === 0) return;
+
+    console.log(`[Realtime-Client] 🚀 Iniciando suscripción estable para:`, cleanIds);
+
+    const channels = cleanIds.map(id => {
+      const channelName = `user-private:${id}`;
+      
+      const channel = supabase
+        .channel(channelName)
+        .on(
+          'broadcast',
+          { event: 'personal-update' },
+          (payload) => {
+            const data = payload.payload;
+            console.log(`[Realtime-Client] 🔄 Update recibido [${channelName}]:`, data);
+            
+            if (data.msg_id && data.msg_id === lastProcessedId.current) return;
+            if (data.msg_id) lastProcessedId.current = data.msg_id;
+
+            if (onUpdateRef.current) onUpdateRef.current(data);
+          }
+        )
+        .on(
+          'broadcast',
+          { event: 'new-notification' },
+          (payload) => {
+            const data = payload.payload;
+            console.log(`[Realtime-Client] 🔔 Notificación recibida [${channelName}]:`, data);
+            if (onNotificationRef.current) onNotificationRef.current(data);
+          }
+        );
+
+      channel.subscribe((status) => {
+        console.log(`[Realtime-Client] 🔌 Estatus canal ${channelName}: ${status}`);
+      });
+      
+      return channel;
+    });
+
+    activeChannels.current = channels;
 
     return () => {
-      supabase.removeChannel(channel);
+      // No cerramos inmediatamente para evitar parpadeos en HMR, 
+      // pero React lo llamará al desmontar de verdad.
     };
-  }, [userId]);
+  }, [userId]); // El JSON.stringify interno maneja la estabilidad
 }

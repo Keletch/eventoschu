@@ -102,7 +102,7 @@ export function HeroSection({
               const email = user?.primaryEmailAddress?.emailAddress;
               if (email) revalidateStatus(email);
             }}
-            className="bg-[#3154DC] text-white font-bold h-14 px-10 rounded-2xl shadow-xl shadow-[#3154DC]/20 hover:scale-105 hover:bg-[#3154DC]/90 transition-all flex items-center gap-3 text-lg"
+            className="bg-[#3154DC] text-white font-bold h-14 px-10 rounded-2xl shadow-[0_10px_20px_-5px_rgba(49,84,220,0.2)] hover:scale-[1.03] hover:bg-[#3154DC]/90 transition-all flex items-center gap-3 text-lg transform backface-visibility-hidden antialiased"
           >
             <Ticket className="size-6" />
             Mis registros
@@ -113,7 +113,7 @@ export function HeroSection({
           <Button
             onClick={() => setIsCheckMode(true)}
             variant="link"
-            className="text-[#3154DC] font-bold text-lg hover:no-underline hover:text-[#3154DC]/80"
+            className="text-[#3154DC] font-bold text-lg hover:no-underline hover:text-[#3154DC]/80 transform backface-visibility-hidden antialiased"
           >
             ¿Ya te registraste? Consulta tu estado
           </Button>

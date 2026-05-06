@@ -70,7 +70,7 @@ import { CategoryTabs } from "./category-tabs";
    isTransitioning,
  }: PublicViewProps) {
    return (
-     <div className="step-1 space-y-8 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <div className="step-1 space-y-8 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 antialiased">
        {/* ── Sección Hero ─────────────────────────────────── */}
        <HeroSection
          isSignedIn={isSignedIn}
@@ -129,7 +129,7 @@ import { CategoryTabs } from "./category-tabs";
                 {/* ── Formulario de registro ──────────────────── */}
                 <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-10 pt-10 border-t border-neutral-200">
                   <h2 className="text-2xl md:text-3xl font-medium text-gray-950">Registro</h2>
-                  <div className="bg-white rounded-[32px] p-8 md:p-16 shadow-lg">
+                  <div className="bg-white rounded-[32px] p-8 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-neutral-100">
                     <RegistrationForm
                       onSubmit={handleRegistration}
                       isLoading={isSubmitting}

@@ -1,6 +1,5 @@
 'use server';
 
-import { createClient } from "@supabase/supabase-js";
 import { auth } from "@clerk/nextjs/server";
 import { registrationSchema } from "./schemas";
 import { validateTurnstileToken } from "./turnstile";
@@ -10,14 +9,12 @@ import {
   notifyAdminSurveyCompleted, 
   notifyAdminSpecificDataUpdate 
 } from "./admin-notifications";
-import { notifyUserRegistrationSuccess } from "./user-notifications";
 import { formatEventForNotification } from "./utils";
 import { broadcastToAdmins, broadcastToUser, broadcastToPublic } from "./utils-realtime";
+import { getEventUIConfig } from "@/lib/event-config";
+import { dispatchSignal } from "@/lib/services/signal-dispatcher";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 /**
  * 🚀 Crea o actualiza un registro desde el formulario público
@@ -120,20 +117,29 @@ export async function createRegistration(data: any, turnstileToken: string) {
 
         await syncKeapTags(validatedData, [], tagsToAdd);
         await notifyAdminNewRegistration(validatedData.email, newlyAddedEvents);
-        await notifyUserRegistrationSuccess(
-          { registrationId: existing.id, clerkId: userId || existing.clerk_id }, 
-          newlyAddedEvents, 
-          alreadyInEvents,
-          mergedEvents,
-          validatedData.first_name
-        );
+
+        // 📢 Notificar al Usuario (Dispatcher EDA)
+        const isWaitingList = newlyAddedEvents.some(e => getEventUIConfig(e).type === 'OPEN');
+        const eventNames = newlyAddedEvents.map(e => formatEventForNotification(e)).join(', ');
+
+        await dispatchSignal('REGISTRATION_SUCCESS', {
+          targetIds: [existing.id, userId || existing.clerk_id],
+          metadata: {
+            email: validatedData.email, // 🚀 Canal de emergencia activado
+            eventNames,
+            isWaitingList
+          },
+          realtimePayload: {
+            event_statuses: updatedStatuses,
+            selected_events: mergedEvents,
+            event_data: updatedEventData
+          }
+        });
       }
 
       // 📢 Sincronización Realtime (No bloqueante para el usuario)
-      const targets = [existing.id, existing.clerk_id, userId].filter(Boolean) as string[];
       Promise.all([
         broadcastToAdmins(null),
-        broadcastToUser(targets, null),
         broadcastToPublic()
       ]).catch(err => console.error("Realtime sync error:", err));
 
@@ -187,20 +193,29 @@ export async function createRegistration(data: any, turnstileToken: string) {
 
       await syncKeapTags(validatedData, [], tagsToAdd);
       await notifyAdminNewRegistration(validatedData.email, allEventsInfo || []);
-      await notifyUserRegistrationSuccess(
-        { registrationId: newRegId, clerkId: userId || undefined }, 
-        allEventsInfo || [], 
-        [],
-        validatedData.selected_events,
-        validatedData.first_name // 🚀 Nombre para el saludo
-      );
+      
+      // 📢 Notificación inicial (Dispatcher EDA)
+      const isWaitingList = allEventsInfo?.some(e => getEventUIConfig(e).type === 'OPEN');
+      const eventNames = allEventsInfo?.map(e => formatEventForNotification(e)).join(', ');
+
+      await dispatchSignal('REGISTRATION_SUCCESS', {
+        targetIds: [newRegId, userId || undefined],
+        metadata: {
+          email: validatedData.email, // 🚀 Canal de emergencia activado
+          eventNames,
+          isWaitingList
+        },
+        realtimePayload: {
+          event_statuses: initialStatuses,
+          selected_events: validatedData.selected_events,
+          event_data: initialEventData
+        }
+      });
     }
 
     // 📢 Sincronización Realtime (No bloqueante para el usuario)
-    const targets = [newRegId, userId].filter(Boolean) as string[];
     Promise.all([
       broadcastToAdmins(null),
-      broadcastToUser(targets, null),
       broadcastToPublic()
     ]).catch(err => console.error("Realtime sync error:", err));
 

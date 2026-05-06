@@ -112,14 +112,31 @@ export function useAdminDashboard() {
   }, [registrations, editingReg?.id]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) {
         router.push("/admin/login");
-      } else {
-        setSession(session);
-        fetchData();
-        fetchTags();
+        setIsLoading(false);
+        return;
       }
+
+      // 🛡️ Doble Verificación: Comprobar si sigue siendo Admin en la tabla
+      const { data: adminCheck } = await supabase
+        .from('admins')
+        .select('email')
+        .eq('email', session.user.email?.toLowerCase().trim())
+        .single();
+
+      if (!adminCheck) {
+        await supabase.auth.signOut();
+        router.push("/admin/login");
+        toast.error("Sesión invalidada: No tienes permisos.");
+        setIsLoading(false);
+        return;
+      }
+
+      setSession(session);
+      fetchData();
+      fetchTags();
       setIsLoading(false);
     });
   }, [fetchData, router]);
