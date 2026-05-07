@@ -152,7 +152,21 @@ export default function Home() {
             scrollContainerRef.current.scrollLeft = 0;
             gsap.set('.scroll-progress-fill', { width: '0%' });
           }
-          setTimeout(() => home.setIsTransitioning(false), 400);
+          
+          // 🚀 Animación de ENTRADA para las nuevas tarjetas
+          setTimeout(() => {
+            gsap.fromTo(ANIM_SELECTORS.card, 
+              { opacity: 0, x: ANIM_CONFIG.offset.sweep }, 
+              { 
+                opacity: 1, 
+                x: 0, 
+                duration: ANIM_CONFIG.duration.normal, 
+                stagger: ANIM_CONFIG.offset.stagger,
+                ease: ANIM_CONFIG.ease.out,
+                onComplete: () => home.setIsTransitioning(false)
+              }
+            );
+          }, 50);
         }
       });
     }
@@ -165,7 +179,16 @@ export default function Home() {
       const tl = gsap.timeline({
         onComplete: () => {
           home.setActiveCategory(category);
-          setTimeout(() => home.setIsTransitioning(false), 150);
+          
+          // 🚀 Animación de ENTRADA para las nuevas tarjetas y tabs
+          setTimeout(() => {
+            gsap.fromTo(ANIM_SELECTORS.card, 
+              { opacity: 0, x: ANIM_CONFIG.offset.sweep }, 
+              { opacity: 1, x: 0, duration: ANIM_CONFIG.duration.normal, stagger: ANIM_CONFIG.offset.stagger }
+            );
+            gsap.to(ANIM_SELECTORS.monthTab, { opacity: 1, duration: ANIM_CONFIG.duration.normal });
+            home.setIsTransitioning(false);
+          }, 50);
         }
       });
 
@@ -222,10 +245,10 @@ export default function Home() {
           <Sidebar isOpen={isSidebarOpen} />
           
           <div className={cn(
-            "flex-1 transition-all duration-300 min-w-0",
+            "flex-1 transition-all duration-300 min-w-0 flex flex-col min-h-[calc(100vh-80px)]",
             isSidebarOpen ? "lg:pl-72" : "pl-0"
           )}>
-            <div className="max-w-[1512px] mx-auto px-4 md:px-8 lg:px-12 min-h-[800px]">
+            <div className="max-w-[1512px] w-full mx-auto px-4 md:px-8 lg:px-12 flex-grow">
               {!home.isLoaded || home.step === null || home.events.length === 0 ? (
                 <div className="flex-1 min-h-[800px]" />
               ) : home.step === 1 ? (
@@ -289,7 +312,7 @@ export default function Home() {
               )}
             </div>
             
-            <Footer />
+            {home.isLoaded && <Footer />}
           </div>
         </div>
 

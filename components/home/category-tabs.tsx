@@ -65,13 +65,29 @@ export function CategoryTabs({
               key={category}
               onClick={() => setActiveCategory(category)}
               className={cn(
-                "category-tab-btn px-7 py-3 rounded-[18px] text-sm font-bold transition-all duration-500 relative group border whitespace-nowrap",
-                "transform backface-visibility-hidden antialiased subpixel-antialiased select-none", 
+                "category-tab-btn px-7 py-3 rounded-[18px] text-sm font-bold transition-all duration-500 relative group border whitespace-nowrap select-none", 
                 isActive
-                  ? "bg-black text-white border-black shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5),0_4px_10px_-5px_rgba(0,0,0,0.3)] scale-[1.05] z-10"
-                  : "bg-white text-gray-500 hover:text-black border-gray-100 hover:border-gray-200 hover:shadow-[0_8px_20px_-10px_rgba(0,0,0,0.1)] scale-100"
+                  ? "bg-black text-white border-black scale-[1.02] z-10"
+                  : "bg-white text-gray-500 hover:text-black border-gray-100 hover:border-gray-200 scale-100"
               )}
+              style={{ 
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                transformStyle: 'preserve-3d',
+                transform: isActive ? 'scale(1.02) translateZ(0.01px)' : 'scale(1) translateZ(0.01px)',
+                WebkitFontSmoothing: 'antialiased'
+              }}
             >
+              {/* 🛡️ Capa de Sombra Aislada (Ultra-Discreta) */}
+              <div className={cn(
+                "absolute inset-0 rounded-[18px] -z-10 transition-all duration-500",
+                isActive 
+                  ? "shadow-[0_4px_12px_-2px_rgba(0,0,0,0.12),0_2px_6px_-1px_rgba(0,0,0,0.08)] opacity-100" 
+                  : "shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] opacity-0 group-hover:opacity-100"
+              )} 
+              style={{ backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}
+              />
+
               <span className="relative z-10">{category}</span>
               {isActive && (
                 <div className="absolute inset-0 rounded-[18px] overflow-hidden pointer-events-none">

@@ -171,3 +171,19 @@ body {
   animation: pulse-gentle 3s ease-in-out infinite;
 }
 
+/* 🚀 GSAP Premium Rendering - Automatizado vía ANIM_SELECTORS */
+.event-card-wrapper,
+.month-tab-btn,
+.category-tab-btn,
+.step-1,
+.step-2,
+.hero-check,
+footer {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  will-change: transform;
+}
+
