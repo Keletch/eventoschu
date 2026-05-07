@@ -46,7 +46,7 @@ const CONFIGS: Record<EventType, EventUIConfig> = {
     },
     hero: {
       title: "¡Ya estás\nen la lista!",
-      description: "Te notificaremos por correo en cuanto confirmemos los cupos disponibles, te brindaremos los detalles para confirmar tu asistencia."
+      description: "Te notificaremos por correo todos los detalles y los próximos pasos de tu registro."
     }
   },
   CLOSED: {
@@ -65,7 +65,7 @@ const CONFIGS: Record<EventType, EventUIConfig> = {
     },
     hero: {
       title: "¡Registro\nRecibido!",
-      description: "Estamos revisando tu solicitud. Te avisaremos pronto sobre el estado de tu cupo."
+      description: "Estamos revisando tu solicitud. Te avisaremos por correo sobre el estado de tu cupo."
     }
   }
 };

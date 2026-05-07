@@ -22,12 +22,38 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // 🛡️ Validación estricta: Todo es obligatorio
+    const requiredFields = [...SURVEY_QUESTIONS.map(q => q.id), "question"];
+    const allAnswered = requiredFields.every(field => answers[field]?.trim());
+
+    if (!allAnswered) {
+      toast.error("Por favor, responde todas las preguntas del formulario.");
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
-      const res = await saveSurveyData(email, answers);
+      // 🧠 Transformar a formato LITERAL para Supabase (Pregunta + Respuesta Texto)
+      const literalPayload: any = {};
+      
+      SURVEY_QUESTIONS.forEach(q => {
+        literalPayload[q.id] = {
+          question: q.label,
+          answer: q.options.find(o => o.value === answers[q.id])?.label || answers[q.id]
+        };
+      });
+
+      // Agregar la pregunta abierta
+      literalPayload.question = {
+        question: "Si pudieras hacerle una sola pregunta directa a Hyenuk en persona, ¿cuál sería?",
+        answer: answers.question
+      };
+
+      const res = await saveSurveyData(email, literalPayload);
       if (res.success) {
-        onSuccess(answers);
+        onSuccess(literalPayload);
         toast.success("¡Formulario enviado correctamente!");
         onOpenChange(false);
       } else {

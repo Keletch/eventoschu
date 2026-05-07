@@ -318,61 +318,44 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                   <h4 className="font-black text-blue-900 text-sm">Información Adicional</h4>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Tema de Interés */}
+                  {/* 1. Relación con CDI */}
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Tema de Interés</p>
+                    <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Relación con CDI</p>
                     <p className="text-xs font-bold text-blue-800">
-                      {reg.survey_data.topic === 'finanzas' && 'Finanzas Personales'}
-                      {reg.survey_data.topic === 'trading' && 'Trading en Bolsa de Valores'}
-                      {reg.survey_data.topic === 'cripto' && 'Criptomonedas'}
-                      {reg.survey_data.topic === 'ingresos' && 'Nuevas fuentes de ingreso'}
-                      {reg.survey_data.topic === 'mentalidad' && 'Mentalidad de Riqueza'}
-                      {!['finanzas', 'trading', 'cripto', 'ingresos', 'mentalidad'].includes(reg.survey_data.topic) && (reg.survey_data.topic || 'N/A')}
+                      {reg.survey_data.relationship?.answer || 'N/A'}
                     </p>
                   </div>
 
-                  {/* Nivel de Experiencia */}
+                  {/* 2. Tema para Profundizar */}
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Tema para Profundizar</p>
+                    <p className="text-xs font-bold text-blue-800">
+                      {reg.survey_data.topic?.answer || 'N/A'}
+                    </p>
+                  </div>
+
+                  {/* 3. Nivel de Experiencia */}
                   <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Nivel de Experiencia</p>
                     <p className="text-xs font-bold text-blue-800">
-                      {reg.survey_data.experience === 'nivel1' && 'Aún no invierto, quiero aprender desde cero'}
-                      {reg.survey_data.experience === 'nivel2' && 'He invertido algo, pero sin resultados consistentes'}
-                      {reg.survey_data.experience === 'nivel3' && 'Invierto regularmente y quiero optimizar mi estrategia'}
-                      {!['nivel1', 'nivel2', 'nivel3'].includes(reg.survey_data.experience) && (reg.survey_data.experience || 'N/A')}
+                      {reg.survey_data.experience?.answer || 'N/A'}
                     </p>
                   </div>
 
-                  {/* Conocimiento de Hyenuk */}
+                  {/* 4. Obstáculo Financiero */}
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Conocimiento de Hyenuk</p>
+                    <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Obstáculo Financiero</p>
                     <p className="text-xs font-bold text-blue-800">
-                      {reg.survey_data.relationship === 'nuevo' && 'Es la primera vez que escucho de él'}
-                      {reg.survey_data.relationship === 'redes' && 'Lo sigo en redes sociales o YouTube'}
-                      {reg.survey_data.relationship === 'libros' && 'He leído sus libros'}
-                      {reg.survey_data.relationship === 'alumno' && 'Ya soy alumno o miembro de CDI'}
-                      {!['nuevo', 'redes', 'libros', 'alumno'].includes(reg.survey_data.relationship) && (reg.survey_data.relationship || 'N/A')}
+                      {reg.survey_data.hurdle?.answer || 'N/A'}
                     </p>
                   </div>
 
-                  {/* Mayor Dolor */}
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Mayor Dolor</p>
-                    <p className="text-xs font-bold text-blue-800">
-                      {reg.survey_data.hurdle === 'dinero' && 'No tengo suficiente dinero para empezar'}
-                      {reg.survey_data.hurdle === 'guia' && 'No sé por dónde empezar'}
-                      {reg.survey_data.hurdle === 'miedo' && 'Me da miedo perder dinero'}
-                      {reg.survey_data.hurdle === 'constancia' && 'Me cuesta ser constante'}
-                      {reg.survey_data.hurdle === 'tiempo' && 'Tiempo'}
-                      {!['dinero', 'guia', 'miedo', 'constancia', 'tiempo'].includes(reg.survey_data.hurdle) && (reg.survey_data.hurdle || 'N/A')}
-                    </p>
-                  </div>
-
-                  {/* Pregunta para Hyenuk */}
+                  {/* 5. Pregunta para Hyenuk */}
                   {reg.survey_data.question && (
                     <div className="md:col-span-2 space-y-1 pt-4 border-t border-blue-100/50">
                       <p className="text-[10px] font-black uppercase text-blue-400 tracking-wider">Pregunta para Hyenuk</p>
                       <div className="text-sm italic text-blue-900 bg-white/50 p-4 rounded-xl border border-blue-100 shadow-sm">
-                        "{reg.survey_data.question}"
+                        "{reg.survey_data.question.answer || reg.survey_data.question}"
                       </div>
                     </div>
                   )}

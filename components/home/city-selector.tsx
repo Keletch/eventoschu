@@ -68,7 +68,7 @@ export function CitySelector({
   return (
     <div ref={containerRef} className="max-w-[1372px] mx-auto bg-white rounded-[32px] py-4 md:py-6 px-6 md:px-8 flex flex-col items-center justify-center gap-6 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
       <div className="text-[17px] md:text-[20px] font-medium text-gray-500 text-center">
-        Selecciona el evento para ver el estado de confirmación:
+        Consulta aquí tus registros para ver más detalles:
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 min-h-[56px]">
