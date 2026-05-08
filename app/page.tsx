@@ -2,6 +2,8 @@ import { getEvents } from "@/app/actions/events";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { HomeClient } from "./home-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   // 🚀 EXTRACCIÓN EN EL SERVIDOR: La IA ve los datos reales desde el primer milisegundo.
   const { data: initialEvents = [] } = await getEvents();
