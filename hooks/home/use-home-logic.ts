@@ -14,15 +14,15 @@ import { getDisplayData } from "@/components/home/utils/home-constants";
 export const HOME_STORAGE_KEY = 'chu_registration';
 export const HOME_STEP_KEY = 'chu_active_step';
 
-export function useHomeLogic() {
+export function useHomeLogic(initialEvents: any[] = []) {
   const { user, isSignedIn, isLoaded } = useUser();
 
   // --- States ---
   const [step, setStep] = useState<number | null>(null);
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<any[]>(initialEvents);
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [userData, setUserData] = useState<any>(null);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(initialEvents.length === 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [activeMonth, setActiveMonth] = useState("");

@@ -1,15 +1,23 @@
 import { MetadataRoute } from 'next';
+import { getEvents } from '@/app/actions/events';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://eventoschu.vercel.app';
+  
+  // 🔄 Obtener eventos para determinar frescura de datos
+  const { data: events } = await getEvents();
+  
+  // Determinar la última fecha de modificación (basada en el evento más reciente o hoy)
+  const lastEventDate = events && events.length > 0 
+    ? new Date(Math.max(...events.map(e => new Date(e.start_date).getTime())))
+    : new Date();
 
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: lastEventDate,
       changeFrequency: 'daily',
       priority: 1,
     },
-    // Podríamos añadir rutas dinámicas aquí si tuvieras páginas individuales por evento
   ];
 }

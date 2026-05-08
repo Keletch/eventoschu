@@ -1,4 +1,3 @@
-"use client";
 
 import { Event } from "@/app/actions/events";
 
@@ -30,7 +29,7 @@ export function EventJsonLd({ events }: EventJsonLdProps) {
         },
         "description": `Evento presencial de HyenUk Chu en ${event.city}. Únete al Club de Inversionistas.`,
         "url": baseUrl,
-        "image": `${baseUrl}/cdi-favicon.png`, // Imagen por defecto
+        "image": `${baseUrl}/favicon.ico`, // Imagen por defecto
         "performer": {
           "@type": "Person",
           "name": "HyenUk Chu"

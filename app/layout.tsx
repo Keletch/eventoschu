@@ -18,14 +18,6 @@ export const metadata: Metadata = {
     description: "Espacio exclusivo para compartir y fortalecer conexiones con HyenUk Chu.",
     url: "https://eventoschu.vercel.app",
     siteName: "Calendario HyenUk Chu",
-    images: [
-      {
-        url: "/cdi-logo.png",
-        width: 1200,
-        height: 630,
-        alt: "Logo Club de Inversionistas",
-      },
-    ],
     locale: "es_ES",
     type: "website",
   },
@@ -33,10 +25,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Eventos Presenciales HyenUk Chu",
     description: "Reserva tu cupo para los próximos eventos y talleres.",
-    images: ["/cdi-logo.png"],
   },
   icons: {
-    icon: "/cdi-favicon.png",
+    icon: "/favicon.ico",
   },
   robots: {
     index: true,
