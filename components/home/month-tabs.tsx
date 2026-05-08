@@ -64,11 +64,11 @@ export function MonthTabs({
     <div className="relative group/months">
       {/* Fading Edges Discretos */}
       <div className={cn(
-        "absolute left-0 top-0 bottom-0 w-8 z-20 bg-gradient-to-r from-[#F8F9FA] to-transparent pointer-events-none transition-opacity duration-500",
+        "absolute left-0 top-0 bottom-0 w-8 z-20 bg-gradient-to-r from-white to-transparent pointer-events-none transition-opacity duration-500",
         canScrollLeft ? "opacity-100" : "opacity-0"
       )} />
       <div className={cn(
-        "absolute right-0 top-0 bottom-0 w-8 z-20 bg-gradient-to-l from-[#F8F9FA] to-transparent pointer-events-none transition-opacity duration-500",
+        "absolute right-0 top-0 bottom-0 w-8 z-20 bg-gradient-to-l from-white to-transparent pointer-events-none transition-opacity duration-500",
         canScrollRight ? "opacity-100" : "opacity-0"
       )} />
 
@@ -98,12 +98,12 @@ export function MonthTabs({
               key={month}
               onClick={() => handleMonthChange(month)}
               className={cn(
-                "month-tab-btn px-10 py-5 !rounded-b-none rounded-t-[32px] font-bold text-lg transition-all duration-500 relative flex items-center gap-0 shrink-0 overflow-hidden cursor-pointer whitespace-nowrap",
+                "month-tab-btn px-6 py-3 !rounded-b-none rounded-t-xl font-bold text-[15px] transition-all duration-300 relative flex items-center gap-0 shrink-0 overflow-hidden cursor-pointer whitespace-nowrap border border-transparent",
                 isActive
                   ? isFutureEvents 
-                    ? "bg-gradient-to-r from-[#0F172A] to-[#3154DC] text-white shadow-[-10px_0_20px_rgba(0,0,0,0.05)] z-10"
-                    : "bg-[#3154DC] text-white shadow-[-10px_0_20px_rgba(0,0,0,0.05)] z-10"
-                  : "bg-[#F1F3F9] text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                    ? "bg-gradient-to-r from-[#0F172A] to-[#3154DC] border-indigo-900 text-white shadow-sm z-10"
+                    : "bg-[#3154DC] border-[#3154DC] text-white shadow-sm z-10"
+                  : "bg-[#F5F6F9] text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 hover:border-neutral-200/50"
               )}
             >
               <span className="relative z-10">{month}</span>
@@ -112,25 +112,20 @@ export function MonthTabs({
               <div
                 className={cn(
                   "overflow-hidden transition-all duration-300 ease-in-out flex items-center justify-center",
-                  selectedCount > 0 ? "w-8 ml-3 opacity-100" : "w-0 ml-0 opacity-0"
+                  selectedCount > 0 ? "w-7 ml-2 opacity-100" : "w-0 ml-0 opacity-0"
                 )}
               >
                 <span
                   className={cn(
-                    "flex items-center justify-center size-6 rounded-full text-[12px] font-black transition-opacity duration-300",
+                    "flex items-center justify-center size-5 rounded-full text-[11px] font-black transition-opacity duration-300",
                     isActive
-                      ? isFutureEvents ? "bg-white text-[#0F172A]" : "bg-white text-[#3154DC]"
-                      : isFutureEvents ? "bg-[#0F172A] text-white" : "bg-[#3154DC] text-white"
+                      ? "bg-white text-[#3154DC]"
+                      : "bg-[#3154DC] text-white shadow-sm"
                   )}
                 >
                   {selectedCount}
                 </span>
               </div>
-
-              {/* Indicador de pestaña activa con brillo */}
-              {isActive && (
-                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/30 backdrop-blur-sm z-20" />
-              )}
             </button>
           );
         })}

@@ -26,8 +26,8 @@ export function CountrySelector({
   onCustomChange,
 }: CountrySelectorProps) {
   return (
-    <div className="flex flex-col gap-3">
-      <Label htmlFor="country" className="text-gray-900 font-bold px-1">
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor="country" className="text-[#03133F] font-normal px-1 text-base">
         País de residencia <span className="text-neutral-400 font-normal ml-1">(opcional)</span>
       </Label>
       <div className="flex flex-col gap-2">
@@ -37,11 +37,11 @@ export function CountrySelector({
             value={isOther ? "otro" : value}
           >
             <SelectTrigger className={cn(
-              "h-12 md:h-14 px-2.5 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50 transition-all text-left",
-              isOther ? "w-[110px] md:w-[140px]" : "w-full"
+              "h-10 md:h-11 px-4 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white transition-all text-left text-[#03133F] font-medium text-base",
+              isOther ? "w-[100px] md:w-[120px]" : "w-full"
             )}>
-              <SelectValue>
-                {isOther ? "Otro" : (value || "Seleccionar")}
+              <SelectValue placeholder="Escribe tu país">
+                {isOther ? "Otro" : (value || <span className="text-[#D6DAE0] font-medium text-base">Escribe tu país</span>)}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -61,13 +61,13 @@ export function CountrySelector({
               </SelectItem>
             </SelectContent>
           </Select>
-
+ 
           {isOther && (
             <Input
               id="country-custom"
               name="country"
               placeholder="Nombre del país"
-              className="flex-1 h-12 md:h-14 rounded-xl border-neutral-200 focus:ring-blue-700 bg-neutral-50/50 animate-in fade-in slide-in-from-left-2 duration-300"
+              className="flex-1 h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white placeholder:text-[#D6DAE0] placeholder:text-base placeholder:font-medium text-[#03133F] font-medium text-base animate-in fade-in slide-in-from-left-2 duration-300"
               value={value}
               onChange={onCustomChange}
               autoFocus

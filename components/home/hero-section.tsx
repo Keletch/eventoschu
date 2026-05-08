@@ -115,7 +115,9 @@ export function HeroSection({
             variant="link"
             className="text-[#3154DC] font-bold text-lg hover:no-underline hover:text-[#3154DC]/80 transform backface-visibility-hidden antialiased"
           >
-            ¿Ya te registraste? Consulta tu estado
+            <span className="underline decoration-[#007AFF] text-[#007AFF] cursor-pointer hover:opacity-80 transition-opacity font-bold">
+              ¿Ya te registraste? Consulta el estatus
+            </span>
           </Button>
         )}
       </div>

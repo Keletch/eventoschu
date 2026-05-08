@@ -56,14 +56,14 @@ export function EventCard({
   return (
     <Card 
       className={cn(
-        "relative p-6 md:p-8 transition-all duration-500 border-2 rounded-[32px] overflow-hidden",
+        "relative p-5 md:p-6 transition-all duration-500 border-2 rounded-[32px] overflow-hidden",
         "transform backface-visibility-hidden antialiased", // 🛠️ Solución global contra artifacts
         isSoldOut 
           ? "border-neutral-200 bg-neutral-50 grayscale cursor-not-allowed" 
-          : "cursor-pointer bg-white hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] hover:-translate-y-1",
+          : "cursor-pointer bg-[#FFFFFF] hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] hover:-translate-y-1",
         selected && !isSoldOut 
           ? "border-blue-700 ring-4 ring-blue-700/5 shadow-[0_20px_50px_rgba(49,84,220,0.15)] -translate-y-1 z-10" 
-          : "border-neutral-100"
+          : "border-white shadow-sm"
       )}
       onClick={() => !isSoldOut && onSelect(id)}
     >

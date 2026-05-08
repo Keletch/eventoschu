@@ -210,7 +210,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     (!home.surveyData || Object.keys(home.surveyData).length === 0);
 
   return (
-    <main ref={containerRef} className="min-h-screen bg-[#F8F9FA] relative selection:bg-[#3154DC]/10">
+    <main ref={containerRef} className="min-h-screen bg-white relative selection:bg-[#3154DC]/10">
       <TooltipProvider>
         <Header 
           registrationId={home.userData?.id} 

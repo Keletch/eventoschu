@@ -134,15 +134,15 @@ export function EventsCarousel({
   }, { dependencies: [activeMonth, events.length], scope: cardsRef });
 
   return (
-    <div className="space-y-12">
-      <h2 className="text-2xl md:text-3xl font-normal text-black leading-tight">
-        Selecciona el evento al que quieres asistir
+    <div className="space-y-2">
+      <h2 className="text-[20px] font-medium text-[#00030C] leading-tight pl-2 md:pl-6">
+        Elige el país en el que te gustaría asistir en la reunión presencial
       </h2>
 
       {isLoadingEvents ? (
-        <div className="flex gap-8 overflow-hidden pb-4 min-h-[380px] md:min-h-[450px]">
+        <div className="flex gap-8 overflow-hidden pb-4 min-h-[350px] md:min-h-[350px]">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="min-w-[320px] md:min-w-[420px]">
+            <div key={i} className="min-w-[290px] md:min-w-[360px]">
               <EventSkeleton />
             </div>
           ))}
@@ -151,28 +151,28 @@ export function EventsCarousel({
         <div className="relative group/carousel">
           {/* Fading Edges Discretos */}
           <div className={cn(
-            "absolute left-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-r from-white to-transparent pointer-events-none transition-opacity duration-500",
+            "absolute left-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-r from-[#F5F6F9] to-transparent pointer-events-none transition-opacity duration-500",
             canScrollLeft ? "opacity-100" : "opacity-0"
           )} />
           <div className={cn(
-            "absolute right-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-l from-white to-transparent pointer-events-none transition-opacity duration-500",
+            "absolute right-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-l from-[#F5F6F9] to-transparent pointer-events-none transition-opacity duration-500",
             canScrollRight ? "opacity-100" : "opacity-0"
           )} />
 
           {/* Carrusel de tarjetas */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-8 overflow-x-auto overflow-y-hidden py-10 px-4 -mx-4 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[380px] md:min-h-[450px]"
+            className="flex gap-8 overflow-x-auto overflow-y-hidden py-20 px-4 -mx-4 -my-10 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[350px] md:min-h-[350px]"
             onScroll={onScrollInternal}
           >
-            <div ref={cardsRef} className="flex gap-8 min-h-[380px] md:min-h-[450px]">
+            <div ref={cardsRef} className="flex gap-8 min-h-[350px] md:min-h-[350px]">
               {monthEvents.map((event: any) => {
                 const data = transformEventForUI(event);
                 return (
                   <div
                     key={event.id}
                     id={`event-${event.id}`}
-                    className="event-card-wrapper min-w-[320px] md:min-w-[420px] snap-center transform backface-visibility-hidden"
+                    className="event-card-wrapper min-w-[290px] md:min-w-[360px] snap-center transform backface-visibility-hidden"
                   >
                     <EventCard
                       id={event.id}

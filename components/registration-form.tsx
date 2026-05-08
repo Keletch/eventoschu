@@ -151,9 +151,10 @@ export function RegistrationForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8 md:gap-12">
-      {/* Row 1: Names and Email */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6 md:gap-8">
+      {/* Grid Principal: 2 filas x 3 columnas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 items-end">
+        {/* Fila 1 */}
         <FormField
           id="firstName"
           name="firstName"
@@ -182,12 +183,9 @@ export function RegistrationForm({
           readOnly={isSignedIn}
           value={formData.email}
           onChange={handleChange}
-          className="md:col-span-2 lg:col-span-1"
         />
-      </div>
 
-      {/* Row 2: Country and Phone */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+        {/* Fila 2 */}
         <CountrySelector 
           value={formData.country}
           isOther={isOtherCountry}
@@ -200,13 +198,31 @@ export function RegistrationForm({
           onPhoneCodeChange={(val) => setFormData(prev => ({ ...prev, phoneCode: val || "" }))}
           onPhoneChange={handleChange}
         />
+        
+        {/* Botón de Registro integrado en la grid */}
+        <div className="flex flex-col gap-2">
+          <Button
+            type="submit"
+            disabled={isLoading || !turnstileToken}
+            className={cn(
+              "w-full h-[44px] bg-[#3154DC] hover:bg-[#2844B5] text-white font-bold rounded-xl text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-[#3154DC]/20",
+              (isLoading || !turnstileToken) && "opacity-70 cursor-not-allowed grayscale"
+            )}
+          >
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              "¡Registrarme ahora!"
+            )}
+          </Button>
+        </div>
       </div>
 
-      {/* Security and Submit */}
-      <div className="flex flex-col items-center gap-8 pt-4">
+      {/* Seguridad y Extras (Centrados abajo) */}
+      <div className="flex flex-col items-center gap-6 mt-4">
         <div 
           key={turnstileKey}
-          className="w-full flex justify-center scale-90 md:scale-100 min-h-[65px] animate-in fade-in slide-in-from-bottom-4 duration-700"
+          className="w-full flex justify-center scale-90 md:scale-100 min-h-[65px]"
         >
           <Turnstile
             sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
@@ -214,40 +230,6 @@ export function RegistrationForm({
             theme="light"
           />
         </div>
-
-        <Button
-          type="submit"
-          disabled={isLoading || !turnstileToken}
-          className={cn(
-            "w-full h-16 bg-[#3154DC] hover:opacity-90 text-white font-bold rounded-3xl text-xl md:text-2xl flex items-center justify-center gap-3 shadow-xl shadow-[#3154DC]/20 transition-all active:scale-[0.98] mt-4",
-            (isLoading || !turnstileToken) && "opacity-70 cursor-not-allowed grayscale"
-          )}
-        >
-          {isLoading ? (
-            <div className="flex items-center gap-3">
-              <Loader2 className="w-6 h-6 animate-spin" />
-              <span>Procesando...</span>
-            </div>
-          ) : (
-            "¡Registrarme ahora!"
-          )}
-        </Button>
-
-        {!isSignedIn && (
-          <div className="flex flex-col items-center gap-2 mt-4 relative z-[100]">
-            <button
-              type="button"
-              onClick={() => openSignIn({})}
-              className="group flex items-center gap-2 text-blue-600 font-bold hover:text-blue-800 transition-colors p-2 text-center"
-            >
-              <Edit3 className="w-4 h-4 shrink-0" />
-              <span className="hover:underline leading-tight">¡Hazlo más fácil! Inicia sesión para autocompletar tus datos y asegurar tu lugar en segundos</span>
-            </button>
-            <p className="text-[11px] text-gray-500 font-medium text-center max-w-[400px]">
-              <span className="text-gray-600 font-bold">Ahorra tiempo </span>al unirte a nuestra comunidad de inversores.
-            </p>
-          </div>
-        )}
       </div>
     </form>
   );
