@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ANIM_CONFIG, ANIM_SELECTORS } from "@/lib/animations";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { transformEventForUI } from "@/lib/event-transformers";
 
 // Skeleton de carga de tarjeta de evento
 function EventSkeleton() {
@@ -165,40 +166,34 @@ export function EventsCarousel({
             onScroll={onScrollInternal}
           >
             <div ref={cardsRef} className="flex gap-8 min-h-[380px] md:min-h-[450px]">
-              {monthEvents.map((event: any) => (
-                <div
-                  key={event.id}
-                  id={`event-${event.id}`}
-                  className="event-card-wrapper min-w-[320px] md:min-w-[420px] snap-center transform backface-visibility-hidden"
-                >
-                  <EventCard
-                    id={event.id}
-                    title={event.title}
-                    city={event.city}
-                    country={event.country}
-                    flag={event.flag}
-                    date={
-                      new Date(event.start_date).getFullYear() === 2099
-                        ? "Por confirmar"
-                        : formatSafeDate(event.start_date)?.toLocaleDateString("es-ES", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        }) || ""
-                    }
-                    time={event.time}
-                    duration={event.duration}
-                    location={event.location}
-                    price={event.price}
-                    bgClass={event.bg_class}
-                    selected={selectedEvents.includes(event.id)}
-                    confirmedCount={eventCounts[event.id] || 0}
-                    capacity={event.capacity || 25}
-                    initialStatus={event.initial_status}
-                    onSelect={handleSelectEvent}
-                  />
-                </div>
-              ))}
+              {monthEvents.map((event: any) => {
+                const data = transformEventForUI(event);
+                return (
+                  <div
+                    key={event.id}
+                    id={`event-${event.id}`}
+                    className="event-card-wrapper min-w-[320px] md:min-w-[420px] snap-center transform backface-visibility-hidden"
+                  >
+                    <EventCard
+                      id={event.id}
+                      title={data.title}
+                      city={data.city}
+                      country={data.country}
+                      flag={event.flag}
+                      date={data.displayDate}
+                      time={data.displayTime}
+                      duration={data.displayDuration}
+                      location={data.displayLocation}
+                      price={data.displayPrice}
+                      selected={selectedEvents.includes(event.id)}
+                      confirmedCount={eventCounts[event.id] || 0}
+                      capacity={event.capacity || 25}
+                      initialStatus={event.initial_status}
+                      onSelect={handleSelectEvent}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
 

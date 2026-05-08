@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Calendario de Eventos HyenUk Chu | Club de Inversionistas",
     description: "Espacio exclusivo para compartir y fortalecer conexiones con HyenUk Chu.",
-    url: "https://eventoschu.vercel.app",
+    url: "https://calendario.chu.mx",
     siteName: "Calendario HyenUk Chu",
     locale: "es_ES",
     type: "website",

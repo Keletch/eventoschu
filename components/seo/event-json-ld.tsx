@@ -1,43 +1,64 @@
 
 import { Event } from "@/app/actions/events";
+import { transformEventForUI } from "@/lib/event-transformers";
 
 interface EventJsonLdProps {
   events: Event[];
 }
 
 export function EventJsonLd({ events }: EventJsonLdProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://eventoschu.vercel.app';
+  const baseUrl = 'https://calendario.chu.mx';
 
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "itemListElement": events.map((event, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "item": {
-        "@type": "Event",
-        "name": event.title,
-        "startDate": event.start_date,
-        "location": {
-          "@type": "Place",
-          "name": event.city,
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": event.city,
-            "addressCountry": event.country
+    "itemListElement": events.map((event, index) => {
+      const data = transformEventForUI(event);
+      
+      // Combinar fecha y hora para el formato ISO
+      const hasTime = data.displayTime !== "Por confirmar";
+      const startDateTime = hasTime 
+        ? `${event.start_date.split('T')[0]}T${data.displayTime}:00`
+        : event.start_date;
+
+      return {
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "Event",
+          "name": data.title,
+          "description": `Únete a ${data.performer} en este evento presencial en ${data.city}. ${data.displayDuration} de aprendizaje con el Club de Inversionistas.`,
+          "startDate": startDateTime,
+          "duration": data.isoDuration,
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "image": `${baseUrl}/favicon.ico`,
+          "location": {
+            "@type": "Place",
+            "name": data.displayLocation,
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": data.city,
+              "addressCountry": data.country
+            }
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock",
+            "url": baseUrl,
+            "description": data.displayPrice
+          },
+          "performer": {
+            "@type": "Person",
+            "name": data.performer,
+            "jobTitle": "Inversionista y Mentor",
+            "url": "https://chu.mx"
           }
-        },
-        "description": `Evento presencial de HyenUk Chu en ${event.city}. Únete al Club de Inversionistas.`,
-        "url": baseUrl,
-        "image": `${baseUrl}/favicon.ico`, // Imagen por defecto
-        "performer": {
-          "@type": "Person",
-          "name": "HyenUk Chu"
-        },
-        "eventStatus": "https://schema.org/EventScheduled",
-        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode"
-      }
-    }))
+        }
+      };
+    })
   };
 
   return (

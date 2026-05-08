@@ -19,9 +19,19 @@ export interface Event {
   country: string;
   start_date: string;
   active: boolean;
+  time?: string;
+  duration?: string;
+  location?: string;
+  price?: string;
+  capacity?: number;
+  flag?: string;
+  bg_class?: string;
+  initial_status?: string;
+  created_at?: string;
   keap_tag_id?: string;
   keap_pending_tag_id?: string;
   categories?: { name: string } | { name: string }[];
+  performer?: string;
 }
 
 /**
