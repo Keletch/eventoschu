@@ -309,13 +309,14 @@ export function useAdminDashboard() {
 
   // --- Derived Stats ---
   const totalInscriptions = registrations.reduce((acc, reg) => acc + (reg.selected_events?.length || 0), 0);
-  const pendingCount = registrations.filter(r => Object.values(r.event_statuses || {}).includes('pending')).length;
-  const approvedCount = registrations.filter(r => Object.values(r.event_statuses || {}).includes('confirmed')).length;
+  const pendingCount = registrations.reduce((acc, r) => acc + Object.values(r.event_statuses || {}).filter(s => s === 'pending').length, 0);
+  const approvedCount = registrations.reduce((acc, r) => acc + Object.values(r.event_statuses || {}).filter(s => s === 'confirmed').length, 0);
+  const cancelledCount = registrations.reduce((acc, r) => acc + Object.values(r.event_statuses || {}).filter(s => s === 'cancelled').length, 0);
 
   return {
     // Data
     events, registrations, categories, isLoading, isSubmitting, isCacheRefreshing,
-    keapTags, isTagsLoading, totalInscriptions, pendingCount, approvedCount,
+    keapTags, isTagsLoading, totalInscriptions, pendingCount, approvedCount, cancelledCount,
     
     // Filters sub-hook
     ...filters,

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { Plus, LogOut, Loader2, BarChart3, Users, Calendar, CheckCircle2, RefreshCw } from "lucide-react";
+import { Plus, LogOut, Loader2, BarChart3, Users, Calendar, CheckCircle2, RefreshCw, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +16,7 @@ import { SearchInput } from "./components/filters/search-input";
 import { SearchablePicker } from "./components/filters/searchable-picker";
 import { EventsTable } from "./components/tables/events-table";
 import { RegistrationsTable } from "./components/tables/registrations-table";
+import { MetricsView } from "./components/metrics/metrics-view";
 import { EventDialog } from "./components/forms/event-dialog";
 import { RegistrationDialog } from "./components/forms/registration-dialog";
 import { PurgeUserDialog } from "./components/forms/purge-user-dialog";
@@ -30,7 +32,13 @@ export default function AdminDashboard() {
     eventsSearch, setEventsSearch, eventTabCatFilter, setEventTabCatFilter,
     eventTabStatusFilter, setEventTabStatusFilter, regsSearch, setRegsSearch,
     regsCategoryFilter, setRegsCategoryFilter, regsEventFilter, setRegsEventFilter,
-    regsStatusFilter, setRegsStatusFilter, isDialogOpen, setIsDialogOpen,
+    regsStatusFilter, setRegsStatusFilter, regsCountryFilter, setRegsCountryFilter,
+    regsSurveyFilter, setRegsSurveyFilter,
+    regsLoyaltyFilter, setRegsLoyaltyFilter,
+    regsSurveyCompleteFilter, setRegsSurveyCompleteFilter,
+    regsTodayFilter, setRegsTodayFilter,
+    currentPage, setCurrentPage, pageSize, setPageSize, totalPages, paginatedRegs, filteredRegs,
+    isDialogOpen, setIsDialogOpen,
     isRegDialogOpen, setIsRegDialogOpen, isPurgeDialogOpen, setIsPurgeDialogOpen,
     isDeleteEventDialogOpen, setIsDeleteEventDialogOpen,
     isToggleDialogOpen, setIsToggleDialogOpen,
@@ -41,7 +49,7 @@ export default function AdminDashboard() {
     toggleEventStatus, handleConfirmToggleStatus, handleClearCache, isCacheRefreshing,
     handleUpdateReg, handleDeleteReg, handleConfirmPurge, 
     handleEditEvent, handleEditReg, handleNewEvent, handleLogout, totalInscriptions,
-    pendingCount, approvedCount, filteredEvents, filteredRegs,
+    pendingCount, approvedCount, cancelledCount, filteredEvents,
     notifications, unreadCount, handleMarkAsRead,
     handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData
   } = useAdminDashboard();
@@ -242,10 +250,36 @@ export default function AdminDashboard() {
           <div className="animate-stat">
             <StatsGrid
               registrationsCount={registrations.length}
-              totalInscriptions={totalInscriptions}
+              cancelledCount={cancelledCount}
               pendingCount={pendingCount}
               approvedCount={approvedCount}
               activeEventsCount={events.filter(e => e.active).length}
+              onEventsClick={() => setActiveTab("events")}
+              onUsersClick={() => {
+                setRegsStatusFilter("all");
+                setRegsEventFilter("all");
+                setRegsCountryFilter("all");
+                setRegsSearch("");
+                setActiveTab("registrations");
+              }}
+              onApprovedClick={() => {
+                setRegsStatusFilter("confirmed");
+                setRegsEventFilter("all");
+                setRegsCountryFilter("all");
+                setActiveTab("registrations");
+              }}
+              onPendingClick={() => {
+                setRegsStatusFilter("pending");
+                setRegsEventFilter("all");
+                setRegsCountryFilter("all");
+                setActiveTab("registrations");
+              }}
+              onCancelledClick={() => {
+                setRegsStatusFilter("cancelled");
+                setRegsEventFilter("all");
+                setRegsCountryFilter("all");
+                setActiveTab("registrations");
+              }}
             />
           </div>
 
@@ -257,6 +291,7 @@ export default function AdminDashboard() {
             <TabsList className="bg-white p-1.5 rounded-2xl border border-neutral-200 h-auto shadow-sm">
               <TabsTrigger value="events" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-neutral-900 data-[state=active]:text-white transition-all">Gestión de Eventos</TabsTrigger>
               <TabsTrigger value="registrations" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-neutral-900 data-[state=active]:text-white transition-all">Usuarios Registrados</TabsTrigger>
+              <TabsTrigger value="metrics" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-neutral-900 data-[state=active]:text-white transition-all">Inteligencia y Métricas</TabsTrigger>
             </TabsList>
 
             {/* TAB: EVENTS */}
@@ -316,7 +351,6 @@ export default function AdminDashboard() {
               </div>
             </TabsContent>
 
-            {/* TAB: REGISTRATIONS */}
             <TabsContent value="registrations" className="space-y-6 outline-none">
               <div className="tab-content-anim flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-3xl border border-neutral-200/60 shadow-sm">
                 <div className="flex flex-wrap items-center gap-3 w-full">
@@ -348,18 +382,169 @@ export default function AdminDashboard() {
                     placeholder="Estados"
                     triggerClassName="w-40"
                   />
+                  <SearchablePicker
+                    value={regsCountryFilter}
+                    onSelect={setRegsCountryFilter}
+                    options={[
+                      { id: 'all', label: 'Todos los Países' },
+                      { id: 'unspecified', label: 'No especificado' },
+                      ...Array.from(new Set(registrations.map(r => r.residence_country).filter(Boolean))).sort().map(c => ({ id: c, label: c }))
+                    ]}
+                    placeholder="Países"
+                    triggerClassName="w-44"
+                  />
                 </div>
               </div>
 
-              <div className="tab-content-anim">
+              <div className="flex flex-wrap gap-2 mb-4">
+                {regsSurveyFilter && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Filtrando por:</span>
+                    <span className="text-sm font-bold text-blue-700">{regsSurveyFilter.a}</span>
+                    <button 
+                      onClick={() => setRegsSurveyFilter(null)}
+                      className="p-1 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                )}
+
+                {regsLoyaltyFilter && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-100 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-purple-400">Segmento:</span>
+                    <span className="text-sm font-bold text-purple-700">Fidelidad (Multi-evento)</span>
+                    <button 
+                      onClick={() => setRegsLoyaltyFilter(false)}
+                      className="p-1 hover:bg-purple-100 rounded-lg transition-colors text-purple-600"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                )}
+
+                {regsSurveyCompleteFilter && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-100 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Estado:</span>
+                    <span className="text-sm font-bold text-indigo-700">Perfil Completo</span>
+                    <button 
+                      onClick={() => setRegsSurveyCompleteFilter(false)}
+                      className="p-1 hover:bg-indigo-100 rounded-lg transition-colors text-indigo-600"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                )}
+
+                {regsTodayFilter && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-100 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Fecha:</span>
+                    <span className="text-sm font-bold text-amber-700">Registrados Hoy</span>
+                    <button 
+                      onClick={() => setRegsTodayFilter(false)}
+                      className="p-1 hover:bg-amber-100 rounded-lg transition-colors text-amber-600"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="tab-content-anim space-y-4">
+                {/* 🔢 Paginación Premium */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b border-neutral-100">
+                  <div className="flex items-center gap-4">
+                    <div className="text-xs font-bold text-neutral-400 uppercase tracking-widest">
+                      Mostrar
+                    </div>
+                    <div className="flex items-center gap-1 bg-neutral-50 p-1 rounded-xl border border-neutral-200/60">
+                      {[10, 20, 50, 100].map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setPageSize(size)}
+                          className={cn(
+                            "px-3 py-1.5 text-xs font-black rounded-lg transition-all",
+                            pageSize === size 
+                              ? "bg-white text-blue-600 shadow-sm" 
+                              : "text-neutral-400 hover:text-neutral-600"
+                          )}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-6">
+                    <div className="text-[11px] font-black text-neutral-400 uppercase tracking-widest">
+                      Mostrando <span className="text-neutral-900">{Math.min((currentPage - 1) * pageSize + 1, filteredRegs.length)}</span> - <span className="text-neutral-900">{Math.min(currentPage * pageSize, filteredRegs.length)}</span> de <span className="text-neutral-900">{filteredRegs.length}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        className="p-2 rounded-xl border border-neutral-200/60 hover:bg-neutral-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <ChevronLeft className="size-4" />
+                      </button>
+                      
+                      <div className="flex items-center gap-1 bg-neutral-50 px-2 py-1.5 rounded-xl border border-neutral-200/60">
+                        <span className="text-xs font-black text-blue-600 px-2">{currentPage}</span>
+                        <span className="text-xs font-bold text-neutral-300">/</span>
+                        <span className="text-xs font-bold text-neutral-400 px-2">{totalPages || 1}</span>
+                      </div>
+
+                      <button
+                        disabled={currentPage >= totalPages}
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        className="p-2 rounded-xl border border-neutral-200/60 hover:bg-neutral-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <ChevronRight className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <RegistrationsTable
-                  registrations={filteredRegs}
+                  registrations={paginatedRegs}
                   isLoading={isDataLoading}
                   events={events}
                   handleEditReg={handleEditReg}
                   handleDeleteReg={handleDeleteReg}
                 />
               </div>
+            </TabsContent>
+
+            <TabsContent value="metrics" className="tab-content-anim outline-none">
+              <MetricsView 
+                registrations={registrations}
+                events={events}
+                onCountryClick={(country) => {
+                  setRegsCountryFilter(country);
+                  setActiveTab("registrations");
+                }}
+                onEventClick={(eventId) => {
+                  setRegsEventFilter(eventId);
+                  setActiveTab("registrations");
+                }}
+                onSurveyClick={(q, a) => {
+                  setRegsSurveyFilter({ q, a });
+                  setActiveTab("registrations");
+                }}
+                onLoyaltyClick={() => {
+                  setRegsLoyaltyFilter(true);
+                  setActiveTab("registrations");
+                }}
+                onSurveyCompleteClick={() => {
+                  setRegsSurveyCompleteFilter(true);
+                  setActiveTab("registrations");
+                }}
+                onTodayClick={() => {
+                  setRegsTodayFilter(true);
+                  setActiveTab("registrations");
+                }}
+              />
             </TabsContent>
           </Tabs>
 

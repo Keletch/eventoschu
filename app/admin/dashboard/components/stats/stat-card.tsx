@@ -9,6 +9,7 @@ interface StatCardProps {
   icon: LucideIcon;
   colorClass: string;
   bgClass: string;
+  onClick?: () => void;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -17,9 +18,16 @@ export const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   colorClass,
   bgClass,
+  onClick,
 }) => {
   return (
-    <Card className="rounded-3xl border-none shadow-sm bg-white py-3 px-4">
+    <Card 
+      onClick={onClick}
+      className={cn(
+        "rounded-3xl border-none shadow-sm bg-white py-3 px-4 transition-all duration-200",
+        onClick && "cursor-pointer hover:scale-[1.02] active:scale-[0.98] hover:shadow-md"
+      )}
+    >
       <div className="flex justify-between items-center">
         <div>
           <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">{label}</p>

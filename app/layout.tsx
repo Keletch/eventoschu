@@ -41,6 +41,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { esES } from "@clerk/localizations";
 import { CustomScrollbar } from "@/components/ui/custom-scrollbar";
 import { VercelAnalytics } from "@/components/vercel-analytics";
+import { VercelSpeedInsights } from "@/components/vercel-speed-insights";
 
 export default function RootLayout({
   children,
@@ -55,6 +56,7 @@ export default function RootLayout({
             {children}
             <CustomScrollbar />
             <VercelAnalytics />
+            <VercelSpeedInsights />
             <Toaster position="bottom-right" expand={true} richColors />
           </TooltipProvider>
         </body>
