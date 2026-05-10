@@ -34,7 +34,7 @@ export function ShareSection({ selectedCityId, cityName, userId }: ShareSectionP
   };
 
   return (
-    <div className="max-w-[1372px] mx-auto mt-12 bg-[#F5F6F9] rounded-[32px] p-8 md:p-12 lg:p-20">
+    <div className="max-w-[1372px] mx-auto mt-12 bg-[#F5F6F9] border border-neutral-100 rounded-[32px] p-8 md:p-12 lg:p-20 shadow-none">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
         <div className="space-y-3 text-center lg:text-left">
           <h3 className="text-xl md:text-2xl font-extrabold text-black">
@@ -49,13 +49,13 @@ export function ShareSection({ selectedCityId, cityName, userId }: ShareSectionP
           <Button
             onClick={handleWhatsapp}
             variant="outline"
-            className="h-14 px-10 rounded-2xl border-[#3154DC] text-[#3154DC] font-bold text-lg md:text-xl hover:bg-[#3154DC]/10 w-full sm:w-auto transform backface-visibility-hidden antialiased"
+            className="h-14 px-6 rounded-2xl border-[#3154DC] text-[#3154DC] font-bold text-base md:text-lg hover:bg-[#3154DC]/10 w-full sm:w-[240px] transform backface-visibility-hidden antialiased"
           >
             Enviar por whatsapp
           </Button>
           <Button
             onClick={handleCopyLink}
-            className="h-14 px-10 rounded-2xl bg-[#3154DC] text-white font-bold text-lg md:text-xl hover:bg-[#3154DC]/90 w-full sm:w-auto transform backface-visibility-hidden antialiased shadow-lg shadow-[#3154DC]/10"
+            className="h-14 px-6 rounded-2xl bg-[#3154DC] text-white font-bold text-base md:text-lg hover:bg-[#3154DC]/90 w-full sm:w-[240px] transform backface-visibility-hidden antialiased shadow-lg shadow-[#3154DC]/10"
           >
             Copiar link
           </Button>

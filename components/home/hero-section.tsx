@@ -96,7 +96,7 @@ export function HeroSection({
 
       {/* CTAs */}
       <div className="hero-check opacity-0 translate-y-8 flex flex-col items-center gap-6 pt-6">
-        {isSignedIn && !isCheckMode && (
+        {isSignedIn && (
           <Button
             onClick={() => {
               const email = user?.primaryEmailAddress?.emailAddress;
@@ -109,7 +109,7 @@ export function HeroSection({
           </Button>
         )}
 
-        {!isCheckMode && (
+        {true && (
           <Button
             onClick={() => setIsCheckMode(true)}
             variant="link"

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { getFlagCode, FlagIcon } from "@/components/home/utils/flag-helpers";
+import { STATUS_CONFIGS, RegistrationStatus } from "@/components/home/utils/home-constants";
 
 interface CitySelectorProps {
   events: any[];
@@ -66,7 +67,7 @@ export function CitySelector({
   };
 
   return (
-    <div ref={containerRef} className="max-w-[1372px] mx-auto bg-white rounded-[32px] py-4 md:py-6 px-6 md:px-8 flex flex-col items-center justify-center gap-6 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+    <div ref={containerRef} className="max-w-[1372px] mx-auto bg-[#F5F6F9] rounded-[32px] py-4 md:py-6 px-6 md:px-8 flex flex-col items-center justify-center gap-6 border border-neutral-100">
       <div className="text-[17px] md:text-[20px] font-medium text-gray-500 text-center">
         Consulta aquí tus registros para ver más detalles:
       </div>
@@ -81,7 +82,8 @@ export function CitySelector({
         ) : (
           registeredEvents.map((e) => {
             const isActive = selectedCityId === e.id;
-            const status = eventStatuses[e.id] || "pending";
+            const statusKey = (eventStatuses[e.id] || "pending") as RegistrationStatus;
+            const config = STATUS_CONFIGS[statusKey];
 
             return (
               <button
@@ -89,11 +91,12 @@ export function CitySelector({
                 onClick={() => handleCityClick(e.id)}
                 className={cn(
                   "event-select-btn group flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all duration-300 border-2 cursor-pointer",
-                  "transform backface-visibility-hidden antialiased", // 🛠️ Suavizado premium
+                  "transform backface-visibility-hidden antialiased",
                   isActive
-                    ? "bg-white border-[#3154DC] shadow-[0_10px_25px_-5px_rgba(49,84,220,0.2)] scale-[1.03] z-10"
+                    ? `bg-white border-current ${config.text} shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)] scale-[1.03] z-10`
                     : "bg-transparent border-white hover:bg-white/50 text-gray-400"
                 )}
+                style={isActive ? { borderColor: statusKey === 'confirmed' ? '#0F9700' : undefined, color: statusKey === 'confirmed' ? '#0F9700' : undefined } : {}}
               >
                 <FlagIcon
                   code={getFlagCode(e.city)}
@@ -101,7 +104,7 @@ export function CitySelector({
                 />
                 <span className={cn(
                   "font-bold text-base md:text-lg leading-tight max-w-[200px] md:max-w-[240px] text-left",
-                  isActive ? "text-[#3154DC]" : "text-gray-500"
+                  isActive ? "" : "text-gray-500"
                 )}>
                   {e.title}
                 </span>
@@ -109,8 +112,7 @@ export function CitySelector({
                 <div
                   className={cn(
                     "size-2 rounded-full shadow-sm shrink-0",
-                    status === "confirmed" ? "bg-green-500 shadow-green-200" :
-                    status === "cancelled" ? "bg-red-500 shadow-red-200"   : "bg-amber-500 shadow-amber-200"
+                    config.dot
                   )}
                 />
               </button>

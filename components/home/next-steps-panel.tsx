@@ -21,9 +21,9 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen }: NextStepsPanelPr
 
   return (
     <div className="max-w-[1372px] mx-auto mt-24 px-4 sm:px-0">
-      <div className="relative border border-gray-200 rounded-[40px] p-8 md:p-16 lg:p-20 bg-white shadow-sm overflow-hidden">
+      <div className="relative border-[3px] border-[#EFEFEF] rounded-[32px] p-8 md:p-12 lg:p-16 bg-[#FFFFFF] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] overflow-hidden">
         {/* Decoración sutil de fondo */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/30 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+
 
         <div className="relative z-10 space-y-12 md:space-y-20">
           <h3 className="text-2xl md:text-[32px] font-black text-black tracking-tight">

@@ -22,9 +22,9 @@ export function RegistrationTopBar({ status, startNewRegistration, eventConfig }
     <div className="max-w-[1372px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6 px-4">
       {/* Badge de estado de la ciudad seleccionada */}
       <div className="city-status-badge">
-        <div className={cn("inline-flex items-center gap-3 px-6 py-2 rounded-full border transition-all duration-500", config.bg, config.border)}>
+        <div className={cn("inline-flex items-center gap-2.5 px-4 py-1.5 rounded-xl border transition-all duration-500", config.bg, config.border)}>
           <div className={cn("size-2 rounded-full", config.dot)} />
-          <span className={cn("font-semibold text-base", config.text)}>{displayLabel}</span>
+          <span className={cn("font-bold text-[15px]", config.text)}>{displayLabel}</span>
         </div>
       </div>
 
@@ -32,7 +32,7 @@ export function RegistrationTopBar({ status, startNewRegistration, eventConfig }
       <Button
         onClick={startNewRegistration}
         variant="outline"
-        className="group flex items-center gap-2 border-neutral-200 text-gray-500 hover:text-[#3154DC] hover:border-[#3154DC] rounded-xl px-6 h-11 font-bold transition-all bg-white shadow-sm"
+        className="group flex items-center gap-2 border-neutral-200 text-gray-500 hover:text-[#3154DC] hover:border-[#3154DC] rounded-xl px-6 h-11 font-bold transition-all bg-white shadow-sm transform backface-visibility-hidden antialiased"
       >
         <LogOut className="size-4 transition-transform group-hover:translate-x-1" />
         Nuevo registro / Salir

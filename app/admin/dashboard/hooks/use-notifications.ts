@@ -26,17 +26,17 @@ export function useNotifications(isAdmin = true, ids?: { clerkId?: string, regis
 
   const fetchNotifications = useCallback(async () => {
     if (!ids?.clerkId && !ids?.registrationId && !isAdmin) {
-      console.log("[useNotifications] ⚠️ No hay IDs disponibles para consultar.");
+
       return;
     }
     
     setIsLoading(true);
-    console.log(`[useNotifications] 🔍 Consultando notificaciones para:`, ids);
+
     
     try {
       const res = await getNotifications(ids || {}, isAdmin);
       if (res.success && res.data) {
-        console.log(`[useNotifications] ✅ Recibidas ${res.data.length} notificaciones.`);
+
         setNotifications(res.data);
         setUnreadCount(res.data.filter((n: any) => !n.read).length);
       } else {

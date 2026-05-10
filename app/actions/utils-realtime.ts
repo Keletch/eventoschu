@@ -10,11 +10,11 @@ export async function broadcastToAdmins(payload: any) {
   const channelName = 'admin-updates';
   const channel = supabaseAdmin.channel(channelName);
 
-  console.log(`[Realtime] 🏢 Broadcasting to Admins...`);
+
 
   return new Promise((resolve) => {
     channel.subscribe(async (status) => {
-      console.log(`[Realtime] 🔌 Admin Channel Status: ${status}`);
+
       if (status === 'SUBSCRIBED') {
         try {
           // 1. Refresh general
@@ -32,10 +32,8 @@ export async function broadcastToAdmins(payload: any) {
               payload: payload
             });
           }
-          console.log(`[Realtime] ✅ Admin broadcast completado.`);
           resolve(true);
         } catch (err) {
-          console.error(`[Realtime] ❌ Admin Broadcast Error:`, err);
           resolve(false);
         } finally {
           supabaseAdmin.removeChannel(channel);
@@ -53,11 +51,11 @@ export async function broadcastToUser(targetIds: string | string[], payload: any
   const cleanIds = Array.from(new Set(ids.filter(id => id && id !== 'guest')));
   
   if (cleanIds.length === 0) {
-    console.warn("[Realtime] ⚠️ No hay IDs válidos para broadcast.");
+
     return { success: true };
   }
 
-  console.log(`[Realtime] 📡 Iniciando broadcast para IDs:`, cleanIds);
+
 
   const broadcastPromises = cleanIds.map(id => {
     const channelName = `user-private:${id}`;
@@ -65,7 +63,7 @@ export async function broadcastToUser(targetIds: string | string[], payload: any
     
     return new Promise((resolve) => {
       channel.subscribe(async (status) => {
-        console.log(`[Realtime] 🔌 Canal ${channelName} status: ${status}`);
+
         if (status === 'SUBSCRIBED') {
           try {
             await channel.send({
@@ -81,7 +79,7 @@ export async function broadcastToUser(targetIds: string | string[], payload: any
                 payload: payload
               });
             }
-            console.log(`[Realtime] ✅ Mensajes enviados al canal ${channelName}`);
+
             resolve(true);
           } catch (err) {
             console.error(`[Realtime] ❌ Error en canal ${channelName}:`, err);
@@ -130,7 +128,7 @@ export async function broadcastToPublic() {
 
 // Función legacy para compatibilidad mientras migramos el resto (Deprecada)
 export async function broadcastDataChange(type: any, payload: any, targetId: any) {
-  console.warn("⚠️ Usando broadcastDataChange deprecado. Migrar a funciones específicas.");
+
   if (type === 'registrations') {
     await broadcastToAdmins(payload);
     if (targetId) await broadcastToUser(targetId, payload);

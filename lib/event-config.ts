@@ -40,13 +40,13 @@ const CONFIGS: Record<EventType, EventUIConfig> = {
     },
     showSyncConfirmationToast: false,
     statusLabels: {
-      confirmed: "En la lista de espera",
+      confirmed: "Registro exitoso",
       pending: "Validando cupo",
       cancelled: "Registro cancelado"
     },
     hero: {
-      title: "¡Ya estás\nen la lista!",
-      description: "Te notificaremos por correo todos los detalles y los próximos pasos de tu registro."
+      title: "¡Ya estás\ndentro!",
+      description: "Te notificaremos por correo todos los detalles"
     }
   },
   CLOSED: {
@@ -59,13 +59,13 @@ const CONFIGS: Record<EventType, EventUIConfig> = {
     },
     showSyncConfirmationToast: true,
     statusLabels: {
-      confirmed: "Cupo confirmado",
+      confirmed: "Registro exitoso",
       pending: "Validando cupo",
       cancelled: "Registro cancelado"
     },
     hero: {
-      title: "¡Registro\nRecibido!",
-      description: "Estamos revisando tu solicitud. Te avisaremos por correo sobre el estado de tu cupo."
+      title: "¡Ya estás\ndentro!",
+      description: "Te notificaremos por correo todos los detalles"
     }
   }
 };

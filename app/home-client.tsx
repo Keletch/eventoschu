@@ -72,8 +72,10 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
 
   useEffect(() => {
     if (home.step === 1) {
-      gsap.to(ANIM_SELECTORS.step2, { opacity: 0, duration: 0.3 });
-      gsap.to(ANIM_SELECTORS.step1, { opacity: 1, duration: 0.3 });
+      const step1 = document.querySelector(ANIM_SELECTORS.step1);
+      const step2 = document.querySelector(ANIM_SELECTORS.step2);
+      if (step2) gsap.to(step2, { opacity: 0, duration: 0.3 });
+      if (step1) gsap.to(step1, { opacity: 1, duration: 0.3 });
     }
   }, [home.step]);
 

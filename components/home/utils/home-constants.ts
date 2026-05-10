@@ -11,17 +11,19 @@ export interface StatusConfig {
   dot: string;
   icon: React.ReactNode;
   description?: string;
+  descriptionColor?: string;
 }
 
 export const STATUS_CONFIGS: Record<RegistrationStatus, StatusConfig> = {
   confirmed: {
-    label: "Cupo confirmado",
-    bg: "bg-emerald-50",
-    text: "text-emerald-700",
-    border: "border-emerald-100",
-    dot: "bg-emerald-500",
-    icon: React.createElement(Check, { className: "size-5", strokeWidth: 3 }),
+    label: "Activo",
+    bg: "bg-[#EAFFEE]",
+    text: "text-[#0F9700]",
+    border: "border-[#0F9700]/10",
+    dot: "bg-[#0F9700]",
+    icon: React.createElement(Check, { className: "size-4", strokeWidth: 3 }),
     description: "Se te enviará un correo con los datos del evento",
+    descriptionColor: "text-[#42A53C]",
   },
   cancelled: {
     label: "Cancelado",
@@ -29,17 +31,19 @@ export const STATUS_CONFIGS: Record<RegistrationStatus, StatusConfig> = {
     text: "text-rose-700",
     border: "border-rose-100",
     dot: "bg-rose-500",
-    icon: React.createElement(XCircle, { className: "size-5" }),
+    icon: React.createElement(XCircle, { className: "size-4" }),
     description: "Tu registro para este evento ha sido cancelado",
+    descriptionColor: "text-rose-600/80",
   },
   pending: {
-    label: "Validando cupo",
+    label: "Pendiente",
     bg: "bg-amber-50",
     text: "text-amber-700",
     border: "border-amber-100",
     dot: "bg-amber-500",
-    icon: React.createElement(Loader2, { className: "size-5 animate-spin" }),
+    icon: React.createElement(Loader2, { className: "size-4 animate-spin" }),
     description: "Estamos revisando tu solicitud, te avisaremos pronto",
+    descriptionColor: "text-amber-600/80",
   },
 };
 

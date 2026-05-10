@@ -54,50 +54,52 @@ export function UserDataCard({
 }: UserDataCardProps) {
   const badgeConfig = STATUS_CONFIGS[(status as RegistrationStatus) || "pending"] ?? STATUS_CONFIGS.pending;
 
-  // 🧠 Obtener etiqueta desde la configuración centralizada
-  const displayLabel = eventConfig.statusLabels[status as RegistrationStatus] || badgeConfig.label;
+  // 🧠 Para la tarjeta de datos, usamos las etiquetas simplificadas (Activo, Pendiente, Cancelado)
+  const displayLabel = badgeConfig.label;
 
   return (
-    <div className="max-w-[1372px] mx-auto bg-white rounded-[32px] p-8 md:p-12 lg:p-16 relative user-data-container border border-neutral-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] transform backface-visibility-hidden antialiased">
-      {/* Badge de estado — esquina superior derecha en md+ */}
-      <div className="md:absolute md:top-10 md:right-10 mb-8 md:mb-0 flex justify-center md:justify-end">
-        {isLoadingEvents ? (
-          <Skeleton className="h-10 w-32 md:w-40 rounded-2xl bg-neutral-200/50" />
-        ) : (
-          <div className="flex flex-col items-center md:items-end gap-2">
-            <div className={cn("px-5 py-2 md:px-6 md:py-2 rounded-2xl font-bold text-base md:text-lg flex items-center gap-2 transition-all duration-500 transform backface-visibility-hidden", badgeConfig.bg, badgeConfig.text)}>
-              {badgeConfig.icon}
-              {displayLabel}
+    <div className="max-w-[1372px] mx-auto bg-[#FFFFFF] rounded-[32px] p-8 md:p-12 lg:p-16 relative user-data-container border-[3px] border-[#EFEFEF] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] transform backface-visibility-hidden antialiased">
+      {/* Cabecera: Título + Badge de estado */}
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 mb-8 md:mb-12">
+        {/* Información del Evento */}
+        <div className="flex flex-col gap-1">
+          {isLoadingEvents ? (
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-32 bg-neutral-200/50" />
+              <Skeleton className="h-8 w-64 bg-neutral-200/30" />
             </div>
-            {badgeConfig.description && (
-              <p className={cn("text-[13px] font-medium animate-in fade-in slide-in-from-top-1", status === 'confirmed' ? 'text-emerald-600/80' : 'text-slate-500/80')}>
-                {badgeConfig.description}
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-1.5 text-[#3154DC] font-black text-[12px] md:text-sm uppercase tracking-[0.15em]">
+                <span>{eventCity}</span>
+                <span className="w-1 h-1 rounded-full bg-[#3154DC] mx-0.5" />
+                <span>{eventCountry}</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-neutral-900 leading-tight">
+                {eventTitle || "Evento"}
+              </h2>
+            </>
+          )}
+        </div>
 
-      {/* Información del Evento — esquina superior izquierda */}
-      <div className="mb-8 md:mb-12">
-        {isLoadingEvents ? (
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32 bg-neutral-200/50" />
-            <Skeleton className="h-8 w-64 bg-neutral-200/30" />
-          </div>
-        ) : (
-          <div className="flex flex-col gap-1">
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-blue-600/80">Inscripción activa</span>
-            <h2 className="text-3xl md:text-4xl font-black text-neutral-900 leading-tight">
-              {eventTitle || "Evento"}
-            </h2>
-            <div className="flex items-center gap-1.5 text-slate-400 font-bold text-sm md:text-base">
-               <span>{eventCity}</span>
-               <span className="w-1 h-1 rounded-full bg-slate-300 mx-1" />
-               <span>{eventCountry}</span>
+        {/* Badge de estado */}
+        <div className="shrink-0">
+          {isLoadingEvents ? (
+            <Skeleton className="h-10 w-32 md:w-40 rounded-2xl bg-neutral-200/50" />
+          ) : (
+            <div className="flex flex-col items-center md:items-end gap-2">
+              <div className={cn("px-4 py-1.5 rounded-xl font-bold text-[15px] flex items-center gap-2 transition-all duration-500 transform backface-visibility-hidden", badgeConfig.bg, badgeConfig.text, badgeConfig.border, "border")}>
+                {badgeConfig.icon}
+                {displayLabel}
+              </div>
+              {badgeConfig.description && (
+                <p className={cn("text-[13px] font-medium animate-in fade-in slide-in-from-top-1", badgeConfig.descriptionColor || "text-slate-500/80")}>
+                  {badgeConfig.description}
+                </p>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 lg:gap-x-12 gap-y-8 lg:gap-y-12 pt-4">
@@ -111,60 +113,94 @@ export function UserDataCard({
         ) : (
           <>
             {/* Nombre */}
-            <div className="space-y-3">
-              <label className="text-[15px] font-medium text-slate-500">Nombre <span className="text-red-500">*</span></label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[#03133F] font-normal px-1 text-base">Nombre <span className="text-red-500">*</span></label>
               {isEditing ? (
-                <Input name="firstName" value={editFormData?.firstName || ""} onChange={handleEditChange} className="h-11 rounded-xl" />
+                <Input 
+                  name="firstName" 
+                  value={editFormData?.firstName || ""} 
+                  onChange={handleEditChange} 
+                  className="h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white text-[#03133F] font-medium text-base transition-all" 
+                />
               ) : (
-                <div className="h-11 px-5 flex items-center bg-white border border-gray-200 rounded-xl text-lg text-black font-medium">{displayData.firstName}</div>
+                <div className="h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium transition-all">
+                  {displayData.firstName}
+                </div>
               )}
             </div>
 
             {/* Apellido */}
-            <div className="space-y-3">
-              <label className="text-[15px] font-medium text-slate-500">Apellido <span className="text-red-500">*</span></label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[#03133F] font-normal px-1 text-base">Apellido <span className="text-red-500">*</span></label>
               {isEditing ? (
-                <Input name="lastName" value={editFormData?.lastName || ""} onChange={handleEditChange} className="h-11 rounded-xl" />
+                <Input 
+                  name="lastName" 
+                  value={editFormData?.lastName || ""} 
+                  onChange={handleEditChange} 
+                  className="h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white text-[#03133F] font-medium text-base transition-all" 
+                />
               ) : (
-                <div className="h-11 px-5 flex items-center bg-white border border-gray-200 rounded-xl text-lg text-black font-medium">{displayData.lastName}</div>
+                <div className="h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium transition-all">
+                  {displayData.lastName}
+                </div>
               )}
             </div>
 
             {/* Correo (solo lectura siempre) */}
-            <div className="space-y-3">
-              <label className="text-[15px] font-medium text-slate-500">Correo electrónico <span className="text-red-500">*</span></label>
-              <div className="h-11 px-5 flex items-center bg-gray-50 border border-gray-200 rounded-xl text-lg text-gray-500 font-medium truncate">{displayData.email}</div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[#03133F] font-normal px-1 text-base">Correo electrónico <span className="text-red-500">*</span></label>
+              <div className="h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium truncate">
+                {displayData.email}
+              </div>
             </div>
 
             {/* País */}
-            <div className="space-y-3">
-              <label className="text-[15px] font-medium text-slate-500">País de residencia (opcional)</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[#03133F] font-normal px-1 text-base">País de residencia <span className="text-neutral-400 font-normal ml-1">(opcional)</span></label>
               {isEditing ? (
-                <Input name="country" value={editFormData?.country || ""} onChange={handleEditChange} className="h-11 rounded-xl" />
+                <Input 
+                  name="country" 
+                  value={editFormData?.country || ""} 
+                  onChange={handleEditChange} 
+                  className="h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white text-[#03133F] font-medium text-base transition-all" 
+                />
               ) : (
-                <div className="h-11 px-5 flex items-center bg-white border border-gray-200 rounded-xl text-lg text-black font-medium">{displayData.country || "No especificado"}</div>
+                <div className="h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium transition-all">
+                  {displayData.country || "No especificado"}
+                </div>
               )}
             </div>
 
             {/* WhatsApp */}
-            <div className="space-y-3">
-              <label className="text-[15px] font-medium text-slate-500">WhatsApp <span className="text-red-500">*</span></label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[#03133F] font-normal px-1 text-base">WhatsApp <span className="text-red-500">*</span></label>
               <div className="flex gap-2">
-                <div className="w-16 h-11 px-3 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-xl text-lg text-gray-500 font-medium">{displayData.phoneCode}</div>
+                <div className="w-16 h-10 md:h-11 flex items-center justify-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium">
+                  {displayData.phoneCode}
+                </div>
                 {isEditing ? (
-                  <Input name="phone" value={editFormData?.phone || ""} onChange={handleEditChange} className="h-11 rounded-xl flex-1" />
+                  <Input 
+                    name="phone" 
+                    value={editFormData?.phone || ""} 
+                    onChange={handleEditChange} 
+                    className="h-10 md:h-11 rounded-xl flex-1 border-[#616B77]/40 focus:ring-blue-700 bg-white text-[#03133F] font-medium text-base transition-all" 
+                  />
                 ) : (
-                  <div className="flex-1 h-11 px-5 flex items-center bg-white border border-gray-200 rounded-xl text-lg text-black font-medium">{displayData.phone}</div>
+                  <div className="flex-1 h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium transition-all">
+                    {displayData.phone}
+                  </div>
                 )}
               </div>
             </div>
 
+
+
             {/* Acciones de edición */}
-            <div className="flex flex-col items-center gap-2 pb-1 pt-[31px]">
+            <div className="flex flex-col items-end gap-2 pb-1 pt-[31px]">
               {!isSignedIn ? (
                 <>
                   <SignInButton mode="modal">
-                    <button className="flex items-center gap-2 text-[#00A650] font-bold text-base underline hover:opacity-80 transition-opacity">
+                    <button className="flex items-center gap-2 text-[#0F923D] font-bold text-base underline">
                       <Edit3 className="size-5" />
                       Inicia sesión para editar tu información
                     </button>
