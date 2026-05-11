@@ -25,14 +25,7 @@ export function HeroSection({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
-    
-    tl.to(".hero-badge", { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "back.out(1.7)" })
-      .to(".hero-title", { opacity: 1, y: 0, duration: 1.2 }, "-=0.6")
-      .to(".hero-desc", { opacity: 1, y: 0, duration: 1 }, "-=1")
-      .to(".hero-check", { opacity: 1, y: 0, duration: 1 }, "-=1");
-
-    // Word Rotator Interno
+    // Word Rotator Interno (Mantenemos GSAP puro para esto)
     const words = ["Giras", "Eventos", "Talleres", "Reuniones"];
     let currentIndex = 0;
     const rotator = document.querySelector(".word-rotator");
@@ -65,7 +58,10 @@ export function HeroSection({
       {/* Badge de lista de espera */}
       <Tooltip>
         <TooltipTrigger>
-          <div className="hero-badge opacity-0 translate-y-8 inline-flex items-center gap-3 px-6 py-2 bg-[#3154DC]/10 rounded-full border border-[#3154DC]/20 cursor-help transition-colors hover:bg-[#3154DC]/20">
+          <div 
+            className="hero-badge animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out inline-flex items-center gap-3 px-6 py-2 bg-[#3154DC]/10 rounded-full border border-[#3154DC]/20 cursor-help transition-colors hover:bg-[#3154DC]/20"
+            style={{ animationFillMode: "both" }}
+          >
             <div className="w-2 h-2 bg-[#3154DC] rounded-full animate-pulse" />
             <span className="text-[#3154DC] font-semibold text-base">
               Lista de espera para reservar cupo
@@ -78,7 +74,10 @@ export function HeroSection({
       </Tooltip>
 
       {/* Título animado */}
-      <h1 className="hero-title opacity-0 translate-y-8 font-extrabold tracking-tight leading-[0.9] text-black text-center flex flex-col items-center">
+      <h1 
+        className="hero-title animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[200ms] ease-out font-extrabold tracking-tight leading-[0.9] text-black text-center flex flex-col items-center"
+        style={{ animationFillMode: "both" }}
+      >
         <div className="h-[70px] sm:h-[100px] lg:h-[150px] overflow-hidden flex items-center justify-center mask-fade-vertical">
           <span className="word-rotator block text-5xl sm:text-7xl lg:text-[120px] text-black leading-none">
             Giras
@@ -90,12 +89,18 @@ export function HeroSection({
       </h1>
 
       {/* Descripción */}
-      <p className="hero-desc opacity-0 translate-y-8 max-w-3xl mx-auto text-lg sm:text-xl md:text-2xl text-gray-600 font-medium leading-relaxed px-4">
+      <p 
+        className="hero-desc animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[400ms] ease-out max-w-3xl mx-auto text-lg sm:text-xl md:text-2xl text-gray-600 font-medium leading-relaxed px-4"
+        style={{ animationFillMode: "both" }}
+      >
         Espacio relajado con Hyenuk Chu para compartir, conocernos mejor y fortalecer conexiones auténticas.
       </p>
 
       {/* CTAs */}
-      <div className="hero-check opacity-0 translate-y-8 flex flex-col items-center gap-6 pt-6">
+      <div 
+        className="hero-check animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[500ms] ease-out flex flex-col items-center gap-6 pt-6"
+        style={{ animationFillMode: "both" }}
+      >
         {isSignedIn && (
           <Button
             onClick={() => {
