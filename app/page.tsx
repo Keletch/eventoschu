@@ -53,11 +53,14 @@ function HomeSkeletonLoader() {
           </div>
         </div>
 
-        {/* Título */}
-        <div className="flex flex-col items-center justify-center">
+        <h1 className="flex flex-col items-center justify-center">
+          <span className="sr-only">Calendario de eventos HyenUk Chu</span>
+          <p className="sr-only">
+            Bienvenido al Calendario de eventos HyenUk Chu. Aquí podrás encontrar y registrarte a todas las giras, talleres presenciales, y reuniones exclusivas del Club de Inversionistas. Consulta las fechas, disponibilidad y asegura tu cupo en nuestra comunidad.
+          </p>
           <div className="w-48 sm:w-64 lg:w-96 h-[70px] sm:h-[100px] lg:h-[150px] bg-neutral-100 rounded-3xl animate-pulse" />
           <div className="w-64 sm:w-96 lg:w-[500px] h-10 sm:h-16 lg:h-24 bg-neutral-100 rounded-2xl animate-pulse -mt-2 sm:-mt-4 lg:-mt-6" />
-        </div>
+        </h1>
 
         {/* Descripción */}
         <div className="flex flex-col items-center gap-2 max-w-3xl mx-auto">

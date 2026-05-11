@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { Notification } from '@/app/admin/dashboard/hooks/use-notifications';
 
 // Modular Components
-import { NotificationItem } from './notifications/notification-item';
+import { NotificationItem } from '@/components/notifications/notification-item';
 
 interface NotificationBellProps {
   notifications: Notification[];

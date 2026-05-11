@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { EventCard } from "@/components/event-card";
+import { EventCard } from "@/components/events/event-card";
 import { cn } from "@/lib/utils";
 import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";

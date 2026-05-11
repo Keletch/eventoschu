@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { NotificationBell } from "@/components/notification-bell";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import gsap from "gsap";
 
 // Modular Components

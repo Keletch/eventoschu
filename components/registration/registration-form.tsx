@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import { COUNTRY_CODES } from "@/lib/constants";
 
 // Modular Components
-import { FormField } from "./registration/form-field";
-import { PhoneInput } from "./registration/phone-input";
-import { CountrySelector } from "./registration/country-selector";
+import { FormField } from "./form-field";
+import { PhoneInput } from "./phone-input";
+import { CountrySelector } from "./country-selector";
 
 interface RegistrationFormProps {
   onSubmit: (data: any, turnstileToken: string) => void;

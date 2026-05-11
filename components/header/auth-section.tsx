@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { UserButton, SignInButton } from '@clerk/nextjs';
-import { NotificationBell } from '../notification-bell';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HeaderAlerts } from './header-alerts';

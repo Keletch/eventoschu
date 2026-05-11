@@ -7,7 +7,7 @@ import { getRegistrationsCount } from "@/app/actions/admin-registration";
 import { getEvents, Event } from "@/app/actions/events";
 import { formatSafeDate } from "@/lib/date-utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SurveyModal } from "@/components/survey-modal";
+import { SurveyModal } from "@/components/registration/survey-modal";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { toast } from "sonner";

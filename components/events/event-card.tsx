@@ -5,9 +5,9 @@ import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass } from "luc
 import { cn } from "@/lib/utils";
 
 // Modular Components
-import { EventProgressBar } from "./events/event-progress-bar";
-import { EventSoldOutOverlay } from "./events/event-sold-out-overlay";
-import { EventFlag } from "./ui/event-flag";
+import { EventProgressBar } from "@/components/events/event-progress-bar";
+import { EventSoldOutOverlay } from "@/components/events/event-sold-out-overlay";
+import { EventFlag } from "@/components/ui/event-flag";
 
 import { getEventUIConfig } from "@/lib/event-config";
 
