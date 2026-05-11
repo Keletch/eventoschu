@@ -36,12 +36,12 @@ export default clerkMiddleware(async (auth, request) => {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
   // Protect /admin routes (Supabase)
   if (request.nextUrl.pathname.startsWith('/admin')) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
     if (request.nextUrl.pathname === '/admin/login') {
       if (user) {
         return NextResponse.redirect(new URL('/admin/dashboard', request.url))

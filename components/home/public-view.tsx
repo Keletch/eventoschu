@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { RegistrationForm } from "@/components/registration-form";
+import dynamic from "next/dynamic";
+const RegistrationForm = dynamic(() => import("@/components/registration-form").then(mod => mod.RegistrationForm), { ssr: false });
 import { HeroSection } from "@/components/home/hero-section";
 import { CheckRegistrationPanel } from "@/components/home/check-registration-panel";
 import { MonthTabs } from "@/components/home/month-tabs";
