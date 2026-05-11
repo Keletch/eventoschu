@@ -39,7 +39,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { esES } from "@clerk/localizations";
-import { CustomScrollbar } from "@/components/ui/custom-scrollbar";
+import { CustomScrollbar } from "@/components/ui/custom-scrollbar-wrapper";
 import { VercelAnalytics } from "@/components/vercel-analytics";
 import { VercelSpeedInsights } from "@/components/vercel-speed-insights";
 

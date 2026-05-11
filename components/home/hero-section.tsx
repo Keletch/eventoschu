@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import dynamic from "next/dynamic";
+
+const WordRotator = dynamic(() => import("./word-rotator").then(mod => mod.WordRotator), { ssr: false });
 import { Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -24,34 +25,7 @@ export function HeroSection({
 }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    // Word Rotator Interno (Mantenemos GSAP puro para esto)
-    const words = ["Giras", "Eventos", "Talleres", "Reuniones"];
-    let currentIndex = 0;
-    const rotator = document.querySelector(".word-rotator");
-
-    if (rotator) {
-      const rotate = () => {
-        const nextIndex = (currentIndex + 1) % words.length;
-        const nextWord = words[nextIndex];
-        const tlRotator = gsap.timeline({
-          onComplete: () => {
-            currentIndex = nextIndex;
-            setTimeout(rotate, 1200);
-          }
-        });
-
-        tlRotator.to(rotator, {
-          y: 120, opacity: 0, filter: "blur(10px)", duration: 0.25, ease: "power2.in",
-          onComplete: () => {
-            rotator.textContent = nextWord;
-            gsap.set(rotator, { y: -120, filter: "blur(10px)" });
-          }
-        }).to(rotator, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.35, ease: "back.out(1.2)" });
-      };
-      setTimeout(rotate, 1500);
-    }
-  }, { scope: containerRef });
+  // GSAP animation logic moved to dynamically imported WordRotator component
 
   return (
     <div ref={containerRef} className="max-w-5xl mx-auto text-center space-y-8">
@@ -79,9 +53,7 @@ export function HeroSection({
         style={{ animationFillMode: "both" }}
       >
         <div className="h-[70px] sm:h-[100px] lg:h-[150px] overflow-hidden flex items-center justify-center mask-fade-vertical">
-          <span className="word-rotator block text-5xl sm:text-7xl lg:text-[120px] text-black leading-none">
-            Giras
-          </span>
+          <WordRotator />
         </div>
         <div className="text-4xl sm:text-6xl lg:text-[88px] -mt-2 sm:-mt-4 lg:-mt-6 whitespace-nowrap">
           HyenUk Chu

@@ -6,7 +6,13 @@ const RegistrationForm = dynamic(() => import("@/components/registration-form").
 import { HeroSection } from "@/components/home/hero-section";
 import { CheckRegistrationPanel } from "@/components/home/check-registration-panel";
 import { MonthTabs } from "@/components/home/month-tabs";
-import { EventsCarousel } from "@/components/home/events-carousel";
+import { EventsSkeleton } from "@/components/home/events-skeleton";
+
+const EventsCarousel = dynamic(() => import("@/components/home/events-carousel").then(mod => mod.EventsCarousel), { 
+  ssr: false,
+  loading: () => <EventsSkeleton />
+});
+
 import { CategoryTabs } from "./category-tabs";
 import { useClerk } from "@clerk/nextjs";
 
