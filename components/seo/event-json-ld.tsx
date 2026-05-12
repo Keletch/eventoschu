@@ -27,21 +27,30 @@ export function EventJsonLd({ events }: EventJsonLdProps) {
         "item": {
           "@type": "Event",
           "name": data.title,
-          "description": `Únete a ${data.performer} en este evento presencial en ${data.city}. ${data.displayDuration} de aprendizaje con el Club de Inversionistas.`,
+          "description": data.isOnline
+            ? `Únete a ${data.performer} en este evento en línea. ${data.displayDuration} de aprendizaje con el Club de Inversionistas.`
+            : `Únete a ${data.performer} en este evento presencial en ${data.city}. ${data.displayDuration} de aprendizaje con el Club de Inversionistas.`,
           "startDate": startDateTime,
           "duration": data.isoDuration,
           "eventStatus": "https://schema.org/EventScheduled",
-          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "eventAttendanceMode": data.isOnline 
+            ? "https://schema.org/OnlineEventAttendanceMode" 
+            : "https://schema.org/OfflineEventAttendanceMode",
           "image": `${baseUrl}/favicon.ico`,
-          "location": {
-            "@type": "Place",
-            "name": data.displayLocation,
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": data.city,
-              "addressCountry": data.country
-            }
-          },
+          "location": data.isOnline
+            ? {
+                "@type": "VirtualLocation",
+                "url": data.displayLinkEnabled && data.displayLinkUrl ? data.displayLinkUrl : baseUrl
+              }
+            : {
+                "@type": "Place",
+                "name": data.displayLocation,
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": data.city,
+                  "addressCountry": data.country
+                }
+              },
           "offers": {
             "@type": "Offer",
             "price": "0",
