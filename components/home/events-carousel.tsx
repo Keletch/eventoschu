@@ -183,13 +183,18 @@ export function EventsCarousel({
                       date={data.displayDate}
                       time={data.displayTime}
                       duration={data.displayDuration}
-                      location={data.displayLocation}
+                      location={data.displayLocation || ""}
                       price={data.displayPrice}
                       selected={selectedEvents.includes(event.id)}
                       confirmedCount={eventCounts[event.id] || 0}
                       capacity={event.capacity || 25}
                       initialStatus={event.initial_status}
                       onSelect={handleSelectEvent}
+                      bgClass={event.bg_class}
+                      isVirtual={data.isOnline}
+                      linkTitle={data.displayLinkTitle}
+                      linkUrl={data.displayLinkUrl}
+                      linkEnabled={data.displayLinkEnabled}
                     />
                   </div>
                 );

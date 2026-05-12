@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MapPin, Copy, Edit, Trash2 } from "lucide-react";
+import { MapPin, Copy, Edit, Trash2, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatSafeDate, formatDateToShort } from "@/lib/date-utils";
 import { EventFlag } from "@/components/ui/event-flag";
@@ -70,7 +70,11 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                       <div>
                         <div className="font-bold text-gray-900">{event.title}</div>
                         <div className="text-xs text-neutral-500 flex items-center gap-1">
-                          <MapPin className="w-3 h-3" /> {event.city}, {event.country}
+                          {event.flag === 'WEB' ? (
+                            <><Globe className="w-3 h-3" /> Evento en línea</>
+                          ) : (
+                            <><MapPin className="w-3 h-3" /> {event.city}, {event.country}</>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -80,7 +84,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                   </TableCell>
                   <TableCell className="text-center font-bold">
                     <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-none">
-                      {regCount} / {event.capacity}
+                      {regCount} / {event.capacity >= 9999 ? "∞" : event.capacity}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">

@@ -15,6 +15,7 @@ const CACHE_TTL = 3600; // 1 hora
 export interface Event {
   id: string;
   title: string;
+  subtitle?: string;
   city: string;
   country: string;
   start_date: string;
@@ -22,6 +23,7 @@ export interface Event {
   time?: string;
   duration?: string;
   location?: string;
+  is_virtual?: boolean;
   price?: string;
   capacity?: number;
   flag?: string;

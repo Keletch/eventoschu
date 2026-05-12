@@ -117,4 +117,6 @@ Antes de escribir **cualquier** bloque de código nuevo (componente, hook, anima
 ### Ejemplo de cómo recomendar una mejora
 > 💡 **Mejora detectada:** Noté que `events-carousel.tsx` recalcula los eventos filtrados en cada render sin memoización. Según el skill `react-best-practices`, esto puede causar re-renders innecesarios al cambiar el mes activo. La solución es envolver el cálculo en `useMemo`. ¿Deseas que lo implemente?
 
+> 💡 **Nota sobre Experimentos:** Para funcionalidades experimentales o pruebas A/B, consulta la sección de **Vercel Flags** en `ARCHITECTURE.md` antes de proceder con una implementación tradicional.
+
 *Si has entendido estas reglas, estás listo para programar sin romper la matrix.*

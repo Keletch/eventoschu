@@ -7,6 +7,7 @@ import {
   Globe, 
   NotebookPen, 
   Presentation, 
+  Monitor,
   LayoutGrid 
 } from "lucide-react";
 
@@ -21,6 +22,7 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   "Giras": Globe,
   "Talleres/Cursos": NotebookPen,
   "Reunión oficina": Presentation,
+  "Eventos en linea": Monitor,
 };
 
 const CATEGORY_LABELS: Record<string, string> = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass } from "lucide-react";
+import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Modular Components
@@ -27,7 +27,12 @@ interface EventCardProps {
   bgClass?: string;
   confirmedCount?: number;
   capacity?: number;
-  initialStatus?: string; // Cambiamos isOpenMode por initialStatus para que el config decida
+  initialStatus?: string;
+  // Propiedades para eventos en línea
+  isVirtual?: boolean;
+  linkTitle?: string | null;
+  linkUrl?: string | null;
+  linkEnabled?: boolean;
 }
 
 export function EventCard({
@@ -47,10 +52,15 @@ export function EventCard({
   confirmedCount = 0,
   capacity = 25,
   initialStatus = 'confirmed',
+  isVirtual = false,
+  linkTitle,
+  linkUrl,
+  linkEnabled = false,
 }: EventCardProps) {
-  // 🧠 Consultar al orquestador central
   const eventConfig = getEventUIConfig({ initial_status: initialStatus });
-  const isFull = confirmedCount >= capacity;
+  const isUnlimited = capacity >= 9999;
+  // Los eventos en línea nunca se marcan como llenos
+  const isFull = !isVirtual && !isUnlimited && confirmedCount >= capacity;
   const isSoldOut = eventConfig.showFullCapacityOverlay && isFull;
 
   return (
@@ -106,7 +116,30 @@ export function EventCard({
           <EventDetailItem icon={<Calendar className="w-4 h-4 text-neutral-400 shrink-0" />} label="Fecha" value={date} />
           <EventDetailItem icon={<Clock className="w-4 h-4 text-neutral-400 shrink-0" />} label="Hora" value={time} />
           <EventDetailItem icon={<Hourglass className="w-4 h-4 text-neutral-400 shrink-0" />} label="Duración" value={duration} />
-          <EventDetailItem icon={<MapPin className="w-4 h-4 text-neutral-400 shrink-0 mt-1" />} label="Sitio" value={location} isMultiLine />
+          {/* Condicional: Sitio para presencial, enlace para online */}
+          {isVirtual ? (
+            <div className="flex gap-3 items-center">
+              <ExternalLink className="w-4 h-4 text-neutral-400 shrink-0" />
+              <span className="font-bold shrink-0">Enlace:</span>
+              {linkEnabled && linkUrl ? (
+                <a
+                  href={linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-blue-600 hover:text-blue-800 underline underline-offset-2 truncate font-medium transition-colors"
+                >
+                  {linkTitle || "Acceder al evento"}
+                </a>
+              ) : (
+                <span className="text-neutral-400 italic truncate">
+                  {linkTitle || "Enlace por confirmar"}
+                </span>
+              )}
+            </div>
+          ) : (
+            <EventDetailItem icon={<MapPin className="w-4 h-4 text-neutral-400 shrink-0 mt-1" />} label="Sitio" value={location} isMultiLine />
+          )}
           <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-neutral-400 shrink-0" />} label="Precio" value={price} />
         </div>
 

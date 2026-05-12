@@ -178,3 +178,9 @@ Componentes atómicos de diseño reutilizables en toda la app.
 ### 📁 `/public` (Directorio de Estáticos Globales)
 Archivos accesibles abiertamente desde la URL raíz (`/`).
 - `cdi-logo.png`: El logotipo crudo de Club de Inversionistas.
+
+---
+
+### 💡 Ideas y Patrones para el Futuro
+- **Vercel Flags (Feature Toggling):** Cuando se necesite implementar una funcionalidad experimental o realizar pruebas A/B (ej. un nuevo formulario de registro), se recomienda usar el **Vercel Flags SDK**. 
+  - **Patrón:** Definir el flag en `lib/flags.ts`, usar `await myFlag()` en Server Components, y controlar la visibilidad desde el dashboard de Vercel sin necesidad de redeploy.
