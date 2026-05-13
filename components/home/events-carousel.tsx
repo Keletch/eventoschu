@@ -19,7 +19,7 @@ function EventSkeleton() {
           <Skeleton className="size-12 rounded-2xl" />
           <Skeleton className="h-6 w-32" />
         </div>
-        
+
         <div className="space-y-3">
           <Skeleton className="h-10 w-full rounded-xl" />
           <Skeleton className="h-10 w-2/3 rounded-xl" />
@@ -101,9 +101,28 @@ export function EventsCarousel({
   };
 
   const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const amount = direction === 'left' ? -450 : 450;
-      scrollContainerRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+    if (scrollContainerRef.current && cardsRef.current) {
+      const container = scrollContainerRef.current;
+      const firstCard = cardsRef.current.firstElementChild as HTMLElement;
+      
+      if (firstCard) {
+        // Calculamos el ancho de la tarjeta + el gap (gap-8 = 32px)
+        const cardWidth = firstCard.offsetWidth;
+        const gap = 32; 
+        const step = cardWidth + gap;
+        
+        const currentScroll = container.scrollLeft;
+        const targetScroll = direction === 'left' 
+          ? Math.max(0, currentScroll - step) 
+          : Math.min(container.scrollWidth - container.clientWidth, currentScroll + step);
+
+        gsap.to(container, {
+          scrollLeft: targetScroll,
+          duration: 0.6,
+          ease: "power2.inOut",
+          onComplete: checkScroll
+        });
+      }
     }
   };
 
@@ -158,24 +177,27 @@ export function EventsCarousel({
         </div>
       ) : (
         <div className="relative group/carousel">
-          {/* Carrusel de tarjetas con Máscara de Gradiente (Sin capas físicas que tapen contenido) */}
+          {/* Carrusel de tarjetas - Restaurada la fluidez nativa y navegación fija */}
           <div
             ref={scrollContainerRef}
-            style={{ 
-              maskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)'
+            className="flex gap-8 overflow-x-auto py-12 px-8 -mx-8 -my-6 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[350px] md:min-h-[350px] relative z-10"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)'
             }}
-            className="flex gap-8 overflow-x-auto py-24 px-10 md:px-16 -mx-10 md:-mx-16 -my-24 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[350px] md:min-h-[350px] relative z-10"
             onScroll={onScrollInternal}
           >
-            <div ref={cardsRef} className="flex gap-8 min-h-[350px] md:min-h-[350px]">
+            <div
+              ref={cardsRef}
+              className="flex gap-8 min-h-[350px] md:min-h-[350px]"
+            >
               {monthEvents.map((event: any) => {
                 const data = transformEventForUI(event);
                 return (
                   <div
                     key={event.id}
                     id={`event-${event.id}`}
-                    className="event-card-wrapper min-w-[290px] md:min-w-[360px] snap-start transform backface-visibility-hidden"
+                    className="event-card-wrapper min-w-[350px] md:min-w-[350px] snap-center transform backface-visibility-hidden"
                   >
                     <EventCard
                       id={event.id}
