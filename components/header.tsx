@@ -54,13 +54,13 @@ export function Header({
         stagger: 0.1, 
         delay: 0.2,
         ease: "back.out(1.7)",
-        onComplete: contextSafe(() => {
+        onComplete: contextSafe ? contextSafe(() => {
           // Limpieza profesional usando el selector del contexto
           const items = context.selector?.(".header-animate-item");
           if (items) {
             items.forEach((item: any) => item.classList.remove("opacity-0"));
           }
-        })
+        }) : undefined
       }
     );
   }, { scope: headerRef });

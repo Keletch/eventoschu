@@ -84,10 +84,10 @@ export function PublicView({
   useGSAP((context: any, contextSafe: any) => {
     const tl = gsap.timeline({
       delay: 0.1,
-      onComplete: contextSafe(() => {
+      onComplete: contextSafe ? contextSafe(() => {
         const items = context.selector?.(".reveal-item");
         if (items) items.forEach((el: any) => el.classList.remove("reveal-item"));
-      })
+      }) : undefined
     });
 
     tl.to(".reveal-item", REVEAL_CONFIG.to);
