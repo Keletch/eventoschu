@@ -66,7 +66,7 @@ export function EventCard({
   return (
     <Card 
       className={cn(
-        "relative p-5 md:p-6 transition-all duration-500 border-2 rounded-[32px] overflow-hidden",
+        "relative h-full p-5 md:p-6 transition-all duration-500 border-2 rounded-[32px] overflow-hidden",
         "transform backface-visibility-hidden antialiased", // 🛠️ Solución global contra artifacts
         isSoldOut 
           ? "border-border bg-muted grayscale cursor-not-allowed" 

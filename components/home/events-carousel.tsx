@@ -138,9 +138,13 @@ export function EventsCarousel({
     if (monthEvents.length > 0) {
       const tl = gsap.timeline();
 
+      const isMobile = window.innerWidth < 768;
+      const xOffset = isMobile ? 0 : 40;
+      const initialScale = isMobile ? 1 : 0.95;
+
       // Animación de entrada
       tl.fromTo(ANIM_SELECTORS.card,
-        { opacity: 0, x: 40, scale: 0.95 },
+        { opacity: 0, x: xOffset, scale: initialScale },
         {
           opacity: 1,
           x: 0,
@@ -175,7 +179,7 @@ export function EventsCarousel({
       </h2>
 
       {isLoadingEvents ? (
-        <div className="flex gap-8 overflow-hidden pb-4 min-h-[350px] md:min-h-[350px]">
+        <div className="flex gap-8 overflow-hidden pb-4 h-[420px]">
           {[1, 2, 3].map((i) => (
             <div key={i} className="min-w-[290px] md:min-w-[360px]">
               <EventSkeleton />
@@ -187,7 +191,7 @@ export function EventsCarousel({
           {/* Carrusel de tarjetas - Restaurada la fluidez nativa y navegación fija */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-8 overflow-x-auto py-12 px-8 -mx-8 -my-6 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[350px] md:min-h-[350px] relative z-10"
+            className="flex gap-8 overflow-x-auto py-12 px-8 -mx-8 -my-6 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar relative z-10"
             style={{
               maskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
               WebkitMaskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)'
@@ -196,7 +200,7 @@ export function EventsCarousel({
           >
             <div
               ref={cardsRef}
-              className="flex gap-8 min-h-[350px] md:min-h-[350px]"
+              className="flex gap-8 h-[420px]"
             >
               {monthEvents.map((event: any) => {
                 const data = transformEventForUI(event);
@@ -204,7 +208,7 @@ export function EventsCarousel({
                   <div
                     key={event.id}
                     id={`event-${event.id}`}
-                    className="event-card-wrapper min-w-[350px] md:min-w-[350px] snap-center transform backface-visibility-hidden"
+                    className="event-card-wrapper h-full w-[calc(100vw-48px)] md:w-auto md:min-w-[350px] md:max-w-none snap-center transform backface-visibility-hidden"
                   >
                     <EventCard
                       id={event.id}

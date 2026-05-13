@@ -144,9 +144,12 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     if (month !== home.activeMonth && !home.isTransitioning) {
       home.setIsTransitioning(true);
       
+      const isMobile = window.innerWidth < 768;
+      const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
+      
       gsap.to(ANIM_SELECTORS.card, { 
         opacity: 0, 
-        x: -ANIM_CONFIG.offset.sweep, 
+        x: -xOffset, 
         duration: ANIM_CONFIG.duration.normal, 
         stagger: ANIM_CONFIG.offset.stagger,
         ease: ANIM_CONFIG.ease.in,
@@ -159,7 +162,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
           
           setTimeout(() => {
             gsap.fromTo(ANIM_SELECTORS.card, 
-              { opacity: 0, x: ANIM_CONFIG.offset.sweep }, 
+              { opacity: 0, x: xOffset }, 
               { 
                 opacity: 1, 
                 x: 0, 
@@ -183,8 +186,11 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
         onComplete: () => {
           home.setActiveCategory(category);
           setTimeout(() => {
+            const isMobile = window.innerWidth < 768;
+            const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
+
             gsap.fromTo(ANIM_SELECTORS.card, 
-              { opacity: 0, x: ANIM_CONFIG.offset.sweep }, 
+              { opacity: 0, x: xOffset }, 
               { opacity: 1, x: 0, duration: ANIM_CONFIG.duration.normal, stagger: ANIM_CONFIG.offset.stagger }
             );
             gsap.to(ANIM_SELECTORS.monthTab, { opacity: 1, duration: ANIM_CONFIG.duration.normal });
@@ -193,9 +199,12 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
         }
       });
 
+      const isMobile = window.innerWidth < 768;
+      const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
+
       tl.to(ANIM_SELECTORS.card, { 
         opacity: 0, 
-        x: -ANIM_CONFIG.offset.sweep, 
+        x: -xOffset, 
         duration: ANIM_CONFIG.duration.fast, 
         ease: ANIM_CONFIG.ease.in
       }, 0);
@@ -310,7 +319,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
             </div>
             
             {home.isLoaded && (
-              <div className="footer-reveal opacity-0 translate-y-10">
+              <div className="footer-reveal opacity-0 translate-y-10 relative z-[200]">
                 <Footer />
               </div>
             )}
