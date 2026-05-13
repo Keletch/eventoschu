@@ -22,7 +22,7 @@ export function EventFlag({ flag, className, bgClass }: EventFlagProps) {
     <div 
       className={cn(
         "rounded-lg flex items-center justify-center overflow-hidden shadow-sm transition-transform",
-        !isHex && (bgClass || "bg-sky-100"),
+        !isHex && (bgClass || "bg-primary/10"),
         className
       )}
       style={isHex ? { backgroundColor: bgClass } : undefined}

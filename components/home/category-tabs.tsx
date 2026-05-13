@@ -59,11 +59,11 @@ export function CategoryTabs({
     <div className="relative group/categories -mx-1 px-1">
       {/* Fading Edges */}
       <div className={cn(
-        "absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-white via-white/50 to-transparent pointer-events-none transition-opacity duration-500",
+        "absolute left-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-background via-background/50 to-transparent pointer-events-none transition-opacity duration-500",
         canScrollLeft ? "opacity-100" : "opacity-0"
       )} />
       <div className={cn(
-        "absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-white via-white/50 to-transparent pointer-events-none transition-opacity duration-500",
+        "absolute right-0 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-background via-background/50 to-transparent pointer-events-none transition-opacity duration-500",
         canScrollRight ? "opacity-100" : "opacity-0"
       )} />
 
@@ -84,14 +84,14 @@ export function CategoryTabs({
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-xl text-[14px] font-bold transition-all duration-300 whitespace-nowrap select-none border border-transparent", 
                 isActive
-                  ? "bg-black text-white border-black shadow-sm scale-[1.02]"
-                  : "bg-[#FAFAFA] text-neutral-500 border-neutral-200/50 hover:bg-neutral-100 hover:text-black hover:border-neutral-300/50"
+                  ? "bg-foreground text-background border-foreground shadow-sm scale-[1.02]"
+                  : "bg-muted text-muted-foreground border-border/50 hover:bg-accent hover:text-foreground hover:border-border"
               )}
             >
               {Icon && (
                 <Icon className={cn(
                   "size-[18px] transition-colors duration-300",
-                  isActive ? "text-white" : "text-neutral-400 group-hover:text-black"
+                  isActive ? "text-background" : "text-muted-foreground/70 group-hover:text-foreground"
                 )} />
               )}
               <span>{label}</span>

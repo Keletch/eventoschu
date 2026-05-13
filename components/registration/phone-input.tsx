@@ -26,7 +26,7 @@ export function PhoneInput({
 }: PhoneInputProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor="phone" className="text-[#03133F] font-normal px-1 text-base">
+      <Label htmlFor="phone" className="text-foreground font-normal px-1 text-base">
         Teléfono (WhatsApp) <span className="text-red-500">*</span>
       </Label>
       <div className="flex gap-3">
@@ -34,9 +34,9 @@ export function PhoneInput({
           value={phoneCode}
           onValueChange={onPhoneCodeChange}
         >
-          <SelectTrigger className="w-[80px] md:w-[90px] h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white flex items-center justify-between px-3 text-[#03133F] font-medium text-base">
+          <SelectTrigger className="w-[80px] md:w-[90px] h-10 md:h-11 rounded-xl border-[#616B77]/40 dark:border-primary/20 focus:ring-primary bg-transparent flex items-center justify-between px-3 text-foreground font-medium text-base">
             <SelectValue>
-              <span className="text-[#D6DAE0] font-medium text-base">{phoneCode || "+51"}</span>
+              <span className="text-muted-foreground/40 font-medium text-base">{phoneCode || "+51"}</span>
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -55,7 +55,7 @@ export function PhoneInput({
           id="phone"
           name="phone"
           placeholder="987 654 321"
-          className="flex-1 h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white placeholder:text-[#D6DAE0] placeholder:text-base placeholder:font-medium text-[#03133F] font-medium text-base"
+          className="flex-1 h-10 md:h-11 rounded-xl border-[#616B77]/40 dark:border-primary/20 focus:ring-primary bg-transparent placeholder:text-muted-foreground/40 placeholder:text-base placeholder:font-medium text-foreground font-medium text-base"
           required
           value={phone}
           onChange={onPhoneChange}

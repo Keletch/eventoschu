@@ -67,17 +67,17 @@ export function CitySelector({
   };
 
   return (
-    <div ref={containerRef} className="max-w-[1372px] mx-auto bg-[#F5F6F9] rounded-[32px] py-4 md:py-6 px-6 md:px-8 flex flex-col items-center justify-center gap-6 border border-neutral-100">
-      <div className="text-[17px] md:text-[20px] font-medium text-gray-500 text-center">
+    <div ref={containerRef} className="max-w-[1372px] mx-auto bg-muted dark:bg-muted/50 rounded-[32px] py-4 md:py-6 px-6 md:px-8 flex flex-col items-center justify-center gap-6 border border-border">
+      <div className="text-[17px] md:text-[20px] font-medium text-muted-foreground text-center">
         Consulta aquí tus registros para ver más detalles:
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 min-h-[56px]">
         {isLoadingEvents ? (
           <>
-            <Skeleton className="h-[52px] w-32 md:w-40 rounded-2xl bg-neutral-100" />
-            <Skeleton className="h-[52px] w-32 md:w-40 rounded-2xl bg-neutral-100" />
-            <Skeleton className="h-[52px] w-32 md:w-40 rounded-2xl bg-neutral-100" />
+            <Skeleton className="h-[52px] w-32 md:w-40 rounded-2xl" />
+            <Skeleton className="h-[52px] w-32 md:w-40 rounded-2xl" />
+            <Skeleton className="h-[52px] w-32 md:w-40 rounded-2xl" />
           </>
         ) : (
           registeredEvents.map((e) => {
@@ -93,8 +93,8 @@ export function CitySelector({
                   "event-select-btn group flex items-center gap-3 px-5 py-2.5 rounded-2xl transition-all duration-300 border-2 cursor-pointer",
                   "transform backface-visibility-hidden antialiased",
                   isActive
-                    ? `bg-white border-current ${config.text} shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)] scale-[1.03] z-10`
-                    : "bg-transparent border-white hover:bg-white/50 text-gray-400"
+                    ? `bg-card border-current ${config.text} shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)] scale-[1.03] z-10`
+                    : "bg-transparent border-border/50 hover:bg-accent hover:text-foreground text-muted-foreground"
                 )}
                 style={isActive ? { borderColor: statusKey === 'confirmed' ? '#0F9700' : undefined, color: statusKey === 'confirmed' ? '#0F9700' : undefined } : {}}
               >
@@ -104,7 +104,7 @@ export function CitySelector({
                 />
                 <span className={cn(
                   "font-bold text-base md:text-lg leading-tight max-w-[200px] md:max-w-[240px] text-left",
-                  isActive ? "" : "text-gray-500"
+                  isActive ? "" : "text-muted-foreground/70"
                 )}>
                   {e.title}
                 </span>

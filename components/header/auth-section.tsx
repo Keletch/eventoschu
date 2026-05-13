@@ -55,8 +55,8 @@ export function AuthSection({
   if (!isLoaded) {
     return (
       <div className="flex items-center gap-2 h-10">
-        <div className="size-10 rounded-xl bg-slate-50 animate-pulse" />
-        <div className="size-10 rounded-xl bg-slate-50 animate-pulse" />
+        <div className="size-10" />
+        <div className="size-10" />
       </div>
     );
   }
@@ -88,7 +88,7 @@ export function AuthSection({
       {/* Slot de Usuario */}
       <div className="size-10 flex items-center justify-center">
         <div className={cn(
-          "relative size-10 rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center transition-all duration-300",
+          "relative size-10 rounded-xl bg-accent overflow-hidden flex items-center justify-center transition-all duration-300",
           !isFullyReady ? "opacity-0 scale-90" : "opacity-100 scale-100"
         )}>
           {isSignedIn ? (
@@ -96,13 +96,13 @@ export function AuthSection({
               appearance={{
                 elements: {
                   avatarBox: "size-10 rounded-xl",
-                  userButtonPopoverCard: "shadow-xl border border-slate-200"
+                  userButtonPopoverCard: "shadow-xl border border-border bg-card text-foreground"
                 }
               }}
             />
           ) : (
             <SignInButton mode="modal">
-              <button className="text-slate-400 hover:text-slate-600 transition-colors w-full h-full flex items-center justify-center cursor-pointer">
+              <button className="text-muted-foreground hover:text-foreground transition-colors w-full h-full flex items-center justify-center cursor-pointer">
                 <UserIcon className="h-5 w-5" />
               </button>
             </SignInButton>

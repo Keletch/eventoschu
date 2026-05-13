@@ -17,6 +17,7 @@ export function EventProgressBar({
   isOpenMode = true,
 }: EventProgressBarProps) {
   const isUnlimited = capacity >= 9999;
+  const isFull = !isOpenMode && confirmedCount >= capacity;
   const progress = isUnlimited ? 0 : Math.min((confirmedCount / capacity) * 100, 100);
 
   return (
@@ -42,11 +43,11 @@ export function EventProgressBar({
       </div>
       {/* Barra solo si NO es ilimitado */}
       {!isUnlimited && (
-        <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
-          <div
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
+          <div 
             className={cn(
-              "h-full transition-all duration-1000",
-              isSoldOut ? "bg-red-600" : "bg-blue-600"
+              "h-full rounded-full transition-all duration-1000 ease-out",
+              isSoldOut ? "bg-muted-foreground/30" : isFull ? "bg-amber-500" : "bg-primary"
             )}
             style={{ width: `${progress}%` }}
           />

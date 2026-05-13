@@ -80,6 +80,19 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     }
   }, [home.step]);
 
+  // 🎭 Footer Reveal Orchestration
+  useGSAP(() => {
+    if (home.isLoaded) {
+      gsap.to(".footer-reveal", {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: 1.5, // Le damos tiempo al contenido para asentarse
+        ease: "power2.out"
+      });
+    }
+  }, [home.isLoaded, home.step]);
+
   const handleRegistrationSubmit = contextSafe(async (data: any, token: string) => {
     const res = await home.handleRegistration(data, token);
     if (res.success) {
@@ -213,7 +226,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     (!home.surveyData || Object.keys(home.surveyData).length === 0);
 
   return (
-    <main ref={containerRef} className="min-h-screen bg-white relative selection:bg-[#3154DC]/10">
+    <main ref={containerRef} className="min-h-screen bg-background relative selection:bg-primary/10">
       <TooltipProvider>
         <Header 
           registrationId={home.userData?.id} 
@@ -231,9 +244,10 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
             "flex-1 transition-all duration-300 min-w-0 flex flex-col min-h-[calc(100vh-80px)]",
             isSidebarOpen ? "lg:pl-72" : "pl-0"
           )}>
-            <div className="max-w-[1512px] w-full mx-auto px-4 md:px-8 lg:px-12 flex-grow">
+            {/* Contenedor con flex-1 para empujar el footer */}
+            <div className="max-w-[1512px] w-full mx-auto px-4 md:px-8 lg:px-12 flex-1 flex flex-col">
               {!home.isLoaded || home.step === null ? (
-                <div className="flex-1 min-h-[800px]" />
+                <div className="flex-1" />
               ) : home.step === 1 ? (
                 <div className="step-1 pt-8">
                   <PublicView 
@@ -268,7 +282,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                   />
                 </div>
               ) : (
-                <div className="step-2 pt-8">
+                <div className="step-2 pt-8 min-h-[120vh]">
                   <RegisteredView 
                     userData={home.userData}
                     displayData={home.displayData}
@@ -295,7 +309,11 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
               )}
             </div>
             
-            {home.isLoaded && <Footer />}
+            {home.isLoaded && (
+              <div className="footer-reveal opacity-0 translate-y-10">
+                <Footer />
+              </div>
+            )}
           </div>
         </div>
 

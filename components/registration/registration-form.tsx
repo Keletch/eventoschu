@@ -6,6 +6,7 @@ import Turnstile from "react-turnstile";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useUser, useClerk } from "@clerk/nextjs";
+import { useTheme } from "next-themes";
 import { checkRegistration } from "@/app/actions/user-registration";
 import { Button } from "@/components/ui/button";
 import { COUNTRY_CODES } from "@/lib/constants";
@@ -150,6 +151,8 @@ export function RegistrationForm({
     }
   };
 
+  const { resolvedTheme } = useTheme();
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 md:gap-8">
       {/* Grid Principal: 2 filas x 3 columnas */}
@@ -205,7 +208,7 @@ export function RegistrationForm({
             type="submit"
             disabled={isLoading || !turnstileToken}
             className={cn(
-              "w-full h-[44px] bg-[#3154DC] hover:bg-[#2844B5] text-white font-bold rounded-xl text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-[#3154DC]/20",
+              "w-full h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-primary/20",
               (isLoading || !turnstileToken) && "opacity-70 cursor-not-allowed grayscale"
             )}
           >
@@ -227,7 +230,7 @@ export function RegistrationForm({
           <Turnstile
             sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
             onVerify={(token) => setTurnstileToken(token)}
-            theme="light"
+            theme={resolvedTheme === "dark" ? "dark" : "light"}
           />
         </div>
       </div>

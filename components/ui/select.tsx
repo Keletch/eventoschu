@@ -60,7 +60,7 @@ function SelectContent({
       >
         <SelectPrimitive.Popup
           className={cn(
-            "overflow-hidden rounded-[24px] border border-neutral-200 bg-white p-1 text-popover-foreground shadow-2xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 pointer-events-auto",
+            "overflow-hidden rounded-[24px] border border-border bg-popover p-1 text-popover-foreground shadow-2xl animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 pointer-events-auto",
             "min-w-[var(--anchor-width)] w-max max-w-[90vw]",
             className
           )}
@@ -83,14 +83,14 @@ function SelectItem({
   return (
     <SelectPrimitive.Item
       className={cn(
-        "relative flex w-full cursor-pointer items-center gap-2 rounded-xl py-3 px-4 text-base outline-none select-none hover:bg-neutral-100 focus:bg-neutral-100 data-[selected]:bg-neutral-50 data-[selected]:text-[#3154DC] transition-colors whitespace-normal",
+        "relative flex w-full cursor-pointer items-center gap-2 rounded-xl py-3 px-4 text-base outline-none select-none hover:bg-muted focus:bg-muted data-[selected]:bg-muted data-[selected]:text-primary transition-colors whitespace-normal",
         className
       )}
       {...props}
     >
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator className="ml-auto">
-        <CheckIcon className="size-4 text-[#3154DC]" />
+        <CheckIcon className="size-4 text-primary" />
       </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
   )

@@ -32,7 +32,7 @@ export function RegistrationTopBar({ status, startNewRegistration, eventConfig }
       <Button
         onClick={startNewRegistration}
         variant="outline"
-        className="group flex items-center gap-2 border-neutral-200 text-gray-500 hover:text-[#3154DC] hover:border-[#3154DC] rounded-xl px-6 h-11 font-bold transition-all bg-white shadow-sm transform backface-visibility-hidden antialiased"
+        className="group flex items-center gap-2 border-border text-muted-foreground hover:text-primary hover:border-primary rounded-xl px-6 h-11 font-bold transition-all bg-card shadow-sm transform backface-visibility-hidden antialiased"
       >
         <LogOut className="size-4 transition-transform group-hover:translate-x-1" />
         Nuevo registro / Salir

@@ -37,34 +37,34 @@ const SOCIALS = [
   { 
     name: "Instagram", 
     href: "https://www.instagram.com/elclubdeinversionistas?utm_source=eventos_cdi&utm_medium=step2_social&utm_campaign=ecosistema_cdi&utm_content=instagram",
-    color: "text-[#3154DC]"
+    color: "text-primary"
   },
   { 
     name: "Facebook", 
     href: "https://www.facebook.com/somoscdi?utm_source=eventos_cdi&utm_medium=step2_social&utm_campaign=ecosistema_cdi&utm_content=facebook",
-    color: "text-[#3154DC]"
+    color: "text-primary"
   },
   { 
     name: "Youtube", 
     href: "https://www.youtube.com/channel/UCIOxD-w2fEkmd-IUCjhn-ZQ?utm_source=eventos_cdi&utm_medium=step2_social&utm_campaign=ecosistema_cdi&utm_content=youtube",
-    color: "text-[#3154DC]"
+    color: "text-primary"
   },
   { 
     name: "TikTok", 
     href: "https://www.tiktok.com/@hyenukchu?utm_source=eventos_cdi&utm_medium=step2_social&utm_campaign=ecosistema_cdi&utm_content=tiktok",
-    color: "text-[#3154DC]"
+    color: "text-primary"
   },
   { 
     name: "X", 
     href: "https://x.com/somoscdi?utm_source=eventos_cdi&utm_medium=step2_social&utm_campaign=ecosistema_cdi&utm_content=twitter",
-    color: "text-[#3154DC]"
+    color: "text-primary"
   },
 ];
 
 export function SocialMediaPanel() {
   return (
-    <div className="max-w-[1372px] mx-auto mt-12 bg-[#F5F6F9] border border-neutral-100 rounded-[32px] py-12 md:py-16 px-8 md:px-12 shadow-none text-center space-y-10">
-      <h3 className="text-xl md:text-2xl font-extrabold text-black tracking-tight">
+    <div className="max-w-[1372px] mx-auto mt-12 bg-muted dark:bg-muted/50 border border-border rounded-[32px] py-12 md:py-16 px-8 md:px-12 shadow-none text-center space-y-10">
+      <h3 className="text-xl md:text-2xl font-extrabold text-foreground tracking-tight">
         No te pierdas ninguna novedad ¡Síguenos!
       </h3>
 
@@ -78,7 +78,7 @@ export function SocialMediaPanel() {
             className="group flex flex-col items-center gap-3 transition-transform hover:scale-110 active:scale-95"
             aria-label={social.name}
           >
-            <div className="size-16 md:size-24 rounded-full bg-white shadow-sm flex items-center justify-center transition-shadow group-hover:shadow-md">
+            <div className="size-16 md:size-24 rounded-full bg-card border border-border/50 shadow-sm flex items-center justify-center transition-shadow group-hover:shadow-md">
               <span className={cn(social.color)}>
                 {ICONS[social.name]}
               </span>

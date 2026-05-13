@@ -75,7 +75,7 @@ export function Sidebar({ isOpen }: SidebarProps) {
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-20 h-[calc(100vh-80px)] w-72 bg-[#3154dc] transition-all duration-300 z-50 overflow-hidden shadow-2xl shadow-black/20",
+        "fixed left-0 top-20 h-[calc(100vh-80px)] w-72 bg-primary dark:bg-[#151210] transition-all duration-300 z-50 overflow-hidden shadow-2xl shadow-black/20",
         isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 pointer-events-none"
       )}
     >
@@ -98,12 +98,12 @@ export function Sidebar({ isOpen }: SidebarProps) {
                   className={cn(
                     "flex items-center justify-between px-4 py-2.5 rounded-xl transition-all group",
                     link.highlight 
-                      ? "bg-white text-[#3154dc] hover:bg-white/90 shadow-lg shadow-black/10" 
+                      ? "bg-background text-primary hover:bg-background/90 shadow-lg shadow-black/10" 
                       : "text-white/80 hover:bg-white/10 hover:text-white"
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <link.icon className={cn("size-5 transition-colors", link.highlight ? "text-[#3154dc]" : "text-white/60 group-hover:text-white")} />
+                    <link.icon className={cn("size-5 transition-colors", link.highlight ? "text-primary" : "text-white/60 group-hover:text-white")} />
                     <span className="font-bold text-sm tracking-tight">{link.name}</span>
                   </div>
                   {link.isExternal && <ExternalLink className="size-3 opacity-0 group-hover:opacity-30 transition-opacity" />}

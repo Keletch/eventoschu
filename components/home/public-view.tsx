@@ -9,12 +9,14 @@ import { MonthTabs } from "@/components/home/month-tabs";
 import { EventsSkeleton } from "@/components/home/events-skeleton";
 
 const EventsCarousel = dynamic(() => import("@/components/home/events-carousel").then(mod => mod.EventsCarousel), { 
-  ssr: false,
-  loading: () => <EventsSkeleton />
+  ssr: false
 });
 
 import { CategoryTabs } from "./category-tabs";
 import { useClerk } from "@clerk/nextjs";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { REVEAL_CONFIG } from "@/lib/animations";
 
 interface PublicViewProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -79,22 +81,36 @@ export function PublicView({
 }: PublicViewProps) {
   const { openSignIn } = useClerk();
 
+  useGSAP((context: any, contextSafe: any) => {
+    const tl = gsap.timeline({
+      delay: 0.1,
+      onComplete: contextSafe(() => {
+        const items = context.selector?.(".reveal-item");
+        if (items) items.forEach((el: any) => el.classList.remove("reveal-item"));
+      })
+    });
+
+    tl.to(".reveal-item", REVEAL_CONFIG.to);
+  }, { scope: containerRef });
+
   return (
-    <div className="step-1 space-y-8 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 antialiased">
+    <div className="step-1 space-y-8 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 antialiased" ref={containerRef}>
       {/* ── Sección Hero ─────────────────────────────────── */}
-      <HeroSection
-        isSignedIn={isSignedIn}
-        user={user}
-        isCheckMode={isCheckMode}
-        revalidateStatus={revalidateStatus}
-        setIsCheckMode={setIsCheckMode}
-      />
+      <div className="reveal-item">
+        <HeroSection
+          isSignedIn={isSignedIn}
+          user={user}
+          isCheckMode={isCheckMode}
+          revalidateStatus={revalidateStatus}
+          setIsCheckMode={setIsCheckMode}
+        />
+      </div>
 
       {/* ── Contenido principal ─────────────────────────────────── */}
       <div className="pt-[140px]">
         {/* ── Tabs de Categoría + Tabs de mes + Carrusel de eventos + Formulario */}
         <div className="flex flex-col">
-          <div className="relative z-30 mb-2"> {/* Categorías */}
+          <div className="relative z-30 mb-2 reveal-item"> {/* Categorías */}
             <CategoryTabs
               availableCategories={availableCategories}
               activeCategory={activeCategory}
@@ -102,7 +118,7 @@ export function PublicView({
             />
           </div>
 
-          <div className="relative z-20"> {/* Meses */}
+          <div className="relative z-20 reveal-item"> {/* Meses */}
             <MonthTabs
               availableMonths={availableMonths}
               activeMonth={activeMonth}
@@ -112,7 +128,7 @@ export function PublicView({
             />
           </div>
 
-          <div className="events-section relative z-10 bg-[#F5F6F9] rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px] p-10 md:p-16 border border-neutral-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px]">
+          <div className="events-section relative z-10 bg-muted rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px] p-10 md:p-16 border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px] reveal-item">
             {/* Carrusel de eventos (Usa solo los eventos filtrados por categoría) */}
             <EventsCarousel
               scrollContainerRef={scrollContainerRef}
@@ -130,8 +146,8 @@ export function PublicView({
 
             {/* ── Formulario de registro ──────────────────── */}
             <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-8 -mt-0">
-              <h2 className="text-[20px] font-medium text-[#00030C] pl-2 md:pl-6">Registro</h2>
-              <div className="bg-[#FFFFFF] rounded-[32px] p-8 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white">
+              <h2 className="text-[20px] font-medium text-foreground pl-2 md:pl-6">Registro</h2>
+              <div className="bg-card rounded-[32px] p-8 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-border/50">
                 <RegistrationForm
                   onSubmit={handleRegistration}
                   isLoading={isSubmitting}
@@ -144,7 +160,7 @@ export function PublicView({
                   <button
                     type="button"
                     onClick={() => openSignIn({})}
-                    className="group flex items-center gap-2 text-[#007AFF] font-bold hover:opacity-80 transition-all p-2 text-center"
+                    className="group flex items-center gap-2 text-secondary font-bold hover:opacity-80 transition-all p-2 text-center"
                   >
                     <span className="underline text-lg leading-tight font-bold">
                       ¡Hazlo más fácil! Inicia sesión para autocompletar tus datos y asegurar tu lugar en segundos

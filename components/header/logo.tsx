@@ -25,7 +25,7 @@ export function Logo({ onClick }: LogoProps) {
           alt="Club de Inversionistas"
           width={144}
           height={48}
-          className="h-full w-full object-contain"
+          className="h-full w-full object-contain dark:brightness-0 dark:invert"
           priority
         />
       </Link>

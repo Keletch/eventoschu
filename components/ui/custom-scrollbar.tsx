@@ -1,17 +1,21 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export function CustomScrollbar() {
+  const { resolvedTheme } = useTheme();
   const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement>(null);
   const dotsRef = useRef<(HTMLDivElement | null)[]>([]);
   const loadingTl = useRef<gsap.core.Timeline | null>(null);
   const [isCurrentlyLoading, setIsCurrentlyLoading] = useState(false);
+
+  const isDark = resolvedTheme === "dark";
 
   const isAdmin = pathname?.startsWith("/admin");
   const dotCount = 30;
@@ -45,10 +49,16 @@ export function CustomScrollbar() {
           duration: 0.4,
           ease: "power2.out",
           overwrite: "auto",
-          backgroundColor: i % 5 === 0 ? "#3154DC" : "#818CF8",
-          boxShadow: i % 5 === 0 
-            ? `0 0 ${gsap.utils.mapRange(0, 5, 12, 0, Math.min(distance, 5))}px rgba(49, 84, 220, 0.6)` 
-            : `0 0 ${gsap.utils.mapRange(0, 5, 6, 0, Math.min(distance, 5))}px rgba(129, 140, 248, 0.3)`
+          backgroundColor: isDark 
+            ? (i % 5 === 0 ? "#E6E2D3" : "#A19A8E") 
+            : (i % 5 === 0 ? "#3154DC" : "#818CF8"),
+          boxShadow: isDark
+            ? (i % 5 === 0 
+                ? `0 0 ${gsap.utils.mapRange(0, 5, 12, 0, Math.min(distance, 5))}px rgba(230, 226, 211, 0.4)` 
+                : `0 0 ${gsap.utils.mapRange(0, 5, 6, 0, Math.min(distance, 5))}px rgba(161, 154, 142, 0.2)`)
+            : (i % 5 === 0 
+                ? `0 0 ${gsap.utils.mapRange(0, 5, 12, 0, Math.min(distance, 5))}px rgba(49, 84, 220, 0.6)` 
+                : `0 0 ${gsap.utils.mapRange(0, 5, 6, 0, Math.min(distance, 5))}px rgba(129, 140, 248, 0.3)`)
         });
       });
     };
@@ -120,7 +130,7 @@ export function CustomScrollbar() {
       window.removeEventListener("app-loading-stop", stopLoadingWave);
       window.removeEventListener("scroll", onScroll);
     };
-  }, [isAdmin]);
+  }, [isAdmin, isDark]);
 
   if (isAdmin) return null;
 

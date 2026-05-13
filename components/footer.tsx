@@ -28,7 +28,7 @@ export function Footer() {
   return (
     <footer 
       ref={footerRef}
-      className="w-full py-6 px-8 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/10 bg-[#3154dc] relative z-[60]"
+      className="w-full py-6 px-8 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-border/10 bg-primary dark:bg-[#151210] relative z-[60]"
     >
       <div className="flex flex-col md:flex-row items-center gap-0.5 md:gap-3">
         <p className="text-[10px] font-bold text-white tracking-[0.05em] uppercase opacity-80">

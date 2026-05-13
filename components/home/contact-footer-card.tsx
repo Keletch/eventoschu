@@ -20,20 +20,20 @@ export function ContactFooterCard() {
   };
 
   return (
-    <div className="max-w-[1372px] mx-auto mt-12 bg-[#3154DC] rounded-[32px] py-8 md:py-10 lg:py-12 px-8 md:px-12 text-center text-white space-y-6 md:space-y-8">
+    <div className="max-w-[1372px] mx-auto mt-12 bg-primary rounded-[32px] py-8 md:py-10 lg:py-12 px-8 md:px-12 text-center text-primary-foreground space-y-6 md:space-y-8">
       <h3 className="text-xl md:text-2xl font-extrabold tracking-tight">¿Dudas? contáctanos</h3>
 
       <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-8">
         <Button
           onClick={handleEmail}
           variant="outline"
-          className="h-14 md:h-16 px-8 rounded-2xl border-white bg-transparent text-white font-bold text-lg md:text-xl hover:bg-white/10 transition-colors w-full sm:w-[280px]"
+          className="h-14 md:h-16 px-8 rounded-2xl border-primary-foreground bg-transparent text-primary-foreground font-bold text-lg md:text-xl hover:bg-primary-foreground/10 transition-colors w-full sm:w-[280px]"
         >
           Correo electrónico
         </Button>
         <Button
           onClick={handleWhatsapp}
-          className="h-14 md:h-16 px-8 rounded-2xl bg-white text-[#3154DC] font-bold text-lg md:text-xl hover:bg-white/90 transition-colors w-full sm:w-[280px]"
+          className="h-14 md:h-16 px-8 rounded-2xl bg-background text-primary font-bold text-lg md:text-xl hover:bg-background/90 transition-colors w-full sm:w-[280px]"
         >
           Whatsapp
         </Button>

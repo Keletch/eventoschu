@@ -39,5 +39,27 @@ export const ANIM_SELECTORS = {
   step1: ".step-1",
   step2: ".step-2",
   heroCheck: ".hero-check",
-  footer: "footer"
+  footer: "footer",
+  revealItem: ".reveal-item"
+};
+
+/**
+ * Configuración específica para el patrón Reveal
+ */
+export const REVEAL_CONFIG = {
+  from: {
+    opacity: 0,
+    y: 30,
+    filter: "blur(15px)",
+    scale: 0.95
+  },
+  to: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    scale: 1,
+    duration: 1.2,
+    ease: "power4.out",
+    stagger: 0.15
+  }
 };

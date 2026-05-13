@@ -111,7 +111,7 @@ export function RegisteredView({
   const eventConfig = getEventUIConfig(currentEvent);
 
   return (
-    <div className="step-2 bg-white space-y-12 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 antialiased">
+    <div className="step-2 bg-transparent text-foreground space-y-12 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 antialiased">
 
       {/* ── Barra superior: estado + botón salir ───────── */}
       <RegistrationTopBar

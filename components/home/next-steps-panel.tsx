@@ -21,12 +21,12 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen }: NextStepsPanelPr
 
   return (
     <div className="max-w-[1372px] mx-auto mt-24 px-4 sm:px-0">
-      <div className="relative border-[3px] border-[#EFEFEF] rounded-[32px] p-8 md:p-12 lg:p-16 bg-[#FFFFFF] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] overflow-hidden">
+      <div className="relative border-[3px] border-border rounded-[32px] p-8 md:p-12 lg:p-16 bg-card shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] overflow-hidden">
         {/* Decoración sutil de fondo */}
 
 
         <div className="relative z-10 space-y-12 md:space-y-20">
-          <h3 className="text-2xl md:text-[32px] font-black text-black tracking-tight">
+          <h3 className="text-2xl md:text-[32px] font-black text-foreground tracking-tight">
             ¿Qué sigue?
           </h3>
 
@@ -34,15 +34,15 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen }: NextStepsPanelPr
             {/* Paso 1 — Registro completado */}
             <div className="flex flex-col sm:flex-row gap-6 md:gap-12 items-center sm:items-start group">
               <div className="relative flex flex-col items-center">
-                <div className="relative z-10 size-14 bg-[#3154DC] rounded-full flex items-center justify-center text-white shadow-lg shadow-[#3154DC]/20 transition-transform group-hover:scale-110 duration-500">
+                <div className="relative z-10 size-14 bg-primary rounded-full flex items-center justify-center text-primary-foreground shadow-lg transition-transform group-hover:scale-110 duration-500">
                   <Check className="size-7" strokeWidth={3} />
                 </div>
                 {/* Línea punteada que pasa por detrás */}
-                <div className="hidden sm:block absolute top-7 z-0 w-px h-32 md:h-44 border-l-2 border-dashed border-gray-200" />
+                <div className="hidden sm:block absolute top-7 z-0 w-px h-32 md:h-44 border-l-2 border-dashed border-muted-foreground/20" />
               </div>
               <div className="flex-1 space-y-2 text-center sm:text-left pt-2">
-                <h4 className="text-xl md:text-[24px] font-bold text-black">Registro completado</h4>
-                <p className="text-lg md:text-[21px] text-gray-500 font-light leading-relaxed">
+                <h4 className="text-xl md:text-[24px] font-bold text-foreground">Registro completado</h4>
+                <p className="text-lg md:text-[21px] text-muted-foreground font-light leading-relaxed">
                   ¡Ya estás en la lista de espera! Tus datos han sido guardados
                 </p>
               </div>
@@ -52,11 +52,11 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen }: NextStepsPanelPr
             <div className="flex flex-col sm:flex-row gap-6 md:gap-12 items-center sm:items-start group">
               <div className="relative z-10 flex flex-col items-center">
                 {surveyDone ? (
-                  <div className="size-14 bg-[#3154DC] rounded-full flex items-center justify-center text-white shadow-lg shadow-[#3154DC]/20 transition-transform group-hover:scale-110 duration-500">
+                  <div className="size-14 bg-primary rounded-full flex items-center justify-center text-primary-foreground shadow-lg transition-transform group-hover:scale-110 duration-500">
                     <Check className="size-7" strokeWidth={3} />
                   </div>
                 ) : (
-                  <div className="size-14 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 shadow-lg shadow-amber-200/50 transition-transform group-hover:scale-110 duration-500">
+                  <div className="size-14 bg-amber-500 rounded-full flex items-center justify-center text-black shadow-lg shadow-amber-500/20 transition-transform group-hover:scale-110 duration-500">
                     <AlertTriangle className="size-7" strokeWidth={2.5} />
                   </div>
                 )}
@@ -64,10 +64,10 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen }: NextStepsPanelPr
 
               <div className="flex-1 space-y-6 text-center sm:text-left pt-2">
                 <div className="space-y-2">
-                  <h4 className="text-xl md:text-[24px] font-bold text-black">
+                  <h4 className="text-xl md:text-[24px] font-bold text-foreground">
                     {surveyDone ? "Datos capturados" : "Ayúdanos a personalizar tu experiencia"}
                   </h4>
-                  <p className="text-lg md:text-[21px] text-gray-500 font-light leading-relaxed">
+                  <p className="text-lg md:text-[21px] text-muted-foreground font-light leading-relaxed">
                     {surveyDone
                       ? "¡Excelente! Hemos recibido tus datos."
                       : "Completa tu datos y te enviaremos información personalizada según tus intereses."
@@ -94,7 +94,7 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen }: NextStepsPanelPr
                 )}
 
                 {surveyDone && (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-bold border border-green-100">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-600 dark:text-green-400 rounded-full text-sm font-bold border border-green-500/20">
                     <Check className="size-4" />
                     Perfil validado correctamente
                   </div>

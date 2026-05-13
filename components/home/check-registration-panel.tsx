@@ -26,16 +26,16 @@ export function CheckRegistrationPanel({
   return (
     <Dialog open={isOpen} onOpenChange={setIsCheckMode}>
       <DialogContent className="max-w-xl p-0 border-none bg-transparent shadow-none overflow-visible focus:outline-none focus-visible:ring-0 ring-0">
-        <div className="bg-white rounded-[40px] p-10 md:p-16 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.15)] space-y-10 outline-none">
+        <div className="bg-card rounded-[40px] p-10 md:p-16 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.15)] space-y-10 outline-none border border-border/50">
           {/* Encabezado */}
           <div className="space-y-4 text-center">
-            <div className="inline-flex items-center justify-center size-16 bg-[#3154DC]/10 rounded-2xl text-[#3154DC] mb-2">
+            <div className="inline-flex items-center justify-center size-16 bg-primary/10 rounded-2xl text-primary mb-2">
               <Search className="size-8" />
             </div>
-            <h3 className="text-3xl font-extrabold text-black tracking-tight">
+            <h3 className="text-3xl font-extrabold text-foreground tracking-tight">
               Consulta tu registro
             </h3>
-            <p className="text-lg text-gray-500 font-medium leading-relaxed">
+            <p className="text-lg text-muted-foreground font-medium leading-relaxed">
               Ingresa tu correo para revisar tus registros activos
             </p>
           </div>
@@ -43,7 +43,7 @@ export function CheckRegistrationPanel({
           {/* Formulario */}
           <div className="space-y-8">
             <div className="space-y-3">
-              <label className="text-sm font-bold uppercase text-slate-400 tracking-[0.1em] ml-1">
+              <label className="text-sm font-bold uppercase text-muted-foreground/70 tracking-[0.1em] ml-1">
                 Correo electrónico
               </label>
               <input
@@ -51,7 +51,7 @@ export function CheckRegistrationPanel({
                 type="email"
                 id="check-email"
                 placeholder="ejemplo@correo.com"
-                className="w-full h-16 px-8 rounded-2xl border border-neutral-200 bg-neutral-50/50 focus:bg-white focus:border-[#3154DC] focus:ring-4 focus:ring-[#3154DC]/10 transition-all outline-none text-xl font-medium"
+                className="w-full h-16 px-8 rounded-2xl border border-border bg-muted focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-xl font-medium"
               />
             </div>
 
@@ -62,7 +62,7 @@ export function CheckRegistrationPanel({
                   handleCheckRegistration(email);
                 }}
                 disabled={isChecking}
-                className="w-full h-16 bg-[#3154DC] hover:bg-[#3154DC]/90 text-white font-bold rounded-2xl text-xl flex items-center justify-center gap-3 shadow-xl shadow-[#3154DC]/20 transition-all active:scale-[0.98]"
+                className="w-full h-16 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-2xl text-xl flex items-center justify-center gap-3 shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
               >
                 {isChecking ? <Loader2 className="size-7 animate-spin" /> : "Consultar ahora"}
               </Button>

@@ -58,24 +58,24 @@ export function UserDataCard({
   const displayLabel = badgeConfig.label;
 
   return (
-    <div className="max-w-[1372px] mx-auto bg-[#FFFFFF] rounded-[32px] p-8 md:p-12 lg:p-16 relative user-data-container border-[3px] border-[#EFEFEF] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] transform backface-visibility-hidden antialiased">
+    <div className="max-w-[1372px] mx-auto bg-card rounded-[32px] p-8 md:p-12 lg:p-16 relative user-data-container border-[3px] border-border shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] transform backface-visibility-hidden antialiased">
       {/* Cabecera: Título + Badge de estado */}
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 mb-8 md:mb-12">
         {/* Información del Evento */}
         <div className="flex flex-col gap-1">
           {isLoadingEvents ? (
             <div className="space-y-2">
-              <Skeleton className="h-4 w-32 bg-neutral-200/50" />
-              <Skeleton className="h-8 w-64 bg-neutral-200/30" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-8 w-64" />
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-1.5 text-[#3154DC] font-black text-[12px] md:text-sm uppercase tracking-[0.15em]">
+              <div className="flex items-center gap-1.5 text-primary font-black text-[12px] md:text-sm uppercase tracking-[0.15em]">
                 <span>{eventCity}</span>
-                <span className="w-1 h-1 rounded-full bg-[#3154DC] mx-0.5" />
+                <span className="w-1 h-1 rounded-full bg-primary mx-0.5" />
                 <span>{eventCountry}</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-black text-neutral-900 leading-tight">
+              <h2 className="text-3xl md:text-4xl font-black text-foreground leading-tight">
                 {eventTitle || "Evento"}
               </h2>
             </>
@@ -85,7 +85,7 @@ export function UserDataCard({
         {/* Badge de estado */}
         <div className="shrink-0">
           {isLoadingEvents ? (
-            <Skeleton className="h-10 w-32 md:w-40 rounded-2xl bg-neutral-200/50" />
+            <Skeleton className="h-10 w-32 md:w-40 rounded-2xl" />
           ) : (
             <div className="flex flex-col items-center md:items-end gap-2">
               <div className={cn("px-4 py-1.5 rounded-xl font-bold text-[15px] flex items-center gap-2 transition-all duration-500 transform backface-visibility-hidden", badgeConfig.bg, badgeConfig.text, badgeConfig.border, "border")}>
@@ -106,24 +106,24 @@ export function UserDataCard({
         {isLoadingEvents ? (
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="space-y-3">
-              <Skeleton className="h-4 w-32 bg-neutral-200/50" />
-              <Skeleton className="h-11 w-full rounded-xl bg-neutral-200/30" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-11 w-full rounded-xl" />
             </div>
           ))
         ) : (
           <>
             {/* Nombre */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#03133F] font-normal px-1 text-base">Nombre <span className="text-red-500">*</span></label>
+              <label className="text-foreground font-normal px-1 text-base">Nombre <span className="text-red-500">*</span></label>
               {isEditing ? (
                 <Input 
                   name="firstName" 
                   value={editFormData?.firstName || ""} 
                   onChange={handleEditChange} 
-                  className="h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white text-[#03133F] font-medium text-base transition-all" 
+                  className="h-10 md:h-11 rounded-xl border-border focus:ring-primary bg-muted text-foreground font-medium text-base transition-all" 
                 />
               ) : (
-                <div className="h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium transition-all">
+                <div className="h-10 md:h-11 px-5 flex items-center bg-muted border border-border rounded-xl text-base text-foreground font-medium transition-all">
                   {displayData.firstName}
                 </div>
               )}
@@ -131,16 +131,16 @@ export function UserDataCard({
 
             {/* Apellido */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#03133F] font-normal px-1 text-base">Apellido <span className="text-red-500">*</span></label>
+              <label className="text-foreground font-normal px-1 text-base">Apellido <span className="text-red-500">*</span></label>
               {isEditing ? (
                 <Input 
                   name="lastName" 
                   value={editFormData?.lastName || ""} 
                   onChange={handleEditChange} 
-                  className="h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white text-[#03133F] font-medium text-base transition-all" 
+                  className="h-10 md:h-11 rounded-xl border-border focus:ring-primary bg-muted text-foreground font-medium text-base transition-all" 
                 />
               ) : (
-                <div className="h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium transition-all">
+                <div className="h-10 md:h-11 px-5 flex items-center bg-muted border border-border rounded-xl text-base text-foreground font-medium transition-all">
                   {displayData.lastName}
                 </div>
               )}
@@ -148,24 +148,24 @@ export function UserDataCard({
 
             {/* Correo (solo lectura siempre) */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#03133F] font-normal px-1 text-base">Correo electrónico <span className="text-red-500">*</span></label>
-              <div className="h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium truncate">
+              <label className="text-foreground font-normal px-1 text-base">Correo electrónico <span className="text-red-500">*</span></label>
+              <div className="h-10 md:h-11 px-5 flex items-center bg-muted border border-border rounded-xl text-base text-foreground font-medium truncate">
                 {displayData.email}
               </div>
             </div>
 
             {/* País */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#03133F] font-normal px-1 text-base">País de residencia <span className="text-neutral-400 font-normal ml-1">(opcional)</span></label>
+              <label className="text-foreground font-normal px-1 text-base">País de residencia <span className="text-muted-foreground/60 font-normal ml-1">(opcional)</span></label>
               {isEditing ? (
                 <Input 
                   name="country" 
                   value={editFormData?.country || ""} 
                   onChange={handleEditChange} 
-                  className="h-10 md:h-11 rounded-xl border-[#616B77]/40 focus:ring-blue-700 bg-white text-[#03133F] font-medium text-base transition-all" 
+                  className="h-10 md:h-11 rounded-xl border-border focus:ring-primary bg-muted text-foreground font-medium text-base transition-all" 
                 />
               ) : (
-                <div className="h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium transition-all">
+                <div className="h-10 md:h-11 px-5 flex items-center bg-muted border border-border rounded-xl text-base text-foreground font-medium transition-all">
                   {displayData.country || "No especificado"}
                 </div>
               )}
@@ -173,9 +173,9 @@ export function UserDataCard({
 
             {/* WhatsApp */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[#03133F] font-normal px-1 text-base">WhatsApp <span className="text-red-500">*</span></label>
+              <label className="text-foreground font-normal px-1 text-base">WhatsApp <span className="text-red-500">*</span></label>
               <div className="flex gap-2">
-                <div className="w-16 h-10 md:h-11 flex items-center justify-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium">
+                <div className="w-16 h-10 md:h-11 flex items-center justify-center bg-muted border border-border rounded-xl text-base text-foreground font-medium">
                   {displayData.phoneCode}
                 </div>
                 {isEditing ? (
@@ -183,10 +183,10 @@ export function UserDataCard({
                     name="phone" 
                     value={editFormData?.phone || ""} 
                     onChange={handleEditChange} 
-                    className="h-10 md:h-11 rounded-xl flex-1 border-[#616B77]/40 focus:ring-blue-700 bg-white text-[#03133F] font-medium text-base transition-all" 
+                    className="h-10 md:h-11 rounded-xl flex-1 border-border focus:ring-primary bg-muted text-foreground font-medium text-base transition-all" 
                   />
                 ) : (
-                  <div className="flex-1 h-10 md:h-11 px-5 flex items-center bg-white border border-[#616B77]/40 rounded-xl text-base text-[#03133F] font-medium transition-all">
+                  <div className="flex-1 h-10 md:h-11 px-5 flex items-center bg-muted border border-border rounded-xl text-base text-foreground font-medium transition-all">
                     {displayData.phone}
                   </div>
                 )}
@@ -220,7 +220,7 @@ export function UserDataCard({
               ) : (
                 <button
                   onClick={() => { setEditFormData(displayData); setIsEditing(true); }}
-                  className="flex items-center gap-2 text-blue-600 font-bold text-base underline hover:opacity-80 transition-opacity"
+                  className="flex items-center gap-2 text-secondary font-bold text-base underline hover:opacity-80 transition-opacity"
                 >
                   <Edit3 className="size-5" />
                   Editar información

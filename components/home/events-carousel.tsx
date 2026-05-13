@@ -13,16 +13,25 @@ import { transformEventForUI } from "@/lib/event-transformers";
 // Skeleton de carga de tarjeta de evento
 function EventSkeleton() {
   return (
-    <div className="space-y-8 p-8 border border-neutral-200 bg-white rounded-[32px] animate-pulse">
-      <div className="flex items-center gap-4">
-        <Skeleton className="size-12 rounded-xl bg-neutral-100" />
-        <Skeleton className="h-8 w-48 bg-neutral-100" />
+    <div className="h-[420px] bg-card/50 border border-border/50 rounded-[32px] p-8 flex flex-col justify-between relative overflow-hidden group shadow-sm">
+      <div className="space-y-8 relative">
+        <div className="flex items-center gap-4">
+          <Skeleton className="size-12 rounded-2xl" />
+          <Skeleton className="h-6 w-32" />
+        </div>
+        
+        <div className="space-y-3">
+          <Skeleton className="h-10 w-full rounded-xl" />
+          <Skeleton className="h-10 w-2/3 rounded-xl" />
+        </div>
+
+        <div className="flex gap-3">
+          <Skeleton className="h-5 w-24 rounded-md opacity-60" />
+          <Skeleton className="h-5 w-24 rounded-md opacity-60" />
+        </div>
       </div>
-      <div className="space-y-4">
-        <Skeleton className="h-5 w-full bg-neutral-100" />
-        <Skeleton className="h-5 w-3/4 bg-neutral-100" />
-        <Skeleton className="h-5 w-2/3 bg-neutral-100" />
-      </div>
+
+      <Skeleton className="h-14 w-full rounded-2xl mt-auto relative" />
     </div>
   );
 }
@@ -135,7 +144,7 @@ export function EventsCarousel({
 
   return (
     <div className="space-y-2">
-      <h2 className="text-[20px] font-medium text-[#00030C] leading-tight pl-2 md:pl-6">
+      <h2 className="text-[20px] font-medium text-foreground leading-tight pl-2 md:pl-6">
         Elige el país en el que te gustaría asistir en la reunión presencial
       </h2>
 
@@ -151,18 +160,18 @@ export function EventsCarousel({
         <div className="relative group/carousel">
           {/* Fading Edges Discretos */}
           <div className={cn(
-            "absolute left-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-r from-[#F5F6F9] to-transparent pointer-events-none transition-opacity duration-500",
+            "absolute left-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-r from-muted to-transparent pointer-events-none transition-opacity duration-500",
             canScrollLeft ? "opacity-100" : "opacity-0"
           )} />
           <div className={cn(
-            "absolute right-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-l from-[#F5F6F9] to-transparent pointer-events-none transition-opacity duration-500",
+            "absolute right-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-l from-muted to-transparent pointer-events-none transition-opacity duration-500",
             canScrollRight ? "opacity-100" : "opacity-0"
           )} />
 
           {/* Carrusel de tarjetas */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-8 overflow-x-auto overflow-y-hidden py-20 px-4 -mx-4 -my-10 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[350px] md:min-h-[350px]"
+            className="flex gap-8 overflow-x-auto py-24 px-20 -mx-20 -my-24 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[350px] md:min-h-[350px]"
             onScroll={onScrollInternal}
           >
             <div ref={cardsRef} className="flex gap-8 min-h-[350px] md:min-h-[350px]">
@@ -208,8 +217,8 @@ export function EventsCarousel({
               <button
                 onClick={() => scroll('left')}
                 className={cn(
-                  "size-10 rounded-full bg-white border border-neutral-200 shadow-sm flex items-center justify-center transition-all duration-300",
-                  "hover:bg-neutral-50 hover:scale-105 active:scale-95 text-neutral-600",
+                  "size-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center transition-all duration-300",
+                  "hover:bg-accent hover:scale-105 active:scale-95 text-muted-foreground",
                   !canScrollLeft && "opacity-30 cursor-not-allowed grayscale"
                 )}
                 disabled={!canScrollLeft}
@@ -217,9 +226,9 @@ export function EventsCarousel({
                 <ChevronLeft className="size-5" />
               </button>
 
-              <div className="h-[2px] flex-1 bg-neutral-100 rounded-full overflow-hidden">
+              <div className="h-[2px] flex-1 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="scroll-progress-fill h-full bg-[#3154DC] rounded-full transition-all duration-300"
+                  className="scroll-progress-fill h-full bg-primary rounded-full transition-all duration-300"
                   style={{ width: '0%' }}
                 />
               </div>
@@ -227,8 +236,8 @@ export function EventsCarousel({
               <button
                 onClick={() => scroll('right')}
                 className={cn(
-                  "size-10 rounded-full bg-white border border-neutral-200 shadow-sm flex items-center justify-center transition-all duration-300",
-                  "hover:bg-neutral-50 hover:scale-105 active:scale-95 text-neutral-600",
+                  "size-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center transition-all duration-300",
+                  "hover:bg-accent hover:scale-105 active:scale-95 text-muted-foreground",
                   !canScrollRight && "opacity-30 cursor-not-allowed grayscale"
                 )}
                 disabled={!canScrollRight}
@@ -237,16 +246,16 @@ export function EventsCarousel({
               </button>
             </div>
 
-            <div className="flex gap-2.5 items-center bg-neutral-50/50 px-4 py-2 rounded-full border border-neutral-100">
+            <div className="flex gap-2.5 items-center bg-muted dark:bg-muted/50 px-4 py-2 rounded-full border border-border/50">
               {availableMonths.map((month: string, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => handleMonthChange(month)}
                   className={cn(
-                    "size-2 rounded-full transition-all duration-300 hover:bg-[#3154DC]/50 cursor-pointer",
+                    "size-2 rounded-full transition-all duration-300 hover:bg-primary/50 cursor-pointer",
                     activeMonth === month
-                      ? "bg-[#3154DC] scale-125 shadow-[0_0_8px_rgba(49,84,220,0.4)]"
-                      : "bg-neutral-300 scale-100"
+                      ? "bg-primary scale-125 shadow-[0_0_8px_rgba(49,84,220,0.4)]"
+                      : "bg-border scale-100"
                   )}
                   aria-label={`Ir a ${month}`}
                 />

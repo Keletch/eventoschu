@@ -43,22 +43,34 @@ import { CustomScrollbar } from "@/components/ui/custom-scrollbar-wrapper";
 import { VercelAnalytics } from "@/components/providers/vercel-analytics";
 import { VercelSpeedInsights } from "@/components/providers/vercel-speed-insights";
 
+import { ThemeProvider } from "@/components/providers/theme-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={esES}>
+    <ClerkProvider 
+      localization={esES}
+      appearance={{
+        elements: {
+          modalBackdrop: "bg-transparent backdrop-blur-lg"
+        }
+      }}
+    >
       <html lang="es" className={`${raleway.variable} antialiased`} suppressHydrationWarning>
         <body className="flex flex-col font-sans">
-          <TooltipProvider>
-            {children}
-            <CustomScrollbar />
-            <VercelAnalytics />
-            <VercelSpeedInsights />
-            <Toaster position="bottom-right" expand={true} richColors />
-          </TooltipProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              {children}
+              <CustomScrollbar />
+              <VercelAnalytics />
+              <VercelSpeedInsights />
+              <Toaster position="bottom-right" expand={true} richColors />
+            <div className="grain-overlay" />
+            </TooltipProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

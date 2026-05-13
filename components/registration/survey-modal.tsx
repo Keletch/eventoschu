@@ -69,10 +69,10 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
   return (
     <Dialog open={isOpen} onOpenChange={(val) => !isSubmitting && onOpenChange(val)}>
       <DialogContent className="max-w-[1100px] w-[95vw] p-0 overflow-hidden border-none rounded-[48px] shadow-2xl">
-        <div className="bg-white p-8 md:p-16 max-h-[90vh] overflow-y-auto no-scrollbar relative">
+        <div className="bg-background p-8 md:p-16 max-h-[90vh] overflow-y-auto no-scrollbar relative">
           <div className="space-y-4 mb-12 text-center">
-            <h2 className="text-4xl md:text-5xl font-black text-black tracking-tighter">Formulario general</h2>
-            <p className="text-gray-500 text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tighter">Formulario general</h2>
+            <p className="text-muted-foreground text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto">
               Para asegurar que esta experiencia sea de alto nivel, cuéntanos un poco sobre ti (Solo te tomará 1 minuto).
             </p>
           </div>
@@ -80,8 +80,8 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
           <form onSubmit={handleSubmit} className="space-y-12">
             {SURVEY_QUESTIONS.map((q, idx) => (
               <div key={q.id} className="space-y-4">
-                <label className="text-lg md:text-xl font-bold text-black flex gap-2">
-                  <span className="text-gray-400 font-medium">{idx + 1}.</span> {q.label}
+                <label className="text-lg md:text-xl font-bold text-foreground flex gap-2">
+                  <span className="text-muted-foreground/40 font-medium">{idx + 1}.</span> {q.label}
                 </label>
                 <Select 
                   name={q.id} 
@@ -89,7 +89,7 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
                   value={answers[q.id] || ""}
                   onValueChange={(val) => setAnswers(prev => ({ ...prev, [q.id]: val ?? "" }))}
                 >
-                  <SelectTrigger className="h-14 rounded-2xl border-neutral-200 bg-neutral-50/50">
+                  <SelectTrigger className="h-14 rounded-2xl border-border bg-muted">
                     <SelectValue placeholder="Seleccionar una opción">
                       {/* Base UI no refleja ItemText automáticamente — mapeamos el value a su label */}
                       {answers[q.id]
@@ -97,7 +97,7 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
                         : undefined}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-neutral-200 shadow-xl">
+                  <SelectContent className="rounded-2xl border-border shadow-xl">
                     {q.options.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value} className="rounded-xl">
                         {opt.label}
@@ -109,8 +109,8 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
             ))}
 
             <div className="space-y-4">
-              <label className="text-lg md:text-xl font-bold text-black flex gap-2">
-                <span className="text-gray-400 font-medium">5.</span> Si pudieras hacerle una sola pregunta directa a Hyenuk en persona, ¿cuál sería?
+              <label className="text-lg md:text-xl font-bold text-foreground flex gap-2">
+                <span className="text-muted-foreground/40 font-medium">5.</span> Si pudieras hacerle una sola pregunta directa a Hyenuk en persona, ¿cuál sería?
               </label>
               <textarea
                 name="question"
@@ -118,7 +118,7 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
                 value={answers.question || ""}
                 onChange={(e) => setAnswers(prev => ({ ...prev, question: e.target.value }))}
                 placeholder="Escribe aquí tu pregunta..."
-                className="w-full min-h-[160px] p-6 rounded-[24px] border border-neutral-200 bg-neutral-50/50 focus:ring-2 focus:ring-[#3154DC] outline-none transition-all text-base md:text-lg resize-none"
+                className="w-full min-h-[160px] p-6 rounded-[24px] border border-border bg-muted focus:ring-2 focus:ring-primary outline-none transition-all text-base md:text-lg resize-none text-foreground placeholder:text-muted-foreground/40"
               />
             </div>
 
@@ -126,7 +126,7 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#3154DC] hover:bg-[#2845c4] text-white px-12 h-16 rounded-full font-bold text-xl shadow-xl shadow-[#3154DC]/20 transition-all active:scale-95 flex items-center gap-3"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-12 h-16 rounded-full font-bold text-xl shadow-xl shadow-primary/20 transition-all active:scale-95 flex items-center gap-3"
               >
                 {isSubmitting ? <Loader2 className="size-6 animate-spin" /> : "Enviar formulario"}
               </Button>

@@ -64,11 +64,11 @@ export function MonthTabs({
     <div className="relative group/months">
       {/* Fading Edges Discretos */}
       <div className={cn(
-        "absolute left-0 top-0 bottom-0 w-8 z-20 bg-gradient-to-r from-white to-transparent pointer-events-none transition-opacity duration-500",
+        "absolute left-0 top-0 bottom-0 w-8 z-20 bg-gradient-to-r from-background to-transparent pointer-events-none transition-opacity duration-500",
         canScrollLeft ? "opacity-100" : "opacity-0"
       )} />
       <div className={cn(
-        "absolute right-0 top-0 bottom-0 w-8 z-20 bg-gradient-to-l from-white to-transparent pointer-events-none transition-opacity duration-500",
+        "absolute right-0 top-0 bottom-0 w-8 z-20 bg-gradient-to-l from-background to-transparent pointer-events-none transition-opacity duration-500",
         canScrollRight ? "opacity-100" : "opacity-0"
       )} />
 
@@ -101,9 +101,9 @@ export function MonthTabs({
                 "month-tab-btn px-6 py-3 !rounded-b-none rounded-t-xl font-bold text-[15px] transition-all duration-300 relative flex items-center gap-0 shrink-0 overflow-hidden cursor-pointer whitespace-nowrap border border-transparent",
                 isActive
                   ? isFutureEvents 
-                    ? "bg-gradient-to-r from-[#0F172A] to-[#3154DC] border-indigo-900 text-white shadow-sm z-10"
-                    : "bg-[#3154DC] border-[#3154DC] text-white shadow-sm z-10"
-                  : "bg-[#F5F6F9] text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 hover:border-neutral-200/50"
+                    ? "bg-gradient-to-r from-[#0F172A] dark:from-[#151210] to-primary border-border/20 text-primary-foreground shadow-sm z-10"
+                    : "bg-primary border-primary text-primary-foreground shadow-sm z-10"
+                  : "bg-muted text-muted-foreground/70 hover:bg-accent hover:text-foreground hover:border-border/50"
               )}
             >
               <span className="relative z-10">{month}</span>
@@ -119,8 +119,8 @@ export function MonthTabs({
                   className={cn(
                     "flex items-center justify-center size-5 rounded-full text-[11px] font-black transition-opacity duration-300",
                     isActive
-                      ? "bg-white text-[#3154DC]"
-                      : "bg-[#3154DC] text-white shadow-sm"
+                      ? "bg-background text-primary"
+                      : "bg-primary text-primary-foreground shadow-sm"
                   )}
                 >
                   {selectedCount}

@@ -38,7 +38,7 @@ export function WordRotator() {
   return (
     <span 
       ref={rotatorRef} 
-      className="word-rotator block text-5xl sm:text-7xl lg:text-[120px] text-black leading-none"
+      className="word-rotator block text-5xl sm:text-7xl lg:text-[120px] text-foreground leading-none"
     >
       Giras
     </span>

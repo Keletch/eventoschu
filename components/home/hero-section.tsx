@@ -7,6 +7,7 @@ const WordRotator = dynamic(() => import("./word-rotator").then(mod => mod.WordR
 import { Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface HeroSectionProps {
   isSignedIn: boolean | undefined;
@@ -30,26 +31,19 @@ export function HeroSection({
   return (
     <div ref={containerRef} className="max-w-5xl mx-auto text-center space-y-8">
       {/* Badge de lista de espera */}
-      <Tooltip>
-        <TooltipTrigger>
-          <div 
-            className="hero-badge animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out inline-flex items-center gap-3 px-6 py-2 bg-[#3154DC]/10 rounded-full border border-[#3154DC]/20 cursor-help transition-colors hover:bg-[#3154DC]/20"
-            style={{ animationFillMode: "both" }}
-          >
-            <div className="w-2 h-2 bg-[#3154DC] rounded-full animate-pulse" />
-            <span className="text-[#3154DC] font-semibold text-base">
-              Lista de espera para reservar cupo
-            </span>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent className="max-w-[250px] p-4 rounded-xl text-center">
-          El registro no garantiza el acceso inmediato, pero asegura tu lugar en la fila.
-        </TooltipContent>
-      </Tooltip>
+      <div 
+        className="hero-badge animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out inline-flex items-center gap-3 px-6 py-2 bg-primary/10 rounded-full border border-primary/20 transition-colors"
+        style={{ animationFillMode: "both" }}
+      >
+        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+        <span className="text-primary font-semibold text-base">
+          Lista de espera para reservar cupo
+        </span>
+      </div>
 
       {/* Título animado */}
       <h1 
-        className="hero-title animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[200ms] ease-out font-extrabold tracking-tight leading-[0.9] text-black text-center flex flex-col items-center"
+        className="hero-title animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[200ms] ease-out font-extrabold tracking-tight leading-[0.9] text-foreground text-center flex flex-col items-center"
         style={{ animationFillMode: "both" }}
       >
         <div className="h-[70px] sm:h-[100px] lg:h-[150px] overflow-hidden flex items-center justify-center mask-fade-vertical">
@@ -62,7 +56,7 @@ export function HeroSection({
 
       {/* Descripción */}
       <p 
-        className="hero-desc animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[400ms] ease-out max-w-3xl mx-auto text-lg sm:text-xl md:text-2xl text-gray-600 font-medium leading-relaxed px-4"
+        className="hero-desc animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[400ms] ease-out max-w-3xl mx-auto text-lg sm:text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed px-4"
         style={{ animationFillMode: "both" }}
       >
         Espacio relajado con Hyenuk Chu para compartir, conocernos mejor y fortalecer conexiones auténticas.
@@ -79,7 +73,7 @@ export function HeroSection({
               const email = user?.primaryEmailAddress?.emailAddress;
               if (email) revalidateStatus(email);
             }}
-            className="bg-[#3154DC] text-white font-bold h-14 px-10 rounded-2xl shadow-[0_10px_20px_-5px_rgba(49,84,220,0.2)] hover:scale-[1.03] hover:bg-[#3154DC]/90 transition-all flex items-center gap-3 text-lg transform backface-visibility-hidden antialiased"
+            className="bg-primary text-primary-foreground font-bold h-14 px-10 rounded-2xl shadow-[0_10px_20px_-5px_rgba(49,84,220,0.2)] hover:scale-[1.03] hover:bg-primary/90 transition-all flex items-center gap-3 text-lg transform backface-visibility-hidden antialiased"
           >
             <Ticket className="size-6" />
             Mis registros
@@ -90,9 +84,9 @@ export function HeroSection({
           <Button
             onClick={() => setIsCheckMode(true)}
             variant="link"
-            className="text-[#3154DC] font-bold text-lg hover:no-underline hover:text-[#3154DC]/80 transform backface-visibility-hidden antialiased"
+            className="text-primary font-bold text-lg hover:no-underline hover:text-primary/80 transform backface-visibility-hidden antialiased"
           >
-            <span className="underline decoration-[#007AFF] text-[#007AFF] cursor-pointer hover:opacity-80 transition-opacity font-bold">
+            <span className="underline decoration-secondary text-secondary cursor-pointer hover:opacity-80 transition-opacity font-bold">
               ¿Ya te registraste? Consulta el estatus
             </span>
           </Button>
