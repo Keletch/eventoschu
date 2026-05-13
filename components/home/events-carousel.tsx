@@ -116,18 +116,19 @@ export function EventsCarousel({
           ? Math.max(0, currentScroll - step) 
           : Math.min(container.scrollWidth - container.clientWidth, currentScroll + step);
 
-        // Desactivamos temporalmente el scroll-behavior nativo para que no pelee con GSAP
-        container.style.scrollBehavior = 'auto';
-
-        gsap.to(container, {
-          scrollLeft: targetScroll,
-          duration: 0.5,
-          ease: "power2.out", // Más rápido al inicio, evita la sensación de delay
-          onComplete: () => {
-            container.style.scrollBehavior = 'smooth';
-            checkScroll();
-          }
+        // Para un "slide normal" sin tirones, desactivamos el snap momentáneamente
+        container.style.scrollSnapType = 'none';
+        
+        container.scrollTo({
+          left: targetScroll,
+          behavior: 'smooth'
         });
+
+        // Reactivamos el snap después de un tiempo prudencial para que las tarjetas se anclen
+        setTimeout(() => {
+          container.style.scrollSnapType = 'x mandatory';
+          checkScroll();
+        }, 600); // 600ms es el tiempo estándar de un scroll 'smooth'
       }
     }
   };
