@@ -43,13 +43,13 @@ export function HeroSection({
 
       {/* Título animado */}
       <h1 
-        className="hero-title animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[200ms] ease-out font-extrabold tracking-tight leading-[0.9] text-foreground text-center flex flex-col items-center"
+        className="hero-title animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[200ms] ease-out font-extrabold tracking-tight leading-[0.9] text-foreground text-center flex flex-col items-center transition-none"
         style={{ animationFillMode: "both" }}
       >
         <div className="h-[70px] sm:h-[100px] lg:h-[150px] overflow-hidden flex items-center justify-center mask-fade-vertical">
           <WordRotator />
         </div>
-        <div className="text-4xl sm:text-6xl lg:text-[88px] -mt-2 sm:-mt-4 lg:-mt-6 whitespace-nowrap">
+        <div className="text-4xl sm:text-6xl lg:text-[88px] -mt-2 sm:-mt-4 lg:-mt-6 whitespace-nowrap transition-none">
           HyenUk Chu
         </div>
       </h1>

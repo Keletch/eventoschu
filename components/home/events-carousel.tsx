@@ -158,20 +158,14 @@ export function EventsCarousel({
         </div>
       ) : (
         <div className="relative group/carousel">
-          {/* Fading Edges Discretos */}
-          <div className={cn(
-            "absolute left-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-r from-muted to-transparent pointer-events-none transition-opacity duration-500",
-            canScrollLeft ? "opacity-100" : "opacity-0"
-          )} />
-          <div className={cn(
-            "absolute right-[-16px] top-0 bottom-0 w-12 z-20 bg-gradient-to-l from-muted to-transparent pointer-events-none transition-opacity duration-500",
-            canScrollRight ? "opacity-100" : "opacity-0"
-          )} />
-
-          {/* Carrusel de tarjetas */}
+          {/* Carrusel de tarjetas con Máscara de Gradiente (Sin capas físicas que tapen contenido) */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-8 overflow-x-auto py-24 px-20 -mx-20 -my-24 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[350px] md:min-h-[350px]"
+            style={{ 
+              maskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent)'
+            }}
+            className="flex gap-8 overflow-x-auto py-24 px-10 md:px-16 -mx-10 md:-mx-16 -my-24 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar min-h-[350px] md:min-h-[350px] relative z-10"
             onScroll={onScrollInternal}
           >
             <div ref={cardsRef} className="flex gap-8 min-h-[350px] md:min-h-[350px]">
@@ -181,7 +175,7 @@ export function EventsCarousel({
                   <div
                     key={event.id}
                     id={`event-${event.id}`}
-                    className="event-card-wrapper min-w-[290px] md:min-w-[360px] snap-center transform backface-visibility-hidden"
+                    className="event-card-wrapper min-w-[290px] md:min-w-[360px] snap-start transform backface-visibility-hidden"
                   >
                     <EventCard
                       id={event.id}

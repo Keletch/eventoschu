@@ -82,7 +82,7 @@ export function CategoryTabs({
               key={category}
               onClick={() => setActiveCategory(category)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-xl text-[14px] font-bold transition-all duration-300 whitespace-nowrap select-none border border-transparent", 
+                "flex items-center gap-2 px-4 py-2 rounded-xl text-[14px] font-bold transition-[background-color,border-color,transform,box-shadow] duration-300 whitespace-nowrap select-none border border-transparent", 
                 isActive
                   ? "bg-foreground text-background border-foreground shadow-sm scale-[1.02]"
                   : "bg-muted text-muted-foreground border-border/50 hover:bg-accent hover:text-foreground hover:border-border"
@@ -90,11 +90,11 @@ export function CategoryTabs({
             >
               {Icon && (
                 <Icon className={cn(
-                  "size-[18px] transition-colors duration-300",
+                  "size-[18px] transition-none duration-300",
                   isActive ? "text-background" : "text-muted-foreground/70 group-hover:text-foreground"
                 )} />
               )}
-              <span>{label}</span>
+              <span className="transition-none">{label}</span>
             </button>
           );
         })}

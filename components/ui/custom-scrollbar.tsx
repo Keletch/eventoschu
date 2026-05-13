@@ -145,7 +145,7 @@ export function CustomScrollbar() {
           <div
             key={i}
             ref={(el) => { dotsRef.current[i] = el; }}
-            className={`w-1 h-1 rounded-full ${i % 3 !== 0 ? "hidden md:block" : ""}`}
+            className="w-1 h-1 rounded-full"
             style={{ willChange: "transform, opacity" }}
           />
         ))}

@@ -128,7 +128,7 @@ export function PublicView({
             />
           </div>
 
-          <div className="events-section relative z-10 bg-muted rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px] p-10 md:p-16 border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px] reveal-item">
+          <div className="events-section relative z-10 bg-muted rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px] p-10 md:p-16 border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px] reveal-item overflow-hidden">
             {/* Carrusel de eventos (Usa solo los eventos filtrados por categoría) */}
             <EventsCarousel
               scrollContainerRef={scrollContainerRef}
