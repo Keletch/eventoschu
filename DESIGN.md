@@ -90,4 +90,21 @@ La página principal (`public-view.tsx`) es el epicentro visual. Se apila de arr
    - `CheckRegistrationPanel` (Modal Inferior/Panel Flotante): Para usuarios que quieren revisar el estado de su entrada existente.
 
 ---
+ 
+## 6. 🏢 Diseño Administrativo Multi-Tema
+ 
+El panel administrativo (`/admin/dashboard`) utiliza un enfoque **Camaleónico**. A diferencia del Home que tiene una estética mayoritariamente clara, el admin debe ser 100% funcional en temas `Light`, `Dark` y `Synthwave`.
+ 
+### Reglas de Oro para Componentes Administrativos:
+- **Prohibición de Colores Literales**: Está estrictamente prohibido usar clases como `bg-white`, `bg-gray-50` o `text-neutral-400`. Estos colores "rompen" la interfaz al cambiar a modo oscuro o Synthwave.
+- **Tokens Semánticos Requeridos**:
+  - Fondos de Contenedor: `bg-card` (se adapta al fondo del tema).
+  - Fondos Sutiles/Inputs: `bg-muted/50` o `bg-muted/30`.
+  - Bordes: `border-border` o `border-border/50`.
+  - Texto Secundario: `text-muted-foreground`.
+  - Acentos de Marca: `text-primary` o `bg-primary`.
+- **Estados Dinámicos**: Los estados (ej. "Pendiente", "Confirmado") deben usar opacidades sobre colores base (`bg-amber-500/10 text-amber-500`) para garantizar que el texto siempre sea legible sobre el fondo del tema activo.
+- **Diálogos y Modales**: Deben usar `bg-card` y asegurar que el `DialogHeader` tenga un contraste suficiente mediante `bg-secondary` o gradientes suaves de marca.
+ 
+---
 *Nota: Este diseño sigue la filosofía "CSS para layout y primeras impresiones, JS para interactividad profunda", asegurando que el diseño parezca Premium sin perjudicar el Lighthouse Score.*

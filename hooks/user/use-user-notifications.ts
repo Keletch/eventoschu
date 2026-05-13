@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { useNotifications } from '@/app/admin/dashboard/hooks/use-notifications';
+import { useNotifications } from '@/app/(admin)/admin/dashboard/hooks/use-notifications';
 import { usePersonalRealtime } from '../realtime/use-personal-realtime';
 
 export function useUserNotifications(propRegistrationId?: string | null) {

@@ -15,25 +15,25 @@ export interface AdminStatusConfig {
 export const ADMIN_STATUS_CONFIGS: Record<AdminRegistrationStatus, AdminStatusConfig> = {
   confirmed: {
     label: "Aprobada",
-    bg: "bg-emerald-50",
-    text: "text-emerald-700",
-    border: "border-emerald-100",
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-500",
+    border: "border-emerald-500/20",
     color: "#10b981", // emerald-500
     icon: React.createElement(CheckCircle2, { className: "size-4" }),
   },
   cancelled: {
     label: "Cancelada",
-    bg: "bg-rose-50",
-    text: "text-rose-700",
-    border: "border-rose-100",
-    color: "#f43f5e", // rose-500
+    bg: "bg-destructive/10",
+    text: "text-destructive",
+    border: "border-destructive/20",
+    color: "#ef4444", // red-500
     icon: React.createElement(XCircle, { className: "size-4" }),
   },
   pending: {
     label: "Pendiente",
-    bg: "bg-amber-50",
-    text: "text-amber-700",
-    border: "border-amber-100",
+    bg: "bg-amber-500/10",
+    text: "text-amber-500",
+    border: "border-amber-500/20",
     color: "#f59e0b", // amber-500
     icon: React.createElement(RefreshCw, { className: "size-4 animate-spin-slow" }),
   },

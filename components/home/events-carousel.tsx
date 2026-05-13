@@ -13,7 +13,7 @@ import { transformEventForUI } from "@/lib/event-transformers";
 // Skeleton de carga de tarjeta de evento
 function EventSkeleton() {
   return (
-    <div className="h-[420px] bg-card/50 border border-border/50 rounded-[32px] p-8 flex flex-col justify-between relative overflow-hidden group shadow-sm">
+    <div className="h-[460px] bg-card/50 border border-border/50 rounded-[32px] p-8 flex flex-col justify-between relative overflow-hidden group shadow-sm">
       <div className="space-y-8 relative">
         <div className="flex items-center gap-4">
           <Skeleton className="size-12 rounded-2xl" />
@@ -70,6 +70,9 @@ export function EventsCarousel({
 
   // Filtrar eventos del mes activo
   const monthEvents = events.filter((e: any) => {
+    // 🛡️ Seguridad total: Si el evento está marcado como inactivo, lo ignoramos de inmediato
+    if (e.active === false) return false;
+
     const d = new Date(e.start_date);
     let label = "";
     if (d.getFullYear() === 2099) label = "Eventos Futuros";
@@ -175,11 +178,11 @@ export function EventsCarousel({
   return (
     <div className="space-y-2">
       <h2 className="text-[20px] font-medium text-foreground leading-tight pl-2 md:pl-6">
-        Elige el país en el que te gustaría asistir en la reunión presencial
+        Selecciona el evento en el que te gustaría participar
       </h2>
 
       {isLoadingEvents ? (
-        <div className="flex gap-8 overflow-hidden pb-4 h-[420px]">
+        <div className="flex gap-8 overflow-hidden pb-4 h-[460px]">
           {[1, 2, 3].map((i) => (
             <div key={i} className="min-w-[290px] md:min-w-[360px]">
               <EventSkeleton />
@@ -200,7 +203,7 @@ export function EventsCarousel({
           >
             <div
               ref={cardsRef}
-              className="flex gap-8 h-[420px]"
+              className="flex gap-8 h-[460px]"
             >
               {monthEvents.map((event: any) => {
                 const data = transformEventForUI(event);
@@ -208,7 +211,7 @@ export function EventsCarousel({
                   <div
                     key={event.id}
                     id={`event-${event.id}`}
-                    className="event-card-wrapper h-full w-[calc(100vw-48px)] md:w-auto md:min-w-[350px] md:max-w-none snap-center transform backface-visibility-hidden"
+                    className="event-card-wrapper h-full w-[calc(100vw-48px)] md:w-[400px] snap-center transform backface-visibility-hidden"
                   >
                     <EventCard
                       id={event.id}
@@ -238,24 +241,24 @@ export function EventsCarousel({
             </div>
           </div>
 
-          {/* Barra de progreso + Controles de Navegación (NUEVO POSICIONAMIENTO) */}
-          <div className="mt-8 flex flex-col md:flex-row items-center gap-6 px-4">
-            <div className="flex items-center gap-4 flex-1 w-full">
+          {/* Barra de progreso + Controles de Navegación (ALTO CONTRASTE) */}
+          <div className="mt-12 flex flex-col md:flex-row items-center gap-8 px-4">
+            <div className="flex items-center gap-5 flex-1 w-full">
               <button
                 onClick={() => scroll('left')}
                 className={cn(
-                  "size-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center transition-all duration-300",
-                  "hover:bg-accent hover:scale-105 active:scale-95 text-muted-foreground",
-                  !canScrollLeft && "opacity-30 cursor-not-allowed grayscale"
+                  "size-11 rounded-full bg-card border-2 border-border shadow-md flex items-center justify-center transition-all duration-300",
+                  "hover:bg-accent hover:border-primary/50 hover:scale-105 active:scale-95 text-foreground",
+                  !canScrollLeft && "opacity-20 cursor-not-allowed grayscale"
                 )}
                 disabled={!canScrollLeft}
               >
-                <ChevronLeft className="size-5" />
+                <ChevronLeft className="size-6" />
               </button>
 
-              <div className="h-[2px] flex-1 bg-muted rounded-full overflow-hidden">
+              <div className="h-[4px] flex-1 bg-muted-foreground/20 rounded-full overflow-hidden">
                 <div
-                  className="scroll-progress-fill h-full bg-primary rounded-full transition-all duration-300"
+                  className="scroll-progress-fill h-full bg-primary rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(49,84,220,0.5)]"
                   style={{ width: '0%' }}
                 />
               </div>
@@ -263,17 +266,17 @@ export function EventsCarousel({
               <button
                 onClick={() => scroll('right')}
                 className={cn(
-                  "size-10 rounded-full bg-card border border-border shadow-sm flex items-center justify-center transition-all duration-300",
-                  "hover:bg-accent hover:scale-105 active:scale-95 text-muted-foreground",
-                  !canScrollRight && "opacity-30 cursor-not-allowed grayscale"
+                  "size-11 rounded-full bg-card border-2 border-border shadow-md flex items-center justify-center transition-all duration-300",
+                  "hover:bg-accent hover:border-primary/50 hover:scale-105 active:scale-95 text-foreground",
+                  !canScrollRight && "opacity-20 cursor-not-allowed grayscale"
                 )}
                 disabled={!canScrollRight}
               >
-                <ChevronRight className="size-5" />
+                <ChevronRight className="size-6" />
               </button>
             </div>
 
-            <div className="flex gap-2.5 items-center bg-muted dark:bg-muted/50 px-4 py-2 rounded-full border border-border/50">
+            <div className="flex gap-3 items-center bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-border shadow-lg">
               {availableMonths.map((month: string, idx: number) => (
                 <button
                   key={idx}
@@ -281,8 +284,8 @@ export function EventsCarousel({
                   className={cn(
                     "size-2 rounded-full transition-all duration-300 hover:bg-primary/50 cursor-pointer",
                     activeMonth === month
-                      ? "bg-primary scale-125 shadow-[0_0_8px_rgba(49,84,220,0.4)]"
-                      : "bg-border scale-100"
+                      ? "bg-primary scale-125 shadow-[0_0_12px_rgba(49,84,220,0.6)]"
+                      : "bg-foreground/20 scale-100"
                   )}
                   aria-label={`Ir a ${month}`}
                 />

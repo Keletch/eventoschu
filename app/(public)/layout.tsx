@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Raleway } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 
 const raleway = Raleway({
   subsets: ["latin"],
@@ -60,9 +60,16 @@ export default function RootLayout({
       }}
     >
       <html lang="es" className={`${raleway.variable} antialiased`} suppressHydrationWarning>
-        <body className="flex flex-col font-sans">
-          <ThemeProvider>
+        <body className="flex flex-col font-sans bg-background text-foreground transition-colors duration-300 min-h-screen">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+            themes={["light", "dark", "synthwave"]}
+          >
             <TooltipProvider>
+              <div className="retro-grid" />
               {children}
               <CustomScrollbar />
               <VercelAnalytics />

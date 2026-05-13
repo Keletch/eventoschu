@@ -72,13 +72,16 @@ export function useHomeLogic(initialEvents: any[] = []) {
 
   // --- Memos de Filtrado ---
   const availableCategories = useMemo(() => {
-    const cats = events.map(e => e.categories?.name).filter(Boolean);
+    // Solo consideramos categorías de eventos que estén ACTIVOS
+    const activeEvents = events.filter(e => e.active !== false);
+    const cats = activeEvents.map(e => e.categories?.name).filter(Boolean);
     return ["Todos", ...Array.from(new Set(cats))];
   }, [events]);
 
   const filteredEventsByCategory = useMemo(() => {
-    if (activeCategory === "Todos") return events;
-    return events.filter(e => e.categories?.name === activeCategory);
+    const activeEvents = events.filter(e => e.active !== false);
+    if (activeCategory === "Todos") return activeEvents;
+    return activeEvents.filter(e => e.categories?.name === activeCategory);
   }, [events, activeCategory]);
 
   const availableMonths = useMemo(() => {

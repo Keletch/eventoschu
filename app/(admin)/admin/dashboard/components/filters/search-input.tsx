@@ -36,15 +36,15 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="h-11 rounded-xl bg-white border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-500/10 transition-all duration-200 shadow-sm text-sm font-bold text-neutral-600 placeholder:text-xs placeholder:font-medium placeholder:text-neutral-400 pl-10 w-full"
+                className="h-11 rounded-xl bg-card border-border hover:border-muted-foreground/30 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all duration-200 shadow-sm text-sm font-bold text-foreground placeholder:text-xs placeholder:font-medium placeholder:text-muted-foreground/60 pl-10 w-full"
               />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
             </div>
           } />
-          <TooltipContent side="bottom" className="p-4 rounded-2xl shadow-2xl bg-white border border-neutral-200 max-w-xs z-[100]">
+          <TooltipContent side="bottom" className="p-4 rounded-2xl shadow-2xl bg-card border border-border max-w-xs z-[100]">
             <div className="space-y-1">
-              <p className="font-black text-blue-700 text-sm">{tooltipTitle}</p>
-              <div className="text-[11px] text-neutral-600 leading-relaxed font-medium">
+              <p className="font-black text-primary text-sm">{tooltipTitle}</p>
+              <div className="text-[11px] text-muted-foreground leading-relaxed font-medium">
                 {tooltipDescription}
               </div>
             </div>

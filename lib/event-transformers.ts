@@ -11,8 +11,8 @@ export function transformEventForUI(event: Event) {
 
   return {
     title: event.title,
-    city: event.city,
-    country: event.country,
+    city: isOnline ? "Evento" : event.city,
+    country: isOnline ? "Online" : event.country,
     // Indicador de modalidad
     isOnline,
     // Fecha formateada igual que en la tarjeta

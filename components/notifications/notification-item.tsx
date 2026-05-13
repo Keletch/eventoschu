@@ -2,7 +2,7 @@
 
 import { Check, Info, AlertTriangle, Circle, Trash2 } from 'lucide-react';
 import { cn, formatRelativeTime } from "@/lib/utils";
-import { Notification } from '@/app/admin/dashboard/hooks/use-notifications';
+import { Notification } from '@/app/(admin)/admin/dashboard/hooks/use-notifications';
 
 interface NotificationItemProps {
   notification: Notification;

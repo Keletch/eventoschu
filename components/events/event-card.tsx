@@ -10,6 +10,12 @@ import { EventSoldOutOverlay } from "@/components/events/event-sold-out-overlay"
 import { EventFlag } from "@/components/ui/event-flag";
 
 import { getEventUIConfig } from "@/lib/event-config";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface EventCardProps {
   id: string;
@@ -70,10 +76,12 @@ export function EventCard({
         "transform backface-visibility-hidden antialiased", // 🛠️ Solución global contra artifacts
         isSoldOut 
           ? "border-border bg-muted grayscale cursor-not-allowed" 
-          : "cursor-pointer bg-card hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] hover:-translate-y-1",
-        selected && !isSoldOut 
-          ? "border-primary ring-4 ring-primary/5 shadow-primary/20 -translate-y-1 z-10" 
-          : "border-card shadow-sm"
+          : cn(
+              "cursor-pointer bg-card transition-all duration-500",
+              selected 
+                ? "border-primary ring-4 ring-primary/5 shadow-md shadow-primary/20 -translate-y-0.5 hover:shadow-lg hover:shadow-primary/30" 
+                : "border-card shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+            )
       )}
       onClick={() => !isSoldOut && onSelect(id)}
     >
@@ -90,10 +98,22 @@ export function EventCard({
             <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-primary">
               Evento Disponible
             </span>
-            <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight truncate">
-              {title}
-            </h3>
-            <p className="text-sm md:text-base font-medium text-muted-foreground flex items-center gap-1.5 truncate">
+            <TooltipProvider delay={300}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <h3 className="text-xl md:text-2xl font-bold text-foreground leading-[1.1] line-clamp-2 mb-1 cursor-help text-left w-full">
+                    {title}
+                  </h3>
+                </TooltipTrigger>
+                <TooltipContent 
+                  side="top" 
+                  className="max-w-[300px] text-xs font-medium bg-popover text-popover-foreground border-border shadow-xl px-4 py-2 rounded-xl"
+                >
+                  <p>{title}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <p className="text-sm md:text-base font-medium text-muted-foreground flex items-center gap-1.5 truncate text-left w-full">
               <span>{city}</span>
               <span className="w-1 h-1 rounded-full bg-border mx-1" />
               <span>{country}</span>

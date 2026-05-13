@@ -1,13 +1,25 @@
 "use client";
 
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+
+import { useTheme } from "next-themes";
 
 interface LogoProps {
   onClick?: () => void;
 }
 
 export function Logo({ onClick }: LogoProps) {
+  const { theme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDarkish = mounted && (theme === "dark" || theme === "synthwave");
+
   return (
     <div className="flex items-center gap-2 shrink-0 min-w-[120px] md:min-w-[144px]">
       <Link 
@@ -25,7 +37,8 @@ export function Logo({ onClick }: LogoProps) {
           alt="Club de Inversionistas"
           width={144}
           height={48}
-          className="h-full w-full object-contain dark:brightness-0 dark:invert"
+          className="h-full w-full object-contain"
+          style={{ filter: isDarkish ? "brightness(0) invert(1)" : "none" }}
           priority
         />
       </Link>

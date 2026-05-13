@@ -38,6 +38,7 @@ El sistema implementa una separación clara de responsabilidades para maximizar 
 - **Métricas en Tiempo Real**: Dashboards visuales con contadores live de inscripciones y estados.
 - **Operaciones de Limpieza**: Herramientas para la eliminación segura de registros y purga de eventos, incluyendo la limpieza automática de tags en el CRM.
 - **Búsqueda Avanzada**: Sistema de filtrado inteligente que permite localizar usuarios y eventos por múltiples criterios (contenido, fecha, estado, categoría).
+- **Interfaz Camaleónica (Multi-Tema)**: El dashboard soporta nativamente múltiples temas visuales (Light, Dark, Synthwave) manteniendo una consistencia premium y accesibilidad en cualquier entorno de iluminación.
 
 ---
 **Desarrollado por Keletch (2026)**  

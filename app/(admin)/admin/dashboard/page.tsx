@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import gsap from "gsap";
 
 // Modular Components
+import { Logo } from "@/components/header/logo";
 import { StatsGrid } from "./components/stats/stats-grid";
 import { SearchInput } from "./components/filters/search-input";
 import { SearchablePicker } from "./components/filters/searchable-picker";
@@ -51,7 +53,7 @@ export default function AdminDashboard() {
     handleEditEvent, handleEditReg, handleNewEvent, handleLogout, totalInscriptions,
     pendingCount, approvedCount, cancelledCount, filteredEvents,
     notifications, unreadCount, handleMarkAsRead,
-    handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData
+    handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData, resetRegsFilters
   } = useAdminDashboard();
 
   const [isActuallyReady, setIsActuallyReady] = React.useState(false);
@@ -91,7 +93,7 @@ export default function AdminDashboard() {
 
   if (!isActuallyReady) {
     return (
-      <div className="h-screen overflow-y-auto no-scrollbar bg-neutral-50/50 pb-20 font-['Raleway'] overflow-x-hidden">
+      <div className="h-screen overflow-y-auto no-scrollbar bg-background pb-20 font-sans overflow-x-hidden transition-colors duration-300">
         <style jsx global>{`
           .no-scrollbar::-webkit-scrollbar {
             display: none !important;
@@ -102,26 +104,26 @@ export default function AdminDashboard() {
           }
         `}</style>
         {/* Skeleton Header - Precise pt-10 pb-10 mb-8 */}
-        <div className="bg-white border-b border-neutral-200/60 pt-10 pb-10 mb-8 shadow-sm">
+        <div className="bg-card border-b border-border pt-10 pb-10 mb-8 shadow-sm">
           <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
             <div className="flex items-center gap-6">
               {/* Logo h-10 */}
-              <div className="h-10 w-36 bg-neutral-100 rounded-lg animate-pulse" />
-              <div className="h-10 w-px bg-neutral-200" />
+              <div className="h-10 w-36 bg-muted rounded-lg animate-pulse" />
+              <div className="h-10 w-px bg-border" />
               <div className="space-y-2">
-                <div className="h-7 w-48 bg-neutral-100 rounded-md animate-pulse" />
-                <div className="h-4 w-64 bg-neutral-50 rounded-md animate-pulse" />
+                <div className="h-7 w-48 bg-muted rounded-md animate-pulse" />
+                <div className="h-4 w-64 bg-muted/50 rounded-md animate-pulse" />
               </div>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex flex-col items-end space-y-1">
-                <div className="h-2.5 w-24 bg-blue-50 rounded animate-pulse" />
-                <div className="h-4 w-32 bg-neutral-100 rounded animate-pulse" />
+                <div className="h-2.5 w-24 bg-primary/10 rounded animate-pulse" />
+                <div className="h-4 w-32 bg-muted rounded animate-pulse" />
               </div>
-              <div className="h-8 w-px bg-neutral-200" />
+              <div className="h-8 w-px bg-border" />
               <div className="flex gap-3">
-                <div className="size-11 bg-neutral-100 rounded-xl animate-pulse" />
-                <div className="h-11 w-32 bg-neutral-100 rounded-xl animate-pulse" />
+                <div className="size-11 bg-muted rounded-xl animate-pulse" />
+                <div className="h-11 w-32 bg-muted rounded-xl animate-pulse" />
               </div>
             </div>
           </div>
@@ -131,37 +133,37 @@ export default function AdminDashboard() {
           {/* Skeleton Stats - Precise grid-cols-2/3/5 gap-4 */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="bg-white py-3 px-4 rounded-3xl border-none shadow-sm h-[76px] animate-pulse flex justify-between items-center">
+              <div key={i} className="bg-card py-3 px-4 rounded-3xl border border-border shadow-sm h-[76px] animate-pulse flex justify-between items-center">
                 <div className="space-y-2">
-                  <div className="h-2.5 w-16 bg-neutral-100 rounded uppercase tracking-wider" />
-                  <div className="h-7 w-12 bg-neutral-100 rounded mt-0.5" />
+                  <div className="h-2.5 w-16 bg-muted rounded uppercase tracking-wider" />
+                  <div className="h-7 w-12 bg-muted rounded mt-0.5" />
                 </div>
-                <div className="p-2 size-8 bg-neutral-50 rounded-xl" />
+                <div className="p-2 size-8 bg-muted/50 rounded-xl" />
               </div>
             ))}
           </div>
 
           <div className="space-y-6">
             {/* Skeleton Tabs - Precise p-1.5 rounded-2xl */}
-            <div className="h-14 w-[410px] bg-white p-1.5 border border-neutral-200 rounded-2xl animate-pulse shadow-sm" />
+            <div className="h-14 w-[410px] bg-card p-1.5 border border-border rounded-2xl animate-pulse shadow-sm" />
             
             {/* Skeleton Filter Bar - Precise p-4 rounded-3xl h-20 */}
-            <div className="bg-white p-4 rounded-3xl border border-neutral-200/60 shadow-sm flex gap-4 h-[78px] items-center">
-              <div className="h-11 w-64 bg-neutral-50 rounded-xl animate-pulse" />
-              <div className="h-11 w-44 bg-neutral-50 rounded-xl animate-pulse" />
-              <div className="h-11 w-40 bg-neutral-50 rounded-xl animate-pulse" />
-              <div className="ml-auto h-11 w-40 bg-blue-50 rounded-xl animate-pulse" />
+            <div className="bg-card p-4 rounded-3xl border border-border shadow-sm flex gap-4 h-[78px] items-center">
+              <div className="h-11 w-64 bg-muted/50 rounded-xl animate-pulse" />
+              <div className="h-11 w-44 bg-muted/50 rounded-xl animate-pulse" />
+              <div className="h-11 w-40 bg-muted/50 rounded-xl animate-pulse" />
+              <div className="ml-auto h-11 w-40 bg-primary/10 rounded-xl animate-pulse" />
             </div>
-
+ 
             {/* Skeleton Table Rows - Precise py-4 avatar-10x10 */}
-            <div className="bg-white rounded-[40px] border border-neutral-200 overflow-hidden shadow-sm">
+            <div className="bg-card rounded-[40px] border border-border overflow-hidden shadow-sm">
               {/* Header row */}
-              <div className="px-6 h-[45px] border-b border-neutral-200 bg-neutral-50/50 animate-pulse" />
+              <div className="px-6 h-[45px] border-b border-border bg-muted/30 animate-pulse" />
               
               {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="px-6 py-4 border-b border-neutral-100 flex items-center gap-6">
+                <div key={i} className="px-6 py-4 border-b border-muted flex items-center gap-6">
                   <div className="flex items-center gap-3">
-                    <div className="size-10 bg-neutral-100 rounded-xl animate-pulse" />
+                    <div className="size-10 bg-muted rounded-xl animate-pulse" />
                     <div className="space-y-2">
                       <div className="h-4 w-40 bg-neutral-100 rounded animate-pulse" />
                       <div className="h-3 w-24 bg-neutral-50 rounded animate-pulse" />
@@ -185,7 +187,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="h-screen overflow-y-auto no-scrollbar bg-neutral-50/50 pb-20 font-['Raleway'] overflow-x-hidden">
+    <div className="h-screen overflow-y-auto no-scrollbar bg-background pb-20 font-sans overflow-x-hidden selection:bg-primary/20">
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none !important;
@@ -196,33 +198,27 @@ export default function AdminDashboard() {
         }
       `}</style>
       <TooltipProvider>
-        <div ref={headerRef} className="bg-white border-b border-neutral-200/60 pt-10 pb-10 mb-8 shadow-sm">
+        <div ref={headerRef} className="bg-card border-b border-border pt-10 pb-10 mb-8 shadow-sm">
           <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
             <div className="flex items-center gap-6">
-              <Image
-                src="/cdi-logo.png"
-                alt="Club de Inversionistas"
-                width={140}
-                height={40}
-                className="h-10 w-auto object-contain"
-                priority
-              />
-              <div className="h-10 w-px bg-neutral-200" />
+              <Logo />
+              <div className="h-10 w-px bg-border" />
               <div>
-                <h1 className="text-2xl font-black text-neutral-900 tracking-tight">Panel de Gestión</h1>
-                <p className="text-neutral-500 font-medium mt-1">Control centralizado de eventos e inscripciones.</p>
+                <h1 className="text-2xl font-black text-foreground tracking-tight">Panel de Gestión</h1>
+                <p className="text-muted-foreground font-medium mt-1">Control centralizado de eventos e inscripciones.</p>
               </div>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex flex-col items-end">
-                <p className="text-[10px] font-black uppercase text-blue-600 tracking-widest">Estado del Sistema</p>
-                <p className="text-sm font-bold text-neutral-800 flex items-center gap-2">
-                  <span className="size-2 bg-green-500 rounded-full animate-pulse" />
+                <p className="text-[10px] font-black uppercase text-primary tracking-widest">Estado del Sistema</p>
+                <p className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <span className="size-2 bg-emerald-500 rounded-full animate-pulse" />
                   Operativo (Realtime)
                 </p>
               </div>
-              <div className="h-8 w-px bg-neutral-200" />
+              <div className="h-8 w-px bg-border" />
               <div className="flex items-center gap-3">
+                <ThemeToggle />
                 <NotificationBell 
                   notifications={notifications}
                   unreadCount={unreadCount}
@@ -235,7 +231,7 @@ export default function AdminDashboard() {
                 <Button 
                   variant="ghost" 
                   onClick={handleLogout}
-                  className="rounded-xl h-11 px-4 text-neutral-400 hover:text-red-600 hover:bg-red-50 font-bold transition-all gap-2"
+                  className="rounded-xl h-11 px-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10 font-bold transition-all gap-2"
                 >
                   <LogOut className="w-5 h-5" />
                   <span className="hidden sm:inline">Cerrar Sesión</span>
@@ -288,15 +284,15 @@ export default function AdminDashboard() {
             onValueChange={setActiveTab}
             className="space-y-6 animate-content"
           >
-            <TabsList className="bg-white p-1.5 rounded-2xl border border-neutral-200 h-auto shadow-sm">
-              <TabsTrigger value="events" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-neutral-900 data-[state=active]:text-white transition-all">Gestión de Eventos</TabsTrigger>
-              <TabsTrigger value="registrations" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-neutral-900 data-[state=active]:text-white transition-all">Usuarios Registrados</TabsTrigger>
-              <TabsTrigger value="metrics" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-neutral-900 data-[state=active]:text-white transition-all">Inteligencia y Métricas</TabsTrigger>
+            <TabsList className="bg-card p-1.5 rounded-2xl border border-border h-auto shadow-sm">
+              <TabsTrigger value="events" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-foreground data-[state=active]:text-background transition-all">Gestión de Eventos</TabsTrigger>
+              <TabsTrigger value="registrations" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-foreground data-[state=active]:text-background transition-all">Usuarios Registrados</TabsTrigger>
+              <TabsTrigger value="metrics" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-foreground data-[state=active]:text-background transition-all">Inteligencia y Métricas</TabsTrigger>
             </TabsList>
 
             {/* TAB: EVENTS */}
             <TabsContent value="events" className="space-y-6 outline-none">
-              <div className="tab-content-anim flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-3xl border border-neutral-200/60 shadow-sm">
+              <div className="tab-content-anim flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-4 rounded-3xl border border-border shadow-sm">
                 <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                   <SearchInput
                     placeholder="Buscar evento..."
@@ -326,13 +322,13 @@ export default function AdminDashboard() {
                     variant="outline" 
                     onClick={handleClearCache} 
                     disabled={isCacheRefreshing}
-                    className="rounded-xl h-11 px-4 text-neutral-500 hover:text-blue-600 border-neutral-200 gap-2 font-bold"
+                    className="rounded-xl h-11 px-4 text-muted-foreground hover:text-primary border-border bg-card gap-2 font-bold"
                     title="Limpiar Caché de Redis"
                   >
                     {isCacheRefreshing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
                     <span className="hidden lg:inline">Refrescar Web</span>
                   </Button>
-                  <Button onClick={handleNewEvent} className="bg-blue-700 hover:bg-blue-800 text-white rounded-xl h-11 px-6 font-bold shadow-lg shadow-blue-200 transition-all gap-2 border-none">
+                  <Button onClick={handleNewEvent} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-11 px-6 font-bold shadow-lg shadow-primary/20 transition-all gap-2 border-none">
                     <Plus className="w-5 h-5" /> Nuevo Evento
                   </Button>
                 </div>
@@ -352,7 +348,7 @@ export default function AdminDashboard() {
             </TabsContent>
 
             <TabsContent value="registrations" className="space-y-6 outline-none">
-              <div className="tab-content-anim flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-3xl border border-neutral-200/60 shadow-sm">
+              <div className="tab-content-anim relative flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-4 rounded-3xl border border-border shadow-sm">
                 <div className="flex flex-wrap items-center gap-3 w-full">
                   <SearchInput
                     placeholder="Buscar usuario..."
@@ -393,6 +389,29 @@ export default function AdminDashboard() {
                     placeholder="Países"
                     triggerClassName="w-44"
                   />
+                  <SearchablePicker
+                    value={regsSurveyCompleteFilter}
+                    onSelect={setRegsSurveyCompleteFilter}
+                    options={[
+                      { id: 'all', label: 'Perfil / Formulario' },
+                      { id: 'completed', label: 'Con Formulario' },
+                      { id: 'pending', label: 'Sin Formulario' }
+                    ]}
+                    placeholder="Formulario"
+                    triggerClassName="w-44"
+                  />
+                </div>
+                <div className="absolute -bottom-7 right-6">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={resetRegsFilters}
+                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-red-500 transition-all gap-1.5"
+                    title="Limpiar todos los filtros"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    Resetear Filtros
+                  </Button>
                 </div>
               </div>
 
@@ -423,13 +442,13 @@ export default function AdminDashboard() {
                   </div>
                 )}
 
-                {regsSurveyCompleteFilter && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-100 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400">Estado:</span>
-                    <span className="text-sm font-bold text-indigo-700">Perfil Completo</span>
+                {regsSurveyCompleteFilter !== "all" && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500/60">Estado:</span>
+                    <span className="text-sm font-bold text-indigo-500">{regsSurveyCompleteFilter === "completed" ? "Perfil Completo" : "Perfil Incompleto"}</span>
                     <button 
-                      onClick={() => setRegsSurveyCompleteFilter(false)}
-                      className="p-1 hover:bg-indigo-100 rounded-lg transition-colors text-indigo-600"
+                      onClick={() => setRegsSurveyCompleteFilter("all")}
+                      className="p-1 hover:bg-indigo-500/20 rounded-lg transition-colors text-indigo-500"
                     >
                       <X className="size-4" />
                     </button>
@@ -437,12 +456,12 @@ export default function AdminDashboard() {
                 )}
 
                 {regsTodayFilter && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-100 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">Fecha:</span>
-                    <span className="text-sm font-bold text-amber-700">Registrados Hoy</span>
+                  <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-500/60">Fecha:</span>
+                    <span className="text-sm font-bold text-amber-500">Registrados Hoy</span>
                     <button 
                       onClick={() => setRegsTodayFilter(false)}
-                      className="p-1 hover:bg-amber-100 rounded-lg transition-colors text-amber-600"
+                      className="p-1 hover:bg-amber-500/20 rounded-lg transition-colors text-amber-500"
                     >
                       <X className="size-4" />
                     </button>
@@ -452,12 +471,12 @@ export default function AdminDashboard() {
 
               <div className="tab-content-anim space-y-4">
                 {/* 🔢 Paginación Premium */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b border-neutral-100">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b border-border">
                   <div className="flex items-center gap-4">
-                    <div className="text-xs font-bold text-neutral-400 uppercase tracking-widest">
+                    <div className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">
                       Mostrar
                     </div>
-                    <div className="flex items-center gap-1 bg-neutral-50 p-1 rounded-xl border border-neutral-200/60">
+                    <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border">
                       {[10, 20, 50, 100].map((size) => (
                         <button
                           key={size}
@@ -465,8 +484,8 @@ export default function AdminDashboard() {
                           className={cn(
                             "px-3 py-1.5 text-xs font-black rounded-lg transition-all",
                             pageSize === size 
-                              ? "bg-white text-blue-600 shadow-sm" 
-                              : "text-neutral-400 hover:text-neutral-600"
+                              ? "bg-background text-primary shadow-sm" 
+                              : "text-muted-foreground/60 hover:text-muted-foreground"
                           )}
                         >
                           {size}
@@ -474,31 +493,31 @@ export default function AdminDashboard() {
                       ))}
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-6">
-                    <div className="text-[11px] font-black text-neutral-400 uppercase tracking-widest">
-                      Mostrando <span className="text-neutral-900">{Math.min((currentPage - 1) * pageSize + 1, filteredRegs.length)}</span> - <span className="text-neutral-900">{Math.min(currentPage * pageSize, filteredRegs.length)}</span> de <span className="text-neutral-900">{filteredRegs.length}</span>
+ 
+                  <div className="flex items-center gap-6 ml-auto">
+                    <div className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-widest">
+                      Mostrando <span className="text-foreground font-black">{Math.min((currentPage - 1) * pageSize + 1, filteredRegs.length)}</span> - <span className="text-foreground font-black">{Math.min(currentPage * pageSize, filteredRegs.length)}</span> de <span className="text-foreground font-black">{filteredRegs.length}</span>
                     </div>
-
+ 
                     <div className="flex items-center gap-2">
                       <button
                         disabled={currentPage === 1}
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        className="p-2 rounded-xl border border-neutral-200/60 hover:bg-neutral-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-foreground disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm"
                       >
                         <ChevronLeft className="size-4" />
                       </button>
                       
-                      <div className="flex items-center gap-1 bg-neutral-50 px-2 py-1.5 rounded-xl border border-neutral-200/60">
-                        <span className="text-xs font-black text-blue-600 px-2">{currentPage}</span>
-                        <span className="text-xs font-bold text-neutral-300">/</span>
-                        <span className="text-xs font-bold text-neutral-400 px-2">{totalPages || 1}</span>
+                      <div className="flex items-center gap-1 bg-muted px-2 py-1.5 rounded-xl border border-border">
+                        <span className="text-xs font-black text-primary px-2">{currentPage}</span>
+                        <span className="text-xs font-bold text-muted-foreground/30">/</span>
+                        <span className="text-xs font-bold text-muted-foreground/60 px-2">{totalPages || 1}</span>
                       </div>
-
+ 
                       <button
                         disabled={currentPage >= totalPages}
                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        className="p-2 rounded-xl border border-neutral-200/60 hover:bg-neutral-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-foreground disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm"
                       >
                         <ChevronRight className="size-4" />
                       </button>
@@ -537,7 +556,7 @@ export default function AdminDashboard() {
                   setActiveTab("registrations");
                 }}
                 onSurveyCompleteClick={() => {
-                  setRegsSurveyCompleteFilter(true);
+                  setRegsSurveyCompleteFilter("completed");
                   setActiveTab("registrations");
                 }}
                 onTodayClick={() => {

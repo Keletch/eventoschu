@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Notification } from '@/app/admin/dashboard/hooks/use-notifications';
+import { Notification } from '@/app/(admin)/admin/dashboard/hooks/use-notifications';
 
 // Modular Components
 import { NotificationItem } from '@/components/notifications/notification-item';

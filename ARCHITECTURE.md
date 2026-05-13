@@ -41,8 +41,8 @@ Esta carpeta reemplaza las APIs REST tradicionales y brinda funciones de servido
 - `utils-realtime.ts`: Helpers para desencadenar eventos WebSocket (Supabase Realtime) tras una mutación.
 - `utils.ts`: Utilidades secundarias para el entorno de Node.js/Server Actions.
 
-#### `/app/admin` (Dashboard Privado)
-- `/app/admin/dashboard/page.tsx`: Vista principal protegida del panel.
+#### `/app/admin` (Dashboard Privado - Tematizado & Camaleónico)
+- `/app/admin/dashboard/page.tsx`: Vista principal protegida del panel. Soporta temas dinámicos (Light, Dark, Synthwave).
 - **/app/admin/dashboard/components/filters/**: Componentes para buscar en tablas.
   - `search-input.tsx`: Campo de búsqueda de texto.
   - `searchable-picker.tsx`: ComboBox avanzado para filtrar y seleccionar opciones de listas muy largas.

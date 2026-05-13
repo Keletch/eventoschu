@@ -28,13 +28,13 @@ export function Footer() {
   return (
     <footer 
       ref={footerRef}
-      className="w-full py-6 px-8 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-border/10 bg-primary dark:bg-[#151210] relative z-[100]"
+      className="w-full py-6 px-8 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-border/10 relative z-[100] transition-colors duration-300 bg-primary dark:bg-[#151210] synthwave:bg-[#13062d]"
     >
       <div className="flex flex-col md:flex-row items-center gap-0.5 md:gap-3">
-        <p className="text-[10px] font-bold text-white tracking-[0.05em] uppercase opacity-80">
+        <p className="text-[10px] font-bold text-foreground tracking-[0.05em] uppercase opacity-90 synthwave:text-muted-foreground">
           @elclubdeinversionistas | Todos los derechos reservados
         </p>
-        <p className="text-[9px] font-medium text-white/40 italic">
+        <p className="text-[9px] font-medium text-foreground/40 italic synthwave:text-muted-foreground/50">
           Educación financiera y trading de alto nivel
         </p>
       </div>

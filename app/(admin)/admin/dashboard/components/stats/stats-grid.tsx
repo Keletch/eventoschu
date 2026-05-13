@@ -33,40 +33,40 @@ export const StatsGrid: React.FC<StatsGridProps> = ({
         label="Eventos activos"
         value={activeEventsCount}
         icon={Calendar}
-        colorClass="text-indigo-600"
-        bgClass="bg-indigo-50"
+        colorClass="text-indigo-500"
+        bgClass="bg-indigo-500/10"
         onClick={onEventsClick}
       />
       <StatCard
         label="Usuarios únicos"
         value={registrationsCount}
         icon={Users}
-        colorClass="text-blue-600"
-        bgClass="bg-blue-50"
+        colorClass="text-primary"
+        bgClass="bg-primary/10"
         onClick={onUsersClick}
       />
       <StatCard
         label="Inscripciones aprobadas"
         value={approvedCount}
         icon={ClipboardCheck}
-        colorClass="text-emerald-600"
-        bgClass="bg-emerald-50"
+        colorClass="text-emerald-500"
+        bgClass="bg-emerald-500/10"
         onClick={onApprovedClick}
       />
       <StatCard
         label="Inscripciones pendientes"
         value={pendingCount}
         icon={RefreshCw}
-        colorClass="text-amber-600"
-        bgClass="bg-amber-50"
+        colorClass="text-amber-500"
+        bgClass="bg-amber-500/10"
         onClick={onPendingClick}
       />
       <StatCard
         label="Inscripciones canceladas"
         value={cancelledCount}
         icon={XCircle}
-        colorClass="text-red-600"
-        bgClass="bg-red-50"
+        colorClass="text-destructive"
+        bgClass="bg-destructive/10"
         onClick={onCancelledClick}
       />
     </div>

@@ -33,29 +33,29 @@ export function ToggleEventDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-[32px] p-8 max-w-md border-none shadow-2xl">
+      <DialogContent className="rounded-[32px] p-8 max-w-md border-none shadow-2xl bg-card text-foreground">
         <DialogHeader className="space-y-4">
           <div className="flex justify-center">
-            <div className={`p-4 rounded-3xl ${isDeactivating ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'}`}>
+            <div className={`p-4 rounded-3xl ${isDeactivating ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'}`}>
               {isDeactivating ? <PowerOff className="w-8 h-8" /> : <RefreshCw className="w-8 h-8" />}
             </div>
           </div>
-          <DialogTitle className="text-2xl font-black text-center text-neutral-900">
+          <DialogTitle className="text-2xl font-black text-center text-foreground">
             {isDeactivating ? '¿Desactivar Evento?' : '¿Reactivar Evento?'}
           </DialogTitle>
-          <DialogDescription className="text-center text-neutral-500 font-medium leading-relaxed">
+          <DialogDescription className="text-center text-muted-foreground font-medium leading-relaxed">
             {isDeactivating ? (
               <>
-                Al desactivar <span className="font-bold text-neutral-900">"{eventTitle}"</span>, 
+                Al desactivar <span className="font-bold text-foreground">"{eventTitle}"</span>, 
                 se eliminarán automáticamente los tags de Keap de todos los usuarios inscritos. 
                 <br /><br />
-                <span className="text-amber-600 font-bold flex items-center justify-center gap-1 text-sm">
+                <span className="text-amber-500 font-bold flex items-center justify-center gap-1 text-sm">
                   <AlertTriangle className="w-4 h-4" /> Los registros se mantendrán en Supabase.
                 </span>
               </>
             ) : (
               <>
-                Al reactivar <span className="font-bold text-neutral-900">"{eventTitle}"</span>, 
+                Al reactivar <span className="font-bold text-foreground">"{eventTitle}"</span>, 
                 el sistema restaurará automáticamente los tags de Keap a todos los usuarios 
                 que ya estaban registrados en Supabase.
               </>
@@ -66,7 +66,7 @@ export function ToggleEventDialog({
           <Button 
             variant="ghost"
             onClick={() => onOpenChange(false)}
-            className="flex-1 rounded-2xl h-12 font-bold border-neutral-200 hover:bg-neutral-50"
+            className="flex-1 rounded-2xl h-12 font-bold hover:bg-muted transition-all"
           >
             Cancelar
           </Button>
@@ -78,8 +78,8 @@ export function ToggleEventDialog({
             disabled={isSubmitting}
             className={`flex-1 rounded-2xl h-12 font-bold text-white shadow-lg transition-all border-none ${
               isDeactivating 
-                ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-200' 
-                : 'bg-blue-700 hover:bg-blue-800 shadow-blue-200'
+                ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/20' 
+                : 'bg-primary hover:bg-primary/90 shadow-primary/20'
             }`}
           >
             {isSubmitting ? (

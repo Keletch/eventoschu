@@ -45,7 +45,7 @@ export const KeapTagPicker: React.FC<KeapTagPickerProps> = ({
     <div className={cn(label ? "space-y-2" : "")}>
       {label && (
         <div className="flex items-center justify-between min-h-6">
-          <Label className="text-xs font-black uppercase text-neutral-400">{label}</Label>
+          <Label className="text-xs font-black uppercase text-muted-foreground">{label}</Label>
         </div>
       )}
 
@@ -54,29 +54,29 @@ export const KeapTagPicker: React.FC<KeapTagPickerProps> = ({
           <Button
             type="button"
             variant="outline"
-            className="w-full justify-between rounded-xl h-12 font-normal bg-neutral-50 border-neutral-100 text-xs hover:bg-neutral-100 transition-all"
+            className="w-full justify-between rounded-xl h-12 font-normal bg-muted/30 border-border text-xs hover:bg-muted transition-all text-foreground"
           >
-            <span className={cn("truncate", !selectedTag && "text-neutral-400")}>
+            <span className={cn("truncate", !selectedTag && "text-muted-foreground")}>
               {selectedTag ? selectedTag.name : "Seleccionar tag..."}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 opacity-40 shrink-0" />
           </Button>
         } />
         <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl shadow-2xl border-neutral-100"
+          className="w-[var(--radix-popover-trigger-width)] p-0 rounded-2xl shadow-2xl border-border bg-popover text-popover-foreground"
           align="start"
         >
-          <Command className="rounded-2xl">
-            <CommandInput placeholder="Buscar tag..." className="h-11 text-xs" />
+          <Command className="rounded-2xl bg-popover">
+            <CommandInput placeholder="Buscar tag..." className="h-11 text-xs border-none focus:ring-0" />
             <CommandList className="max-h-[220px]">
-              <CommandEmpty className="py-6 text-center text-xs text-neutral-400">
+              <CommandEmpty className="py-6 text-center text-xs text-muted-foreground">
                 {isLoading ? "Cargando tags..." : "No se encontraron tags."}
               </CommandEmpty>
               <CommandGroup>
                 {value && (
                   <CommandItem
                     onSelect={() => { onChange(""); setOpen(false); }}
-                    className="cursor-pointer text-xs text-red-500 hover:text-red-600"
+                    className="cursor-pointer text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
                   >
                     <X className="mr-2 h-3 w-3" />
                     Quitar selección
@@ -88,8 +88,8 @@ export const KeapTagPicker: React.FC<KeapTagPickerProps> = ({
                     value={tag.name}
                     onSelect={() => { onChange(tag.id); setOpen(false); }}
                     className={cn(
-                      "cursor-pointer text-xs",
-                      value === tag.id && "font-bold text-blue-700"
+                      "cursor-pointer text-xs hover:bg-accent hover:text-accent-foreground transition-colors",
+                      value === tag.id && "font-black text-primary bg-primary/5"
                     )}
                   >
                     {tag.name}

@@ -24,13 +24,13 @@ export const StatCard: React.FC<StatCardProps> = ({
     <Card 
       onClick={onClick}
       className={cn(
-        "rounded-3xl border-none shadow-sm bg-white py-3 px-4 transition-all duration-200",
+        "rounded-3xl border border-border/50 shadow-sm bg-card py-3 px-4 transition-all duration-200",
         onClick && "cursor-pointer hover:scale-[1.02] active:scale-[0.98] hover:shadow-md"
       )}
     >
       <div className="flex justify-between items-center">
         <div>
-          <p className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">{label}</p>
+          <p className="text-[9px] text-muted-foreground/60 font-bold uppercase tracking-wider">{label}</p>
           <h3 className={cn("text-2xl font-black mt-0.5", colorClass)}>{value}</h3>
         </div>
         <div className={cn("p-2 rounded-xl", bgClass, colorClass)}>

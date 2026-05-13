@@ -14,7 +14,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
   const [regsCountryFilter, setRegsCountryFilter] = useState("all");
   const [regsSurveyFilter, setRegsSurveyFilter] = useState<{ q: string, a: string } | null>(null);
   const [regsLoyaltyFilter, setRegsLoyaltyFilter] = useState(false);
-  const [regsSurveyCompleteFilter, setRegsSurveyCompleteFilter] = useState(false);
+  const [regsSurveyCompleteFilter, setRegsSurveyCompleteFilter] = useState("all");
   const [regsTodayFilter, setRegsTodayFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -49,7 +49,8 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
                            (reg.survey_data?.[regsSurveyFilter.q]?.answer === regsSurveyFilter.a);
 
       const matchesLoyalty = !regsLoyaltyFilter || ((reg.selected_events?.length || 0) > 1);
-      const matchesSurveyComplete = !regsSurveyCompleteFilter || (reg.survey_data && Object.keys(reg.survey_data).length > 0);
+      const matchesSurveyComplete = regsSurveyCompleteFilter === "all" || 
+                                   (regsSurveyCompleteFilter === "completed" ? (reg.survey_data && Object.keys(reg.survey_data).length > 0) : (!reg.survey_data || Object.keys(reg.survey_data).length === 0));
       const today = new Date().toISOString().split('T')[0];
       const matchesToday = !regsTodayFilter || reg.created_at?.startsWith(today);
 
@@ -92,6 +93,18 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
     totalPages,
     filteredEvents,
     filteredRegs,
-    paginatedRegs
+    paginatedRegs,
+    resetRegsFilters: () => {
+      setRegsSearch("");
+      setRegsCategoryFilter("all");
+      setRegsEventFilter("all");
+      setRegsStatusFilter("all");
+      setRegsCountryFilter("all");
+      setRegsSurveyFilter(null);
+      setRegsLoyaltyFilter(false);
+      setRegsSurveyCompleteFilter("all");
+      setRegsTodayFilter(false);
+      setCurrentPage(1);
+    }
   };
 }

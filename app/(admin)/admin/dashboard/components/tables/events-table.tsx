@@ -38,15 +38,15 @@ export const EventsTable: React.FC<EventsTableProps> = ({
   handleDeleteEvent,
 }) => {
   return (
-    <Card className="rounded-3xl border border-neutral-200 overflow-hidden bg-white shadow-sm">
+    <Card className="rounded-3xl border border-border overflow-hidden bg-card shadow-sm">
       <Table>
-        <TableHeader className="bg-neutral-50/50">
-          <TableRow className="hover:bg-transparent border-neutral-200">
-            <TableHead className="w-[300px] font-bold text-neutral-500 uppercase text-[10px] tracking-wider pl-6">Evento / Ciudad</TableHead>
-            <TableHead className="font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Fecha</TableHead>
-            <TableHead className="text-center font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Inscritos</TableHead>
-            <TableHead className="text-center font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Estado</TableHead>
-            <TableHead className="text-right pr-6 font-bold text-neutral-500 uppercase text-[10px] tracking-wider">Acciones</TableHead>
+        <TableHeader className="bg-muted/30">
+          <TableRow className="hover:bg-transparent border-border">
+            <TableHead className="w-[300px] font-bold text-muted-foreground uppercase text-[10px] tracking-wider pl-6">Evento / Ciudad</TableHead>
+            <TableHead className="font-bold text-muted-foreground uppercase text-[10px] tracking-wider">Fecha</TableHead>
+            <TableHead className="text-center font-bold text-muted-foreground uppercase text-[10px] tracking-wider">Inscritos</TableHead>
+            <TableHead className="text-center font-bold text-muted-foreground uppercase text-[10px] tracking-wider">Estado</TableHead>
+            <TableHead className="text-right pr-6 font-bold text-muted-foreground uppercase text-[10px] tracking-wider">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -59,17 +59,17 @@ export const EventsTable: React.FC<EventsTableProps> = ({
               const formattedDate = formatDateToShort(formatSafeDate(event.start_date));
 
               return (
-                <TableRow key={event.id} className="group border-neutral-100 hover:bg-neutral-50/50 transition-colors table-row-anim">
+                <TableRow key={event.id} className="group border-border hover:bg-muted/30 transition-colors table-row-anim">
                   <TableCell className="pl-6 py-4">
                     <div className="flex items-center gap-3">
                       <EventFlag 
                         flag={event.flag} 
-                        bgClass={event.bg_class || "bg-sky-100"} 
+                        bgClass={event.bg_class || "bg-muted"} 
                         className="w-10 h-10"
-                      />
+                       />
                       <div>
-                        <div className="font-bold text-gray-900">{event.title}</div>
-                        <div className="text-xs text-neutral-500 flex items-center gap-1">
+                        <div className="font-bold text-foreground">{event.title}</div>
+                        <div className="text-xs text-muted-foreground flex items-center gap-1">
                           {event.flag === 'WEB' ? (
                             <><Globe className="w-3 h-3" /> Evento en línea</>
                           ) : (
@@ -82,8 +82,8 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                   <TableCell className="text-sm font-medium">
                     {formattedDate}
                   </TableCell>
-                  <TableCell className="text-center font-bold">
-                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-none">
+                   <TableCell className="text-center font-bold">
+                    <Badge variant="secondary" className="bg-primary/10 text-primary border-none">
                       {regCount} / {event.capacity >= 9999 ? "∞" : event.capacity}
                     </Badge>
                   </TableCell>
@@ -99,7 +99,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDuplicateEvent(event)}
-                        className="text-zinc-500 hover:bg-zinc-100 rounded-xl cursor-pointer"
+                         className="text-muted-foreground hover:bg-muted rounded-xl cursor-pointer"
                         title="Duplicar"
                       >
                         <Copy className="w-4 h-4" />
@@ -108,7 +108,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEditEvent(event)}
-                        className="text-blue-700 hover:bg-blue-50 rounded-xl cursor-pointer"
+                        className="text-primary hover:bg-primary/10 rounded-xl cursor-pointer"
                         title="Editar"
                       >
                         <Edit className="w-4 h-4" />
@@ -117,7 +117,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteEvent(event)}
-                        className="text-red-500 hover:bg-red-50 rounded-xl cursor-pointer"
+                        className="text-destructive hover:bg-destructive/10 rounded-xl cursor-pointer"
                         title="Eliminar"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -129,7 +129,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={5} className="h-40 text-center text-neutral-400">
+              <TableCell colSpan={5} className="h-40 text-center text-muted-foreground font-medium">
                 {isLoading ? "Cargando eventos..." : "No se encontraron eventos con esos filtros."}
               </TableCell>
             </TableRow>

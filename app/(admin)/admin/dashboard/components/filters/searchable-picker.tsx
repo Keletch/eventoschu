@@ -54,7 +54,7 @@ export const SearchablePicker: React.FC<SearchablePickerProps> = ({
         <Button
           variant="outline"
           className={cn(
-            "h-11 rounded-xl bg-white border-neutral-200 hover:border-neutral-300 focus:border-neutral-400 focus:ring-2 focus:ring-neutral-500/10 transition-all duration-200 shadow-sm text-sm font-bold text-neutral-600",
+            "h-11 rounded-xl bg-card border-border hover:border-muted-foreground/30 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all duration-200 shadow-sm text-sm font-bold text-foreground",
             triggerClassName
           )}
         >
@@ -62,11 +62,11 @@ export const SearchablePicker: React.FC<SearchablePickerProps> = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50 shrink-0" />
         </Button>
       } />
-      <PopoverContent className={cn("p-0 rounded-2xl shadow-2xl border-neutral-100 overflow-hidden picker-anim", className)} align="start">
+      <PopoverContent className={cn("p-0 rounded-2xl shadow-2xl border-border bg-card overflow-hidden picker-anim", className)} align="start">
         <Command>
           <CommandInput placeholder={searchPlaceholder} className="h-10 border-none focus:ring-0 text-xs" />
           <CommandList>
-            <CommandEmpty className="p-4 text-[10px] text-neutral-400 text-center">{emptyMessage}</CommandEmpty>
+            <CommandEmpty className="p-4 text-[10px] text-muted-foreground/60 text-center">{emptyMessage}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem

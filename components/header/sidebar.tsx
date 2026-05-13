@@ -75,7 +75,8 @@ export function Sidebar({ isOpen }: SidebarProps) {
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-20 h-[calc(100vh-80px)] w-72 bg-primary dark:bg-[#151210] transition-all duration-300 z-50 overflow-hidden shadow-2xl shadow-black/20",
+        "fixed left-0 top-20 h-[calc(100vh-80px)] w-72 transition-all duration-300 z-50 overflow-hidden shadow-2xl shadow-black/20 border-r border-transparent",
+        "bg-primary dark:bg-[#151210] synthwave:bg-[#13062d] synthwave:border-white/5",
         isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 pointer-events-none"
       )}
     >

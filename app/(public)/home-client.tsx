@@ -15,8 +15,8 @@ import dynamic from "next/dynamic";
 
 import { PublicView } from "@/components/home/public-view";
 const RegisteredView = dynamic(() => import("@/components/home/registered-view").then(mod => mod.RegisteredView), { ssr: false });
-import { usePublicRealtime } from "../hooks/realtime/use-public-realtime";
-import { usePersonalRealtime } from "../hooks/realtime/use-personal-realtime";
+import { usePublicRealtime } from "@/hooks/realtime/use-public-realtime";
+import { usePersonalRealtime } from "@/hooks/realtime/use-personal-realtime";
 import { useHomeLogic } from "@/hooks/home/use-home-logic";
 import { Sidebar } from "@/components/header/sidebar";
 import { cn } from "@/lib/utils";
