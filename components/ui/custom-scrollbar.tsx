@@ -18,7 +18,17 @@ export function CustomScrollbar() {
   const isDark = resolvedTheme === "dark";
 
   const isAdmin = pathname?.startsWith("/admin");
-  const dotCount = 30;
+  const [dotCount, setDotCount] = useState(30);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setDotCount(window.innerWidth < 768 ? 15 : 30);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const dotArray = Array.from({ length: dotCount });
 
   useGSAP(() => {
@@ -129,8 +139,9 @@ export function CustomScrollbar() {
       window.removeEventListener("app-loading-start", startLoadingWave);
       window.removeEventListener("app-loading-stop", stopLoadingWave);
       window.removeEventListener("scroll", onScroll);
+      dotsRef.current = []; // Limpiamos referencias al desmontar o cambiar conteo
     };
-  }, [isAdmin, isDark]);
+  }, [isAdmin, isDark, dotCount]);
 
   if (isAdmin) return null;
 

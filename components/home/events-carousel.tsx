@@ -116,11 +116,17 @@ export function EventsCarousel({
           ? Math.max(0, currentScroll - step) 
           : Math.min(container.scrollWidth - container.clientWidth, currentScroll + step);
 
+        // Desactivamos temporalmente el scroll-behavior nativo para que no pelee con GSAP
+        container.style.scrollBehavior = 'auto';
+
         gsap.to(container, {
           scrollLeft: targetScroll,
-          duration: 0.6,
-          ease: "power2.inOut",
-          onComplete: checkScroll
+          duration: 0.5,
+          ease: "power2.out", // Más rápido al inicio, evita la sensación de delay
+          onComplete: () => {
+            container.style.scrollBehavior = 'smooth';
+            checkScroll();
+          }
         });
       }
     }
