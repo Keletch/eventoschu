@@ -182,7 +182,7 @@ export function EventsCarousel({
       </h2>
 
       {isLoadingEvents ? (
-        <div className="flex gap-8 overflow-hidden pb-4 h-[460px]">
+        <div className="flex gap-8 overflow-hidden pb-4 min-h-[460px] h-auto">
           {[1, 2, 3].map((i) => (
             <div key={i} className="min-w-[290px] md:min-w-[360px]">
               <EventSkeleton />
@@ -194,7 +194,7 @@ export function EventsCarousel({
           {/* Carrusel de tarjetas - Restaurada la fluidez nativa y navegación fija */}
           <div
             ref={scrollContainerRef}
-            className="flex gap-8 overflow-x-auto py-12 px-8 -mx-8 -my-6 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar relative z-10"
+            className="flex gap-8 overflow-x-auto py-12 px-8 -mx-8 -my-6 scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] hide-scrollbar relative z-10 transition-all duration-300 ease-in-out"
             style={{
               maskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)',
               WebkitMaskImage: 'linear-gradient(to right, transparent, black 20px, black calc(100% - 20px), transparent)'
@@ -203,7 +203,7 @@ export function EventsCarousel({
           >
             <div
               ref={cardsRef}
-              className="flex gap-8 h-[460px]"
+              className="flex gap-8 min-h-[460px] h-auto items-stretch transition-all duration-300 ease-in-out"
             >
               {monthEvents.map((event: any) => {
                 const data = transformEventForUI(event);
@@ -242,7 +242,7 @@ export function EventsCarousel({
           </div>
 
           {/* Barra de progreso + Controles de Navegación (ALTO CONTRASTE) */}
-          <div className="mt-12 flex flex-col md:flex-row items-center gap-8 px-4">
+          <div className="mt-12 flex flex-col md:flex-row items-center gap-8 px-4 transition-all duration-300 ease-in-out">
             <div className="flex items-center gap-5 flex-1 w-full">
               <button
                 onClick={() => scroll('left')}
