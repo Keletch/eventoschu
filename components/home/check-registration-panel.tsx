@@ -51,7 +51,7 @@ export function CheckRegistrationPanel({
                 type="email"
                 id="check-email"
                 placeholder="ejemplo@correo.com"
-                className="w-full h-16 px-8 rounded-2xl border border-border bg-muted focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-xl font-medium"
+                className="w-full h-16 px-8 rounded-2xl border border-border bg-muted focus:bg-card focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-xl font-medium text-foreground"
               />
             </div>
 

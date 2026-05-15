@@ -128,7 +128,7 @@ export function PublicView({
             />
           </div>
 
-          <div className="events-section relative z-10 bg-muted rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px] px-4 py-10 md:p-16 border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px] reveal-item overflow-hidden">
+          <div className="events-section relative z-10 bg-surface rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px] px-4 py-10 md:p-16 border border-surface-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px] reveal-item overflow-hidden">
             {/* Carrusel de eventos (Usa solo los eventos filtrados por categoría) */}
             <EventsCarousel
               scrollContainerRef={scrollContainerRef}
@@ -147,7 +147,7 @@ export function PublicView({
             {/* ── Formulario de registro ──────────────────── */}
             <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-8 -mt-0">
               <h2 className="text-[20px] font-medium text-foreground pl-2 md:pl-6">Registro</h2>
-              <div className="bg-card rounded-[32px] p-6 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-border/50">
+              <div className="bg-form-card-bg rounded-[32px] p-6 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-form-card-border">
                 <RegistrationForm
                   onSubmit={handleRegistration}
                   isLoading={isSubmitting}

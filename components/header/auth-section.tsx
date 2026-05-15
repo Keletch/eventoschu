@@ -95,6 +95,9 @@ export function AuthSection({
             <UserButton 
               appearance={{
                 elements: {
+                  rootBox: "user-button-root-custom",
+                  userButtonTrigger: "user-button-trigger-custom",
+                  userButtonAvatarBox: "user-button-avatar-box-custom",
                   avatarBox: "size-10 rounded-xl",
                   userButtonPopoverCard: "shadow-xl border border-border bg-card text-foreground"
                 }

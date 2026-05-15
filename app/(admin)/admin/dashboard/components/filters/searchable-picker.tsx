@@ -54,7 +54,7 @@ export const SearchablePicker: React.FC<SearchablePickerProps> = ({
         <Button
           variant="outline"
           className={cn(
-            "h-11 rounded-xl bg-card border-border hover:border-muted-foreground/30 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all duration-200 shadow-sm text-sm font-bold text-foreground",
+            "h-11 rounded-xl bg-muted/30 border-border hover:bg-muted/50 hover:border-muted-foreground/30 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all duration-200 shadow-sm text-sm font-bold text-foreground",
             triggerClassName
           )}
         >

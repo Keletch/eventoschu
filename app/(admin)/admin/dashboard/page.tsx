@@ -284,10 +284,10 @@ export default function AdminDashboard() {
             onValueChange={setActiveTab}
             className="space-y-6 animate-content"
           >
-            <TabsList className="bg-card p-1.5 rounded-2xl border border-border h-auto shadow-sm">
-              <TabsTrigger value="events" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-foreground data-[state=active]:text-background transition-all">Gestión de Eventos</TabsTrigger>
-              <TabsTrigger value="registrations" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-foreground data-[state=active]:text-background transition-all">Usuarios Registrados</TabsTrigger>
-              <TabsTrigger value="metrics" className="rounded-xl px-8 py-2.5 font-bold data-[state=active]:bg-foreground data-[state=active]:text-background transition-all">Inteligencia y Métricas</TabsTrigger>
+            <TabsList className="bg-muted/30 p-1.5 rounded-2xl border border-border h-auto shadow-sm">
+              <TabsTrigger value="events" className="rounded-xl px-8 py-2.5 font-bold data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">Gestión de Eventos</TabsTrigger>
+              <TabsTrigger value="registrations" className="rounded-xl px-8 py-2.5 font-bold data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">Usuarios Registrados</TabsTrigger>
+              <TabsTrigger value="metrics" className="rounded-xl px-8 py-2.5 font-bold data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">Inteligencia y Métricas</TabsTrigger>
             </TabsList>
 
             {/* TAB: EVENTS */}

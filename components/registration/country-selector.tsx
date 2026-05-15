@@ -37,24 +37,24 @@ export function CountrySelector({
             value={isOther ? "otro" : value}
           >
             <SelectTrigger className={cn(
-              "h-10 md:h-11 px-4 rounded-xl border-[#616B77]/40 dark:border-primary/20 focus:ring-primary bg-transparent transition-all text-left text-foreground font-medium text-base",
+              "h-10 md:h-11 px-4 rounded-xl border-form-input-border focus:ring-form-btn-bg bg-form-input-bg transition-all text-left text-form-input-text font-medium text-base",
               isOther ? "w-[100px] md:w-[120px]" : "w-full"
             )}>
               <SelectValue placeholder="Escribe tu país">
-                {isOther ? "Otro" : (value || <span className="text-muted-foreground/40 font-medium text-base">Escribe tu país</span>)}
+                {isOther ? "Otro" : (value || <span className="text-form-input-text/40 font-medium text-base">Escribe tu país</span>)}
               </SelectValue>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-card border-border">
               {COUNTRY_CODES.map((item, idx) => (
-                <SelectItem key={idx} value={item.country}>
-                  <span className="flex items-center gap-2">
+                <SelectItem key={idx} value={item.country} className="focus:bg-primary/10">
+                  <span className="flex items-center gap-2 text-foreground">
                     <span>{item.flag}</span>
                     <span>{item.country}</span>
                   </span>
                 </SelectItem>
               ))}
-              <SelectItem value="otro">
-                <span className="flex items-center gap-2">
+              <SelectItem value="otro" className="focus:bg-primary/10">
+                <span className="flex items-center gap-2 text-foreground">
                   <span>🌍</span>
                   <span>Otro</span>
                 </span>
@@ -67,7 +67,7 @@ export function CountrySelector({
               id="country-custom"
               name="country"
               placeholder="Nombre del país"
-              className="flex-1 h-10 md:h-11 rounded-xl border-[#616B77]/40 dark:border-primary/20 focus:ring-primary bg-transparent placeholder:text-muted-foreground/40 placeholder:text-base placeholder:font-medium text-foreground font-medium text-base animate-in fade-in slide-in-from-left-2 duration-300"
+              className="flex-1 h-10 md:h-11 rounded-xl border-form-input-border focus:ring-form-btn-bg bg-form-input-bg placeholder:text-form-input-text/40 placeholder:text-base placeholder:font-medium text-form-input-text font-medium text-base animate-in fade-in slide-in-from-left-2 duration-300"
               value={value}
               onChange={onCustomChange}
               autoFocus

@@ -33,9 +33,9 @@ export function FormField({
 }: FormFieldProps) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label htmlFor={id} className="text-foreground font-normal px-1 text-base">
+      <Label htmlFor={id} className="text-form-label font-normal px-1 text-base">
         {label} {required && <span className="text-red-500">*</span>}
-        {optional && <span className="text-muted-foreground/60 font-normal ml-1">(opcional)</span>}
+        {optional && <span className="text-form-label/60 font-normal ml-1">(opcional)</span>}
       </Label>
       <Input
         id={id}
@@ -43,8 +43,8 @@ export function FormField({
         type={type}
         placeholder={placeholder}
         className={cn(
-          "h-10 md:h-11 rounded-xl border-[#616B77]/40 dark:border-primary/20 focus:ring-primary bg-transparent placeholder:text-muted-foreground/40 placeholder:text-base placeholder:font-medium text-foreground font-medium text-base transition-all",
-          readOnly && "bg-muted/30 cursor-not-allowed opacity-70"
+          "h-10 md:h-11 rounded-xl border-form-input-border focus:ring-form-btn-bg bg-form-input-bg placeholder:text-form-input-text/40 placeholder:text-base placeholder:font-medium text-form-input-text font-medium text-base transition-all",
+          readOnly && "bg-form-input-bg opacity-70 cursor-not-allowed"
         )}
         required={required}
         value={value}

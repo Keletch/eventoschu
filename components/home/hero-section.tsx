@@ -32,18 +32,18 @@ export function HeroSection({
     <div ref={containerRef} className="max-w-5xl mx-auto text-center space-y-8">
       {/* Badge de lista de espera */}
       <div 
-        className="hero-badge animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out inline-flex items-center gap-3 px-6 py-2 bg-primary/10 rounded-full border border-primary/20 transition-colors"
+        className="hero-badge animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out inline-flex items-center gap-3 px-6 py-2 bg-hero-badge-bg rounded-full border border-hero-badge-border transition-colors"
         style={{ animationFillMode: "both" }}
       >
-        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-        <span className="text-primary font-semibold text-base">
+        <div className="w-2 h-2 bg-hero-badge-text rounded-full animate-pulse" />
+        <span className="text-hero-badge-text font-semibold text-base">
           Lista de espera para reservar cupo
         </span>
       </div>
 
       {/* Título animado */}
       <h1 
-        className="hero-title animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[200ms] ease-out font-extrabold tracking-tight leading-[0.9] text-foreground text-center flex flex-col items-center transition-none"
+        className="hero-title animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[200ms] ease-out font-extrabold tracking-tight leading-[0.9] text-hero-title text-center flex flex-col items-center transition-none"
         style={{ animationFillMode: "both" }}
       >
         <div className="h-[70px] sm:h-[100px] lg:h-[150px] overflow-hidden flex items-center justify-center mask-fade-vertical">
@@ -56,7 +56,7 @@ export function HeroSection({
 
       {/* Descripción */}
       <p 
-        className="hero-desc animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[400ms] ease-out max-w-3xl mx-auto text-lg sm:text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed px-4"
+        className="hero-desc animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[400ms] ease-out max-w-3xl mx-auto text-lg sm:text-xl md:text-2xl text-hero-desc font-medium leading-relaxed px-4"
         style={{ animationFillMode: "both" }}
       >
         Espacio relajado con Hyenuk Chu para compartir, conocernos mejor y fortalecer conexiones auténticas.
@@ -73,7 +73,7 @@ export function HeroSection({
               const email = user?.primaryEmailAddress?.emailAddress;
               if (email) revalidateStatus(email);
             }}
-            className="bg-primary text-primary-foreground font-bold h-14 px-10 rounded-2xl shadow-[0_10px_20px_-5px_rgba(49,84,220,0.2)] hover:scale-[1.03] hover:bg-primary/90 transition-all flex items-center gap-3 text-lg transform backface-visibility-hidden antialiased"
+            className="bg-hero-btn-bg text-hero-btn-text font-bold h-14 px-10 rounded-2xl shadow-lg shadow-hero-btn-bg/20 hover:scale-[1.03] hover:opacity-90 transition-all flex items-center gap-3 text-lg transform backface-visibility-hidden antialiased"
           >
             <Ticket className="size-6" />
             Mis registros

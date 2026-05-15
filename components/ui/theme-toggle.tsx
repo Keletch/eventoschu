@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sun, Moon, Gamepad2 } from "lucide-react";
+import { Sun, Moon, Gamepad2, Terminal, Coffee } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
@@ -14,10 +14,12 @@ export function ThemeToggle() {
   }, []);
 
   const toggleTheme = () => {
-    // Ciclo: light -> dark -> synthwave -> light
+    // Ciclo: light -> dark -> synthwave -> hacker -> coffee -> light
     if (theme === "light") setTheme("dark");
     else if (theme === "dark") setTheme("synthwave");
-    else setTheme("light"); // Maneja 'system' o cualquier otro valor enviándolo a 'light'
+    else if (theme === "synthwave") setTheme("hacker");
+    else if (theme === "hacker") setTheme("coffee");
+    else setTheme("light"); 
   };
 
   if (!mounted) {
@@ -39,6 +41,8 @@ export function ThemeToggle() {
       {theme === "light" && <Sun className="h-[1.2rem] w-[1.2rem] text-muted-foreground animate-in zoom-in" />}
       {theme === "dark" && <Moon className="h-[1.2rem] w-[1.2rem] text-muted-foreground animate-in zoom-in" />}
       {theme === "synthwave" && <Gamepad2 className="h-[1.2rem] w-[1.2rem] text-primary animate-in zoom-in" />}
+      {theme === "hacker" && <Terminal className="h-[1.2rem] w-[1.2rem] text-primary animate-in zoom-in" />}
+      {theme === "coffee" && <Coffee className="h-[1.2rem] w-[1.2rem] text-primary animate-in zoom-in" />}
       <span className="sr-only">Alternar tema</span>
     </Button>
   );

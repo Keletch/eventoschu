@@ -36,7 +36,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="h-11 rounded-xl bg-card border-border hover:border-muted-foreground/30 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all duration-200 shadow-sm text-sm font-bold text-foreground placeholder:text-xs placeholder:font-medium placeholder:text-muted-foreground/60 pl-10 w-full"
+                className="h-11 rounded-xl bg-muted/30 border-border hover:bg-muted/50 hover:border-muted-foreground/30 focus:border-primary/40 focus:ring-2 focus:ring-primary/10 transition-all duration-200 shadow-sm text-sm font-bold text-foreground placeholder:text-xs placeholder:font-medium placeholder:text-muted-foreground/60 pl-10 w-full"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
             </div>

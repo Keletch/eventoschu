@@ -4,8 +4,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EventCard } from "@/components/events/event-card";
 import { cn } from "@/lib/utils";
 import { useRef, useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ANIM_CONFIG, ANIM_SELECTORS } from "@/lib/animations";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { transformEventForUI } from "@/lib/event-transformers";
@@ -63,6 +65,7 @@ export function EventsCarousel({
   handleMonthChange,
   formatSafeDate,
 }: EventsCarouselProps) {
+  const { resolvedTheme } = useTheme();
   const cardsRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -102,6 +105,16 @@ export function EventsCarousel({
     handleScroll(e);
     checkScroll();
   };
+
+  useEffect(() => {
+    // 🔄 Refrescar cálculos de GSAP cuando cambia el tema
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [resolvedTheme]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current && cardsRef.current) {
@@ -173,7 +186,7 @@ export function EventsCarousel({
         });
       }
     }
-  }, { dependencies: [activeMonth, events.length], scope: cardsRef });
+  }, { dependencies: [activeMonth, events.length, resolvedTheme], scope: cardsRef });
 
   return (
     <div className="space-y-2">
@@ -247,8 +260,8 @@ export function EventsCarousel({
               <button
                 onClick={() => scroll('left')}
                 className={cn(
-                  "size-11 rounded-full bg-card border-2 border-border shadow-md flex items-center justify-center transition-all duration-300",
-                  "hover:bg-accent hover:border-primary/50 hover:scale-105 active:scale-95 text-foreground",
+                  "size-11 rounded-full bg-card border-2 border-card-border shadow-md flex items-center justify-center transition-all duration-300",
+                  "hover:opacity-90 hover:scale-105 active:scale-95 text-foreground",
                   !canScrollLeft && "opacity-20 cursor-not-allowed grayscale"
                 )}
                 disabled={!canScrollLeft}
@@ -256,9 +269,9 @@ export function EventsCarousel({
                 <ChevronLeft className="size-6" />
               </button>
 
-              <div className="h-[4px] flex-1 bg-muted-foreground/20 rounded-full overflow-hidden">
+              <div className="h-[4px] flex-1 bg-scrollbar-track rounded-full overflow-hidden">
                 <div
-                  className="scroll-progress-fill h-full bg-primary rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(49,84,220,0.5)]"
+                  className="scroll-progress-fill h-full bg-scrollbar-dot rounded-full transition-all duration-300 shadow-[0_0_10px_var(--scrollbar-dot)]"
                   style={{ width: '0%' }}
                 />
               </div>
@@ -266,8 +279,8 @@ export function EventsCarousel({
               <button
                 onClick={() => scroll('right')}
                 className={cn(
-                  "size-11 rounded-full bg-card border-2 border-border shadow-md flex items-center justify-center transition-all duration-300",
-                  "hover:bg-accent hover:border-primary/50 hover:scale-105 active:scale-95 text-foreground",
+                  "size-11 rounded-full bg-card border-2 border-card-border shadow-md flex items-center justify-center transition-all duration-300",
+                  "hover:opacity-90 hover:scale-105 active:scale-95 text-foreground",
                   !canScrollRight && "opacity-20 cursor-not-allowed grayscale"
                 )}
                 disabled={!canScrollRight}
@@ -276,16 +289,16 @@ export function EventsCarousel({
               </button>
             </div>
 
-            <div className="flex gap-3 items-center bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-border shadow-lg">
+            <div className="flex gap-3 items-center bg-surface/80 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-surface-border shadow-lg">
               {availableMonths.map((month: string, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => handleMonthChange(month)}
                   className={cn(
-                    "size-2 rounded-full transition-all duration-300 hover:bg-primary/50 cursor-pointer",
+                    "size-2 rounded-full transition-all duration-300 hover:opacity-50 cursor-pointer",
                     activeMonth === month
-                      ? "bg-primary scale-125 shadow-[0_0_12px_rgba(49,84,220,0.6)]"
-                      : "bg-foreground/20 scale-100"
+                      ? "bg-scrollbar-dot scale-125 shadow-[0_0_12px_var(--scrollbar-dot)]"
+                      : "bg-scrollbar-dot-muted scale-100"
                   )}
                   aria-label={`Ir a ${month}`}
                 />

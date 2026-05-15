@@ -25,8 +25,8 @@ export async function GET() {
       const data = transformEventForUI(event);
       if (data.isOnline) {
         const linkInfo = data.displayLinkEnabled && data.displayLinkUrl
-          ? `Acceder en: ${data.displayLinkUrl}`
-          : `Enlace por confirmar`;
+          ? `Plataforma: ${data.displayLinkTitle} (${data.displayLinkUrl})`
+          : `Plataforma por confirmar`;
         markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** — Evento en línea. ${linkInfo}. Costo: ${data.displayPrice}. Duración: ${data.displayDuration}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
       } else {
         // El estándar prefiere listas claras que las IAs puedan indexar

@@ -43,7 +43,9 @@ export function SocialIcon({ name, href }: SocialIconProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="p-2 bg-white/10 rounded-xl text-white/70 hover:text-white hover:bg-white/20 transition-all hover:scale-110 active:scale-95 group backdrop-blur-sm"
+      className="p-2.5 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 group backdrop-blur-sm
+                 bg-[var(--social-bg)] text-[var(--social-color)] 
+                 hover:bg-[var(--social-hover-bg)] hover:text-[var(--social-hover-color)]"
       aria-label={name}
     >
       {icons[name]}

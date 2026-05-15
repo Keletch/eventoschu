@@ -101,9 +101,9 @@ export function MonthTabs({
                 "month-tab-btn px-6 py-3 !rounded-b-none rounded-t-xl font-bold text-[15px] transition-[background-color,border-color,transform,box-shadow,width,margin,opacity] duration-300 relative flex items-center gap-0 shrink-0 overflow-hidden cursor-pointer whitespace-nowrap border border-transparent",
                 isActive
                   ? isFutureEvents 
-                    ? "bg-gradient-to-r from-[#0F172A] dark:from-[#151210] to-primary border-border/20 text-primary-foreground shadow-sm z-10"
-                    : "bg-primary border-primary text-primary-foreground shadow-sm z-10"
-                  : "bg-muted text-muted-foreground/70 hover:bg-accent hover:text-foreground hover:border-border/50"
+                    ? "bg-gradient-to-r from-[#0F172A] dark:from-[#151210] to-tab-active-bg border-border/20 text-tab-active-text shadow-sm z-10"
+                    : "bg-tab-active-bg border-tab-active-bg text-tab-active-text shadow-sm z-10"
+                  : "bg-tab-inactive-bg text-tab-inactive-text hover:opacity-90 hover:border-tab-border/50"
               )}
             >
               <span className="relative z-10 transition-none">{month}</span>
@@ -119,8 +119,8 @@ export function MonthTabs({
                   className={cn(
                     "flex items-center justify-center size-5 rounded-full text-[11px] font-black transition-none duration-300",
                     isActive
-                      ? "bg-background text-primary"
-                      : "bg-primary text-primary-foreground shadow-sm"
+                      ? "bg-tab-active-text text-tab-active-bg"
+                      : "bg-tab-active-bg text-tab-active-text shadow-sm"
                   )}
                 >
                   {selectedCount}

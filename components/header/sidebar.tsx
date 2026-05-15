@@ -75,8 +75,8 @@ export function Sidebar({ isOpen }: SidebarProps) {
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-20 h-[calc(100vh-80px)] w-72 transition-all duration-300 z-50 overflow-hidden shadow-2xl shadow-black/20 border-r border-transparent",
-        "bg-primary dark:bg-[#151210] synthwave:bg-[#13062d] synthwave:border-white/5",
+        "fixed left-0 top-20 h-[calc(100vh-80px)] w-72 transition-all duration-300 z-50 overflow-hidden shadow-2xl shadow-black/40 border-r border-white/10",
+        "bg-sidebar-bg",
         isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 pointer-events-none"
       )}
     >
@@ -87,7 +87,7 @@ export function Sidebar({ isOpen }: SidebarProps) {
       >
         {SIDEBAR_LINKS.map((group, idx) => (
           <div key={idx} className="space-y-1.5">
-            <h3 className="px-4 py-1 text-[10px] font-bold text-white/50 uppercase tracking-[0.15em]">
+            <h3 className="px-4 py-1 text-[10px] font-bold text-sidebar-foreground/50 uppercase tracking-[0.15em]">
               {group.category}
             </h3>
             <div className="space-y-0.5">
@@ -99,12 +99,12 @@ export function Sidebar({ isOpen }: SidebarProps) {
                   className={cn(
                     "flex items-center justify-between px-4 py-2.5 rounded-xl transition-all group",
                     link.highlight 
-                      ? "bg-background text-primary hover:bg-background/90 shadow-lg shadow-black/10" 
-                      : "text-white/80 hover:bg-white/10 hover:text-white"
+                      ? "bg-sidebar-foreground text-sidebar-bg hover:bg-sidebar-foreground/90 shadow-lg shadow-black/10" 
+                      : "text-sidebar-foreground/80 hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <link.icon className={cn("size-5 transition-colors", link.highlight ? "text-primary" : "text-white/60 group-hover:text-white")} />
+                    <link.icon className={cn("size-5 transition-colors", link.highlight ? "text-sidebar-bg" : "text-sidebar-foreground/60 group-hover:text-sidebar-foreground")} />
                     <span className="font-bold text-sm tracking-tight">{link.name}</span>
                   </div>
                   {link.isExternal && <ExternalLink className="size-3 opacity-0 group-hover:opacity-30 transition-opacity" />}

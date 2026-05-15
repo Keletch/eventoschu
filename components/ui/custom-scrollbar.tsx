@@ -52,23 +52,11 @@ export function CustomScrollbar() {
         const scale = gsap.utils.mapRange(0, 4, 1.8, 0.6, Math.min(distance, 4));
         const xOffset = gsap.utils.mapRange(0, 4, -8, 0, Math.min(distance, 4));
         const opacity = gsap.utils.mapRange(0, 4, 1, 0.15, Math.min(distance, 4));
-
-        // Detectar si es synthwave buscando la clase en el html
-        const isSynthwave = document.documentElement.classList.contains('synthwave');
-
-        let bgColor = "#818CF8";
-        let glowColor = "rgba(129, 140, 248, 0.3)";
-
-        if (isSynthwave) {
-          bgColor = i % 5 === 0 ? "#bd00ff" : "#ff71ce"; 
-          glowColor = i % 5 === 0 ? "rgba(189, 0, 255, 0.6)" : "rgba(255, 113, 206, 0.4)";
-        } else if (isDark) {
-          bgColor = i % 5 === 0 ? "#E6E2D3" : "#A19A8E";
-          glowColor = i % 5 === 0 ? "rgba(230, 226, 211, 0.4)" : "rgba(161, 154, 142, 0.2)";
-        } else {
-          bgColor = i % 5 === 0 ? "#3154DC" : "#818CF8";
-          glowColor = i % 5 === 0 ? "rgba(49, 84, 220, 0.6)" : "rgba(129, 140, 248, 0.3)";
-        }
+        
+        const isAccent = i % 5 === 0;
+        const bgColor = isAccent ? "var(--scrollbar-dot)" : "var(--scrollbar-dot-muted)";
+        // Usamos una sombra sutil basada en el color de acento
+        const shadowOpacity = isAccent ? 0.6 : 0.2;
 
         gsap.to(dot, {
           scale,
@@ -78,7 +66,7 @@ export function CustomScrollbar() {
           ease: "power2.out",
           overwrite: "auto",
           backgroundColor: bgColor,
-          boxShadow: `0 0 ${gsap.utils.mapRange(0, 4, 12, 0, Math.min(distance, 4))}px ${glowColor}`
+          boxShadow: `0 0 ${gsap.utils.mapRange(0, 4, 12, 0, Math.min(distance, 4))}px ${bgColor}`
         });
       });
     };

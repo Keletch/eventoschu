@@ -84,14 +84,14 @@ export function CategoryTabs({
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-xl text-[14px] font-bold transition-[background-color,border-color,transform,box-shadow] duration-300 whitespace-nowrap select-none border border-transparent", 
                 isActive
-                  ? "bg-foreground text-background border-foreground shadow-sm scale-[1.02]"
-                  : "bg-muted text-muted-foreground border-border/50 hover:bg-accent hover:text-foreground hover:border-border"
+                  ? "bg-category-tab-active-bg text-category-tab-active-text border-category-tab-active-bg shadow-sm scale-[1.02]"
+                  : "bg-tab-inactive-bg text-tab-inactive-text border-tab-border/50 hover:opacity-90 hover:border-tab-border"
               )}
             >
               {Icon && (
                 <Icon className={cn(
                   "size-[18px] transition-none duration-300",
-                  isActive ? "text-background" : "text-muted-foreground/70 group-hover:text-foreground"
+                  isActive ? "text-category-tab-active-text" : "text-tab-inactive-text/70 group-hover:text-foreground"
                 )} />
               )}
               <span className="transition-none">{label}</span>

@@ -94,7 +94,7 @@ export function EventCard({
               "cursor-pointer bg-card transition-all duration-300",
               selected 
                 ? "border-primary ring-4 ring-primary/5 shadow-md shadow-primary/20 -translate-y-0.5 hover:shadow-lg hover:shadow-primary/30" 
-                : "border-card shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+                : "border-card-border shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
             )
       )}
       onClick={() => !isSoldOut && onSelect(id)}
@@ -110,7 +110,7 @@ export function EventCard({
               className="size-12 md:size-14 rounded-[16px] md:rounded-[20px] p-2.5 md:p-3 shrink-0" 
             />
             <div className="flex flex-col gap-0.5 overflow-hidden w-full">
-              <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-primary">
+              <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-card-badge-text">
                 Evento Disponible
               </span>
               <div className="relative group/title mt-1">
@@ -121,7 +121,7 @@ export function EventCard({
                   <h3 
                     ref={titleRef}
                     className={cn(
-                      "text-xl md:text-2xl font-bold text-foreground leading-[1.1] text-left w-full",
+                      "text-xl md:text-2xl font-bold text-card-title leading-[1.1] text-left w-full",
                       (!isExpanded && !isTransitioning) && "truncate"
                     )}
                   >
@@ -130,7 +130,7 @@ export function EventCard({
                 </div>
               </div>
               
-              <p className="text-sm md:text-base font-medium text-muted-foreground flex items-center gap-1.5 truncate text-left w-full mt-1">
+              <div className="text-sm md:text-base font-medium text-card-text flex items-center gap-1.5 truncate text-left w-full mt-1">
                 <span>{city}</span>
                 <span className="w-1 h-1 rounded-full bg-border mx-1" />
                 <span>{country}</span>
@@ -159,7 +159,7 @@ export function EventCard({
                     </div>
                   </span>
                 )}
-              </p>
+              </div>
             </div>
           </div>
         
@@ -173,15 +173,15 @@ export function EventCard({
           )}
         </div>
 
-        <div className="space-y-4 text-sm md:text-[16px] leading-relaxed text-muted-foreground">
+        <div className="space-y-4 text-sm md:text-[16px] leading-relaxed text-card-text">
           <div className="space-y-3">
-            <EventDetailItem icon={<Calendar className="w-4 h-4 text-muted-foreground/60 shrink-0" />} label="Fecha" value={date} />
-            <EventDetailItem icon={<Clock className="w-4 h-4 text-muted-foreground/60 shrink-0" />} label="Hora" value={time} />
-            <EventDetailItem icon={<Hourglass className="w-4 h-4 text-muted-foreground/60 shrink-0" />} label="Duración" value={duration} />
+            <EventDetailItem icon={<Calendar className="w-4 h-4 text-card-icon shrink-0" />} label="Fecha" value={date} />
+            <EventDetailItem icon={<Clock className="w-4 h-4 text-card-icon shrink-0" />} label="Hora" value={time} />
+            <EventDetailItem icon={<Hourglass className="w-4 h-4 text-card-icon shrink-0" />} label="Duración" value={duration} />
             {isVirtual ? (
               <div className="flex gap-3 items-center">
-                <ExternalLink className="w-4 h-4 text-muted-foreground/60 shrink-0" />
-                <span className="font-bold shrink-0">Enlace:</span>
+                <ExternalLink className="w-4 h-4 text-card-icon shrink-0" />
+                <span className="font-bold shrink-0">Plataforma:</span>
                 {linkEnabled && linkUrl ? (
                   <a
                     href={linkUrl}
@@ -193,15 +193,15 @@ export function EventCard({
                     {linkTitle || "Acceder al evento"}
                   </a>
                 ) : (
-                  <span className="text-muted-foreground/60 italic truncate">
-                    {linkTitle || "Enlace por confirmar"}
+                  <span className="truncate">
+                    {linkTitle || "Por confirmar"}
                   </span>
                 )}
               </div>
             ) : (
-              <EventDetailItem icon={<MapPin className="w-4 h-4 text-muted-foreground/60 shrink-0 mt-1" />} label="Sitio" value={location} isMultiLine />
+              <EventDetailItem icon={<MapPin className="w-4 h-4 text-card-icon shrink-0 mt-1" />} label="Sitio" value={location} isMultiLine />
             )}
-            <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-muted-foreground/60 shrink-0" />} label="Precio" value={price} />
+            <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-card-icon shrink-0" />} label="Precio" value={price} />
           </div>
         </div>
 

@@ -299,7 +299,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                     <>
                       <div className="md:col-span-2 space-y-2">
                         <div className="flex items-center gap-1.5">
-                          <Label className="text-xs font-black uppercase text-muted-foreground">Título del Enlace</Label>
+                          <Label className="text-xs font-black uppercase text-muted-foreground">Título del Enlace (Plataforma)</Label>
                           <InfoTooltip content="Texto del botón o enlace que verá el usuario. Ej: 'Unirse al Webinar', 'Acceder al Zoom'." />
                         </div>
                         <Input
@@ -311,7 +311,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                       </div>
                       <div className="md:col-span-2 space-y-2">
                         <div className="flex items-center gap-1.5">
-                          <Label className="text-xs font-black uppercase text-muted-foreground">URL del Enlace</Label>
+                          <Label className="text-xs font-black uppercase text-muted-foreground">URL de la Plataforma</Label>
                           <InfoTooltip content="URL completa del evento online (Zoom, Google Meet, Teams, etc.). Debe empezar con https://." />
                         </div>
                         <Input
@@ -324,7 +324,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                       </div>
                       <div className="md:col-span-2 flex items-center justify-between p-4 bg-muted/50 rounded-xl border border-border">
                         <div>
-                          <Label className="text-sm font-bold text-foreground">Enlace habilitado</Label>
+                          <Label className="text-sm font-bold text-foreground">Acceso a la plataforma</Label>
                           <p className="text-xs text-muted-foreground italic">Al desactivar, el enlace aparece bloqueado en la tarjeta.</p>
                         </div>
                         <div className="flex items-center gap-2">

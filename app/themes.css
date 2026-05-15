@@ -1,0 +1,339 @@
+/* 🎨 ARCHIVO DE TEMAS - TOKENS DE DISEÑO POR CONTEXTO */
+
+/* 📚 TEMA DARK (Libro Viejo) */
+.dark {
+  /* Base */
+  --background: #1A1614;
+  --foreground: #E6E2D3;
+  --surface: #151210;
+  --surface-foreground: #E6E2D3;
+  --surface-border: rgba(230, 226, 211, 0.1);
+  --border: #322A25;
+  --ring: #3154DC;
+  --radius: 32px;
+  --card: #241F1C;
+  --card-foreground: #E6E2D3;
+  --logo-color: #E6E2D3;
+  --popover: #241F1C;
+  --popover-foreground: #E6E2D3;
+
+  /* Hero */
+  --hero-badge-bg: rgba(230, 226, 211, 0.05);
+  --hero-badge-text: #E6E2D3;
+  --hero-badge-border: rgba(230, 226, 211, 0.1);
+  --hero-title: #E6E2D3;
+  --hero-desc: #A19A8E;
+  --hero-btn-bg: #E6E2D3;
+  --hero-btn-text: #1A1614;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #E6E2D3;
+  --tab-active-text: #1A1614;
+  --category-tab-active-bg: #E6E2D3;
+  --category-tab-active-text: #1A1614;
+  --tab-inactive-bg: #241F1C;
+  --tab-inactive-text: #A19A8E;
+  --tab-border: #322A25;
+
+  /* Event Cards (Step 1) */
+  --card: #241F1C;
+  --card-border: #322A25;
+  --card-title: #E6E2D3;
+  --card-text: #A19A8E;
+  --card-icon: #A19A8E;
+  --card-badge-text: #E6E2D3;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #241F1C;
+  --form-card-border: rgba(230, 226, 211, 0.05);
+  --form-label: #E6E2D3;
+  --form-input-bg: #241F1C;
+  --form-input-border: #3E352F;
+  --form-input-text: #E6E2D3;
+  --form-btn-bg: #E6E2D3;
+  --form-btn-text: #1A1614;
+
+  /* Footer & Socials */
+  --footer-text-primary: #E6E2D3;
+  --footer-text-secondary: rgba(230, 226, 211, 0.4);
+  --social-bg: rgba(230, 226, 211, 0.05);
+  --social-color: #A19A8E;
+  --social-hover-bg: #E6E2D3;
+  --social-hover-color: #1A1614;
+
+  /* Global Fallbacks */
+  --primary: #E6E2D3;
+  --primary-foreground: #1A1614;
+  --secondary: #A19A8E;
+  --secondary-foreground: #1A1614;
+  --muted: #241F1C;
+  --muted-foreground: #A19A8E;
+  --accent: #322A25;
+  --accent-foreground: #E6E2D3;
+  --scrollbar-dot: #E6E2D3;
+  --scrollbar-dot-muted: rgba(230, 226, 211, 0.2);
+  --sidebar-bg: #1A1614;
+  --sidebar-foreground: #E6E2D3;
+  --footer-bg: #151210;
+  --scrollbar-track: rgba(255, 255, 255, 0.05);
+}
+
+/* 🌃 TEMA SYNTHWAVE (84 Retro-futurismo) */
+.synthwave {
+  /* Base */
+  --background: #0d0221;
+  --foreground: #fffaff;
+  --surface: #13062d;
+  --surface-foreground: #fffaff;
+  --surface-border: rgba(255, 113, 206, 0.2);
+  --border: #3d2b4f;
+  --ring: #ff71ce;
+  --radius: 32px;
+  --card: #241b2f;
+  --card-foreground: #fffaff;
+  --logo-color: #01CDFE;
+  --popover: #241b2f;
+  --popover-foreground: #fffaff;
+
+  /* Hero */
+  --hero-badge-bg: rgba(189, 0, 255, 0.1);
+  --hero-badge-text: #bd00ff;
+  --hero-badge-border: rgba(189, 0, 255, 0.2);
+  --hero-title: #fffaff;
+  --hero-desc: #e0d7e5;
+  --hero-btn-bg: #bd00ff;
+  --hero-btn-text: #fffaff;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #bd00ff;
+  --tab-active-text: #fffaff;
+  --category-tab-active-bg: #bd00ff;
+  --category-tab-active-text: #fffaff;
+  --tab-inactive-bg: #241b2f;
+  --tab-inactive-text: #01cdfe;
+  --tab-border: #3d2b4f;
+
+  /* Event Cards (Step 1) */
+  --card: #241b2f;
+  --card-border: #3d2b4f;
+  --card-title: #fffaff;
+  --card-text: #e0d7e5;
+  --card-icon: #01cdfe;
+  --card-badge-text: #bd00ff;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #13062d;
+  --form-card-border: rgba(255, 113, 206, 0.1);
+  --form-label: #fffaff;
+  --form-input-bg: #0d0221;
+  --form-input-border: #3d2b4f;
+  --form-input-text: #fffaff;
+  --form-btn-bg: #bd00ff;
+  --form-btn-text: #fffaff;
+
+  /* Footer & Socials */
+  --footer-text-primary: #fffaff;
+  --footer-text-secondary: rgba(255, 250, 255, 0.4);
+  --social-bg: rgba(255, 113, 206, 0.1);
+  --social-color: #ff71ce;
+  --social-hover-bg: #bd00ff;
+  --social-hover-color: #fffaff;
+
+  /* Global Fallbacks */
+  --primary: #bd00ff;
+  --primary-foreground: #fffaff;
+  --secondary: #01cdfe;
+  --secondary-foreground: #0d0221;
+  --muted: #241b2f;
+  --muted-foreground: #e0d7e5;
+  --accent: #ff71ce;
+  --accent-foreground: #0d0221;
+  --scrollbar-dot: #bd00ff;
+  --scrollbar-dot-muted: rgba(189, 0, 255, 0.2);
+  --sidebar-bg: #0d0221;
+  --sidebar-foreground: #fffaff;
+  --footer-bg: #13062d;
+  --scrollbar-track: rgba(189, 0, 255, 0.1);
+}
+
+/* 📟 TEMA HACKER (Matrix) */
+.hacker {
+  /* Base */
+  --background: #000500;
+  --foreground: #00FF41;
+  --surface: #020802;
+  --surface-foreground: #00FF41;
+  --surface-border: rgba(0, 255, 65, 0.2);
+  --border: #003B00;
+  --ring: #00FF41;
+  --radius: 32px;
+  --card: #050a05;
+  --card-foreground: #00FF41;
+  --logo-color: #00FF41;
+  --popover: #050a05;
+  --popover-foreground: #00FF41;
+
+  /* Hero */
+  --hero-badge-bg: rgba(0, 255, 65, 0.05);
+  --hero-badge-text: #00FF41;
+  --hero-badge-border: rgba(0, 255, 65, 0.2);
+  --hero-title: #00FF41;
+  --hero-desc: #00A31A;
+  --hero-btn-bg: #00FF41;
+  --hero-btn-text: #000500;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #00FF41;
+  --tab-active-text: #000500;
+  --category-tab-active-bg: #00FF41;
+  --category-tab-active-text: #000500;
+  --tab-inactive-bg: #001A00;
+  --tab-inactive-text: #008F11;
+  --tab-border: #003B00;
+
+  /* Event Cards (Step 1) */
+  --card: #050a05;
+  --card-border: #003B00;
+  --card-title: #00FF41;
+  --card-text: #00A31A;
+  --card-icon: #008F11;
+  --card-badge-text: #00FF41;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #020802;
+  --form-card-border: rgba(0, 255, 65, 0.1);
+  --form-label: #00FF41;
+  --form-input-bg: #000500;
+  --form-input-border: #003B00;
+  --form-input-text: #00FF41;
+  --form-btn-bg: #00FF41;
+  --form-btn-text: #000500;
+
+  /* Footer & Socials */
+  --footer-text-primary: #00FF41;
+  --footer-text-secondary: rgba(0, 255, 65, 0.3);
+  --social-bg: rgba(0, 255, 65, 0.05);
+  --social-color: #00FF41;
+  --social-hover-bg: #00FF41;
+  --social-hover-color: #000500;
+
+  /* Global Fallbacks */
+  --primary: #00FF41;
+  --primary-foreground: #000500;
+  --secondary: #00FF41;
+  --secondary-foreground: #000500;
+  --muted: #050a05;
+  --muted-foreground: #00A31A;
+  --accent: #003300;
+  --accent-foreground: #00FF41;
+  --scrollbar-dot: #00FF41;
+  --scrollbar-dot-muted: rgba(0, 255, 65, 0.2);
+  --sidebar-bg: #000500;
+  --sidebar-foreground: #00FF41;
+  --footer-bg: #020802;
+  --scrollbar-track: rgba(0, 255, 65, 0.1);
+}
+
+/* ☕ TEMA MILK & COFFEE */
+.coffee {
+  /* Base */
+  --background: #FDF8F5;
+  --foreground: #3E2723;
+  --surface: #F9F3F0;
+  --surface-foreground: #3E2723;
+  --surface-border: rgba(141, 110, 99, 0.2);
+  --border: #D7CCC8;
+  --ring: #6D4C41;
+  --radius: 32px;
+  --card: #FFFFFF;
+  --card-foreground: #3E2723;
+  --logo-color: #3E2723;
+  --popover: #FFFFFF;
+  --popover-foreground: #3E2723;
+
+  /* Hero */
+  --hero-badge-bg: #EFEBE9;
+  --hero-badge-text: #6D4C41;
+  --hero-badge-border: #D7CCC8;
+  --hero-title: #3E2723;
+  --hero-desc: #8D6E63;
+  --hero-btn-bg: #6D4C41;
+  --hero-btn-text: #FDF8F5;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #6D4C41;
+  --tab-active-text: #FDF8F5;
+  --category-tab-active-bg: #6D4C41;
+  --category-tab-active-text: #FDF8F5;
+  --tab-inactive-bg: #EFEBE9;
+  --tab-inactive-text: #8D6E63;
+  --tab-border: #D7CCC8;
+
+  /* Event Cards (Step 1) */
+  --card: #FFFFFF;
+  --card-border: #EFEBE9;
+  --card-title: #3E2723;
+  --card-text: #8D6E63;
+  --card-icon: #A1887F;
+  --card-badge-text: #6D4C41;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #FFFFFF;
+  --form-card-border: rgba(141, 110, 99, 0.1);
+  --form-label: #3E2723;
+  --form-input-bg: #FDF8F5;
+  --form-input-border: #D7CCC8;
+  --form-input-text: #3E2723;
+  --form-btn-bg: #6D4C41;
+  --form-btn-text: #FDF8F5;
+
+  /* Footer & Socials */
+  --footer-text-primary: #3E2723;
+  --footer-text-secondary: rgba(62, 39, 35, 0.4);
+  --social-bg: #EFEBE9;
+  --social-color: #5D4037;
+  --social-hover-bg: #6D4C41;
+  --social-hover-color: #FDF8F5;
+
+  /* Global Fallbacks */
+  --primary: #6D4C41;
+  --primary-foreground: #FDF8F5;
+  --secondary: #8D6E63;
+  --secondary-foreground: #FDF8F5;
+  --muted: #F9F3F0;
+  --muted-foreground: #8D6E63;
+  --accent: #5D4037;
+  --accent-foreground: #FDF8F5;
+  --scrollbar-dot: #6D4C41;
+  --scrollbar-dot-muted: #D7CCC8;
+  --sidebar-bg: #D7CCC8;
+  --sidebar-foreground: #3E2723;
+  --footer-bg: #D7CCC8;
+  --scrollbar-track: #EFEBE9;
+}
+
+/* --- EFECTOS ESPECÍFICOS --- */
+.synthwave .retro-grid {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(to right, rgba(255, 113, 206, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 113, 206, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse at center, black, transparent 80%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dark .grain-overlay, .synthwave .grain-overlay {
+  display: block;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.hacker .event-card-wrapper:hover {
+  filter: drop-shadow(2px 0px 0px rgba(0, 255, 65, 0.3));
+  transition: filter 0.2s ease;
+}

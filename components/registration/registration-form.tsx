@@ -208,8 +208,8 @@ export function RegistrationForm({
             type="submit"
             disabled={isLoading || !turnstileToken}
             className={cn(
-              "w-full h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-primary/20",
-              (isLoading || !turnstileToken) && "opacity-70 cursor-not-allowed grayscale"
+              "w-full h-[44px] bg-form-btn-bg hover:opacity-90 text-form-btn-text font-bold rounded-xl text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-form-btn-bg/20",
+              (isLoading || !turnstileToken) && "opacity-40 cursor-not-allowed active:scale-100"
             )}
           >
             {isLoading ? (
@@ -230,7 +230,7 @@ export function RegistrationForm({
           <Turnstile
             sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
             onVerify={(token) => setTurnstileToken(token)}
-            theme={resolvedTheme === "dark" ? "dark" : "light"}
+            theme={(resolvedTheme === "light" || resolvedTheme === "coffee") ? "light" : "dark"}
           />
         </div>
       </div>
