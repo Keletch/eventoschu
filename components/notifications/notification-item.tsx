@@ -51,23 +51,23 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
           {formatRelativeTime(notification.created_at || (notification as any).metadata?.dispatched_at || new Date().toISOString())}
         </p>
       </div>
-      <div className="absolute right-2 top-4 flex flex-col gap-1">
+      <div className="absolute right-3 bottom-3 flex items-center gap-1">
         {!notification.read && (
           <button 
             onClick={() => onMarkAsRead(notification.id)}
-            className="p-1 text-slate-300 hover:text-sky-500 opacity-0 group-hover:opacity-100 transition-all"
+            className="p-1 text-emerald-500 hover:text-emerald-600 transition-all"
             title="Marcar como leído"
           >
-            <Check className="h-4 w-4" />
+            <Check className="h-3.5 w-3.5" />
           </button>
         )}
         {onDelete && (
           <button 
             onClick={() => onDelete(notification.id)}
-            className="p-1 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+            className="p-1 text-red-500 hover:text-red-600 transition-all"
             title="Eliminar notificación"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         )}
       </div>

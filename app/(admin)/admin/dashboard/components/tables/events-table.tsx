@@ -120,7 +120,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                         className="text-destructive hover:bg-destructive/10 rounded-xl cursor-pointer"
                         title="Eliminar"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4 text-red-500" />
                       </Button>
                     </div>
                   </TableCell>
