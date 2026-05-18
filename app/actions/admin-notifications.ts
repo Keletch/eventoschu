@@ -88,21 +88,35 @@ export async function notifyAdminRegistrationDeleted(adminEmail: string, targetE
   });
 }
 
-export async function notifyAdminEventPurged(adminEmail: string, eventTitle: string, affectedUsersCount: number) {
+export async function notifyAdminEventPurged(adminEmail: string, eventTitle: string, affectedUsersCount: number, removeKeapTags: boolean = true) {
+  const keapStatus = removeKeapTags 
+    ? "tags removidos de Keap y registros locales actualizados" 
+    : "solo limpieza local, historial conservado en Keap";
+    
   return insertAdminNotification({
     admin_email: adminEmail,
     title: "Evento Eliminado (Purga)",
-    message: `El administrador ${adminEmail} ha eliminado el evento "${eventTitle}".\n\nEsta acción afectó a ${affectedUsersCount} usuarios inscritos (tags removidos y registros actualizados).`,
+    message: `El administrador ${adminEmail} ha eliminado el evento "${eventTitle}".\n\nEsta acción afectó a ${affectedUsersCount} usuarios inscritos (${keapStatus}).`,
     type: "warning"
   });
 }
 
-export async function notifyAdminEventStatusChanged(adminEmail: string, event: any, isActivated: boolean) {
+export async function notifyAdminEventStatusChanged(adminEmail: string, event: any, isActivated: boolean, removeKeapTags: boolean = true) {
   const eventDetails = `\n• ${formatEventForNotification(event)}`;
+  
+  let syncMessage = "";
+  if (isActivated) {
+    syncMessage = "\n\nSe han restaurado los tags en Keap.";
+  } else {
+    syncMessage = removeKeapTags 
+      ? "\n\nSe han pausado las campañas y removido los tags en Keap."
+      : "\n\nLas automatizaciones en Keap continúan activas (tags conservados).";
+  }
+
   return insertAdminNotification({
     admin_email: adminEmail,
     title: `Evento ${isActivated ? 'Activado' : 'Desactivado'}`,
-    message: `El administrador ${adminEmail} ha ${isActivated ? 'activado' : 'desactivado'} el evento:${eventDetails}\n\nSe han sincronizado los tags en Keap.`,
+    message: `El administrador ${adminEmail} ha ${isActivated ? 'activado' : 'desactivado'} el evento:${eventDetails}${syncMessage}`,
     type: isActivated ? 'success' : 'warning'
   });
 }

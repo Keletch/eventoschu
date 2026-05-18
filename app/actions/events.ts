@@ -40,16 +40,26 @@ export interface Event {
  * 📅 Obtiene eventos con capa de caché inteligente en Redis
  */
 export async function getEvents() {
+  // Obtener la fecha de hoy en formato YYYY-MM-DD
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStr = today.toISOString().split('T')[0];
+
   try {
     // 1. Intentar desde Cache
     const cached = await redis.get(EVENTS_CACHE_KEY);
-    if (cached) return { success: true, data: cached as Event[], source: "cache" };
+    if (cached) {
+      // Filtrar también el caché por si hay eventos que caducaron mientras estaban en memoria
+      const validEvents = (cached as Event[]).filter(e => e.start_date >= todayStr);
+      return { success: true, data: validEvents, source: "cache" };
+    }
 
-    // 2. Si no hay cache, ir a Supabase
+    // 2. Si no hay cache, ir a Supabase (solo eventos futuros/de hoy)
     const { data, error } = await supabaseAdmin
       .from('events')
       .select('*, categories(name)')
       .eq('active', true)
+      .gte('start_date', todayStr)
       .order('start_date', { ascending: true });
 
     if (error) throw error;
@@ -69,6 +79,7 @@ export async function getEvents() {
         .from('events')
         .select('*, categories(name)')
         .eq('active', true)
+        .gte('start_date', todayStr)
         .order('start_date', { ascending: true });
       return { success: true, data: data as Event[], source: "fallback" };
     } catch (e) {

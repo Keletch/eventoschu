@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, AlertTriangle, RefreshCw, PowerOff } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface ToggleEventDialogProps {
   isOpen: boolean;
@@ -19,6 +21,8 @@ interface ToggleEventDialogProps {
   isActive: boolean;
   onConfirm: () => void;
   isSubmitting: boolean;
+  removeKeapTags?: boolean;
+  setRemoveKeapTags?: (val: boolean) => void;
 }
 
 export function ToggleEventDialog({
@@ -27,7 +31,9 @@ export function ToggleEventDialog({
   eventTitle,
   isActive,
   onConfirm,
-  isSubmitting
+  isSubmitting,
+  removeKeapTags = true,
+  setRemoveKeapTags
 }: ToggleEventDialogProps) {
   const isDeactivating = isActive; // Si estaba activo y lo tocamos, vamos a desactivar
 
@@ -47,10 +53,17 @@ export function ToggleEventDialog({
             {isDeactivating ? (
               <>
                 Al desactivar <span className="font-bold text-foreground">"{eventTitle}"</span>, 
-                se eliminarán automáticamente los tags de Keap de todos los usuarios inscritos. 
-                <br /><br />
-                <span className="text-amber-500 font-bold flex items-center justify-center gap-1 text-sm">
-                  <AlertTriangle className="w-4 h-4" /> Los registros se mantendrán en Supabase.
+                el evento se ocultará de la vista pública de inmediato.
+                
+                <span className="block mt-4 text-sm font-bold p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-600">
+                  {removeKeapTags 
+                    ? "Los usuarios serán desvinculados en Keap (pausando correos de este evento)." 
+                    : "Las automatizaciones en Keap seguirán activas para los usuarios inscritos."}
+                </span>
+                
+                <br />
+                <span className="text-muted-foreground flex items-center justify-center gap-1 text-xs">
+                  <AlertTriangle className="w-3 h-3" /> Los registros se mantendrán intactos en Supabase.
                 </span>
               </>
             ) : (
@@ -61,6 +74,24 @@ export function ToggleEventDialog({
               </>
             )}
           </DialogDescription>
+          
+          {isDeactivating && setRemoveKeapTags && (
+            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border mt-6">
+              <div className="space-y-0.5 text-left">
+                <Label htmlFor="remove-keap" className="font-bold text-sm cursor-pointer">
+                  Quitar Tags de Keap
+                </Label>
+                <p className="text-[11px] text-muted-foreground">
+                  Pausa correos relacionados con este evento en CRM.
+                </p>
+              </div>
+              <Switch 
+                id="remove-keap" 
+                checked={removeKeapTags} 
+                onCheckedChange={setRemoveKeapTags} 
+              />
+            </div>
+          )}
         </DialogHeader>
         <DialogFooter className="flex flex-col sm:flex-row gap-3 mt-8">
           <Button 

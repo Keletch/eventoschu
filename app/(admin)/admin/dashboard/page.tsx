@@ -53,7 +53,8 @@ export default function AdminDashboard() {
     handleEditEvent, handleEditReg, handleNewEvent, handleLogout, totalInscriptions,
     pendingCount, approvedCount, cancelledCount, filteredEvents,
     notifications, unreadCount, handleMarkAsRead,
-    handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData, resetRegsFilters
+    handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData, resetRegsFilters,
+    removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle, removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge
   } = useAdminDashboard();
 
   const [isActuallyReady, setIsActuallyReady] = React.useState(false);
@@ -607,6 +608,8 @@ export default function AdminDashboard() {
             registrationsCount={registrations.filter(r => r.selected_events?.includes(deletingEvent?.id)).length}
             onConfirm={handleConfirmEventPurge}
             isSubmitting={isSubmitting}
+            removeKeapTags={removeKeapTagsOnPurge}
+            setRemoveKeapTags={setRemoveKeapTagsOnPurge}
           />
 
           <ToggleEventDialog
@@ -616,6 +619,8 @@ export default function AdminDashboard() {
             isActive={togglingEvent?.active || false}
             onConfirm={handleConfirmToggleStatus}
             isSubmitting={isSubmitting}
+            removeKeapTags={removeKeapTagsOnToggle}
+            setRemoveKeapTags={setRemoveKeapTagsOnToggle}
           />
         </main>
       </TooltipProvider>

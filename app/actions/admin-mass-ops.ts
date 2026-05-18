@@ -28,8 +28,9 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
  * 🏷️ Sincronización Masiva de Tags (Activar/Desactivar Evento)
  * @param eventId ID del evento en Supabase
  * @param action 'activate' | 'deactivate'
+ * @param removeKeapTags Opcional. Si es false, no quita los tags en Keap al desactivar.
  */
-export async function syncMassTagsByEvent(eventId: string, action: 'activate' | 'deactivate') {
+export async function syncMassTagsByEvent(eventId: string, action: 'activate' | 'deactivate', removeKeapTags: boolean = true) {
   const { isAdmin } = await verifyAdminPermission();
   if (!isAdmin) return { success: false, error: "No tienes permisos" };
 
@@ -87,8 +88,8 @@ export async function syncMassTagsByEvent(eventId: string, action: 'activate' | 
             method: "POST",
             body: JSON.stringify({ tagIds: [parseInt(activeTag)] }),
           });
-        } else {
-          // Eliminar todos los tags relacionados con este evento
+        } else if (removeKeapTags) {
+          // Eliminar todos los tags relacionados con este evento, solo si se solicitó
           for (const tagId of tagIds) {
             await keapFetch(`contacts/${contactId}/tags/${tagId}`, { method: "DELETE" });
           }
@@ -185,8 +186,9 @@ export async function migrateEventTags(data: {
 
 /**
  * 🧹 Purga un evento en cascada (Limpia Keap, Registros y Caché)
+ * @param removeKeapTags Opcional. Si es false, conserva los tags en Keap como historial.
  */
-export async function purgeEvent(eventId: string) {
+export async function purgeEvent(eventId: string, removeKeapTags: boolean = true) {
   const { isAdmin } = await verifyAdminPermission();
   if (!isAdmin) return { success: false, error: "No tienes permisos" };
 
@@ -213,8 +215,8 @@ export async function purgeEvent(eventId: string) {
       
       // 3. Limpiar cada usuario (Keap y Supabase)
       for (const reg of registrations) {
-        // A. Quitar tags en Keap
-        if (tagsToRemove.length > 0) {
+        // A. Quitar tags en Keap (Solo si se solicitó)
+        if (removeKeapTags && tagsToRemove.length > 0) {
           try {
             await syncKeapTags(
               { email: reg.email, firstName: reg.first_name, lastName: reg.last_name },
@@ -253,7 +255,7 @@ export async function purgeEvent(eventId: string) {
     const supabase = await createSupabaseServer();
     const { data: { user } } = await supabase.auth.getUser();
     const adminEmail = user?.email || "un administrador";
-    await notifyAdminEventPurged(adminEmail, event.title, registrations?.length || 0);
+    await notifyAdminEventPurged(adminEmail, event.title, registrations?.length || 0, removeKeapTags);
 
     // 6. Limpiar Caché de Redis
     await clearEventsCache();

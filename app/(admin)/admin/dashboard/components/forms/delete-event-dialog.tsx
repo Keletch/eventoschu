@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertTriangle, Loader2, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface DeleteEventDialogProps {
   isOpen: boolean;
@@ -21,6 +23,8 @@ interface DeleteEventDialogProps {
   registrationsCount: number;
   onConfirm: () => Promise<void>;
   isSubmitting: boolean;
+  removeKeapTags?: boolean;
+  setRemoveKeapTags?: (val: boolean) => void;
 }
 
 export function DeleteEventDialog({
@@ -29,7 +33,9 @@ export function DeleteEventDialog({
   eventTitle,
   registrationsCount,
   onConfirm,
-  isSubmitting
+  isSubmitting,
+  removeKeapTags = false,
+  setRemoveKeapTags
 }: DeleteEventDialogProps) {
   const [confirmTitle, setConfirmTitle] = useState("");
 
@@ -51,11 +57,32 @@ export function DeleteEventDialog({
             ¿Eliminar evento y purgar inscritos?
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground font-medium leading-relaxed">
-            Esta es una operación masiva. Se eliminará el evento de la base de datos y se 
-            <span className="text-destructive font-bold"> limpiarán los tags de Keap </span> 
-            de todos los usuarios afectados.
+            Esta es una operación masiva. Se eliminará el evento de la base de datos de manera definitiva.
+            {removeKeapTags && (
+              <span className="block mt-2 text-destructive font-bold">
+                ¡Atención! También se limpiarán los tags de Keap de todos los usuarios afectados.
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
+
+        {setRemoveKeapTags && (
+          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border mx-8 mt-2">
+            <div className="space-y-0.5 text-left">
+              <Label htmlFor="purge-remove-keap" className="font-bold text-sm cursor-pointer">
+                Eliminar Historial en Keap
+              </Label>
+              <p className="text-[11px] text-muted-foreground">
+                Si activas esto, se borrarán los tags del evento en el CRM.
+              </p>
+            </div>
+            <Switch 
+              id="purge-remove-keap" 
+              checked={removeKeapTags} 
+              onCheckedChange={setRemoveKeapTags} 
+            />
+          </div>
+        )}
 
         <div className="py-6 space-y-6">
           <div className="bg-muted/50 rounded-2xl p-4 flex items-center justify-between border border-border">
@@ -65,7 +92,12 @@ export function DeleteEventDialog({
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">Impacto Estimado</p>
-                <p className="text-sm font-bold text-foreground">{registrationsCount} usuarios serán actualizados</p>
+                <p className="text-sm font-bold text-foreground">
+                  {registrationsCount} usuarios serán desvinculados
+                  <span className="block text-xs text-muted-foreground font-normal mt-0.5">
+                    {removeKeapTags ? "(En Base de Datos y Keap CRM)" : "(Solo limpieza local, sin afectar Keap)"}
+                  </span>
+                </p>
               </div>
             </div>
             <Badge variant="outline" className="bg-card border-border text-muted-foreground font-bold">

@@ -41,8 +41,11 @@ export function useAdminDashboard() {
     title: "", city: "", country: "", category_id: "", start_date: "",
     time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
     price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true,
-    initial_status: "confirmed"
   });
+  
+  // Toggles para acciones destructivas en Keap
+  const [removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle] = useState(true);
+  const [removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge] = useState(false); // Por defecto conservamos el historial al purgar
 
   // Notification Management
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -223,7 +226,7 @@ export function useAdminDashboard() {
     setIsSubmitting(true);
     try {
       const newStatus = !togglingEvent.active;
-      const syncResult = await syncMassTagsByEvent(togglingEvent.id, newStatus ? 'activate' : 'deactivate');
+      const syncResult = await syncMassTagsByEvent(togglingEvent.id, newStatus ? 'activate' : 'deactivate', removeKeapTagsOnToggle);
       if (!syncResult.success) throw new Error(syncResult.error);
 
       const { error } = await supabase.from("events").update({ active: newStatus }).eq("id", togglingEvent.id);
@@ -232,9 +235,15 @@ export function useAdminDashboard() {
       await clearEventsCache(); // Invalida caché de Redis
 
       const adminEmail = session?.user?.email || "Un administrador";
-      await notifyAdminEventStatusChanged(adminEmail, togglingEvent, newStatus);
+      await notifyAdminEventStatusChanged(adminEmail, togglingEvent, newStatus, removeKeapTagsOnToggle);
 
-      toast.success(`Evento ${newStatus ? 'activado' : 'desactivado'} y tags sincronizados`);
+      if (newStatus) {
+        toast.success(`Evento activado (tags en Keap restaurados)`);
+      } else {
+        toast.success(removeKeapTagsOnToggle 
+          ? `Evento desactivado (Keap pausado)` 
+          : `Evento desactivado (Keap continúa activo)`);
+      }
       setIsToggleDialogOpen(false);
       setTogglingEvent(null);
     } catch (error: any) {
@@ -253,10 +262,14 @@ export function useAdminDashboard() {
     if (!deletingEvent) return;
     setIsSubmitting(true);
     try {
-      const result = await purgeEvent(deletingEvent.id);
+      const result = await purgeEvent(deletingEvent.id, removeKeapTagsOnPurge);
       if (!result.success) throw new Error(result.error);
       await clearEventsCache();
-      toast.success("Evento y datos relacionados purgados");
+      
+      toast.success(removeKeapTagsOnPurge 
+        ? "Evento y datos relacionados purgados (BD y Keap)" 
+        : "Evento purgado (Limpieza Local, Keap intacto)");
+        
       setIsDeleteEventDialogOpen(false);
       setDeletingEvent(null);
     } catch (error: any) {
@@ -327,6 +340,8 @@ export function useAdminDashboard() {
     isToggleDialogOpen, setIsToggleDialogOpen, editingReg, setEditingReg, 
     purgingReg, setPurgingReg, deletingEvent, setDeletingEvent, togglingEvent,
     newEvent, setNewEvent, notifications, unreadCount, isNotifOpen, setIsNotifOpen,
+    removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle,
+    removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge,
 
     // Handlers
     fetchData, fetchTags, handleClearCache, handleCreateEvent, handleDeleteEvent, handleConfirmEventPurge,
