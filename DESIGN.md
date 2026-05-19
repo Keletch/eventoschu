@@ -4,17 +4,20 @@ Este documento detalla la identidad visual, paleta de colores, tipografía y arq
 
 ---
 
-## 1. 🖌️ Identidad Visual y Paleta de Colores
+## 1. 🖌️ Identidad Visual, Paleta de Colores y Tailwind CSS v4
 
-El sitio utiliza una estética minimalista, de alta luminosidad ("Clean UI"), con gran uso de espacios en blanco (Whitespace) y bordes extremadamente redondeados que simulan una interfaz móvil premium (estilo Apple/Fintech).
+El proyecto está diseñado bajo **Tailwind CSS v4**, lo que significa que no existe un archivo `tailwind.config.js` para pre-configurar clases estáticas. Toda la paleta y tokens de diseño se declaran directamente como variables CSS nativas en `globals.css` y se mapean usando la directiva `@theme inline`.
 
-### Colores Principales (Extraídos de `globals.css` y clases Tailwind)
-- **Primary Blue (`#3154DC`)**: Color principal de la marca. Usado en botones primarios, la barra de progreso de scroll, avatares de banderas, y elementos interactivos (hover states).
-- **Secondary Link Blue (`#007AFF`)**: Color clásico de "enlace iOS". Usado exclusivamente en textos con subrayado para acciones secundarias ("¿Ya te registraste?", "Inicia sesión para autocompletar").
-- **Brand Accent Green (`#04C259`)**: Color de éxito, declarado nativamente en V4 (`--color-brand-accent`). Posiblemente usado para estados de "Confirmado".
-- **Deep Black (`#00030C`)**: El negro principal para textos de alto contraste (Títulos, `h2`, textos fuertes). No es negro puro (`#000000`), tiene una pequeñísima saturación de azul.
-- **Background Gray (`#F5F6F9`)**: El color de fondo de la gran sección de eventos. Crea un contraste sutil y limpio contra las tarjetas de eventos que son blancas.
-- **Pure White (`#FFFFFF`)**: Usado en los contenedores flotantes, tarjetas de eventos (`EventCard`) y el bloque del formulario.
+El sitio utiliza una estética minimalista, de alta luminosidad ("Clean UI") para el portal público, y una arquitectura "Camaleónica" multi-tema para el panel administrativo.
+
+### Colores Clave Dinámicos (Resueltos por Variable del Tema)
+- **Primary / Brand Action (`var(--primary)`)**: El color principal del tema activo (ej: Azul `#3154DC` en Light, Verde `#00FF41` en Hacker, Púrpura `#bd00ff` en Synthwave). Usado en botones primarios, la barra de progreso, y elementos interactivos.
+- **Secondary (`var(--secondary)`)**: Color clásico de enlace o acento secundario (ej: Azul de enlace `#007AFF` en Light, Cyan `#01cdfe` en Synthwave). Usado en textos con subrayado para acciones secundarias ("¿Ya te registraste?", "Inicia sesión").
+- **Brand Accent Green (`#04C259`)**: Color de éxito estático (`--color-brand-accent` en v4). Usado de forma universal para estados de "Confirmado".
+- **Background (`var(--background)`)**: El lienzo principal del tema actual (ej: Blanco `#FFFFFF` en Light, Café oscuro `#1A1614` en Dark, Negro `#000500` en Hacker).
+- **Surface (`var(--surface)`)**: El color para bloques estructurales (Sidebar, Footer) que complementa al fondo.
+- **Card (`var(--card)`)**: Fondo para Event Cards y modales. Debe contrastar de forma natural con `--background` sin depender de sombras pesadas.
+- **Bordes (`var(--border)`)**: El color de delineación sutil para inputs y divisiones. Mapeado como `border-border` en Tailwind.
 
 ---
 
@@ -40,7 +43,7 @@ La plataforma ignora las esquinas afiladas. Todo el sistema geométrico se basa 
 - **Secciones Gigantes**: El bloque gris de los eventos tiene un radio asimétrico: `rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px]`. Esto crea un efecto de "tarjeta apilada" debajo de las pestañas de meses.
 - **Tarjetas y Formularios**: 
   - Tienen `rounded-[32px]`.
-  - Sombras elegantes e imperceptibles: `shadow-[0_8px_30px_rgb(0,0,0,0.04)]` para contenedores y `shadow-[0_20px_50px_rgba(0,0,0,0.05)]` para dar el efecto de que el formulario está "flotando".
+  - **Sombras Dinámicas Adaptativas**: En el tema Light se utilizan sombras elegantes e imperceptibles (`shadow-[0_8px_30px_rgb(0,0,0,0.04)]` para contenedores y `shadow-[0_20px_50px_rgba(0,0,0,0.05)]` para dar el efecto de flotación). En temas oscuros (`dark`, `synthwave`, `coffee`), las sombras se atenúan o desactivan, confiando en bordes sutiles (`border-border/50`) para delimitar profundidad. En el tema `hacker`, se reemplaza por un filtro fluorescente en hover (`filter: drop-shadow(2px_0px_0px_rgba(0,255,65,0.3))`).
 - **Botones y Badges**:
   - Botones principales: `rounded-2xl` (cuadrados curvos).
   - Badges (como el de "Lista de espera"): `rounded-full` (forma de píldora).
@@ -60,7 +63,13 @@ Encargadas de la *entrada inicial* (Entrance Animations) para evitar bloquear el
 ### Animaciones de Interacción (GSAP)
 Cargadas dinámicamente (`ssr: false`) para interacciones premium una vez que el sitio hidrató.
 - **Micro-Nudge (Carrusel)**: Al cargar, GSAP hace un pequeño tirón (`scrollLeft: 40` y luego de vuelta a `0`) para enseñarle inconscientemente al usuario de móvil que el carrusel es deslizable horizontalmente.
-- **Custom Scrollbar**: Puntos laterales que cambian de escala, color (`#3154DC` a `#818CF8`) y generan ondas de pulso reactivas a la velocidad de desplazamiento del ratón.
+- **Custom Scrollbar / DotScrollbar**: Componente de scrollbar unificado y elástico basado en puntos (dots) que reaccionan dinámicamente a la velocidad del scroll (aumentando la escala y el estiramiento vertical mediante transformaciones de GSAP).
+- **Loading Wave (Ola de Carga)**: Cuando el sitio carga o cambia de pestaña, el `DotScrollbar` ejecuta una ola de carga fluida de lado a lado a lo largo de la línea guía, construida sobre un timeline secuencial de `gsap.set()` para evitar lag y flicker en la CPU.
+- **Tokens de Scrollbar**: Su diseño visual está 100% tokenizado y es dinámico en base al tema activo:
+  - `--scrollbar-dot`: Color del dot activo.
+  - `--scrollbar-dot-muted`: Color de dots secundarios o inactivos.
+  - `--scrollbar-sidebar-dot`: Color de dots en el menú lateral.
+  - `--scrollbar-track`: Color del riel conductor.
 - **Word Rotator**: Mueve las palabras verticalmente en el título de forma infinita.
 
 ---
@@ -91,20 +100,20 @@ La página principal (`public-view.tsx`) es el epicentro visual. Se apila de arr
 
 ---
  
-## 6. 🏢 Diseño Administrativo Multi-Tema
- 
-El panel administrativo (`/admin/dashboard`) utiliza un enfoque **Camaleónico**. A diferencia del Home que tiene una estética mayoritariamente clara, el admin debe ser 100% funcional en temas `Light`, `Dark` y `Synthwave`.
- 
+## 6. 🏢 Diseño Administrativo Multi-Tema & Camaleónico
+
+El panel administrativo (`/admin/dashboard`) utiliza un enfoque **Camaleónico**. A diferencia del Home que tiene una estética predeterminada clara, el admin debe ser 100% funcional y visualmente premium en los 5 temas integrados: `Light`, `Dark`, `Synthwave`, `Hacker` y `Coffee`.
+
 ### Reglas de Oro para Componentes Administrativos:
-- **Prohibición de Colores Literales**: Está estrictamente prohibido usar clases como `bg-white`, `bg-gray-50` o `text-neutral-400`. Estos colores "rompen" la interfaz al cambiar a modo oscuro o Synthwave.
-- **Tokens Semánticos Requeridos**:
-  - Fondos de Contenedor: `bg-card` (se adapta al fondo del tema).
-  - Fondos Sutiles/Inputs: `bg-muted/50` o `bg-muted/30`.
+- **Prohibición Absoluta de Colores Literales**: Está estrictamente prohibido usar clases como `bg-white`, `bg-gray-50` o `text-neutral-400`. Estos colores estáticos "rompen" la interfaz al cambiar de tema, volviendo los textos ilegibles o los contenedores demasiado brillantes en modos oscuros.
+- **Uso Obligatorio de Tokens Semánticos**:
+  - Fondos de Contenedor: `bg-card` (se adapta al contenedor del tema activo).
+  - Fondos Sutiles/Inputs: `bg-muted` o `bg-muted/50` (opacidad controlada).
   - Bordes: `border-border` o `border-border/50`.
   - Texto Secundario: `text-muted-foreground`.
-  - Acentos de Marca: `text-primary` o `bg-primary`.
-- **Estados Dinámicos**: Los estados (ej. "Pendiente", "Confirmado") deben usar opacidades sobre colores base (`bg-amber-500/10 text-amber-500`) para garantizar que el texto siempre sea legible sobre el fondo del tema activo.
-- **Diálogos y Modales**: Deben usar `bg-card` y asegurar que el `DialogHeader` tenga un contraste suficiente mediante `bg-secondary` o gradientes suaves de marca.
- 
+  - Acentos de Marca: `text-primary` o `bg-primary` (toman el color de acción del tema activo).
+- **Estados Dinámicos y Contraste**: Los estados de registro (ej. "Pendiente", "Confirmado") deben usar opacidades sobre colores base (ej: `bg-amber-500/10 text-amber-500`) para garantizar que el texto tenga el contraste requerido sobre el fondo de cualquier tema (Light, Dark, Synthwave, Hacker o Coffee).
+- **Diálogos y Modales**: Deben usar `bg-card` para su fondo y asegurar que los encabezados o cierres tengan contraste mediante el uso de `bg-secondary` u opacidades controladas.
+
 ---
 *Nota: Este diseño sigue la filosofía "CSS para layout y primeras impresiones, JS para interactividad profunda", asegurando que el diseño parezca Premium sin perjudicar el Lighthouse Score.*

@@ -30,6 +30,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - No uses esquinas afiladas. Todo el diseño utiliza radios masivos (`rounded-[32px]`, `rounded-[48px]`, `rounded-full`).
 - No inventes colores. Usa el Primary Blue (`#3154DC`) para llamadas a la acción primarias y el Link Blue (`#007AFF`) para enlaces secundarios.
 - **Soporte Multi-Tema Obligatorio (Admin)**: En el panel administrativo, está estrictamente prohibido usar colores literales (ej: `bg-white`, `text-neutral-400`). Debes usar exclusivamente **Tokens Semánticos** de Shadcn/Tailwind (`bg-card`, `bg-muted`, `text-muted-foreground`, `border`) para que la interfaz sea "Camaleónica" y se adapte automáticamente a los temas Light, Dark y Synthwave.
+  - ✅ **Excepción — Colores de Estado Semántico Universal:** Los colores de semáforo para estados de registro (`bg-emerald-500` = Confirmado, `bg-amber-500` = Pendiente, `bg-destructive` = Cancelado) están exentos de tokenización. Son convenciones universales de UX que deben mantenerse constantes en todos los temas para garantizar accesibilidad y comprensión inmediata.
 
 ## 6. 🏗️ Arquitectura DRY y Domain-Driven Colocation
 
@@ -56,6 +57,16 @@ Este proyecto sigue el paradigma oficial de Next.js App Router llamado **Colocat
 ### Regla de Auditoría Obligatoria
 - Antes de modificar cualquier archivo, abre el archivo, léelo completo y ejecuta `grep_search` para entender su alcance. Si tienes dudas sobre si un cambio puede romper algo, **pregunta primero**.
 
+### 🔩 Componentes de Infraestructura Existentes (No Duplicar)
+Antes de crear cualquier componente de animación o UI de sistema, verifica que no existe uno ya:
+
+| Componente | Archivo | Cuándo usarlo |
+|---|---|---|
+| **DotScrollbar** | `components/ui/dot-scrollbar.tsx` | Cualquier scrollbar de puntos GSAP. Acepta props: `scrollTarget` (`"window"` o `ref`), `position` (`"fixed"` o `"absolute"`), `colorVar` (token CSS), `showLoadingWave` (boolean), `className`. **No crees uno nuevo desde cero.** |
+| **CustomScrollbar** | `components/ui/custom-scrollbar.tsx` | Thin wrapper de `DotScrollbar` para el scrollbar global de página (fixed, con ola de carga). |
+| **SidebarScrollbar** | `components/ui/sidebar-scrollbar.tsx` | Thin wrapper de `DotScrollbar` para el scrollbar del sidemenu (absolute, sin ola de carga). |
+| **animateCardsTransition** | `app/(public)/home-client.tsx` | Orquestador GSAP de transiciones de Event Cards. Recibe `(stateUpdater: () => void, animateMonths: boolean)`. Úsalo para cualquier cambio de filtro (categoría, mes, subcategoría) — no escribas lógica GSAP duplicada. |
+
 ## 7. 🔩 Principios SOLID (Adaptados a React / Next.js)
 
 SOLID no es teoría de Java. Aquí está traducido a decisiones reales de este proyecto:
@@ -72,14 +83,17 @@ SOLID no es teoría de Java. Aquí está traducido a decisiones reales de este p
 
 ### I — Interface Segregation (No fuerces props innecesarias)
 - Si un componente recibe más de **6-7 props**, es una señal de alerta. Probablemente está haciendo demasiado o necesita ser dividido.
-- **Prohibido el Prop Drilling**: si necesitas pasar un dato por 3+ niveles de componentes, usa un hook de contexto o eleva la lógica a un Server Component.
+- **Prohibido el Prop Drilling** de estado de UI: si necesitas pasar un dato de UI por 3+ niveles de componentes, usa un hook de contexto o eleva la lógica a un Server Component.
+  - ✅ **Excepción válida:** pasar funciones utilitarias (ej: `formatSafeDate`) como prop está permitido cuando es **Dependency Injection intencional** (ver sección D).
 - Ejemplo correcto: `EventCard` recibe `title`, `date`, `city` — datos simples y directos. Ejemplo incorrecto: pasarle el objeto `event` completo y que el componente lo desestructure internamente (eso rompe el encapsulamiento).
 
 ### D — Dependency Inversion (Depende de abstracciones, no implementaciones)
 - Los componentes no deben importar `supabase` directamente. Toda interacción con BD pasa por **Server Actions** en `app/actions/`.
-- Los componentes no formatean fechas con `new Date()` directo. Usan `formatSafeDate()` de `lib/date-utils.ts`.
+- Los componentes no formatean fechas con `new Date()` **para mostrarlas al usuario**. Usan `formatSafeDate()` de `lib/date-utils.ts`.
+  - ✅ **Excepción válida:** `new Date()` está permitido para **lógica interna de agrupación o filtrado** (ej: clasificar eventos por mes). No es display, es matemática.
 - Los componentes no leen datos crudos de eventos. Usan `transformEventForUI()` de `lib/event-transformers.ts`.
 - **La regla**: si una implementación de tercero cambia (Supabase → otra BD, Clerk → otro auth), solo debes cambiar el archivo de `lib/` o `actions/`, nunca tocar los componentes.
+- ✅ **Dependency Injection via props es válida:** pasar funciones como `formatSafeDate` como prop (en lugar de importarlas directamente) es un patrón correcto cuando el componente necesita ser testeable o cuando el consumidor quiere invertir la dependencia. No confundas esto con prop drilling innecesario.
 
 ## 8. 📚 Consulta Obligatoria de Skills Antes de Implementar
 

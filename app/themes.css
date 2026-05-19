@@ -72,6 +72,7 @@
   --accent-foreground: #E6E2D3;
   --scrollbar-dot: #E6E2D3;
   --scrollbar-dot-muted: rgba(230, 226, 211, 0.2);
+  --scrollbar-sidebar-dot: #E6E2D3;
   --sidebar-bg: #1A1614;
   --sidebar-foreground: #E6E2D3;
   --footer-bg: #151210;
@@ -150,6 +151,7 @@
   --accent-foreground: #0d0221;
   --scrollbar-dot: #bd00ff;
   --scrollbar-dot-muted: rgba(189, 0, 255, 0.2);
+  --scrollbar-sidebar-dot: #ff71ce;
   --sidebar-bg: #0d0221;
   --sidebar-foreground: #fffaff;
   --footer-bg: #13062d;
@@ -228,6 +230,7 @@
   --accent-foreground: #00FF41;
   --scrollbar-dot: #00FF41;
   --scrollbar-dot-muted: rgba(0, 255, 65, 0.2);
+  --scrollbar-sidebar-dot: #00FF41;
   --sidebar-bg: #000500;
   --sidebar-foreground: #00FF41;
   --footer-bg: #020802;
@@ -306,6 +309,7 @@
   --accent-foreground: #FDF8F5;
   --scrollbar-dot: #6D4C41;
   --scrollbar-dot-muted: #D7CCC8;
+  --scrollbar-sidebar-dot: #3E2723;
   --sidebar-bg: #D7CCC8;
   --sidebar-foreground: #3E2723;
   --footer-bg: #D7CCC8;

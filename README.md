@@ -10,7 +10,8 @@ La aplicación sigue una arquitectura moderna basada en **Next.js 15+ (App Route
 - **Lógica de Negocio (Server Actions)**: Procesamiento centralizado en el servidor para registros, gestión de estados, operaciones masivas y notificaciones, garantizando que la lógica sensible nunca se exponga al cliente.
 - **Gestión de Estado (Hooks Especializados)**: Hooks personalizados (`useHomeLogic`, `useAdminDashboard`) que encapsulan la complejidad del estado local, persistencia y sincronización en tiempo real.
 - **Componentes Modulares**: UI desacoplada y reutilizable (Estadísticas, Tablas, Selectores de búsqueda, Diálogos) construida con **Shadcn UI** y **Tailwind CSS**.
-- **Motor de Animaciones (GSAP)**: Implementación de coreografías visuales avanzadas y micro-interacciones que elevan la percepción de marca.
+- **Motor de Animaciones (GSAP)**: Coreografías visuales de alto rendimiento. Incluye el componente unificado **`DotScrollbar`** (con elasticidad interactiva por velocidad y efectos de "Loading Wave" optimizados para evitar jank en la CPU) y el orquestador centralizado **`animateCardsTransition`** para filtros fluidos en la UI.
+- **Seguridad Antifraude**: Integración con **Cloudflare Turnstile** en los formularios de registro para mitigar ataques de bots de manera no intrusiva.
 
 ## 🔐 Estrategia de Identidad Dual
 
@@ -38,7 +39,7 @@ El sistema implementa una separación clara de responsabilidades para maximizar 
 - **Métricas en Tiempo Real**: Dashboards visuales con contadores live de inscripciones y estados.
 - **Operaciones de Limpieza**: Herramientas para la eliminación segura de registros y purga de eventos, incluyendo la limpieza automática de tags en el CRM.
 - **Búsqueda Avanzada**: Sistema de filtrado inteligente que permite localizar usuarios y eventos por múltiples criterios (contenido, fecha, estado, categoría).
-- **Interfaz Camaleónica (Multi-Tema)**: El dashboard soporta nativamente múltiples temas visuales (Light, Dark, Synthwave) manteniendo una consistencia premium y accesibilidad en cualquier entorno de iluminación.
+- **Interfaz Camaleónica (Multi-Tema)**: El dashboard soporta nativamente múltiples temas visuales (**Light, Dark, Synthwave, Hacker y Coffee**) utilizando tokens de diseño semánticos y CSS variables que garantizan una experiencia de usuario premium, consistente y accesible en cualquier entorno de iluminación.
 
 ---
 **Desarrollado por Keletch (2026)**  

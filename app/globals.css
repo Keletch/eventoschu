@@ -69,6 +69,7 @@
 
   --color-scrollbar-dot: var(--scrollbar-dot);
   --color-scrollbar-dot-muted: var(--scrollbar-dot-muted);
+  --color-scrollbar-sidebar-dot: var(--scrollbar-sidebar-dot);
   --color-scrollbar-track: var(--scrollbar-track);
 
   --color-popover: var(--popover);
@@ -158,6 +159,7 @@
   --social-hover-color: #ffffff;
   --scrollbar-dot: #3154DC;
   --scrollbar-dot-muted: #818CF8;
+  --scrollbar-sidebar-dot: #FFFFFF;
   --scrollbar-track: rgba(0, 0, 0, 0.05);
 
   /* Global Fallbacks */

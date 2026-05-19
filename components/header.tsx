@@ -66,7 +66,7 @@ export function Header({
   }, { scope: headerRef });
 
   return (
-    <header ref={headerRef} className="fixed top-0 left-0 right-0 h-20 bg-background/80 backdrop-blur-md border-b border-border flex items-center justify-center px-4 md:px-8 z-[60]">
+    <header ref={headerRef} className="fixed top-0 left-0 right-0 h-20 bg-background/80 backdrop-blur-md border-b border-border flex items-center justify-center px-4 md:px-8 z-[100]">
       <div className="w-full max-w-[1512px] flex items-center justify-between">
         
         {/* 1. Izquierda: Hamburguesa + Logo */}

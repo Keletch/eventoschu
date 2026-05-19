@@ -140,82 +140,71 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     });
   });
 
-  const handleMonthChange = contextSafe((month: string) => {
-    if (month !== home.activeMonth && !home.isTransitioning) {
-      home.setIsTransitioning(true);
-      
-      const isMobile = window.innerWidth < 768;
-      const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
-      
-      gsap.to(ANIM_SELECTORS.card, { 
-        opacity: 0, 
-        x: -xOffset, 
-        duration: ANIM_CONFIG.duration.normal, 
-        stagger: ANIM_CONFIG.offset.stagger,
-        ease: ANIM_CONFIG.ease.in,
-        onComplete: () => {
-          home.setActiveMonth(month);
-          if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollLeft = 0;
-            gsap.set('.scroll-progress-fill', { width: '0%' });
-          }
+  // 🛠️ Orquestador Maestro de Transiciones (DRY)
+  const animateCardsTransition = contextSafe((stateUpdater: () => void, animateMonths: boolean = false) => {
+    if (home.isTransitioning) return;
+    home.setIsTransitioning(true);
+    
+    const isMobile = window.innerWidth < 768;
+    const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
+    
+    const tl = gsap.timeline({
+      onComplete: () => {
+        // 1. Aplicamos el cambio de estado (React re-renderiza)
+        stateUpdater();
+        
+        // 2. Reseteamos la barra de scroll al inicio
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollLeft = 0;
+          gsap.set('.scroll-progress-fill', { width: '0%' });
+        }
+        
+        // 3. Animación de Entrada
+        setTimeout(() => {
+          gsap.fromTo(ANIM_SELECTORS.card, 
+            { opacity: 0, x: xOffset }, 
+            { 
+              opacity: 1, 
+              x: 0, 
+              duration: ANIM_CONFIG.duration.normal, 
+              stagger: ANIM_CONFIG.offset.stagger,
+              ease: ANIM_CONFIG.ease.out,
+              onComplete: () => home.setIsTransitioning(false)
+            }
+          );
           
-          setTimeout(() => {
-            gsap.fromTo(ANIM_SELECTORS.card, 
-              { opacity: 0, x: xOffset }, 
-              { 
-                opacity: 1, 
-                x: 0, 
-                duration: ANIM_CONFIG.duration.normal, 
-                stagger: ANIM_CONFIG.offset.stagger,
-                ease: ANIM_CONFIG.ease.out,
-                onComplete: () => home.setIsTransitioning(false)
-              }
-            );
-          }, 50);
-        }
-      });
-    }
-  });
-
-  const handleCategoryChange = contextSafe((category: string) => {
-    if (category !== home.activeCategory && !home.isTransitioning) {
-      home.setIsTransitioning(true);
-      
-      const tl = gsap.timeline({
-        onComplete: () => {
-          home.setActiveCategory(category);
-          setTimeout(() => {
-            const isMobile = window.innerWidth < 768;
-            const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
-
-            gsap.fromTo(ANIM_SELECTORS.card, 
-              { opacity: 0, x: xOffset }, 
-              { opacity: 1, x: 0, duration: ANIM_CONFIG.duration.normal, stagger: ANIM_CONFIG.offset.stagger }
-            );
+          if (animateMonths) {
             gsap.to(ANIM_SELECTORS.monthTab, { opacity: 1, duration: ANIM_CONFIG.duration.normal });
-            home.setIsTransitioning(false);
-          }, 50);
-        }
-      });
+          }
+        }, 50);
+      }
+    });
 
-      const isMobile = window.innerWidth < 768;
-      const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
+    // Animación de Salida
+    tl.to(ANIM_SELECTORS.card, { 
+      opacity: 0, 
+      x: -xOffset, 
+      duration: ANIM_CONFIG.duration.normal, 
+      stagger: ANIM_CONFIG.offset.stagger,
+      ease: ANIM_CONFIG.ease.in
+    }, 0);
 
-      tl.to(ANIM_SELECTORS.card, { 
-        opacity: 0, 
-        x: -xOffset, 
-        duration: ANIM_CONFIG.duration.fast, 
-        ease: ANIM_CONFIG.ease.in
-      }, 0);
-
-      tl.to(ANIM_SELECTORS.monthTab, { 
-        opacity: 0,
-        duration: ANIM_CONFIG.duration.fast, 
-        ease: "none"
-      }, 0);
+    if (animateMonths) {
+      tl.to(ANIM_SELECTORS.monthTab, { opacity: 0, duration: ANIM_CONFIG.duration.fast, ease: "none" }, 0);
     }
   });
+
+  const handleMonthChange = (month: string) => {
+    if (month !== home.activeMonth) animateCardsTransition(() => home.setActiveMonth(month), false);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    if (category !== home.activeCategory) animateCardsTransition(() => home.setActiveCategory(category), true);
+  };
+
+  const handleSubcategoryChange = (sub: string) => {
+    if (sub !== home.activeSubcategory) animateCardsTransition(() => home.setActiveSubcategory(sub), false);
+  };
 
   const handleScroll = contextSafe((e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
@@ -281,7 +270,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     availableCategories={home.availableCategories}
                     availableCategoryIcons={home.availableCategoryIcons}
                     activeSubcategory={home.activeSubcategory}
-                    setActiveSubcategory={home.setActiveSubcategory}
+                    setActiveSubcategory={handleSubcategoryChange}
                     availableSubcategories={home.availableSubcategories}
                     selectedEvents={home.selectedEvents}
                     handleSelectEvent={(id) => home.setSelectedEvents(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id])}
