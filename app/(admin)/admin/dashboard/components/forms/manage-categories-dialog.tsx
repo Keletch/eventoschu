@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { createCategory, deleteCategory } from "@/app/actions/admin-categories";
-import { Loader2, Plus, Trash2, FolderTree, Calendar, Laptop, MapPin, Users, Video, Globe, BookOpen, Presentation, Coffee, Building, Mic, Music, Camera, Zap, Award, NotebookPen, Monitor } from "lucide-react";
+import { createCategory, deleteCategory, updateCategory } from "@/app/actions/admin-categories";
+import { Loader2, Plus, Trash2, Edit, FolderTree, Calendar, Laptop, MapPin, Users, Video, Globe, BookOpen, Presentation, Coffee, Building, Mic, Music, Camera, Zap, Award, NotebookPen, Monitor } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const AVAILABLE_ICONS = [
@@ -43,11 +43,26 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
   const [name, setName] = useState("");
   const [parentId, setParentId] = useState<string>("none");
   const [icon, setIcon] = useState<string>("Calendar");
+  const [editingCategory, setEditingCategory] = useState<any | null>(null);
 
   // Filtrar solo las categorías principales para ser padres
   const parentCategories = categories.filter(c => !c.parent_category_id);
 
-  const handleCreate = async () => {
+  const handleEditClick = (category: any) => {
+    setEditingCategory(category);
+    setName(category.name);
+    setParentId(category.parent_category_id || "none");
+    setIcon(category.icon || "Calendar");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCategory(null);
+    setName("");
+    setParentId("none");
+    setIcon("Calendar");
+  };
+
+  const handleSubmit = async () => {
     if (!name.trim()) {
       toast.error("El nombre de la categoría es requerido.");
       return;
@@ -57,19 +72,32 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
     try {
       const parent = parentId === "none" ? null : parentId;
       const selectedIcon = parentId === "none" ? icon : null;
-      const result = await createCategory(name, parent, selectedIcon);
-      
-      if (result.success) {
-        toast.success("Categoría creada con éxito.");
-        setName("");
-        setParentId("none");
-        setIcon("Calendar");
-        if (onCategoryAdded) onCategoryAdded();
+
+      if (editingCategory) {
+        const result = await updateCategory(editingCategory.id, name, parent, selectedIcon);
+        
+        if (result.success) {
+          toast.success("Categoría actualizada con éxito.");
+          handleCancelEdit();
+          if (onCategoryAdded) onCategoryAdded();
+        } else {
+          toast.error(result.error || "Error al actualizar la categoría.");
+        }
       } else {
-        toast.error(result.error || "Error al crear la categoría.");
+        const result = await createCategory(name, parent, selectedIcon);
+        
+        if (result.success) {
+          toast.success("Categoría creada con éxito.");
+          setName("");
+          setParentId("none");
+          setIcon("Calendar");
+          if (onCategoryAdded) onCategoryAdded();
+        } else {
+          toast.error(result.error || "Error al crear la categoría.");
+        }
       }
     } catch (error) {
-      toast.error("Error inesperado al crear.");
+      toast.error("Error inesperado al procesar.");
     } finally {
       setIsSubmitting(false);
     }
@@ -113,9 +141,11 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
           </DialogHeader>
 
           <div className="space-y-8">
-            {/* Formulario de creación */}
+            {/* Formulario de creación/edición */}
             <div className="bg-muted/30 border border-border p-6 rounded-2xl space-y-4">
-              <h3 className="font-bold text-foreground">Crear nueva categoría</h3>
+              <h3 className="font-bold text-foreground">
+                {editingCategory ? "Editar categoría" : "Crear nueva categoría"}
+              </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -129,20 +159,22 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="text-xs font-black uppercase text-muted-foreground">Categoría Padre (Opcional)</Label>
+                  <Label className="text-xs font-black uppercase text-muted-foreground">Categoría Padre</Label>
                   <Select value={parentId} onValueChange={(val) => setParentId(val || "none")}>
                     <SelectTrigger className="h-12 rounded-xl bg-background border-border truncate pr-2">
-                      <SelectValue placeholder="Ninguna (Categoría Principal)">
+                      <SelectValue placeholder="Ninguna">
                         {parentId === "none" 
-                          ? "Ninguna (Categoría Principal)" 
+                          ? "Ninguna" 
                           : parentCategories.find(c => c.id === parentId)?.name || parentId}
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-border bg-popover">
-                      <SelectItem value="none" className="font-bold">Ninguna (Categoría Principal)</SelectItem>
-                      {parentCategories.map(cat => (
-                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                      ))}
+                      <SelectItem value="none" className="font-bold">Ninguna</SelectItem>
+                      {parentCategories
+                        .filter(cat => !editingCategory || cat.id !== editingCategory.id)
+                        .map(cat => (
+                          <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -177,14 +209,35 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
                 </div>
               )}
 
-              <Button 
-                onClick={handleCreate} 
-                disabled={isSubmitting || !name.trim()}
-                className="w-full h-12 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {isSubmitting ? <Loader2 className="size-5 animate-spin mr-2" /> : <Plus className="size-5 mr-2" />}
-                Crear Categoría
-              </Button>
+              {editingCategory ? (
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={handleSubmit} 
+                    disabled={isSubmitting || !name.trim()}
+                    className="flex-1 h-12 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                  >
+                    {isSubmitting ? <Loader2 className="size-5 animate-spin mr-2" /> : <Edit className="size-5 mr-2" />}
+                    Guardar Cambios
+                  </Button>
+                  <Button 
+                    onClick={handleCancelEdit} 
+                    variant="outline"
+                    disabled={isSubmitting}
+                    className="h-12 px-6 rounded-xl font-bold border-border text-foreground hover:bg-muted cursor-pointer"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  onClick={handleSubmit} 
+                  disabled={isSubmitting || !name.trim()}
+                  className="w-full h-12 rounded-xl font-bold bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                >
+                  {isSubmitting ? <Loader2 className="size-5 animate-spin mr-2" /> : <Plus className="size-5 mr-2" />}
+                  Crear Categoría
+                </Button>
+              )}
             </div>
 
             {/* Lista actual */}
@@ -206,15 +259,28 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
                           </div>
                           <span className="font-bold text-foreground">{parent.name}</span>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          onClick={() => handleDelete(parent.id)}
-                          disabled={isSubmitting}
-                          className="text-destructive hover:bg-destructive/10 rounded-xl cursor-pointer size-8"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-500" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => handleEditClick(parent)}
+                            disabled={isSubmitting}
+                            className="text-primary hover:bg-primary/10 rounded-xl cursor-pointer size-8"
+                            title="Editar"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => handleDelete(parent.id)}
+                            disabled={isSubmitting}
+                            className="text-destructive hover:bg-destructive/10 rounded-xl cursor-pointer size-8"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
                       </div>
                       
                       {children.length > 0 && (
@@ -222,15 +288,28 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
                           {children.map(child => (
                             <div key={child.id} className="flex items-center justify-between bg-background border border-border/50 rounded-lg p-2 px-3">
                               <span className="text-sm font-medium text-muted-foreground">{child.name}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="icon"
-                                onClick={() => handleDelete(child.id)}
-                                disabled={isSubmitting}
-                                className="text-destructive hover:bg-destructive/10 rounded-xl cursor-pointer size-6"
-                              >
-                                <Trash2 className="w-3 h-3 text-red-500" />
-                              </Button>
+                              <div className="flex items-center gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => handleEditClick(child)}
+                                  disabled={isSubmitting}
+                                  className="text-primary hover:bg-primary/10 rounded-xl cursor-pointer size-6"
+                                  title="Editar"
+                                >
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => handleDelete(child.id)}
+                                  disabled={isSubmitting}
+                                  className="text-destructive hover:bg-destructive/10 rounded-xl cursor-pointer size-6"
+                                  title="Eliminar"
+                                >
+                                  <Trash2 className="w-3 h-3 text-red-500" />
+                                </Button>
+                              </div>
                             </div>
                           ))}
                         </div>

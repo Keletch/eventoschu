@@ -67,8 +67,22 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
               <TableRow key={reg.id} className="group border-border hover:bg-muted/30 transition-colors table-row-anim">
                 <TableCell className="pl-6 py-4">
                   <div className="flex flex-col space-y-1">
-                    <span className="font-bold text-foreground text-[15px]">
-                      {reg.first_name ? `${reg.first_name} ${reg.last_name || ''}` : ((Object.values(reg.event_data || {}) as any[]).find((d: any) => d.first_name)?.first_name || 'Sin nombre')}
+                    <span className="font-bold text-foreground text-[15px] flex items-center gap-2">
+                      <span>
+                        {reg.first_name ? `${reg.first_name} ${reg.last_name || ''}` : ((Object.values(reg.event_data || {}) as any[]).find((d: any) => d.first_name)?.first_name || 'Sin nombre')}
+                      </span>
+                      {reg.clerk_id && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <CheckCircle2 className="w-4 h-4 text-emerald-500 fill-emerald-500/10 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-card border border-border shadow-xl rounded-xl z-[100] p-2 text-xs text-foreground">
+                              Registrado en Clerk
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                     </span>
                     <div className="flex flex-col gap-0.5 mt-1">
                       <div className="text-xs font-medium text-primary flex items-center gap-1.5"><Mail className="w-3 h-3 text-muted-foreground/60" /> {reg.email}</div>

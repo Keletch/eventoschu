@@ -40,6 +40,7 @@ export default function AdminDashboard() {
     regsLoyaltyFilter, setRegsLoyaltyFilter,
     regsSurveyCompleteFilter, setRegsSurveyCompleteFilter,
     regsTodayFilter, setRegsTodayFilter,
+    regsClerkFilter, setRegsClerkFilter,
     currentPage, setCurrentPage, pageSize, setPageSize, totalPages, paginatedRegs, filteredRegs,
     isDialogOpen, setIsDialogOpen,
     isRegDialogOpen, setIsRegDialogOpen, isPurgeDialogOpen, setIsPurgeDialogOpen,
@@ -427,12 +428,28 @@ export default function AdminDashboard() {
                     triggerClassName="w-44"
                   />
                 </div>
-                <div className="absolute -bottom-7 right-6">
+                <div className="absolute -bottom-7 right-6 flex items-center gap-3">
+                  <button
+                    onClick={() => setRegsClerkFilter(prev => prev === "registered" ? "all" : "registered")}
+                    className={cn(
+                      "h-6 px-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all gap-1 flex items-center border cursor-pointer select-none",
+                      regsClerkFilter === "registered"
+                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 shadow-sm"
+                        : "text-muted-foreground/60 hover:text-muted-foreground border-transparent bg-transparent"
+                    )}
+                    title="Filtrar solo usuarios registrados en Clerk"
+                  >
+                    <CheckCircle2 className={cn("w-3.5 h-3.5", regsClerkFilter === "registered" ? "text-emerald-500" : "text-muted-foreground/40")} />
+                    <span>Solo Clerk</span>
+                  </button>
+
+                  <div className="w-px h-3 bg-border" />
+
                   <Button 
                     variant="ghost" 
                     size="sm"
                     onClick={resetRegsFilters}
-                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-red-500 transition-all gap-1.5"
+                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-red-500 transition-all gap-1.5 cursor-pointer"
                     title="Limpiar todos los filtros"
                   >
                     <RefreshCw className="w-3 h-3" />
@@ -475,6 +492,19 @@ export default function AdminDashboard() {
                     <button 
                       onClick={() => setRegsSurveyCompleteFilter("all")}
                       className="p-1 hover:bg-indigo-500/20 rounded-lg transition-colors text-indigo-500"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                )}
+
+                {regsClerkFilter !== "all" && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Clerk:</span>
+                    <span className="text-sm font-bold text-primary">{regsClerkFilter === "registered" ? "Registrado" : "No Registrado"}</span>
+                    <button 
+                      onClick={() => setRegsClerkFilter("all")}
+                      className="p-1 hover:bg-primary/20 rounded-lg transition-colors text-primary text-primary"
                     >
                       <X className="size-4" />
                     </button>

@@ -16,6 +16,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
   const [regsLoyaltyFilter, setRegsLoyaltyFilter] = useState(false);
   const [regsSurveyCompleteFilter, setRegsSurveyCompleteFilter] = useState("all");
   const [regsTodayFilter, setRegsTodayFilter] = useState(false);
+  const [regsClerkFilter, setRegsClerkFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
@@ -50,9 +51,11 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
 
       const matchesLoyalty = !regsLoyaltyFilter || ((reg.selected_events?.length || 0) > 1);
       const matchesSurveyComplete = regsSurveyCompleteFilter === "all" || 
-                                   (regsSurveyCompleteFilter === "completed" ? (reg.survey_data && Object.keys(reg.survey_data).length > 0) : (!reg.survey_data || Object.keys(reg.survey_data).length === 0));
+                                    (regsSurveyCompleteFilter === "completed" ? (reg.survey_data && Object.keys(reg.survey_data).length > 0) : (!reg.survey_data || Object.keys(reg.survey_data).length === 0));
       const today = new Date().toISOString().split('T')[0];
       const matchesToday = !regsTodayFilter || reg.created_at?.startsWith(today);
+      const matchesClerk = regsClerkFilter === "all" || 
+                           (regsClerkFilter === "registered" ? !!reg.clerk_id : !reg.clerk_id);
 
       // Category filter is more complex as it depends on events linked to registration
       let matchesCat = true;
@@ -60,14 +63,14 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
         // Implement complex cat logic if needed
       }
 
-      return matchesSearch && matchesEvent && matchesStatus && matchesCat && matchesCountry && matchesSurvey && matchesLoyalty && matchesSurveyComplete && matchesToday;
+      return matchesSearch && matchesEvent && matchesStatus && matchesCat && matchesCountry && matchesSurvey && matchesLoyalty && matchesSurveyComplete && matchesToday && matchesClerk;
     });
-  }, [registrations, regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter]);
+  }, [registrations, regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsClerkFilter]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter]);
+  }, [regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsClerkFilter]);
 
   const totalPages = Math.ceil(filteredRegs.length / pageSize);
   const paginatedRegs = useMemo(() => {
@@ -88,6 +91,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
     regsLoyaltyFilter, setRegsLoyaltyFilter,
     regsSurveyCompleteFilter, setRegsSurveyCompleteFilter,
     regsTodayFilter, setRegsTodayFilter,
+    regsClerkFilter, setRegsClerkFilter,
     currentPage, setCurrentPage,
     pageSize, setPageSize,
     totalPages,
@@ -104,6 +108,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
       setRegsLoyaltyFilter(false);
       setRegsSurveyCompleteFilter("all");
       setRegsTodayFilter(false);
+      setRegsClerkFilter("all");
       setCurrentPage(1);
     }
   };
