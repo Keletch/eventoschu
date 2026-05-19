@@ -169,13 +169,13 @@ export function DotScrollbar({
   });
 
   const positionClass = position === "fixed"
-    ? "fixed right-1 inset-y-0 h-screen py-8"
+    ? "fixed right-1 top-0 bottom-0 h-[100dvh] py-4"
     : "absolute right-1 top-2 bottom-2";
 
   return (
     <div
       ref={containerRef}
-      className={`${positionClass} w-6 pointer-events-none flex items-center justify-end opacity-0 ${className}`}
+      className={`${positionClass} w-6 pointer-events-none opacity-0 ${className}`}
     >
       <div className="flex flex-col h-full justify-between items-end pr-1">
         {dotArray.map((_, i) => (
