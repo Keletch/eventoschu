@@ -279,6 +279,10 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     activeCategory={home.activeCategory}
                     setActiveCategory={handleCategoryChange}
                     availableCategories={home.availableCategories}
+                    availableCategoryIcons={home.availableCategoryIcons}
+                    activeSubcategory={home.activeSubcategory}
+                    setActiveSubcategory={home.setActiveSubcategory}
+                    availableSubcategories={home.availableSubcategories}
                     selectedEvents={home.selectedEvents}
                     handleSelectEvent={(id) => home.setSelectedEvents(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id])}
                     isLoadingEvents={home.isLoadingEvents}

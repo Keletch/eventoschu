@@ -25,6 +25,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
   const [isLoadingEvents, setIsLoadingEvents] = useState(initialEvents.length === 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
+  const [activeSubcategory, setActiveSubcategory] = useState<string>("Todos");
   const [activeMonth, setActiveMonth] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPageReady, setIsPageReady] = useState(false);
@@ -74,15 +75,66 @@ export function useHomeLogic(initialEvents: any[] = []) {
   const availableCategories = useMemo(() => {
     // Solo consideramos categorías de eventos que estén ACTIVOS
     const activeEvents = events.filter(e => e.active !== false);
-    const cats = activeEvents.map(e => e.categories?.name).filter(Boolean);
+    const cats = activeEvents.map(e => {
+      // Si tiene parent, el category principal es el parent. Si no, es la categoría misma.
+      return e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
+    }).filter(Boolean);
     return ["Todos", ...Array.from(new Set(cats))];
   }, [events]);
 
+  const availableCategoryIcons = useMemo(() => {
+    const icons: Record<string, string> = { "Todos": "Calendar" };
+    events.filter(e => e.active !== false).forEach(e => {
+      const parentName = e.categories?.parent_category?.name;
+      const parentIcon = e.categories?.parent_category?.icon;
+      const selfName = e.categories?.name;
+      const selfIcon = e.categories?.icon;
+
+      if (parentName && parentIcon) icons[parentName] = parentIcon;
+      if (selfName && selfIcon) icons[selfName] = selfIcon;
+    });
+    return icons;
+  }, [events]);
+
+  const availableSubcategories = useMemo(() => {
+    if (activeCategory === "Todos") return [];
+    const activeEvents = events.filter(e => e.active !== false);
+    
+    // Obtenemos todos los eventos que pertenecen a esta macro-categoría
+    const eventsInCat = activeEvents.filter(e => {
+      const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
+      return mainCatName === activeCategory;
+    });
+
+    // Filtramos para sacar solo los que tienen una subcategoría explícita
+    const subcats = eventsInCat
+      .filter(e => e.categories?.parent_category) // Solo los que son hijos
+      .map(e => e.categories?.name) // El nombre de la subcategoría
+      .filter(Boolean);
+      
+    if (subcats.length === 0) return [];
+    return ["Todos", ...Array.from(new Set(subcats))];
+  }, [events, activeCategory]);
+
   const filteredEventsByCategory = useMemo(() => {
     const activeEvents = events.filter(e => e.active !== false);
-    if (activeCategory === "Todos") return activeEvents;
-    return activeEvents.filter(e => e.categories?.name === activeCategory);
-  }, [events, activeCategory]);
+    
+    // Filtro Nivel 1: Macro-Categoría
+    let filtered = activeEvents;
+    if (activeCategory !== "Todos") {
+      filtered = activeEvents.filter(e => {
+        const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
+        return mainCatName === activeCategory;
+      });
+    }
+
+    // Filtro Nivel 2: Sub-Categoría (Pills)
+    if (activeSubcategory !== "Todos") {
+      filtered = filtered.filter(e => e.categories?.name === activeSubcategory);
+    }
+
+    return filtered;
+  }, [events, activeCategory, activeSubcategory]);
 
   const availableMonths = useMemo(() => {
     const monthsSet = new Set<string>();
@@ -105,7 +157,12 @@ export function useHomeLogic(initialEvents: any[] = []) {
     return months;
   }, [filteredEventsByCategory]);
 
-  // Reset active month when category changes
+  // Reset subcategory ONLY when main category changes
+  useEffect(() => {
+    setActiveSubcategory("Todos");
+  }, [activeCategory]);
+
+  // Adjust active month when availableMonths changes
   useEffect(() => {
     if (availableMonths.length > 0) {
       // Intentar mantener el mes si existe en la nueva categoría, si no, ir al primero
@@ -115,7 +172,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } else {
       setActiveMonth("");
     }
-  }, [activeCategory, availableMonths]);
+  }, [availableMonths, activeMonth]);
 
   // 🔄 Efecto para sincronizar el estado de carga global con CustomEvents
   useEffect(() => {
@@ -614,7 +671,11 @@ export function useHomeLogic(initialEvents: any[] = []) {
     availableMonths,
     activeCategory,
     setActiveCategory,
+    activeSubcategory,
+    setActiveSubcategory,
     availableCategories,
+    availableCategoryIcons,
+    availableSubcategories,
     filteredEvents: filteredEventsByCategory
   };
 }

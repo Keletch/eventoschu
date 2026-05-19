@@ -33,6 +33,7 @@ export function useAdminDashboard() {
   const [isPurgeDialogOpen, setIsPurgeDialogOpen] = useState(false);
   const [isDeleteEventDialogOpen, setIsDeleteEventDialogOpen] = useState(false);
   const [isToggleDialogOpen, setIsToggleDialogOpen] = useState(false);
+  const [isCategoriesDialogOpen, setIsCategoriesDialogOpen] = useState(false);
   const [editingReg, setEditingReg] = useState<any>(null);
   const [purgingReg, setPurgingReg] = useState<any>(null);
   const [deletingEvent, setDeletingEvent] = useState<any>(null);
@@ -66,7 +67,7 @@ export function useAdminDashboard() {
     if (events.length === 0) setIsLoading(true);
     try {
       const [{ data: eventsData }, { data: catsData }, regsResult] = await Promise.all([
-        supabase.from("events").select("*, categories:category_id(name)").order("start_date", { ascending: true }),
+        supabase.from("events").select("*, categories:category_id(*, parent_category:parent_category_id(id, name, icon))").order("start_date", { ascending: true }),
         supabase.from("categories").select("*").order("name"),
         getRegistrations()
       ]);
@@ -337,7 +338,9 @@ export function useAdminDashboard() {
     // Dialogs & UI State
     isDialogOpen, setIsDialogOpen, isRegDialogOpen, setIsRegDialogOpen,
     isPurgeDialogOpen, setIsPurgeDialogOpen, isDeleteEventDialogOpen, setIsDeleteEventDialogOpen,
-    isToggleDialogOpen, setIsToggleDialogOpen, editingReg, setEditingReg, 
+    isToggleDialogOpen, setIsToggleDialogOpen,
+    isCategoriesDialogOpen, setIsCategoriesDialogOpen,
+    editingReg, setEditingReg, 
     purgingReg, setPurgingReg, deletingEvent, setDeletingEvent, togglingEvent,
     newEvent, setNewEvent, notifications, unreadCount, isNotifOpen, setIsNotifOpen,
     removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle,

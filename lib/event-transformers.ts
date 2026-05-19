@@ -1,6 +1,15 @@
 import { Event } from "@/app/actions/events";
 import { formatSafeDate } from "./date-utils";
 
+const TIMEZONE_SHORT_CODES: Record<string, string> = {
+  "America/Mexico_City": "CDMX",
+  "America/Bogota": "Bogotá/Lima",
+  "America/New_York": "EST",
+  "America/Argentina/Buenos_Aires": "ARG",
+  "America/Santiago": "CHL",
+  "Europe/Madrid": "Madrid",
+};
+
 /**
  * 🛠️ Orquestador de Verdad: Transforma un evento de BD en datos listos para el usuario/IA.
  * Esta es la ÚNICA fuente de verdad para la visualización.
@@ -9,7 +18,21 @@ export function transformEventForUI(event: Event) {
   const isFutureEvent = new Date(event.start_date).getFullYear() === 2099;
   const isOnline = event.flag === "WEB";
 
+  const categoryName = event.categories?.parent_category ? event.categories.parent_category.name : (event.categories?.name || "General");
+  const subcategoryName = event.categories?.parent_category ? event.categories.name : null;
+
+  let displayTime = !event.time || event.time.toLowerCase().includes('confirmar') 
+    ? "Por confirmar" 
+    : event.time;
+    
+  if (displayTime !== "Por confirmar" && event.timezone && event.timezone !== "none") {
+    const shortCode = TIMEZONE_SHORT_CODES[event.timezone] || event.timezone;
+    displayTime = `${displayTime} (${shortCode})`;
+  }
+
   return {
+    category: categoryName,
+    subcategory: subcategoryName,
     title: event.title,
     city: isOnline ? "Evento" : event.city,
     country: isOnline ? "Online" : event.country,
@@ -24,9 +47,7 @@ export function transformEventForUI(event: Event) {
           year: "numeric",
         }) || "Por confirmar",
     // Horario
-    displayTime: !event.time || event.time.toLowerCase().includes('confirmar') 
-      ? "Por confirmar" 
-      : event.time,
+    displayTime,
     // Ubicación exacta — para eventos presenciales
     displayLocation: isOnline
       ? null

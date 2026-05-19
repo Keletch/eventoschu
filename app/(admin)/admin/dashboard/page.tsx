@@ -24,6 +24,7 @@ import { RegistrationDialog } from "./components/forms/registration-dialog";
 import { PurgeUserDialog } from "./components/forms/purge-user-dialog";
 import { DeleteEventDialog } from "./components/forms/delete-event-dialog";
 import { ToggleEventDialog } from "./components/forms/toggle-event-dialog";
+import { ManageCategoriesDialog } from "./components/forms/manage-categories-dialog";
 
 // Hooks
 import { useAdminDashboard } from "./hooks/use-admin-dashboard";
@@ -44,6 +45,7 @@ export default function AdminDashboard() {
     isRegDialogOpen, setIsRegDialogOpen, isPurgeDialogOpen, setIsPurgeDialogOpen,
     isDeleteEventDialogOpen, setIsDeleteEventDialogOpen,
     isToggleDialogOpen, setIsToggleDialogOpen,
+    isCategoriesDialogOpen, setIsCategoriesDialogOpen,
     editingReg, setEditingReg, purgingReg, setPurgingReg,
     deletingEvent, setDeletingEvent, togglingEvent,
     newEvent, setNewEvent, keapTags, isTagsLoading, fetchTags,
@@ -56,6 +58,20 @@ export default function AdminDashboard() {
     handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData, resetRegsFilters,
     removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle, removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge
   } = useAdminDashboard();
+
+  const categoryOptions = React.useMemo(() => {
+    const parents = categories.filter((c: any) => !c.parent_category_id);
+    const options = [{ id: 'all', label: 'Categorías' }];
+    parents.forEach((parent: any) => {
+      options.push({ id: parent.id.toString(), label: parent.name });
+      const children = categories.filter((c: any) => c.parent_category_id === parent.id);
+      children.forEach((child: any) => {
+        // Usa un espacio en blanco especial y una flecha para sangrar la subcategoría
+        options.push({ id: child.id.toString(), label: `  ↳ ${child.name}` });
+      });
+    });
+    return options;
+  }, [categories]);
 
   const [isActuallyReady, setIsActuallyReady] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("events");
@@ -305,7 +321,7 @@ export default function AdminDashboard() {
                   <SearchablePicker
                     value={eventTabCatFilter}
                     onSelect={setEventTabCatFilter}
-                    options={[{ id: 'all', label: 'Categorías' }, ...categories.map(c => ({ id: c.id.toString(), label: c.name }))]}
+                    options={categoryOptions}
                     placeholder="Categorías"
                     triggerClassName="w-44"
                   />
@@ -319,6 +335,15 @@ export default function AdminDashboard() {
                 </div>
                 
                 <div className="flex items-center gap-3 w-full md:w-auto">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsCategoriesDialogOpen(true)} 
+                    className="rounded-xl h-11 px-4 text-muted-foreground hover:text-primary border-border bg-card gap-2 font-bold"
+                    title="Gestionar Categorías"
+                  >
+                    <Users className="w-4 h-4" /> {/* Reuse Users or use FolderTree if imported */}
+                    <span className="hidden lg:inline">Categorías</span>
+                  </Button>
                   <Button 
                     variant="outline" 
                     onClick={handleClearCache} 
@@ -361,7 +386,7 @@ export default function AdminDashboard() {
                   <SearchablePicker
                     value={regsCategoryFilter}
                     onSelect={setRegsCategoryFilter}
-                    options={[{ id: 'all', label: 'Categorías' }, ...categories.map(c => ({ id: c.id.toString(), label: c.name }))]}
+                    options={categoryOptions}
                     placeholder="Categorías"
                     triggerClassName="w-44"
                   />
@@ -623,6 +648,12 @@ export default function AdminDashboard() {
             setRemoveKeapTags={setRemoveKeapTagsOnToggle}
           />
         </main>
+        <ManageCategoriesDialog
+          isOpen={isCategoriesDialogOpen}
+          setIsOpen={setIsCategoriesDialogOpen}
+          categories={categories}
+          onCategoryAdded={fetchData}
+        />
       </TooltipProvider>
     </div>
   );

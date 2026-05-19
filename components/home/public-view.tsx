@@ -38,6 +38,10 @@ interface PublicViewProps {
   activeCategory: string;
   setActiveCategory: (cat: string) => void;
   availableCategories: string[];
+  availableCategoryIcons?: Record<string, string>;
+  activeSubcategory?: string;
+  setActiveSubcategory?: (cat: string) => void;
+  availableSubcategories?: string[];
   selectedEvents: string[];
   handleSelectEvent: (id: string) => void;
   isLoadingEvents: boolean;
@@ -69,6 +73,10 @@ export function PublicView({
   activeCategory,
   setActiveCategory,
   availableCategories,
+  availableCategoryIcons,
+  activeSubcategory,
+  setActiveSubcategory,
+  availableSubcategories,
   selectedEvents,
   handleSelectEvent,
   isLoadingEvents,
@@ -113,8 +121,12 @@ export function PublicView({
           <div className="relative z-30 mb-2 reveal-item"> {/* Categorías */}
             <CategoryTabs
               availableCategories={availableCategories}
+              availableCategoryIcons={availableCategoryIcons}
               activeCategory={activeCategory}
               setActiveCategory={setActiveCategory}
+              activeSubcategory={activeSubcategory}
+              setActiveSubcategory={setActiveSubcategory}
+              availableSubcategories={availableSubcategories}
             />
           </div>
 

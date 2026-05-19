@@ -21,6 +21,7 @@ export interface Event {
   start_date: string;
   active: boolean;
   time?: string;
+  timezone?: string;
   duration?: string;
   location?: string;
   is_virtual?: boolean;
@@ -32,7 +33,13 @@ export interface Event {
   created_at?: string;
   keap_tag_id?: string;
   keap_pending_tag_id?: string;
-  categories?: { name: string } | { name: string }[];
+  categories?: { 
+    id?: string; 
+    name: string; 
+    icon?: string | null;
+    parent_category_id?: string | null;
+    parent_category?: { id: string; name: string; icon?: string | null; };
+  } | any;
   performer?: string;
 }
 
@@ -57,7 +64,7 @@ export async function getEvents() {
     // 2. Si no hay cache, ir a Supabase (solo eventos futuros/de hoy)
     const { data, error } = await supabaseAdmin
       .from('events')
-      .select('*, categories(name)')
+      .select('*, categories(*, parent_category:parent_category_id(id, name, icon))')
       .eq('active', true)
       .gte('start_date', todayStr)
       .order('start_date', { ascending: true });
@@ -77,7 +84,7 @@ export async function getEvents() {
     try {
       const { data } = await supabaseAdmin
         .from('events')
-        .select('*, categories(name)')
+        .select('*, categories(*, parent_category:parent_category_id(id, name, icon))')
         .eq('active', true)
         .gte('start_date', todayStr)
         .order('start_date', { ascending: true });

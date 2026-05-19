@@ -70,6 +70,16 @@ const BG_COLOR_OPTIONS = [
   { value: "custom", label: "Personalizado", preview: "bg-gradient-to-tr from-red-400 via-green-400 to-blue-400" },
 ];
 
+const TIMEZONE_LABELS: Record<string, string> = {
+  "none": "Sin huso horario",
+  "America/Mexico_City": "Ciudad de México (CDMX)",
+  "America/Bogota": "Bogotá / Lima / Quito",
+  "America/New_York": "Miami / Nueva York (EST)",
+  "America/Argentina/Buenos_Aires": "Buenos Aires (ARG)",
+  "America/Santiago": "Santiago (CHL)",
+  "Europe/Madrid": "Madrid (España)",
+};
+
 export const EventDialog: React.FC<EventDialogProps> = ({
   isOpen,
   setIsOpen,
@@ -91,7 +101,13 @@ export const EventDialog: React.FC<EventDialogProps> = ({
   const selectedCategory = categories.find(
     (c: any) => c.id.toString() === event.category_id?.toString()
   );
-  const isOnline = selectedCategory?.slug === "online" || !!event.is_virtual;
+  const parentCategory = selectedCategory?.parent_category_id 
+    ? categories.find((c: any) => c.id === selectedCategory.parent_category_id) 
+    : null;
+    
+  const isOnline = selectedCategory?.slug === "online" || 
+                   parentCategory?.slug === "online" || 
+                   !!event.is_virtual;
 
   return (
     <TooltipProvider delay={200}>
@@ -193,66 +209,116 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5">
-                      <Label className="text-xs font-black uppercase text-muted-foreground">Categoría</Label>
-                      <InfoTooltip content="Agrupa el evento para los filtros de la web (Gira, Taller, Meetup). Determina en qué pestaña aparece." />
-                    </div>
-                    <Select
-                      value={event.category_id?.toString()}
-                      onValueChange={(v) => {
-                        const cat = categories.find((c: any) => c.id.toString() === v);
-                        const isOnlineCat = cat?.slug === "online";
-                        setEvent({
-                          ...event,
-                          category_id: v,
-                          is_virtual: isOnlineCat,
-                          flag: isOnlineCat ? "WEB" : event.flag,
-                        });
-                      }}
-                    >
-                      <SelectTrigger className="rounded-xl border-border bg-muted/50 h-12">
-                        <SelectValue placeholder="Seleccionar categoría">
-                          {categories.find(c => c.id.toString() === event.category_id?.toString())?.name ?? "Seleccionar categoría"}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent className="rounded-2xl border-border shadow-xl bg-popover">
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id.toString()} className="rounded-lg cursor-pointer">
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    {(() => {
+                      const selectedCat = categories.find((c: any) => c.id.toString() === event.category_id?.toString());
+                      const currentParentId = selectedCat?.parent_category_id ? selectedCat.parent_category_id : selectedCat?.id;
+                      const parentCategories = categories.filter((c: any) => !c.parent_category_id);
+                      const subcategories = categories.filter((c: any) => c.parent_category_id === currentParentId);
+                      
+                      const currentParentName = parentCategories.find((c: any) => c.id === currentParentId)?.name || "Seleccionar categoría padre";
+                      
+                      const selectedSubCat = selectedCat?.parent_category_id ? selectedCat : null;
+                      const currentSubName = selectedSubCat?.name || "Sin subcategoría (Opcional)";
 
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5">
-                      <Label className="text-xs font-black uppercase text-muted-foreground">Código de Bandera (ISO)</Label>
-                      <InfoTooltip content="Código ISO de 2 letras del país. Ej: PE = Perú, MX = México, CO = Colombia, ES = España." />
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <EventFlag 
-                        flag={isOnline ? "WEB" : event.flag} 
-                        className="size-12 rounded-xl shrink-0 border border-border/50" 
-                        bgClass="bg-muted" 
-                      />
-                      {isOnline ? (
-                        <div className="flex-1 h-12 rounded-xl bg-muted border border-border flex items-center px-4">
-                          <span className="text-sm font-bold text-muted-foreground">Evento Global (Web)</span>
-                        </div>
-                      ) : (
-                        <Input
-                          required
-                          value={event.flag}
-                          onChange={(e) => setEvent({ ...event, flag: e.target.value.toUpperCase() })}
-                          className="rounded-xl border-border bg-muted/50 h-12 font-mono flex-1 focus:bg-background transition-all"
-                          placeholder="PE"
-                          maxLength={2}
-                        />
-                      )}
-                    </div>
-                  </div>
+                      return (
+                        <>
+                          {/* Selector Padre */}
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1.5">
+                              <Label className="text-xs font-black uppercase text-muted-foreground">Categoría Principal</Label>
+                              <InfoTooltip content="Agrupa el evento para los filtros principales (Ej. Giras, Eventos en Línea)." />
+                            </div>
+                            <Select
+                              value={currentParentId?.toString()}
+                              onValueChange={(v) => {
+                                const cat = categories.find((c: any) => c.id.toString() === v);
+                                const isOnlineCat = cat?.slug === "online";
+                                setEvent({
+                                  ...event,
+                                  category_id: v, // Se asigna al padre por defecto
+                                  is_virtual: isOnlineCat,
+                                  flag: isOnlineCat ? "WEB" : event.flag,
+                                });
+                              }}
+                            >
+                              <SelectTrigger className="rounded-xl border-border bg-muted/50 h-12">
+                                <SelectValue placeholder="Seleccionar categoría">{currentParentName}</SelectValue>
+                              </SelectTrigger>
+                              <SelectContent className="rounded-2xl border-border shadow-xl bg-popover">
+                                {parentCategories.map((cat: any) => (
+                                  <SelectItem key={cat.id} value={cat.id.toString()} className="rounded-lg cursor-pointer">
+                                    {cat.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Bandera (Ahora al lado de Categoría Principal) */}
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1.5">
+                              <Label className="text-xs font-black uppercase text-muted-foreground">Código de Bandera (ISO)</Label>
+                              <InfoTooltip content="Código ISO de 2 letras del país. Ej: PE = Perú, MX = México, CO = Colombia, ES = España." />
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <EventFlag 
+                                flag={isOnline ? "WEB" : event.flag} 
+                                className="size-12 rounded-xl shrink-0 border border-border/50" 
+                                bgClass="bg-muted" 
+                              />
+                              {isOnline ? (
+                                <div className="flex-1 h-12 rounded-xl bg-muted border border-border flex items-center px-4">
+                                  <span className="text-sm font-bold text-muted-foreground">Evento Global (Web)</span>
+                                </div>
+                              ) : (
+                                <Input
+                                  required
+                                  value={event.flag}
+                                  onChange={(e) => setEvent({ ...event, flag: e.target.value.toUpperCase() })}
+                                  className="rounded-xl border-border bg-muted/50 h-12 font-mono flex-1 focus:bg-background transition-all"
+                                  placeholder="PE"
+                                  maxLength={2}
+                                />
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Selector Hijo (Subcategoría) - Abarcando todo el ancho */}
+                          {subcategories.length > 0 && (
+                            <div className="md:col-span-2 space-y-2">
+                              <div className="flex items-center gap-1.5">
+                                <Label className="text-xs font-black uppercase text-muted-foreground">Subcategoría</Label>
+                                <InfoTooltip content="Clasificación específica (Ej. Webinar, Retiro). Si no seleccionas ninguna, quedará solo en la categoría principal." />
+                              </div>
+                              <Select
+                                value={selectedSubCat ? selectedSubCat.id.toString() : "none"}
+                                onValueChange={(v) => {
+                                  if (v === "none") {
+                                    setEvent({ ...event, category_id: currentParentId });
+                                  } else {
+                                    setEvent({ ...event, category_id: v });
+                                  }
+                                }}
+                              >
+                                <SelectTrigger className="rounded-xl border-border bg-muted/50 h-12">
+                                  <SelectValue placeholder="Sin subcategoría">{currentSubName}</SelectValue>
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl border-border shadow-xl bg-popover">
+                                  <SelectItem value="none" className="rounded-lg cursor-pointer italic text-muted-foreground">
+                                    Sin subcategoría (Opcional)
+                                  </SelectItem>
+                                  {subcategories.map((cat: any) => (
+                                    <SelectItem key={cat.id} value={cat.id.toString()} className="rounded-lg cursor-pointer">
+                                      {cat.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                 </div>
               </section>
 
@@ -398,13 +464,13 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                       onChange={(e) => setEvent({ ...event, time: e.target.value })}
                       disabled={isTimeConfirm}
                       className={cn(
-                        "rounded-xl h-12 transition-all border-border",
+                        "rounded-xl h-12 transition-all border-border w-full",
                         isTimeConfirm
                           ? "bg-muted text-muted-foreground opacity-60 border-dashed"
                           : "bg-muted/50 focus:bg-background"
                       )}
                     />
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-2 mt-1">
                       <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
                         ¿Por confirmar?
                       </span>
@@ -418,6 +484,38 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                     </div>
                   </div>
 
+                  {/* Huso Horario (Donde antes estaba duración) */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-xs font-black uppercase text-muted-foreground">Zona Horaria</Label>
+                      <InfoTooltip content="Huso horario oficial del evento. Sirve para estandarizar la hora y generar recordatorios o enlaces de calendario." />
+                    </div>
+                    <Select
+                      value={event.timezone || "none"}
+                      onValueChange={(v) => setEvent({ ...event, timezone: v === "none" ? null : v })}
+                      disabled={isTimeConfirm}
+                    >
+                      <SelectTrigger className={cn(
+                        "rounded-xl h-12 border-border w-full truncate pr-2",
+                        isTimeConfirm ? "bg-muted text-muted-foreground opacity-60 border-dashed" : "bg-muted/50 focus:bg-background transition-all"
+                      )}>
+                        <SelectValue placeholder="Zona Horaria">
+                          {TIMEZONE_LABELS[event.timezone || "none"] || "Zona Horaria"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-border bg-popover shadow-xl">
+                        <SelectItem value="none" className="italic text-muted-foreground rounded-lg cursor-pointer">Sin huso horario (Opcional)</SelectItem>
+                        <SelectItem value="America/Mexico_City" className="rounded-lg cursor-pointer">Ciudad de México (CDMX)</SelectItem>
+                        <SelectItem value="America/Bogota" className="rounded-lg cursor-pointer">Bogotá / Lima / Quito</SelectItem>
+                        <SelectItem value="America/New_York" className="rounded-lg cursor-pointer">Miami / Nueva York (EST)</SelectItem>
+                        <SelectItem value="America/Argentina/Buenos_Aires" className="rounded-lg cursor-pointer">Buenos Aires (ARG)</SelectItem>
+                        <SelectItem value="America/Santiago" className="rounded-lg cursor-pointer">Santiago (CHL)</SelectItem>
+                        <SelectItem value="Europe/Madrid" className="rounded-lg cursor-pointer">Madrid (España)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Duración (Movida a la derecha) */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-1.5">
                       <Label className="text-xs font-black uppercase text-muted-foreground">Duración</Label>

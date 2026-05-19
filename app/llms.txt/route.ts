@@ -23,14 +23,16 @@ export async function GET() {
   if (events && events.length > 0) {
     events.forEach(event => {
       const data = transformEventForUI(event);
+      const categoryInfo = data.subcategory ? `${data.category} > ${data.subcategory}` : data.category;
+      
       if (data.isOnline) {
         const linkInfo = data.displayLinkEnabled && data.displayLinkUrl
           ? `Plataforma: ${data.displayLinkTitle} (${data.displayLinkUrl})`
           : `Plataforma por confirmar`;
-        markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** — Evento en línea. ${linkInfo}. Costo: ${data.displayPrice}. Duración: ${data.displayDuration}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
+        markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** — [${categoryInfo}] Evento en línea. ${linkInfo}. Costo: ${data.displayPrice}. Duración: ${data.displayDuration}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
       } else {
         // El estándar prefiere listas claras que las IAs puedan indexar
-        markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** en ${data.displayLocation}. Costo: ${data.displayPrice}. Duración: ${data.displayDuration}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
+        markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** en ${data.displayLocation} — [${categoryInfo}]. Costo: ${data.displayPrice}. Duración: ${data.displayDuration}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
       }
     });
   } else {
