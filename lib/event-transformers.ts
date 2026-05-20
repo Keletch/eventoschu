@@ -30,6 +30,9 @@ export function transformEventForUI(event: Event) {
     displayTime = `${displayTime} (${shortCode})`;
   }
 
+  const tagsList = event.event_tags?.map(et => et.tags).filter(Boolean) || [];
+  const isPaid = tagsList.some(tag => tag.slug === 'pago');
+
   return {
     category: categoryName,
     subcategory: subcategoryName,
@@ -65,8 +68,13 @@ export function transformEventForUI(event: Event) {
     // Duración
     displayDuration: event.duration || "Aproximadamente 2 horas",
     // Metadatos técnicos para Schema.org
-    isFree: !event.price || event.price.toLowerCase().includes('sin costo') || event.price === "0",
-    isoDuration: event.duration?.includes('2') ? 'PT2H' : 'PT1H',
-    performer: "HyenUk Chu"
+    isFree: !isPaid && (!event.price || event.price.toLowerCase().includes('sin costo') || event.price === "0"),
+    isoDuration: (!event.duration || event.duration === "Por confirmar") ? null : (event.duration.includes('2') ? 'PT2H' : 'PT1H'),
+    performer: "HyenUk Chu",
+    // Tags y Redirección
+    tags: tagsList,
+    isPaid,
+    externalUrl: event.external_url || null,
+    externalButtonText: event.external_button_text || "Adquirir entrada"
   };
 }

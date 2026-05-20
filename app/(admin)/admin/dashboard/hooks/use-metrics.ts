@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { SURVEY_QUESTIONS } from "@/lib/constants";
+import { transformEventForUI } from "@/lib/event-transformers";
 
 export function useMetrics(registrations: any[], events: any[]) {
   return useMemo(() => {
@@ -46,23 +47,66 @@ export function useMetrics(registrations: any[], events: any[]) {
       };
     });
 
-    // 4. Rendimiento por Evento
+    // 4. Rendimiento por Evento (SSoT via transformEventForUI)
     const eventPerformance = events.map(event => {
+      const uiData = transformEventForUI(event);
+      const isUnlimited = (event.capacity ?? 0) >= 9999;
       const eventRegs = registrations.filter(r => r.selected_events?.includes(event.id));
       const confirmed = eventRegs.reduce((acc, r) => 
         acc + (r.event_statuses?.[event.id] === 'confirmed' ? 1 : 0), 0);
       
       return {
         id: event.id,
-        title: event.title,
-        city: event.city,
-        capacity: event.capacity || 25,
+        title: uiData.title,
+        city: isUnlimited ? uiData.country : (uiData.isOnline ? "Online" : uiData.city),
+        capacity: isUnlimited ? null : (event.capacity || 25),
+        isUnlimited,
         total: eventRegs.length,
         confirmed,
-        occupancyRate: (confirmed / (event.capacity || 25)) * 100,
+        occupancyRate: isUnlimited ? null : (confirmed / (event.capacity || 25)) * 100,
         active: event.active
       };
     }).sort((a, b) => b.confirmed - a.confirmed);
+
+    // 5. Tendencia de Registros (Últimos 14 días — mostramos 7 días pero calculamos 14 para el delta)
+    const trendData: { date: string; label: string; count: number }[] = [];
+    const now = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const label = d.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
+      const count = registrations.filter(r => r.created_at?.startsWith(dateStr)).length;
+      trendData.push({ date: dateStr, label, count });
+    }
+
+    // Delta semana pasada vs actual (últimos 7 días vs 7 días anteriores)
+    const thisWeekTotal = trendData.reduce((s, d) => s + d.count, 0);
+    const prevWeekDays: number[] = [];
+    for (let i = 13; i >= 7; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      prevWeekDays.push(registrations.filter(r => r.created_at?.startsWith(dateStr)).length);
+    }
+    const prevWeekTotal = prevWeekDays.reduce((s, c) => s + c, 0);
+    const weeklyDelta = prevWeekTotal > 0 
+      ? Math.round(((thisWeekTotal - prevWeekTotal) / prevWeekTotal) * 100)
+      : thisWeekTotal > 0 ? 100 : 0;
+
+    // 6. Distribución de Interés por Categoría
+    const categoryMap: Record<string, number> = {};
+    registrations.forEach(r => {
+      (r.selected_events || []).forEach((eventId: string) => {
+        const ev = events.find(e => e.id === eventId);
+        if (!ev) return;
+        const catName = ev.categories?.parent_category?.name || ev.categories?.name || "Sin categoría";
+        categoryMap[catName] = (categoryMap[catName] || 0) + 1;
+      });
+    });
+    const categoryDistribution = Object.entries(categoryMap)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
 
     return {
       global: {
@@ -77,6 +121,10 @@ export function useMetrics(registrations: any[], events: any[]) {
       countryDistribution,
       surveyInsights,
       eventPerformance,
+      trendData,
+      weeklyDelta,
+      thisWeekTotal,
+      categoryDistribution,
     };
   }, [registrations, events]);
 }

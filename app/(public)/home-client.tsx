@@ -273,7 +273,13 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     setActiveSubcategory={handleSubcategoryChange}
                     availableSubcategories={home.availableSubcategories}
                     selectedEvents={home.selectedEvents}
-                    handleSelectEvent={(id) => home.setSelectedEvents(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id])}
+                    handleSelectEvent={(id) => {
+                      const ev = home.events.find(e => e.id === id);
+                      const tagsList = ev?.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
+                      const isPaid = tagsList.some((t: any) => t.slug === 'pago');
+                      if (isPaid) return;
+                      home.setSelectedEvents(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]);
+                    }}
                     isLoadingEvents={home.isLoadingEvents}
                     eventCounts={home.eventCounts}
                     handleScroll={handleScroll}

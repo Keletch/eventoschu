@@ -3,7 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { 
-  Users, Globe, NotebookPen, Presentation, Monitor, LayoutGrid, Calendar, Laptop, MapPin, Video, BookOpen, Coffee, Building, Mic, Music, Camera, Zap, Award 
+  Users, Globe, NotebookPen, Presentation, Monitor, LayoutGrid, Calendar, Laptop, MapPin, Video, BookOpen, Coffee, Building, Mic, Music, Camera, Zap, Award, CircleDollarSign
 } from "lucide-react";
 
 const ALL_LUCIDE_ICONS: Record<string, React.ElementType> = {
@@ -24,7 +24,8 @@ const ALL_LUCIDE_ICONS: Record<string, React.ElementType> = {
   "Award": Award,
   "NotebookPen": NotebookPen,
   "Monitor": Monitor,
-  "LayoutGrid": LayoutGrid
+  "LayoutGrid": LayoutGrid,
+  "CircleDollarSign": CircleDollarSign
 };
 
 interface CategoryTabsProps {
@@ -142,8 +143,8 @@ export function CategoryTabs({
                 className={cn(
                   "px-3 py-1.5 rounded-full text-[12px] font-bold transition-all duration-300 whitespace-nowrap border",
                   isActive
-                    ? "bg-foreground text-background border-foreground shadow-md"
-                    : "bg-surface text-muted-foreground border-surface-border hover:border-foreground/30 hover:text-foreground"
+                    ? "bg-primary text-primary-foreground border-primary shadow-md"
+                    : "bg-surface text-muted-foreground border-surface-border hover:border-primary/30 hover:text-foreground"
                 )}
               >
                 {sub === "Todos" ? "Ver Todo" : sub}

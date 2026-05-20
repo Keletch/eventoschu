@@ -25,15 +25,17 @@ import { PurgeUserDialog } from "./components/forms/purge-user-dialog";
 import { DeleteEventDialog } from "./components/forms/delete-event-dialog";
 import { ToggleEventDialog } from "./components/forms/toggle-event-dialog";
 import { ManageCategoriesDialog } from "./components/forms/manage-categories-dialog";
+import { OperationProgressDialog } from "./components/forms/operation-progress-dialog";
 
 // Hooks
 import { useAdminDashboard } from "./hooks/use-admin-dashboard";
 
 export default function AdminDashboard() {
   const {
-    events, registrations, categories, isLoading: isDataLoading, isSubmitting,
+    events, registrations, categories, systemTags, isLoading: isDataLoading, isSubmitting,
     eventsSearch, setEventsSearch, eventTabCatFilter, setEventTabCatFilter,
-    eventTabStatusFilter, setEventTabStatusFilter, regsSearch, setRegsSearch,
+    eventTabStatusFilter, setEventTabStatusFilter, eventTabTagFilter, setEventTabTagFilter,
+    regsSearch, setRegsSearch,
     regsCategoryFilter, setRegsCategoryFilter, regsEventFilter, setRegsEventFilter,
     regsStatusFilter, setRegsStatusFilter, regsCountryFilter, setRegsCountryFilter,
     regsSurveyFilter, setRegsSurveyFilter,
@@ -56,8 +58,9 @@ export default function AdminDashboard() {
     handleEditEvent, handleEditReg, handleNewEvent, handleLogout, totalInscriptions,
     pendingCount, approvedCount, cancelledCount, filteredEvents,
     notifications, unreadCount, handleMarkAsRead,
-    handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData, resetRegsFilters,
-    removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle, removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge
+    handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData, resetRegsFilters, resetEventsFilters,
+    removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle, removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge,
+    progressState
   } = useAdminDashboard();
 
   const categoryOptions = React.useMemo(() => {
@@ -73,6 +76,13 @@ export default function AdminDashboard() {
     });
     return options;
   }, [categories]);
+
+  const tagOptions = React.useMemo(() => {
+    return [
+      { id: 'all', label: 'Etiquetas' },
+      ...systemTags.map((tag: any) => ({ id: tag.id.toString(), label: tag.name }))
+    ];
+  }, [systemTags]);
 
   const [isActuallyReady, setIsActuallyReady] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("events");
@@ -310,7 +320,7 @@ export default function AdminDashboard() {
 
             {/* TAB: EVENTS */}
             <TabsContent value="events" className="space-y-6 outline-none">
-              <div className="tab-content-anim flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-4 rounded-3xl border border-border shadow-sm">
+              <div className="tab-content-anim relative flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-4 rounded-3xl border border-border shadow-sm">
                 <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                   <SearchInput
                     placeholder="Buscar evento..."
@@ -333,6 +343,13 @@ export default function AdminDashboard() {
                     placeholder="Estados"
                     triggerClassName="w-40"
                   />
+                  <SearchablePicker
+                    value={eventTabTagFilter}
+                    onSelect={setEventTabTagFilter}
+                    options={tagOptions}
+                    placeholder="Etiquetas"
+                    triggerClassName="w-40"
+                  />
                 </div>
                 
                 <div className="flex items-center gap-3 w-full md:w-auto">
@@ -345,23 +362,92 @@ export default function AdminDashboard() {
                     <Users className="w-4 h-4" /> {/* Reuse Users or use FolderTree if imported */}
                     <span className="hidden lg:inline">Categorías</span>
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={handleClearCache} 
-                    disabled={isCacheRefreshing}
-                    className="rounded-xl h-11 px-4 text-muted-foreground hover:text-primary border-border bg-card gap-2 font-bold"
-                    title="Limpiar Caché de Redis"
-                  >
-                    {isCacheRefreshing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                    <span className="hidden lg:inline">Refrescar Web</span>
-                  </Button>
                   <Button onClick={handleNewEvent} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-11 px-6 font-bold shadow-lg shadow-primary/20 transition-all gap-2 border-none">
                     <Plus className="w-5 h-5" /> Nuevo Evento
                   </Button>
                 </div>
               </div>
 
-              <div className="tab-content-anim">
+              {/* Contenedor de Filtros Activos y Acciones */}
+              <div className="tab-content-anim flex flex-col sm:flex-row justify-between items-start gap-4 mt-3 mb-4 w-full">
+                {/* Izquierda: Chips Activos */}
+                <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
+                  {eventTabCatFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-sky-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Categoría:</span>
+                      <span className="text-[11px] font-bold">
+                        {categories.find((c: any) => c.id.toString() === eventTabCatFilter.toString())?.name || eventTabCatFilter}
+                      </span>
+                      <button 
+                        onClick={() => setEventTabCatFilter("all")}
+                        className="p-0.5 hover:bg-sky-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {eventTabStatusFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-emerald-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Estado:</span>
+                      <span className="text-[11px] font-bold">
+                        {eventTabStatusFilter === "active" ? "Activo" : "Inactivo"}
+                      </span>
+                      <button 
+                        onClick={() => setEventTabStatusFilter("all")}
+                        className="p-0.5 hover:bg-emerald-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {eventTabTagFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-rose-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Etiqueta:</span>
+                      <span className="text-[11px] font-bold">
+                        {systemTags.find((t: any) => t.id.toString() === eventTabTagFilter.toString())?.name || eventTabTagFilter}
+                      </span>
+                      <button 
+                        onClick={() => setEventTabTagFilter("all")}
+                        className="p-0.5 hover:bg-rose-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Derecha: Acciones (Resetear y Refrescar Web) */}
+                <div className="flex items-center gap-3 shrink-0 self-end sm:self-center ml-auto sm:ml-0">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={resetEventsFilters}
+                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-red-500 transition-all gap-1.5 cursor-pointer"
+                    title="Limpiar todos los filtros"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    Resetear Filtros
+                  </Button>
+
+                  <div className="w-px h-3 bg-border" />
+
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={handleClearCache}
+                    disabled={isCacheRefreshing}
+                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-primary transition-all gap-1.5 cursor-pointer"
+                    title="Limpiar Caché de Redis"
+                  >
+                    {isCacheRefreshing ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                    Refrescar Web
+                  </Button>
+                </div>
+              </div>
+
+              <div className="tab-content-anim pt-2">
                 <EventsTable
                   events={filteredEvents}
                   isLoading={isDataLoading}
@@ -394,7 +480,7 @@ export default function AdminDashboard() {
                   <SearchablePicker
                     value={regsEventFilter}
                     onSelect={setRegsEventFilter}
-                    options={[{ id: 'all', label: 'Todos los Eventos' }, ...events.map(e => ({ id: e.id.toString(), label: `${e.city} - ${e.categories?.name}` }))]}
+                    options={[{ id: 'all', label: 'Todos los Eventos' }, ...events.map(e => ({ id: e.id.toString(), label: e.title }))]}
                     placeholder="Todos los Eventos"
                     triggerClassName="min-w-[200px]"
                   />
@@ -428,7 +514,140 @@ export default function AdminDashboard() {
                     triggerClassName="w-44"
                   />
                 </div>
-                <div className="absolute -bottom-7 right-6 flex items-center gap-3">
+              </div>
+
+              {/* Contenedor de Filtros Activos y Acciones */}
+              <div className="tab-content-anim flex flex-col sm:flex-row justify-between items-start gap-4 mt-3 mb-4 w-full">
+                {/* Izquierda: Chips Activos */}
+                <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
+                  {regsSurveyFilter && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-blue-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Filtrando por:</span>
+                      <span className="text-[11px] font-bold">{regsSurveyFilter.a}</span>
+                      <button 
+                        onClick={() => setRegsSurveyFilter(null)}
+                        className="p-0.5 hover:bg-blue-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {regsLoyaltyFilter && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-violet-500/10 border border-violet-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-violet-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Segmento:</span>
+                      <span className="text-[11px] font-bold">Fidelidad (Multi-evento)</span>
+                      <button 
+                        onClick={() => setRegsLoyaltyFilter(false)}
+                        className="p-0.5 hover:bg-violet-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {regsCategoryFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-sky-500/10 border border-sky-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-sky-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Categoría:</span>
+                      <span className="text-[11px] font-bold">
+                        {categories.find((c: any) => c.id.toString() === regsCategoryFilter.toString())?.name || regsCategoryFilter}
+                      </span>
+                      <button 
+                        onClick={() => setRegsCategoryFilter("all")}
+                        className="p-0.5 hover:bg-sky-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {regsEventFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-rose-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Evento:</span>
+                      <span className="text-[11px] font-bold">
+                        {events.find((e: any) => e.id.toString() === regsEventFilter.toString())?.title || regsEventFilter}
+                      </span>
+                      <button 
+                        onClick={() => setRegsEventFilter("all")}
+                        className="p-0.5 hover:bg-rose-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {regsStatusFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-emerald-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Estado:</span>
+                      <span className="text-[11px] font-bold">
+                        {regsStatusFilter === "confirmed" ? "Confirmado" : regsStatusFilter === "pending" ? "Pendiente" : "Cancelado"}
+                      </span>
+                      <button 
+                        onClick={() => setRegsStatusFilter("all")}
+                        className="p-0.5 hover:bg-emerald-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {regsCountryFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-teal-500/10 border border-teal-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-teal-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">País:</span>
+                      <span className="text-[11px] font-bold">
+                        {regsCountryFilter === "unspecified" ? "No especificado" : regsCountryFilter}
+                      </span>
+                      <button 
+                        onClick={() => setRegsCountryFilter("all")}
+                        className="p-0.5 hover:bg-teal-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {regsSurveyCompleteFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-indigo-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Formulario:</span>
+                      <span className="text-[11px] font-bold">{regsSurveyCompleteFilter === "completed" ? "Perfil Completo" : "Perfil Incompleto"}</span>
+                      <button 
+                        onClick={() => setRegsSurveyCompleteFilter("all")}
+                        className="p-0.5 hover:bg-indigo-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {regsClerkFilter !== "all" && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-fuchsia-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Clerk:</span>
+                      <span className="text-[11px] font-bold">{regsClerkFilter === "registered" ? "Registrado" : "No Registrado"}</span>
+                      <button 
+                        onClick={() => setRegsClerkFilter("all")}
+                        className="p-0.5 hover:bg-fuchsia-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {regsTodayFilter && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-amber-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Fecha:</span>
+                      <span className="text-[11px] font-bold">Registrados Hoy</span>
+                      <button 
+                        onClick={() => setRegsTodayFilter(false)}
+                        className="p-0.5 hover:bg-amber-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Derecha: Acciones (Solo Clerk y Resetear Filtros) */}
+                <div className="flex items-center gap-3 shrink-0 self-end sm:self-center ml-auto sm:ml-0">
                   <button
                     onClick={() => setRegsClerkFilter(prev => prev === "registered" ? "all" : "registered")}
                     className={cn(
@@ -456,73 +675,6 @@ export default function AdminDashboard() {
                     Resetear Filtros
                   </Button>
                 </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-4">
-                {regsSurveyFilter && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Filtrando por:</span>
-                    <span className="text-sm font-bold text-blue-700">{regsSurveyFilter.a}</span>
-                    <button 
-                      onClick={() => setRegsSurveyFilter(null)}
-                      className="p-1 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                )}
-
-                {regsLoyaltyFilter && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-100 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-purple-400">Segmento:</span>
-                    <span className="text-sm font-bold text-purple-700">Fidelidad (Multi-evento)</span>
-                    <button 
-                      onClick={() => setRegsLoyaltyFilter(false)}
-                      className="p-1 hover:bg-purple-100 rounded-lg transition-colors text-purple-600"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                )}
-
-                {regsSurveyCompleteFilter !== "all" && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500/60">Estado:</span>
-                    <span className="text-sm font-bold text-indigo-500">{regsSurveyCompleteFilter === "completed" ? "Perfil Completo" : "Perfil Incompleto"}</span>
-                    <button 
-                      onClick={() => setRegsSurveyCompleteFilter("all")}
-                      className="p-1 hover:bg-indigo-500/20 rounded-lg transition-colors text-indigo-500"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                )}
-
-                {regsClerkFilter !== "all" && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Clerk:</span>
-                    <span className="text-sm font-bold text-primary">{regsClerkFilter === "registered" ? "Registrado" : "No Registrado"}</span>
-                    <button 
-                      onClick={() => setRegsClerkFilter("all")}
-                      className="p-1 hover:bg-primary/20 rounded-lg transition-colors text-primary text-primary"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                )}
-
-                {regsTodayFilter && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-2xl w-fit animate-in fade-in slide-in-from-left-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-500/60">Fecha:</span>
-                    <span className="text-sm font-bold text-amber-500">Registrados Hoy</span>
-                    <button 
-                      onClick={() => setRegsTodayFilter(false)}
-                      className="p-1 hover:bg-amber-500/20 rounded-lg transition-colors text-amber-500"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                )}
               </div>
 
               <div className="tab-content-anim space-y-4">
@@ -630,6 +782,7 @@ export default function AdminDashboard() {
             event={newEvent}
             setEvent={setNewEvent}
             categories={categories}
+            systemTags={systemTags}
             keapTags={keapTags}
             isTagsLoading={isTagsLoading}
             onRefreshTags={fetchTags}
@@ -676,6 +829,14 @@ export default function AdminDashboard() {
             isSubmitting={isSubmitting}
             removeKeapTags={removeKeapTagsOnToggle}
             setRemoveKeapTags={setRemoveKeapTagsOnToggle}
+          />
+          
+          <OperationProgressDialog
+            isOpen={progressState.isOpen}
+            current={progressState.current}
+            total={progressState.total}
+            message={progressState.message}
+            title={progressState.title}
           />
         </main>
         <ManageCategoriesDialog

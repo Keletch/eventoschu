@@ -24,15 +24,23 @@ export async function GET() {
     events.forEach(event => {
       const data = transformEventForUI(event);
       const categoryInfo = data.subcategory ? `${data.category} > ${data.subcategory}` : data.category;
+      const durationInfo = data.displayDuration
+        ? `. Duración: ${data.displayDuration}`
+        : "";
       
-      if (data.isOnline) {
+      if (data.isPaid) {
+        const buyLink = data.externalUrl
+          ? `Compra tu entrada en: [${data.externalButtonText || 'Enlace de compra'}](${data.externalUrl})`
+          : "Enlace de compra por confirmar";
+        markdown += `- [${data.title}](${data.externalUrl || baseUrl}): **${data.displayDate}** — [${categoryInfo}] Evento de Pago. ${buyLink}. Costo: ${data.displayPrice}${durationInfo}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
+      } else if (data.isOnline) {
         const linkInfo = data.displayLinkEnabled && data.displayLinkUrl
           ? `Plataforma: ${data.displayLinkTitle} (${data.displayLinkUrl})`
           : `Plataforma por confirmar`;
-        markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** — [${categoryInfo}] Evento en línea. ${linkInfo}. Costo: ${data.displayPrice}. Duración: ${data.displayDuration}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
+        markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** — [${categoryInfo}] Evento en línea. ${linkInfo}. Costo: ${data.displayPrice}${durationInfo}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
       } else {
         // El estándar prefiere listas claras que las IAs puedan indexar
-        markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** en ${data.displayLocation} — [${categoryInfo}]. Costo: ${data.displayPrice}. Duración: ${data.displayDuration}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
+        markdown += `- [${data.title}](${baseUrl}): **${data.displayDate}** en ${data.displayLocation} — [${categoryInfo}]. Costo: ${data.displayPrice}${durationInfo}. Estado: ${event.active ? "Disponible" : "Agotado"}.\n`;
       }
     });
   } else {

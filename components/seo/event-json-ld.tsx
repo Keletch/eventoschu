@@ -21,6 +21,10 @@ export function EventJsonLd({ events }: EventJsonLdProps) {
         ? `${event.start_date.split('T')[0]}T${data.displayTime}:00`
         : event.start_date;
 
+      const durationText = data.displayDuration && data.displayDuration !== "Por confirmar"
+        ? `${data.displayDuration} de `
+        : "";
+
       return {
         "@type": "ListItem",
         "position": index + 1,
@@ -28,10 +32,10 @@ export function EventJsonLd({ events }: EventJsonLdProps) {
           "@type": "Event",
           "name": data.title,
           "description": data.isOnline
-            ? `Únete a ${data.performer} en este evento en línea. ${data.displayDuration} de aprendizaje con el Club de Inversionistas.`
-            : `Únete a ${data.performer} en este evento presencial en ${data.city}. ${data.displayDuration} de aprendizaje con el Club de Inversionistas.`,
+            ? `Únete a ${data.performer} en este evento en línea. ${durationText}aprendizaje con el Club de Inversionistas.`
+            : `Únete a ${data.performer} en este evento presencial en ${data.city}. ${durationText}aprendizaje con el Club de Inversionistas.`,
           "startDate": startDateTime,
-          "duration": data.isoDuration,
+          ...(data.isoDuration ? { "duration": data.isoDuration } : {}),
           "eventStatus": "https://schema.org/EventScheduled",
           "eventAttendanceMode": data.isOnline 
             ? "https://schema.org/OnlineEventAttendanceMode" 
@@ -53,10 +57,10 @@ export function EventJsonLd({ events }: EventJsonLdProps) {
               },
           "offers": {
             "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD",
-            "availability": "https://schema.org/InStock",
-            "url": baseUrl,
+            "price": data.isFree ? "0" : (event.price ? (event.price.replace(/[^0-9.]/g, '') || "0") : "0"),
+            "priceCurrency": (event.price && event.price.toUpperCase().includes('MXN')) ? 'MXN' : 'USD',
+            "availability": event.active ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            "url": (data.isPaid && data.externalUrl) ? data.externalUrl : baseUrl,
             "description": data.displayPrice
           },
           "performer": {

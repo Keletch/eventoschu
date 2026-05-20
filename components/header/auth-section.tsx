@@ -5,6 +5,7 @@ import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HeaderAlerts } from './header-alerts';
+import { trackGTMEvent } from '@/lib/gtm-utils';
 
 interface AuthSectionProps {
   isSignedIn: boolean;
@@ -105,7 +106,10 @@ export function AuthSection({
             />
           ) : (
             <SignInButton mode="modal">
-              <button className="text-muted-foreground hover:text-foreground transition-colors w-full h-full flex items-center justify-center cursor-pointer">
+              <button 
+                onClick={() => trackGTMEvent("clerk_auth_initiated")}
+                className="text-muted-foreground hover:text-foreground transition-colors w-full h-full flex items-center justify-center cursor-pointer"
+              >
                 <UserIcon className="h-5 w-5" />
               </button>
             </SignInButton>

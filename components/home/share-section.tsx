@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { trackGTMEvent } from "@/lib/gtm-utils";
 
 interface ShareSectionProps {
   selectedCityId: string;
@@ -19,6 +20,7 @@ export function ShareSection({ selectedCityId, cityName, userId }: ShareSectionP
   };
 
   const handleWhatsapp = () => {
+    trackGTMEvent("event_shared", { share_method: "whatsapp" });
     const link = getShareLink();
     const text = encodeURIComponent(
       `¡Hola! Me acabo de registrar para la gira de HyenUk Chu en ${cityName || "mi ciudad"}. Te comparto el link para que también te registres: ${link}`
@@ -27,6 +29,7 @@ export function ShareSection({ selectedCityId, cityName, userId }: ShareSectionP
   };
 
   const handleCopyLink = () => {
+    trackGTMEvent("event_shared", { share_method: "copy_link" });
     const link = getShareLink();
     navigator.clipboard.writeText(link).then(() => {
       toast.success("¡Enlace copiado al portapapeles!");

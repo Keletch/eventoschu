@@ -30,11 +30,22 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
  * @param action 'activate' | 'deactivate'
  * @param removeKeapTags Opcional. Si es false, no quita los tags en Keap al desactivar.
  */
-export async function syncMassTagsByEvent(eventId: string, action: 'activate' | 'deactivate', removeKeapTags: boolean = true) {
+export async function syncMassTagsByEvent(eventId: string, action: 'activate' | 'deactivate', removeKeapTags: boolean = true, operationId?: string) {
   const { isAdmin } = await verifyAdminPermission();
   if (!isAdmin) return { success: false, error: "No tienes permisos" };
 
+  let progressChannel: any = null;
+
   try {
+    if (operationId) {
+      progressChannel = supabaseAdmin.channel(`op-progress:${operationId}`);
+      await new Promise((resolve) => {
+        progressChannel.subscribe((status: string) => {
+          resolve(status === 'SUBSCRIBED');
+        });
+      });
+    }
+
     // 1. Obtener detalles del evento (especialmente los IDs de Tags)
     const { data: event, error: eventError } = await supabaseAdmin
       .from('events')
@@ -57,13 +68,24 @@ export async function syncMassTagsByEvent(eventId: string, action: 'activate' | 
     if (regError) throw regError;
     if (!registrations || registrations.length === 0) return { success: true, message: "No hay usuarios registrados para este evento." };
 
-
-
     // 3. Procesar cada usuario
     const results = { success: 0, failed: 0 };
 
     for (const reg of registrations) {
       try {
+        const currentIdx = results.success + results.failed + 1;
+        if (progressChannel) {
+          await progressChannel.send({
+            type: 'broadcast',
+            event: 'progress-update',
+            payload: {
+              current: currentIdx,
+              total: registrations.length,
+              message: `${action === 'activate' ? 'Asignando' : 'Removiendo'} tags para ${reg.email}...`
+            }
+          });
+        }
+
         const { success, contactId } = await getOrCreateContact({
           email: reg.email,
           firstName: reg.first_name,
@@ -110,6 +132,10 @@ export async function syncMassTagsByEvent(eventId: string, action: 'activate' | 
   } catch (error: any) {
     console.error("❌ Mass Ops Error:", error);
     return { success: false, error: error.message };
+  } finally {
+    if (progressChannel) {
+      supabaseAdmin.removeChannel(progressChannel);
+    }
   }
 }
 
@@ -121,10 +147,21 @@ export async function migrateEventTags(data: {
   oldTags: { pending?: string, confirmed?: string },
   newTags: { pending?: string, confirmed?: string },
   adminEmail: string,
-  eventTitle: string
+  eventTitle: string,
+  operationId?: string
 }) {
+  let progressChannel: any = null;
+  const { eventId, oldTags, newTags, operationId } = data;
+
   try {
-    const { eventId, oldTags, newTags } = data;
+    if (operationId) {
+      progressChannel = supabaseAdmin.channel(`op-progress:${operationId}`);
+      await new Promise((resolve) => {
+        progressChannel.subscribe((status: string) => {
+          resolve(status === 'SUBSCRIBED');
+        });
+      });
+    }
 
     // 1. Obtener usuarios del evento
     const { data: registrations, error: regError } = await supabaseAdmin
@@ -135,12 +172,24 @@ export async function migrateEventTags(data: {
     if (regError) throw regError;
     if (!registrations || registrations.length === 0) return { success: true, count: 0 };
 
-
-
     const affectedContacts: string[] = [];
+    let currentIdx = 0;
 
     for (const reg of registrations) {
       try {
+        currentIdx++;
+        if (progressChannel) {
+          await progressChannel.send({
+            type: 'broadcast',
+            event: 'progress-update',
+            payload: {
+              current: currentIdx,
+              total: registrations.length,
+              message: `Migrando etiquetas para ${reg.email}...`
+            }
+          });
+        }
+
         const { success, contactId } = await getOrCreateContact({
           email: reg.email,
           firstName: reg.first_name,
@@ -153,10 +202,24 @@ export async function migrateEventTags(data: {
         
         // Determinar qué tags quitar y poner
         const tagsToRemove = [];
-        if (oldTags.pending && oldTags.pending !== newTags.pending) tagsToRemove.push(oldTags.pending);
-        if (oldTags.confirmed && oldTags.confirmed !== newTags.confirmed) tagsToRemove.push(oldTags.confirmed);
+        let tagToAdd = null;
 
-        const tagToAdd = status === 'confirmed' ? newTags.confirmed : newTags.pending;
+        if (status === 'confirmed') {
+          if (oldTags.confirmed && oldTags.confirmed !== newTags.confirmed) {
+            tagsToRemove.push(oldTags.confirmed);
+          }
+          if (newTags.confirmed && oldTags.confirmed !== newTags.confirmed) {
+            tagToAdd = newTags.confirmed;
+          }
+        } else {
+          // Para usuarios pendientes:
+          // Solo modificamos Keap si el tag ya existía y cambió a otro valor válido (sin habilitar/deshabilitar)
+          const hasPendingChange = oldTags.pending && newTags.pending && oldTags.pending !== newTags.pending;
+          if (hasPendingChange) {
+            tagsToRemove.push(oldTags.pending);
+            tagToAdd = newTags.pending;
+          }
+        }
 
         // A. Eliminar tags viejos
         for (const tid of tagsToRemove) {
@@ -171,7 +234,10 @@ export async function migrateEventTags(data: {
           });
         }
 
-        affectedContacts.push(reg.email);
+        // Solo consideramos al contacto afectado si realmente modificamos algo en Keap
+        if (tagsToRemove.length > 0 || tagToAdd) {
+          affectedContacts.push(reg.email);
+        }
       } catch (err) {
         console.error(`❌ Error migrando tags para ${reg.email}:`, err);
       }
@@ -181,6 +247,10 @@ export async function migrateEventTags(data: {
   } catch (error: any) {
     console.error("❌ Error en migrateEventTags:", error);
     return { success: false, error: error.message };
+  } finally {
+    if (progressChannel) {
+      supabaseAdmin.removeChannel(progressChannel);
+    }
   }
 }
 
@@ -188,11 +258,22 @@ export async function migrateEventTags(data: {
  * 🧹 Purga un evento en cascada (Limpia Keap, Registros y Caché)
  * @param removeKeapTags Opcional. Si es false, conserva los tags en Keap como historial.
  */
-export async function purgeEvent(eventId: string, removeKeapTags: boolean = true) {
+export async function purgeEvent(eventId: string, removeKeapTags: boolean = true, operationId?: string) {
   const { isAdmin } = await verifyAdminPermission();
   if (!isAdmin) return { success: false, error: "No tienes permisos" };
 
+  let progressChannel: any = null;
+
   try {
+    if (operationId) {
+      progressChannel = supabaseAdmin.channel(`op-progress:${operationId}`);
+      await new Promise((resolve) => {
+        progressChannel.subscribe((status: string) => {
+          resolve(status === 'SUBSCRIBED');
+        });
+      });
+    }
+
     // 1. Obtener detalles del evento (Tags)
     const { data: event } = await supabaseAdmin
       .from('events')
@@ -211,10 +292,23 @@ export async function purgeEvent(eventId: string, removeKeapTags: boolean = true
       .contains('selected_events', [eventId]);
 
     if (registrations && registrations.length > 0) {
+      let currentIdx = 0;
 
-      
       // 3. Limpiar cada usuario (Keap y Supabase)
       for (const reg of registrations) {
+        currentIdx++;
+        if (progressChannel) {
+          await progressChannel.send({
+            type: 'broadcast',
+            event: 'progress-update',
+            payload: {
+              current: currentIdx,
+              total: registrations.length,
+              message: `Purgando registros de ${reg.email}...`
+            }
+          });
+        }
+
         // A. Quitar tags en Keap (Solo si se solicitó)
         if (removeKeapTags && tagsToRemove.length > 0) {
           try {
@@ -264,6 +358,10 @@ export async function purgeEvent(eventId: string, removeKeapTags: boolean = true
   } catch (error: any) {
     console.error("❌ Error en Purga de Evento:", error);
     return { success: false, error: error.message };
+  } finally {
+    if (progressChannel) {
+      supabaseAdmin.removeChannel(progressChannel);
+    }
   }
 }
 

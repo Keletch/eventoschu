@@ -43,6 +43,7 @@ import { esES } from "@clerk/localizations";
 import { CustomScrollbar } from "@/components/ui/custom-scrollbar-wrapper";
 import { VercelAnalytics } from "@/components/providers/vercel-analytics";
 import { VercelSpeedInsights } from "@/components/providers/vercel-speed-insights";
+import { GTMProvider } from "@/components/providers/gtm-provider";
 
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
@@ -101,6 +102,7 @@ export default function RootLayout({
               <div className="retro-grid" />
               {children}
               <CustomScrollbar />
+              <GTMProvider />
               <VercelAnalytics />
               <VercelSpeedInsights />
                             <Toaster 

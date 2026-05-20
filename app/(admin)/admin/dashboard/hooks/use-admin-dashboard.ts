@@ -21,6 +21,7 @@ export function useAdminDashboard() {
   const [events, setEvents] = useState<any[]>([]);
   const [registrations, setRegistrations] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [systemTags, setSystemTags] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCacheRefreshing, setIsCacheRefreshing] = useState(false);
@@ -41,7 +42,8 @@ export function useAdminDashboard() {
   const [newEvent, setNewEvent] = useState<any>({
     title: "", city: "", country: "", category_id: "", start_date: "",
     time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
-    price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true,
+    price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: null, flag: "PE", bg_class: "bg-sky-100", active: true,
+    external_url: "", external_button_text: "", tag_ids: []
   });
   
   // Toggles para acciones destructivas en Keap
@@ -62,18 +64,81 @@ export function useAdminDashboard() {
   // Modular Filters Logic
   const filters = useDashboardFilters(events, registrations);
 
+  // Progress tracking state for long Keap operations
+  const [progressState, setProgressState] = useState<{
+    isOpen: boolean;
+    current: number;
+    total: number;
+    message: string;
+    title: string;
+  }>({
+    isOpen: false,
+    current: 0,
+    total: 100,
+    message: "",
+    title: "",
+  });
+
+  const runWithProgress = async (
+    title: string,
+    operation: (operationId: string) => Promise<any>
+  ) => {
+    const opId = typeof crypto?.randomUUID === "function" 
+      ? crypto.randomUUID() 
+      : Math.random().toString(36).substring(2) + Date.now().toString(36);
+    
+    setProgressState({
+      isOpen: true,
+      current: 0,
+      total: 100,
+      message: "Estableciendo conexión con el servidor...",
+      title,
+    });
+
+    const channel = supabase
+      .channel(`op-progress:${opId}`)
+      .on("broadcast", { event: "progress-update" }, (payload) => {
+        const data = payload.payload;
+        if (data) {
+          setProgressState((prev) => ({
+            ...prev,
+            current: data.current,
+            total: data.total,
+            message: data.message,
+          }));
+        }
+      })
+      .subscribe();
+
+    try {
+      const result = await operation(opId);
+      return result;
+    } finally {
+      supabase.removeChannel(channel);
+      setProgressState({
+        isOpen: false,
+        current: 0,
+        total: 100,
+        message: "",
+        title: "",
+      });
+    }
+  };
+
   // --- Data Fetching ---
   const fetchData = useCallback(async () => {
     if (events.length === 0) setIsLoading(true);
     try {
-      const [{ data: eventsData }, { data: catsData }, regsResult] = await Promise.all([
-        supabase.from("events").select("*, categories:category_id(*, parent_category:parent_category_id(id, name, icon))").order("start_date", { ascending: true }),
+      const [{ data: eventsData }, { data: catsData }, { data: tagsData }, regsResult] = await Promise.all([
+        supabase.from("events").select("*, categories:category_id(*, parent_category:parent_category_id(id, name, icon)), event_tags(tags(*))").order("start_date", { ascending: true }),
         supabase.from("categories").select("*").order("name"),
+        supabase.from("tags").select("*").order("name"),
         getRegistrations()
       ]);
 
       if (eventsData) setEvents(eventsData);
       if (catsData) setCategories(catsData);
+      if (tagsData) setSystemTags(tagsData);
       if (regsResult.success && regsResult.data) {
         setRegistrations(regsResult.data);
       }
@@ -181,24 +246,52 @@ export function useAdminDashboard() {
         }
       }
 
-      // 2. Limpiamos el objeto para que no lleve la relación "categories" virtual que da error
+      // 2. Limpiamos el objeto para que no lleve relaciones virtuales que den error
       const adminEmail = session?.user?.email || "un administrador";
-      const { categories: _, ...eventToSave } = newEvent;
-      const { error } = eventToSave.id 
-        ? await supabase.from("events").update(eventToSave).eq("id", eventToSave.id)
-        : await supabase.from("events").insert([eventToSave]);
+      const { categories: _, event_tags: __, tag_ids: tagIdsToSave, ...eventToSave } = newEvent;
+      
+      const { data: savedData, error } = eventToSave.id 
+        ? await supabase.from("events").update(eventToSave).eq("id", eventToSave.id).select()
+        : await supabase.from("events").insert([eventToSave]).select();
       
       if (error) throw error;
 
+      const eventId = eventToSave.id || (savedData && savedData[0]?.id);
+      if (!eventId) throw new Error("No se pudo obtener el ID del evento");
+
+      // Sincronizar tabla event_tags
+      await supabase.from("event_tags").delete().eq("event_id", eventId);
+      if (tagIdsToSave && tagIdsToSave.length > 0) {
+        const relations = tagIdsToSave.map((tid: string) => ({ event_id: eventId, tag_id: tid }));
+        const { error: tagsInsertError } = await supabase.from("event_tags").insert(relations);
+        if (tagsInsertError) throw tagsInsertError;
+      }
+
       // 3. Si los tags cambiaron, migrar usuarios en Keap
       if (isUpdating && tagsChanged) {
-        const migration = await migrateEventTags({
-          eventId: eventToSave.id,
-          oldTags,
-          newTags: { pending: newEvent.keap_pending_tag_id, confirmed: newEvent.keap_tag_id },
-          adminEmail: session?.user?.email || "Admin",
-          eventTitle: eventToSave.title
-        });
+        const totalUsers = registrations.filter(r => r.selected_events?.includes(eventToSave.id)).length;
+        
+        let migration: { success: boolean; count?: number; error?: any } = { success: true, count: 0 };
+        if (totalUsers > 0) {
+          migration = await runWithProgress("Migrando Etiquetas en Keap CRM", (opId) =>
+            migrateEventTags({
+              eventId: eventToSave.id,
+              oldTags,
+              newTags: { pending: newEvent.keap_pending_tag_id, confirmed: newEvent.keap_tag_id },
+              adminEmail: session?.user?.email || "Admin",
+              eventTitle: eventToSave.title,
+              operationId: opId
+            })
+          );
+        } else {
+          migration = await migrateEventTags({
+            eventId: eventToSave.id,
+            oldTags,
+            newTags: { pending: newEvent.keap_pending_tag_id, confirmed: newEvent.keap_tag_id },
+            adminEmail: session?.user?.email || "Admin",
+            eventTitle: eventToSave.title
+          });
+        }
 
         if (migration.success && migration.count && migration.count > 0) {
           await notifyAdminTagsMigrated({
@@ -227,7 +320,19 @@ export function useAdminDashboard() {
     setIsSubmitting(true);
     try {
       const newStatus = !togglingEvent.active;
-      const syncResult = await syncMassTagsByEvent(togglingEvent.id, newStatus ? 'activate' : 'deactivate', removeKeapTagsOnToggle);
+      const totalUsers = registrations.filter(r => r.selected_events?.includes(togglingEvent.id)).length;
+      
+      let syncResult;
+      const affectsKeap = newStatus || removeKeapTagsOnToggle;
+      if (totalUsers > 0 && affectsKeap) {
+        syncResult = await runWithProgress(
+          newStatus ? "Activando Evento y Sincronizando Keap" : "Desactivando Evento y Pausando Keap",
+          (opId) => syncMassTagsByEvent(togglingEvent.id, newStatus ? 'activate' : 'deactivate', removeKeapTagsOnToggle, opId)
+        );
+      } else {
+        syncResult = await syncMassTagsByEvent(togglingEvent.id, newStatus ? 'activate' : 'deactivate', removeKeapTagsOnToggle);
+      }
+
       if (!syncResult.success) throw new Error(syncResult.error);
 
       const { error } = await supabase.from("events").update({ active: newStatus }).eq("id", togglingEvent.id);
@@ -263,7 +368,18 @@ export function useAdminDashboard() {
     if (!deletingEvent) return;
     setIsSubmitting(true);
     try {
-      const result = await purgeEvent(deletingEvent.id, removeKeapTagsOnPurge);
+      const totalUsers = registrations.filter(r => r.selected_events?.includes(deletingEvent.id)).length;
+      
+      let result;
+      if (totalUsers > 0 && removeKeapTagsOnPurge) {
+        result = await runWithProgress(
+          "Purgando Evento y Limpiando Keap CRM",
+          (opId) => purgeEvent(deletingEvent.id, removeKeapTagsOnPurge, opId)
+        );
+      } else {
+        result = await purgeEvent(deletingEvent.id, removeKeapTagsOnPurge);
+      }
+
       if (!result.success) throw new Error(result.error);
       await clearEventsCache();
       
@@ -329,7 +445,7 @@ export function useAdminDashboard() {
 
   return {
     // Data
-    events, registrations, categories, isLoading, isSubmitting, isCacheRefreshing,
+    events, registrations, categories, systemTags, isLoading, isSubmitting, isCacheRefreshing,
     keapTags, isTagsLoading, totalInscriptions, pendingCount, approvedCount, cancelledCount,
     
     // Filters sub-hook
@@ -345,6 +461,7 @@ export function useAdminDashboard() {
     newEvent, setNewEvent, notifications, unreadCount, isNotifOpen, setIsNotifOpen,
     removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle,
     removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge,
+    progressState,
 
     // Handlers
     fetchData, fetchTags, handleClearCache, handleCreateEvent, handleDeleteEvent, handleConfirmEventPurge,
@@ -352,7 +469,10 @@ export function useAdminDashboard() {
     handleEditEvent: (event: any) => { 
       setNewEvent({
         ...event,
-        start_date: formatDateForInput(event.start_date)
+        start_date: formatDateForInput(event.start_date),
+        external_url: event.external_url || "",
+        external_button_text: event.external_button_text || "",
+        tag_ids: event.event_tags?.map((et: any) => et.tags?.id).filter(Boolean) || []
       }); 
       setIsDialogOpen(true); 
     },
@@ -361,18 +481,24 @@ export function useAdminDashboard() {
       setNewEvent({
         title: "", city: "", country: "", category_id: "", start_date: "",
         time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
-        price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: "", flag: "PE", bg_class: "bg-sky-100", active: true,
-        initial_status: "confirmed"
+        price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: null, flag: "PE", bg_class: "bg-sky-100", active: true,
+        initial_status: "confirmed",
+        external_url: "",
+        external_button_text: "",
+        tag_ids: []
       });
       setIsDialogOpen(true);
     },
     handleDuplicateEvent: async (event: any) => {
-      const { id, created_at, categories, ...rest } = event;
+      const { id, created_at, categories, event_tags, ...rest } = event;
       setNewEvent({ 
         ...rest, 
         title: `${rest.title} (Copia)`, 
         active: false,
-        start_date: formatDateForInput(rest.start_date)
+        start_date: formatDateForInput(rest.start_date),
+        external_url: rest.external_url || "",
+        external_button_text: rest.external_button_text || "",
+        tag_ids: event.event_tags?.map((et: any) => et.tags?.id).filter(Boolean) || []
       });
       setIsDialogOpen(true);
     },

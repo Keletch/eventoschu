@@ -34,6 +34,9 @@ interface EventCardProps {
   linkTitle?: string | null;
   linkUrl?: string | null;
   linkEnabled?: boolean;
+  isPaid?: boolean;
+  externalUrl?: string | null;
+  externalButtonText?: string | null;
 }
 
 export function EventCard({
@@ -57,6 +60,9 @@ export function EventCard({
   linkTitle,
   linkUrl,
   linkEnabled = false,
+  isPaid = false,
+  externalUrl,
+  externalButtonText,
 }: EventCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -91,13 +97,18 @@ export function EventCard({
         isSoldOut 
           ? "border-border bg-muted grayscale cursor-not-allowed" 
           : cn(
-              "cursor-pointer bg-card transition-all duration-300",
-              selected 
-                ? "border-primary ring-4 ring-primary/5 shadow-md shadow-primary/20 -translate-y-0.5 hover:shadow-lg hover:shadow-primary/30" 
-                : "border-card-border shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
+              "bg-card transition-all duration-300",
+              isPaid
+                ? "cursor-default border-card-border shadow-sm hover:shadow-md"
+                : "cursor-pointer border-card-border shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1",
+              selected && !isPaid && "border-primary ring-4 ring-primary/5 shadow-md shadow-primary/20 -translate-y-0.5 hover:shadow-lg hover:shadow-primary/30"
             )
       )}
-      onClick={() => !isSoldOut && onSelect(id)}
+      onClick={() => {
+        if (!isPaid && !isSoldOut) {
+          onSelect(id);
+        }
+      }}
     >
       {isSoldOut && <EventSoldOutOverlay />}
 
@@ -163,12 +174,17 @@ export function EventCard({
             </div>
           </div>
         
-          {!isSoldOut && (
+          {!isSoldOut && !isPaid && (
             <div className={cn(
               "w-6 h-6 md:w-7 md:h-7 rounded-[20px] border-2 flex items-center justify-center transition-all shrink-0",
               selected ? "bg-primary border-primary" : "border-primary"
             )}>
               {selected && <Check className="w-4 h-4 md:w-5 md:h-5 text-primary-foreground" strokeWidth={3} />}
+            </div>
+          )}
+          {isPaid && (
+            <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider shrink-0 select-none">
+              Pago
             </div>
           )}
         </div>
@@ -206,12 +222,28 @@ export function EventCard({
         </div>
 
         <div className="mt-auto pt-6">
-          <EventProgressBar 
-            confirmedCount={confirmedCount}
-            capacity={capacity}
-            isSoldOut={isSoldOut}
-            isOpenMode={eventConfig.type === 'OPEN'}
-          />
+          {isPaid ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (externalUrl) {
+                  window.open(externalUrl, "_blank", "noopener,noreferrer");
+                }
+              }}
+              className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {externalButtonText || "Adquirir entrada"}
+              <ExternalLink className="size-3.5" strokeWidth={2.5} />
+            </button>
+          ) : (
+            <EventProgressBar 
+              confirmedCount={confirmedCount}
+              capacity={capacity}
+              isSoldOut={isSoldOut}
+              isOpenMode={eventConfig.type === 'OPEN'}
+            />
+          )}
         </div>
       </div>
     </Card>

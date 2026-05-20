@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { getEvents } from "@/app/actions/events";
+import { trackGTMEvent } from "@/lib/gtm-utils";
 import { getRegistrationsCount } from "@/app/actions/admin-registration";
 import { createRegistration, checkRegistration, updateEventSpecificData } from "@/app/actions/user-registration";
 import { getEventUIConfig } from "@/lib/event-config";
@@ -79,11 +80,24 @@ export function useHomeLogic(initialEvents: any[] = []) {
       // Si tiene parent, el category principal es el parent. Si no, es la categoría misma.
       return e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
     }).filter(Boolean);
-    return ["Todos", ...Array.from(new Set(cats))];
+    
+    const uniqueCats = Array.from(new Set(cats));
+    
+    // Verificar si hay eventos con el tag "Pago"
+    const hasPaidEvents = activeEvents.some(e => {
+      const tagsList = e.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
+      return tagsList.some((t: any) => t.slug === 'pago');
+    });
+
+    if (hasPaidEvents) {
+      uniqueCats.push("Pago");
+    }
+
+    return ["Todos", ...uniqueCats];
   }, [events]);
 
   const availableCategoryIcons = useMemo(() => {
-    const icons: Record<string, string> = { "Todos": "Calendar" };
+    const icons: Record<string, string> = { "Todos": "Calendar", "Pago": "CircleDollarSign" };
     events.filter(e => e.active !== false).forEach(e => {
       const parentName = e.categories?.parent_category?.name;
       const parentIcon = e.categories?.parent_category?.icon;
@@ -100,6 +114,20 @@ export function useHomeLogic(initialEvents: any[] = []) {
     if (activeCategory === "Todos") return [];
     const activeEvents = events.filter(e => e.active !== false);
     
+    if (activeCategory === "Pago") {
+      // Obtener subcategorías de los eventos que tengan el tag de pago
+      const paidEvents = activeEvents.filter(e => {
+        const tagsList = e.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
+        return tagsList.some((t: any) => t.slug === 'pago');
+      });
+      const subcats = paidEvents
+        .filter(e => e.categories?.parent_category)
+        .map(e => e.categories?.name)
+        .filter(Boolean);
+      if (subcats.length === 0) return [];
+      return ["Todos", ...Array.from(new Set(subcats))];
+    }
+
     // Obtenemos todos los eventos que pertenecen a esta macro-categoría
     const eventsInCat = activeEvents.filter(e => {
       const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
@@ -122,10 +150,17 @@ export function useHomeLogic(initialEvents: any[] = []) {
     // Filtro Nivel 1: Macro-Categoría
     let filtered = activeEvents;
     if (activeCategory !== "Todos") {
-      filtered = activeEvents.filter(e => {
-        const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
-        return mainCatName === activeCategory;
-      });
+      if (activeCategory === "Pago") {
+        filtered = activeEvents.filter(e => {
+          const tagsList = e.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
+          return tagsList.some((t: any) => t.slug === 'pago');
+        });
+      } else {
+        filtered = activeEvents.filter(e => {
+          const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
+          return mainCatName === activeCategory;
+        });
+      }
     }
 
     // Filtro Nivel 2: Sub-Categoría (Pills)
@@ -482,6 +517,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
       }));
 
       window.dispatchEvent(new Event('registration-success'));
+      trackGTMEvent("registration_completed");
 
       return { success: true }; 
     } catch (error: any) {

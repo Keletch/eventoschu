@@ -10,6 +10,7 @@ import { useTheme } from "next-themes";
 import { checkRegistration } from "@/app/actions/user-registration";
 import { Button } from "@/components/ui/button";
 import { COUNTRY_CODES } from "@/lib/constants";
+import { trackGTMEvent } from "@/lib/gtm-utils";
 
 // Modular Components
 import { FormField } from "./form-field";
@@ -29,6 +30,15 @@ export function RegistrationForm({
 }: RegistrationFormProps) {
   const { user, isSignedIn } = useUser();
   const { openSignIn } = useClerk();
+
+  const [hasTrackedInitiated, setHasTrackedInitiated] = useState(false);
+
+  const trackInitiation = useCallback(() => {
+    if (!hasTrackedInitiated) {
+      trackGTMEvent("registration_initiated");
+      setHasTrackedInitiated(true);
+    }
+  }, [hasTrackedInitiated]);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -136,11 +146,13 @@ export function RegistrationForm({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    trackInitiation();
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleCountryChange = (val: string | null) => {
+    trackInitiation();
     const value = val || "";
     if (value === "otro") {
       setIsOtherCountry(true);
@@ -198,7 +210,10 @@ export function RegistrationForm({
         <PhoneInput 
           phoneCode={formData.phoneCode}
           phone={formData.phone}
-          onPhoneCodeChange={(val) => setFormData(prev => ({ ...prev, phoneCode: val || "" }))}
+          onPhoneCodeChange={(val) => {
+            trackInitiation();
+            setFormData(prev => ({ ...prev, phoneCode: val || "" }));
+          }}
           onPhoneChange={handleChange}
         />
         

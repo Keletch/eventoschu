@@ -45,6 +45,13 @@ export function useHomeSync({
       )
       .on(
         'postgres_changes',
+        { event: '*', schema: 'public', table: 'event_tags' },
+        () => {
+          if (isMounted && onEventsUpdateRef.current) onEventsUpdateRef.current();
+        }
+      )
+      .on(
+        'postgres_changes',
         { event: '*', schema: 'public', table: 'registrations' },
         (payload) => {
           if (!isMounted) return;

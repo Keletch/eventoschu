@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SignInButton } from "@clerk/nextjs";
+import { trackGTMEvent } from "@/lib/gtm-utils";
 import { cn } from "@/lib/utils";
 import { STATUS_CONFIGS, RegistrationStatus } from "@/components/home/utils/home-constants";
 import { EventUIConfig } from "@/lib/event-config";
@@ -200,7 +201,10 @@ export function UserDataCard({
               {!isSignedIn ? (
                 <>
                   <SignInButton mode="modal">
-                    <button className="flex items-center gap-2 text-[#0F923D] font-bold text-base underline">
+                    <button 
+                      onClick={() => trackGTMEvent("clerk_auth_initiated")}
+                      className="flex items-center gap-2 text-[#0F923D] font-bold text-base underline"
+                    >
                       <Edit3 className="size-5" />
                       Inicia sesión para editar tu información
                     </button>

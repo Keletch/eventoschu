@@ -49,6 +49,13 @@ export function useAdminRealtime({ onRefresh, onNewNotification }: AdminRealtime
           onRefreshRef.current();
         }
       )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'event_tags' },
+        () => {
+          onRefreshRef.current();
+        }
+      )
       .subscribe();
 
     return () => {

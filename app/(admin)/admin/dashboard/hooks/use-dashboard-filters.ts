@@ -5,6 +5,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
   const [eventsSearch, setEventsSearch] = useState("");
   const [eventTabCatFilter, setEventTabCatFilter] = useState("all");
   const [eventTabStatusFilter, setEventTabStatusFilter] = useState("all");
+  const [eventTabTagFilter, setEventTabTagFilter] = useState("all");
 
   // Registrations Filters
   const [regsSearch, setRegsSearch] = useState("");
@@ -28,9 +29,11 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
       const matchesCat = eventTabCatFilter === "all" || event.category_id === eventTabCatFilter;
       const matchesStatus = eventTabStatusFilter === "all" || 
                            (eventTabStatusFilter === "active" ? event.active : !event.active);
-      return matchesSearch && matchesCat && matchesStatus;
+      const matchesTag = eventTabTagFilter === "all" ||
+                         event.event_tags?.some((et: any) => et.tags?.id === eventTabTagFilter);
+      return matchesSearch && matchesCat && matchesStatus && matchesTag;
     });
-  }, [events, eventsSearch, eventTabCatFilter, eventTabStatusFilter]);
+  }, [events, eventsSearch, eventTabCatFilter, eventTabStatusFilter, eventTabTagFilter]);
 
   // Filter Logic: Registrations
   const filteredRegs = useMemo(() => {
@@ -60,12 +63,18 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
       // Category filter is more complex as it depends on events linked to registration
       let matchesCat = true;
       if (regsCategoryFilter !== "all") {
-        // Implement complex cat logic if needed
+        matchesCat = (reg.selected_events || []).some((eventId: string) => {
+          const ev = events.find(e => e.id === eventId);
+          if (!ev) return false;
+          if (ev.category_id === regsCategoryFilter) return true;
+          if (ev.categories?.parent_category_id === regsCategoryFilter) return true;
+          return false;
+        });
       }
 
       return matchesSearch && matchesEvent && matchesStatus && matchesCat && matchesCountry && matchesSurvey && matchesLoyalty && matchesSurveyComplete && matchesToday && matchesClerk;
     });
-  }, [registrations, regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsClerkFilter]);
+  }, [events, registrations, regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsClerkFilter]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -82,6 +91,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
     eventsSearch, setEventsSearch,
     eventTabCatFilter, setEventTabCatFilter,
     eventTabStatusFilter, setEventTabStatusFilter,
+    eventTabTagFilter, setEventTabTagFilter,
     regsSearch, setRegsSearch,
     regsCategoryFilter, setRegsCategoryFilter,
     regsEventFilter, setRegsEventFilter,
@@ -110,6 +120,12 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
       setRegsTodayFilter(false);
       setRegsClerkFilter("all");
       setCurrentPage(1);
+    },
+    resetEventsFilters: () => {
+      setEventsSearch("");
+      setEventTabCatFilter("all");
+      setEventTabStatusFilter("all");
+      setEventTabTagFilter("all");
     }
   };
 }

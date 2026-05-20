@@ -247,6 +247,9 @@ export function EventsCarousel({
                       linkTitle={data.displayLinkTitle}
                       linkUrl={data.displayLinkUrl}
                       linkEnabled={data.displayLinkEnabled}
+                      isPaid={data.isPaid}
+                      externalUrl={data.externalUrl}
+                      externalButtonText={data.externalButtonText}
                     />
                   </div>
                 );

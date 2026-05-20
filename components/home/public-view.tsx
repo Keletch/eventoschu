@@ -17,6 +17,7 @@ import { useClerk } from "@clerk/nextjs";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { REVEAL_CONFIG } from "@/lib/animations";
+import { trackGTMEvent } from "@/lib/gtm-utils";
 
 interface PublicViewProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -157,30 +158,42 @@ export function PublicView({
             />
 
             {/* ── Formulario de registro ──────────────────── */}
-            <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-8 -mt-0">
-              <h2 className="text-[20px] font-medium text-foreground pl-2 md:pl-6">Registro</h2>
-              <div className="bg-form-card-bg rounded-[32px] p-6 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-form-card-border">
-                <RegistrationForm
-                  onSubmit={handleRegistration}
-                  isLoading={isSubmitting}
-                  onCheckRegistration={revalidateStatus}
-                />
-              </div>
-
-              {!isSignedIn && (
-                <div className="flex flex-col items-center gap-2 relative z-[100] mt-8">
-                  <button
-                    type="button"
-                    onClick={() => openSignIn({})}
-                    className="group flex items-center gap-2 text-secondary font-bold hover:opacity-80 transition-all p-2 text-center"
-                  >
-                    <span className="underline text-lg leading-tight font-bold">
-                      ¡Hazlo más fácil! Inicia sesión para autocompletar tus datos y asegurar tu lugar en segundos
-                    </span>
-                  </button>
+            {activeCategory !== "Pago" ? (
+              <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-8 -mt-0">
+                <h2 className="text-[20px] font-medium text-foreground pl-2 md:pl-6">Registro</h2>
+                <div className="bg-form-card-bg rounded-[32px] p-6 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-form-card-border">
+                  <RegistrationForm
+                    onSubmit={handleRegistration}
+                    isLoading={isSubmitting}
+                    onCheckRegistration={revalidateStatus}
+                  />
                 </div>
-              )}
-            </div>
+
+                {!isSignedIn && (
+                  <div className="flex flex-col items-center gap-2 relative z-[100] mt-8">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        trackGTMEvent("clerk_auth_initiated");
+                        openSignIn({});
+                      }}
+                      className="group flex items-center gap-2 text-secondary font-bold hover:opacity-80 transition-all p-2 text-center"
+                    >
+                      <span className="underline text-lg leading-tight font-bold">
+                        ¡Hazlo más fácil! Inicia sesión para autocompletar tus datos y asegurar tu lugar en segundos
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-500 space-y-4 text-center py-10 px-6 bg-primary/5 rounded-[32px] border border-primary/10 max-w-2xl mx-auto">
+                <p className="text-foreground font-bold text-lg">Adquiere tu entrada directamente</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Para participar en nuestros eventos de pago, haz clic en el botón de compra de la tarjeta correspondiente para ser redirigido a la plataforma de pago oficial.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

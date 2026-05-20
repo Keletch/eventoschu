@@ -54,6 +54,7 @@ interface EventDialogProps {
   event: any;
   setEvent: (event: any) => void;
   categories: any[];
+  systemTags?: any[];
   keapTags: any[];
   isTagsLoading: boolean;
   onRefreshTags: () => void;
@@ -86,6 +87,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
   event,
   setEvent,
   categories,
+  systemTags = [],
   keapTags,
   isTagsLoading,
   onRefreshTags,
@@ -94,6 +96,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
 }) => {
   const isTimeConfirm = event.time === "Por confirmar";
   const isDateConfirm = event.start_date?.startsWith("2099");
+  const isDurationConfirm = event.duration === "Por confirmar";
   // Evento Abierto (confirmed) puede ser ilimitado. Evento Cerrado (pending) no.
   const isOpenMode = (event.initial_status ?? "confirmed") !== "pending";
   const isUnlimited = (event.capacity ?? 0) >= 9999;
@@ -319,8 +322,87 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                         </>
                       );
                     })()}
-                </div>
-              </section>
+
+                    {/* Selector de Tags */}
+                    <div className="md:col-span-2 space-y-3 pt-4 border-t border-border/50">
+                      <div className="flex items-center gap-1.5">
+                        <Label className="text-xs font-black uppercase text-muted-foreground">Etiquetas del Sistema (Tags)</Label>
+                        <InfoTooltip content="Selecciona etiquetas especiales para habilitar comportamientos del sistema (como redirecciones de pago)." />
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {systemTags.map((tag: any) => {
+                          const isSelected = event.tag_ids?.includes(tag.id);
+                          return (
+                            <button
+                              key={tag.id}
+                              type="button"
+                              onClick={() => {
+                                const currentTags = event.tag_ids || [];
+                                const nextTags = isSelected
+                                  ? currentTags.filter((id: string) => id !== tag.id)
+                                  : [...currentTags, tag.id];
+                                setEvent({ ...event, tag_ids: nextTags });
+                              }}
+                              className={cn(
+                                "px-4 py-2 rounded-full text-xs font-bold transition-all border",
+                                isSelected
+                                  ? "bg-primary text-primary-foreground border-primary shadow-sm scale-105"
+                                  : "bg-muted/40 hover:bg-muted/80 text-muted-foreground border-border"
+                              )}
+                            >
+                              {tag.name}
+                            </button>
+                          );
+                        })}
+                        {systemTags.length === 0 && (
+                          <span className="text-xs italic text-muted-foreground">No hay etiquetas de sistema disponibles.</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Campos condicionales para Pago */}
+                    {(() => {
+                      const pagoTag = systemTags.find((t: any) => t.slug === "pago");
+                      const isPaidEvent = pagoTag && event.tag_ids?.includes(pagoTag.id);
+                      if (!isPaidEvent) return null;
+                      return (
+                        <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 p-6 bg-primary/5 rounded-[24px] border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-300 mt-4">
+                          <div className="md:col-span-2 space-y-1">
+                            <h4 className="text-xs font-black uppercase text-primary tracking-wide">Configuración de Evento Pago</h4>
+                            <p className="text-[11px] text-muted-foreground">Este evento redirigirá a un enlace externo en lugar del flujo de registro local.</p>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1.5">
+                              <Label className="text-xs font-black uppercase text-muted-foreground">Enlace de Compra / Redirección</Label>
+                              <span className="text-[10px] text-red-500 font-bold">*</span>
+                            </div>
+                            <Input
+                              required={isPaidEvent}
+                              type="url"
+                              value={event.external_url || ""}
+                              onChange={(e) => setEvent({ ...event, external_url: e.target.value })}
+                              className="rounded-xl border-border bg-background h-12 focus:bg-background transition-all shadow-sm"
+                              placeholder="https://hotmart.com/... o https://pay.chu.com/..."
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1.5">
+                              <Label className="text-xs font-black uppercase text-muted-foreground">Texto del Botón</Label>
+                            </div>
+                            <Input
+                              value={event.external_button_text || ""}
+                              onChange={(e) => setEvent({ ...event, external_button_text: e.target.value })}
+                              className="rounded-xl border-border bg-background h-12 focus:bg-background transition-all shadow-sm"
+                              placeholder="Adquiere tu entrada (Por defecto)"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </section>
 
               {/* ── Sección 2: Lugar y Fecha ── */}
               <section className="space-y-4">
@@ -522,12 +604,30 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                       <InfoTooltip content="Tiempo estimado del evento. Se muestra como texto libre. Ej: 'Aproximadamente 2 horas', '1 día completo'." />
                     </div>
                     <Input
-                      required
-                      value={event.duration || ""}
+                      required={!isDurationConfirm}
+                      value={isDurationConfirm ? "Por confirmar" : (event.duration || "")}
                       onChange={(e) => setEvent({ ...event, duration: e.target.value })}
-                      className="rounded-xl border-border bg-muted/50 h-12 focus:bg-background transition-all"
+                      disabled={isDurationConfirm}
+                      className={cn(
+                        "rounded-xl border-border h-12 transition-all w-full",
+                        isDurationConfirm
+                          ? "bg-muted text-muted-foreground opacity-60 border-dashed"
+                          : "bg-muted/50 focus:bg-background"
+                      )}
                       placeholder="Ej: Aproximadamente 2 horas"
                     />
+                    <div className="flex items-center justify-end gap-2 mt-1">
+                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                        ¿Por confirmar?
+                      </span>
+                      <Switch
+                        checked={isDurationConfirm}
+                        onCheckedChange={(val) =>
+                          setEvent({ ...event, duration: val ? "Por confirmar" : "Aproximadamente 2 horas" })
+                        }
+                        className="scale-[0.75] data-[state=checked]:bg-primary"
+                      />
+                    </div>
                   </div>
                 </div>
               </section>
