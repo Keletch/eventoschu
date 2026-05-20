@@ -475,28 +475,56 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
               />
             ))}
 
-            {/* Círculo interior — centro vacío con texto */}
-            <circle cx={CX} cy={CY} r={R_INNER - 2} fill="hsl(var(--card))" />
+            {/* Círculo interior — centro vacío (transparente) con texto */}
+            <circle cx={CX} cy={CY} r={R_INNER - 2} fill="none" />
             {active ? (
               <>
                 <text
-                  x={CX} y={CY - 10}
+                  x={CX}
+                  y={CY - 12}
                   textAnchor="middle"
-                  style={{ fontSize: '22px', fontWeight: 900, fontFamily: 'inherit', fill: active.color }}
+                  dominantBaseline="central"
+                  style={{
+                    textAnchor: 'middle',
+                    dominantBaseline: 'central',
+                    fontSize: '24px',
+                    fontWeight: 900,
+                    fontFamily: 'inherit',
+                    fill: active.color,
+                  }}
                 >
                   {active.count}
                 </text>
                 <text
-                  x={CX} y={CY + 8}
+                  x={CX}
+                  y={CY + 8}
                   textAnchor="middle"
-                  style={{ fontSize: '9px', fontWeight: 700, fontFamily: 'inherit', fill: 'hsl(var(--muted-foreground))' }}
+                  dominantBaseline="central"
+                  style={{
+                    textAnchor: 'middle',
+                    dominantBaseline: 'central',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    fontFamily: 'inherit',
+                    fill: 'var(--muted-foreground)',
+                  }}
                 >
                   registro{active.count !== 1 ? 's' : ''}
                 </text>
                 <text
-                  x={CX} y={CY + 22}
+                  x={CX}
+                  y={CY + 22}
                   textAnchor="middle"
-                  style={{ fontSize: '8px', fontWeight: 900, fontFamily: 'inherit', fill: 'hsl(var(--muted-foreground))', opacity: 0.6 }}
+                  dominantBaseline="central"
+                  style={{
+                    textAnchor: 'middle',
+                    dominantBaseline: 'central',
+                    fontSize: '9px',
+                    fontWeight: 900,
+                    fontFamily: 'inherit',
+                    fill: 'var(--muted-foreground)',
+                    opacity: 0.6,
+                  }}
                 >
                   {Math.round(active.pct * 100)}% del total
                 </text>
@@ -504,16 +532,34 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
             ) : (
               <>
                 <text
-                  x={CX} y={CY - 6}
+                  x={CX}
+                  y={CY - 8}
                   textAnchor="middle"
-                  style={{ fontSize: '26px', fontWeight: 900, fontFamily: 'inherit', fill: 'hsl(var(--foreground))' }}
+                  dominantBaseline="central"
+                  style={{
+                    textAnchor: 'middle',
+                    dominantBaseline: 'central',
+                    fontSize: '28px',
+                    fontWeight: 900,
+                    fontFamily: 'inherit',
+                    fill: 'var(--foreground)',
+                  }}
                 >
                   {thisWeekTotal}
                 </text>
                 <text
-                  x={CX} y={CY + 14}
+                  x={CX}
+                  y={CY + 14}
                   textAnchor="middle"
-                  style={{ fontSize: '9px', fontWeight: 700, fontFamily: 'inherit', fill: 'hsl(var(--muted-foreground))' }}
+                  dominantBaseline="central"
+                  style={{
+                    textAnchor: 'middle',
+                    dominantBaseline: 'central',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    fontFamily: 'inherit',
+                    fill: 'var(--muted-foreground)',
+                  }}
                 >
                   total semana
                 </text>
@@ -544,7 +590,7 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
                   />
                   <span
                     className="text-sm font-bold truncate transition-colors duration-150"
-                    style={{ color: isActive ? s.color : 'hsl(var(--foreground))' }}
+                    style={{ color: isActive ? s.color : 'var(--foreground)' }}
                   >
                     {s.label}
                   </span>
@@ -560,7 +606,7 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
                   </div>
                   <span
                     className="text-sm font-black min-w-[28px] text-right transition-colors duration-150"
-                    style={{ color: isActive ? s.color : 'hsl(var(--foreground))' }}
+                    style={{ color: isActive ? s.color : 'var(--foreground)' }}
                   >
                     {s.count}
                   </span>

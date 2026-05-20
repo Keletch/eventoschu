@@ -25,6 +25,7 @@ El sistema implementa una separación clara de responsabilidades para maximizar 
 - Integración profunda con la API de Keap para la gestión automática de contactos.
 - Sincronización bidireccional de etiquetas (Tags) basadas en el estado de la inscripción (Pendiente, Confirmado, Cancelado).
 - Creación y actualización automática de contactos durante el proceso de registro o modificación administrativa.
+- **Barra de Progreso en Vivo**: Operaciones masivas de sincronización y migración transmiten su avance contacto por contacto a través de WebSockets de Supabase Realtime, visualizándose en el admin con una barra dinámica de carga.
 
 ### ⚡ Capa de Rendimiento (Redis)
 - Implementación de **Upstash Redis** para el almacenamiento en caché de eventos y metadatos de etiquetas.
@@ -36,10 +37,11 @@ El sistema implementa una separación clara de responsabilidades para maximizar 
 
 ## 🛠️ Gestión Operativa (Admin Dashboard)
 
-- **Métricas en Tiempo Real**: Dashboards visuales con contadores live de inscripciones y estados.
+- **Métricas en Tiempo Real**: Visualización interactiva con un gráfico circular donut de tendencia (TrendChart) en split 50/50, lista de días de la semana y cálculo dinámico de interés por categorías y geolocalizaciones (Top 5 con expansión).
+- **Aforo Ilimitado**: Soporte para eventos online o con capacidad ilimitada (`capacity >= 9999`), representados visualmente con un badge e indicador `∞ Ilimitado`.
 - **Operaciones de Limpieza**: Herramientas para la eliminación segura de registros y purga de eventos, incluyendo la limpieza automática de tags en el CRM.
-- **Búsqueda Avanzada**: Sistema de filtrado inteligente que permite localizar usuarios y eventos por múltiples criterios (contenido, fecha, estado, categoría).
-- **Interfaz Camaleónica (Multi-Tema)**: El dashboard soporta nativamente múltiples temas visuales (**Light, Dark, Synthwave, Hacker y Coffee**) utilizando tokens de diseño semánticos y CSS variables que garantizan una experiencia de usuario premium, consistente y accesible en cualquier entorno de iluminación.
+- **Búsqueda Avanzada**: Sistema de filtrado inteligente de usuarios y eventos por múltiples criterios simultáneos, ordenado de forma responsiva para evitar encabalgamiento de filas.
+- **Interfaz Camaleónica (Multi-Tema)**: El dashboard soporta nativamente múltiples temas visuales (**Light, Dark, Synthwave, Hacker y Coffee**) utilizando tokens de diseño semánticos y CSS variables que garantizan una experiencia de usuario premium, consistente y accesible en cualquier entorno de iluminación (incluyendo gráficos SVG nativos con adaptabilidad automática).
 
 ---
 **Desarrollado por Keletch (2026)**  

@@ -191,6 +191,25 @@ Componentes atómicos de diseño reutilizables en toda la app.
 
 ---
 
+## 🗄️ Modelado de Datos y Sincronización Realtime
+
+### 1. Base de Datos Relacional (PostgreSQL)
+El backend en Supabase gestiona las relaciones maestras para la segmentación de eventos:
+*   `tags`: Contiene las etiquetas globales del sistema (ej: `pago` para clasificar y marcar eventos pagados).
+*   `event_tags`: Tabla relacional intermedia (Muchos a Muchos) que vincula etiquetas a eventos específicos para modular la UI y el comportamiento de inscripción de forma dinámica.
+
+### 2. Canales de Progreso en Tiempo Real (Keap CRM Sync)
+Para operaciones de administración pesadas (como la migración o sincronización de miles de contactos en el CRM Keap):
+*   **Orquestación WebSocket**: Se asigna un identificador único de operación (`operationId`).
+*   **Canales Dinámicos**: La Server Action abre y transmite actualizaciones de porcentaje y logs a un canal exclusivo de Supabase Realtime (`op-progress:${operationId}`).
+*   **Consumo Cliente**: El componente `OperationProgressDialog` se suscribe en tiempo real a este canal para renderizar una barra de progreso fluida con feedback directo de cada contacto procesado, mitigando el riesgo de desconexión del cliente durante procesos prolongados de red.
+
+### 3. Lógica de Negocio en Inteligencia y Métricas
+*   **Cálculo SSoT**: Toda métrica de eventos extraída en el dashboard admin consume la función centralizada `transformEventForUI` para formatear de manera idéntica los títulos y nombres de ciudades virtuales (`Online`).
+*   **Manejo de Aforo Ilimitado**: Los eventos con un cupo mayor o igual a `9999` se consideran de capacidad ilimitada (`isUnlimited: true`), inyectando en la vista de rendimiento un badge de infinito `∞` que sobrescribe las barras de porcentaje y evita cálculos de ocupación incorrectos.
+
+---
+
 ### 📁 `/public` (Directorio de Estáticos Globales)
 Archivos accesibles abiertamente desde la URL raíz (`/`).
 - `cdi-logo.png`: El logotipo crudo de Club de Inversionistas.

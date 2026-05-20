@@ -190,6 +190,13 @@ appearance={{
 *   **Mapeo de Variables**: El modal de Clerk lee `var(--card)` y `var(--foreground)`, adaptándose dinámicamente si el HTML cambia de clase.
 *   **Inversión de Logotipo**: El logo del Club de Inversionistas se invierte automáticamente en brillo y saturación bajo temas oscuros o neón a través de los selectores de Clerk específicos (`logoBox`).
 
+### 🎨 Estilización Camaleónica de Elementos SVG Nativos
+
+Dado que los gráficos SVG vectoriales inline (como el gráfico de tendencia en métricas) se renderizan en un contexto gráfico independiente de HTML, los selectores de clases CSS tradicionales o el uso directo de `hsl(var(--variable))` en los atributos directos del SVG (`fill` o `stroke`) pueden fallar en múltiples navegadores, provocando que los elementos caigan en fallbacks negros.
+
+*   **Regla Obligatoria**: Utilizar variables CSS nativas a nivel de estilos en línea de React para dar color a textos, áreas y trazos vectoriales (ej: `style={{ fill: 'var(--foreground)' }}` o `style={{ stroke: 'var(--border)' }}`).
+*   **Adaptabilidad en Tiempo Real**: Al conmutar entre los 5 temas, el motor de Next-Themes actualiza instantáneamente los valores mapeados a las variables CSS. Esto permite que el gráfico adapte sus colores vectoriales al instante y sin necesidad de realizar re-renders en React.
+
 ---
 
 ## 🛠️ Plantilla de Referencia de Tokens Semánticos

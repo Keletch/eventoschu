@@ -29,8 +29,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Lee `DESIGN.md` antes de crear UI.
 - No uses esquinas afiladas. Todo el diseño utiliza radios masivos (`rounded-[32px]`, `rounded-[48px]`, `rounded-full`).
 - No inventes colores. Usa el Primary Blue (`#3154DC`) para llamadas a la acción primarias y el Link Blue (`#007AFF`) para enlaces secundarios.
-- **Soporte Multi-Tema Obligatorio (Admin)**: En el panel administrativo, está estrictamente prohibido usar colores literales (ej: `bg-white`, `text-neutral-400`). Debes usar exclusivamente **Tokens Semánticos** de Shadcn/Tailwind (`bg-card`, `bg-muted`, `text-muted-foreground`, `border`) para que la interfaz sea "Camaleónica" y se adapte automáticamente a los temas Light, Dark y Synthwave.
+- **Soporte Multi-Tema Obligatorio (Admin)**: En el panel administrativo, está estrictamente prohibido usar colores literales (ej: `bg-white`, `text-neutral-400`). Debes usar exclusivamente **Tokens Semánticos** de Shadcn/Tailwind (`bg-card`, `bg-muted`, `text-muted-foreground`, `border`) para que la interfaz sea "Camaleónica" y se adapte automáticamente a los temas Light, Dark, Synthwave, Hacker y Coffee.
   - ✅ **Excepción — Colores de Estado Semántico Universal:** Los colores de semáforo para estados de registro (`bg-emerald-500` = Confirmado, `bg-amber-500` = Pendiente, `bg-destructive` = Cancelado) están exentos de tokenización. Son convenciones universales de UX que deben mantenerse constantes en todos los temas para garantizar accesibilidad y comprensión inmediata.
+  - 🎨 **Regla para Gráficos SVG Camaleónicos:** Al construir o editar gráficos SVG inline en el panel administrativo, está prohibido utilizar colores estáticos hexadecimales para trazos, textos u áreas neutras. Del mismo modo, no utilices clases de Tailwind o formatos `hsl(var(--variable))` en los atributos directos del SVG (ej: `fill="hsl(...)"`), ya que suelen fallar su resolución fuera de elementos DOM estándar. Usa siempre variables CSS directas en el estilo inline de React (ej: `style={{ fill: 'var(--foreground)' }}`).
 
 ## 6. 🏗️ Arquitectura DRY y Domain-Driven Colocation
 

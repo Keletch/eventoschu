@@ -44,6 +44,8 @@ La plataforma ignora las esquinas afiladas. Todo el sistema geométrico se basa 
 - **Tarjetas y Formularios**: 
   - Tienen `rounded-[32px]`.
   - **Sombras Dinámicas Adaptativas**: En el tema Light se utilizan sombras elegantes e imperceptibles (`shadow-[0_8px_30px_rgb(0,0,0,0.04)]` para contenedores y `shadow-[0_20px_50px_rgba(0,0,0,0.05)]` para dar el efecto de flotación). En temas oscuros (`dark`, `synthwave`, `coffee`), las sombras se atenúan o desactivan, confiando en bordes sutiles (`border-border/50`) para delimitar profundidad. En el tema `hacker`, se reemplaza por un filtro fluorescente en hover (`filter: drop-shadow(2px_0px_0px_rgba(0,255,65,0.3))`).
+  - **Campos y Selectores Dinámicos**: Formulario de creación/edición de eventos con selector de tags en formato chips. Al seleccionar la etiqueta `"Pago"`, un contenedor animado se despliega para ingresar la URL externa de compra y el texto personalizado del botón.
+  - **Layout de Filtros en Dashboard**: Diseño responsivo flexible (`flex flex-col sm:flex-row gap-4 mt-3 mb-4 w-full`) para chips de filtros activos y botones utilitarios del admin. Evita encabalgamiento de líneas y solapamiento visual en interfaces móviles y de escritorio, sincronizando la entrada estética con la animación `tab-content-anim` de GSAP.
 - **Botones y Badges**:
   - Botones principales: `rounded-2xl` (cuadrados curvos).
   - Badges (como el de "Lista de espera"): `rounded-full` (forma de píldora).
@@ -114,6 +116,11 @@ El panel administrativo (`/admin/dashboard`) utiliza un enfoque **Camaleónico**
   - Acentos de Marca: `text-primary` o `bg-primary` (toman el color de acción del tema activo).
 - **Estados Dinámicos y Contraste**: Los estados de registro (ej. "Pendiente", "Confirmado") deben usar opacidades sobre colores base (ej: `bg-amber-500/10 text-amber-500`) para garantizar que el texto tenga el contraste requerido sobre el fondo de cualquier tema (Light, Dark, Synthwave, Hacker o Coffee).
 - **Diálogos y Modales**: Deben usar `bg-card` para su fondo y asegurar que los encabezados o cierres tengan contraste mediante el uso de `bg-secondary` u opacidades controladas.
+
+### Visualización de Datos y Gráficos SVG Camaleónicos:
+- **Layout de Tendencias (Donut + Lista)**: Estructurado en un split 50/50. El 50% izquierdo dibuja un donut SVG interactivo con el acumulado central transparente y hover sobre segmentos. El 50% derecho renderiza la lista de días con micro-barras porcentuales. Ambos lados tienen interactividad cruzada en hover (resaltado mutuo).
+- **Indicadores de Drill-Down**: Las tarjetas KPI interactivas revelan un micro-texto `Ver lista →` al hover. Las barras de progreso y listas de rendimiento muestran un badge discreto de `(Filtrar)` para guiar las acciones del administrador.
+- **Badge de Aforo Especial**: El aforo ilimitado se representa mediante un badge violeta (`bg-purple-500/10 text-purple-400 border border-purple-500/20`) y el glifo `∞ Ilimitado`, asegurando legibilidad sin alterar el balance de contrastes del tema.
 
 ---
 *Nota: Este diseño sigue la filosofía "CSS para layout y primeras impresiones, JS para interactividad profunda", asegurando que el diseño parezca Premium sin perjudicar el Lighthouse Score.*
