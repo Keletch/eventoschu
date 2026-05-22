@@ -232,6 +232,7 @@ export function EventsCarousel({
                       city={data.city}
                       country={data.country}
                       flag={event.flag}
+                      imageUrl={event.image_url}
                       date={data.displayDate}
                       time={data.displayTime}
                       duration={data.displayDuration}

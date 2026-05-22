@@ -116,12 +116,21 @@ export function CategoryTabs({
                     : "bg-tab-inactive-bg text-tab-inactive-text border-tab-border/50 hover:opacity-90 hover:border-tab-border"
                 )}
               >
-                {Icon && (
+                {iconName && iconName.startsWith("http") ? (
+                  <img 
+                    src={iconName} 
+                    alt={label} 
+                    className={cn(
+                      "size-[18px] object-cover rounded-[4px] transition-none duration-300",
+                      !isActive && "opacity-70 group-hover:opacity-100 grayscale"
+                    )} 
+                  />
+                ) : Icon ? (
                   <Icon className={cn(
                     "size-[18px] transition-none duration-300",
                     isActive ? "text-category-tab-active-text" : "text-tab-inactive-text/70 group-hover:text-foreground"
                   )} />
-                )}
+                ) : null}
                 <span className="transition-none">{label}</span>
               </button>
             );

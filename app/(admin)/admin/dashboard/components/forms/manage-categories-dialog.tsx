@@ -7,28 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { createCategory, deleteCategory, updateCategory } from "@/app/actions/admin-categories";
-import { Loader2, Plus, Trash2, Edit, FolderTree, Calendar, Laptop, MapPin, Users, Video, Globe, BookOpen, Presentation, Coffee, Building, Mic, Music, Camera, Zap, Award, NotebookPen, Monitor } from "lucide-react";
+import { Loader2, Plus, Trash2, Edit, FolderTree, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-const AVAILABLE_ICONS = [
-  { name: "Calendar", icon: Calendar },
-  { name: "Laptop", icon: Laptop },
-  { name: "MapPin", icon: MapPin },
-  { name: "Users", icon: Users },
-  { name: "Video", icon: Video },
-  { name: "Globe", icon: Globe },
-  { name: "BookOpen", icon: BookOpen },
-  { name: "Presentation", icon: Presentation },
-  { name: "Coffee", icon: Coffee },
-  { name: "Building", icon: Building },
-  { name: "Mic", icon: Mic },
-  { name: "Music", icon: Music },
-  { name: "Camera", icon: Camera },
-  { name: "Zap", icon: Zap },
-  { name: "NotebookPen", icon: NotebookPen },
-  { name: "Monitor", icon: Monitor },
-  { name: "Award", icon: Award },
-];
+import { uploadImage } from "@/app/actions/upload-image";
+import { convertToWebP } from "@/lib/image-utils";
+import { AVAILABLE_ICONS } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 interface ManageCategoriesDialogProps {
@@ -43,6 +26,8 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
   const [name, setName] = useState("");
   const [parentId, setParentId] = useState<string>("none");
   const [icon, setIcon] = useState<string>("Calendar");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any | null>(null);
 
   // Filtrar solo las categorías principales para ser padres
@@ -52,7 +37,13 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
     setEditingCategory(category);
     setName(category.name);
     setParentId(category.parent_category_id || "none");
-    setIcon(category.icon || "Calendar");
+    if (category.icon && category.icon.startsWith("http")) {
+      setImageUrl(category.icon);
+      setIcon("Custom");
+    } else {
+      setIcon(category.icon || "Calendar");
+      setImageUrl("");
+    }
   };
 
   const handleCancelEdit = () => {
@@ -60,6 +51,7 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
     setName("");
     setParentId("none");
     setIcon("Calendar");
+    setImageUrl("");
   };
 
   const handleSubmit = async () => {
@@ -71,7 +63,7 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
     setIsSubmitting(true);
     try {
       const parent = parentId === "none" ? null : parentId;
-      const selectedIcon = parentId === "none" ? icon : null;
+      const selectedIcon = parentId === "none" ? (imageUrl ? imageUrl : icon) : null;
 
       if (editingCategory) {
         const result = await updateCategory(editingCategory.id, name, parent, selectedIcon);
@@ -91,6 +83,7 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
           setName("");
           setParentId("none");
           setIcon("Calendar");
+          setImageUrl("");
           if (onCategoryAdded) onCategoryAdded();
         } else {
           toast.error(result.error || "Error al crear la categoría.");
@@ -119,6 +112,38 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
       toast.error("Error inesperado al eliminar.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validación de tamaño (Máximo 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("La imagen original es demasiado gigante. Máximo 10MB permitido.");
+      return;
+    }
+    
+    setIsUploading(true);
+    try {
+      toast.info("Optimizando imagen...");
+      const optimizedFile = await convertToWebP(file, 800, 0.8);
+
+      const formData = new FormData();
+      formData.append("file", optimizedFile);
+      const res = await uploadImage(formData);
+      if (res.success && res.url) {
+        setImageUrl(res.url);
+        setIcon("Custom");
+        toast.success("Imagen subida con éxito.");
+      } else {
+        toast.error(res.error || "Error al subir imagen.");
+      }
+    } catch (error) {
+      toast.error("Error al subir la imagen.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -182,29 +207,63 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
 
               {/* Selector de Icono (Solo para Categorías Principales) */}
               {parentId === "none" && (
-                <div className="space-y-3 pt-2">
-                  <Label className="text-xs font-black uppercase text-muted-foreground">Ícono de la Categoría</Label>
-                  <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
-                    {AVAILABLE_ICONS.map((item) => {
-                      const IconComponent = item.icon;
-                      const isActive = icon === item.name;
-                      return (
-                        <button
-                          key={item.name}
-                          type="button"
-                          onClick={() => setIcon(item.name)}
-                          className={cn(
-                            "flex items-center justify-center p-3 rounded-xl border transition-all duration-200",
-                            isActive 
-                              ? "bg-primary text-primary-foreground border-primary shadow-md scale-105" 
-                              : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
-                          )}
-                          title={item.name}
-                        >
-                          <IconComponent className="size-5" />
-                        </button>
-                      );
-                    })}
+                <div className="space-y-3 pt-2 relative">
+                  <div className="flex items-center gap-1.5">
+                    <Label className="text-xs font-black uppercase text-muted-foreground whitespace-nowrap">Ícono de la Categoría</Label>
+                    <span className="text-[10px] text-muted-foreground/70 hidden sm:inline-block">Recomendado: Cuadrada 1:1, max 2MB</span>
+                  </div>
+                  {imageUrl ? (
+                    <div className="p-4 border border-border rounded-xl flex flex-col items-center justify-center bg-muted/20 gap-3">
+                      <img src={imageUrl} alt="Icono personalizado" className="size-16 object-cover rounded-xl shadow-sm border border-border" />
+                      <span className="text-xs text-muted-foreground font-medium">Usando imagen personalizada</span>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
+                      {AVAILABLE_ICONS.map((item) => {
+                        const IconComponent = item.icon;
+                        const isActive = icon === item.name;
+                        return (
+                          <button
+                            key={item.name}
+                            type="button"
+                            onClick={() => { setIcon(item.name); setImageUrl(""); }}
+                            className={cn(
+                              "flex items-center justify-center p-3 rounded-xl border transition-all duration-200",
+                              isActive 
+                                ? "bg-primary text-primary-foreground border-primary shadow-md scale-105" 
+                                : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+                            )}
+                            title={item.name}
+                          >
+                            <IconComponent className="size-5" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-end gap-2 mt-1">
+                    <Label htmlFor="category-icon-upload" className="cursor-pointer text-[10px] font-bold bg-muted hover:bg-muted/80 text-foreground px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5">
+                      {isUploading ? "Subiendo..." : "Subir Imagen Personalizada"}
+                    </Label>
+                    <Input 
+                      id="category-icon-upload" 
+                      type="file" 
+                      accept="image/png, image/jpeg, image/webp" 
+                      className="hidden" 
+                      onChange={handleFileUpload}
+                      disabled={isUploading || isSubmitting}
+                    />
+                    {imageUrl && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 px-2 text-destructive hover:bg-destructive/10 text-[10px] rounded-full"
+                        onClick={() => { setImageUrl(""); setIcon("Calendar"); }}
+                      >
+                        Quitar
+                      </Button>
+                    )}
                   </div>
                 </div>
               )}
@@ -253,6 +312,9 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-background border border-border rounded-lg">
                             {(() => {
+                              if (parent.icon && parent.icon.startsWith("http")) {
+                                return <img src={parent.icon} alt={parent.name} className="size-4 object-cover rounded-sm" />;
+                              }
                               const FoundIcon = AVAILABLE_ICONS.find(i => i.name === parent.icon)?.icon || Calendar;
                               return <FoundIcon className="size-4 text-primary" />;
                             })()}

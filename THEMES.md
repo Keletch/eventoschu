@@ -10,7 +10,7 @@ El sistema de temas se implementa combinando tres tecnologías principales: **Ne
 
 ```mermaid
 graph TD
-    A[ThemeToggle.tsx] -->|setTheme| B[next-themes ThemeProvider]
+    A[theme-toggle.tsx] -->|setTheme| B[next-themes ThemeProvider]
     B -->|Inyecta clase en html/body| C[DOM html class='synthwave']
     C -->|Activa selectores en themes.css / globals.css| D[Variables CSS --background, etc.]
     D -->|Mapeado por Tailwind v4 @theme inline| E[Clases de Utilidad Tailwind bg-card, text-primary]

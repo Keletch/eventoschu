@@ -124,6 +124,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                                 <div className="flex items-center gap-2 border-b border-border pb-2 mb-1">
                                   <EventFlag 
                                     flag={event?.flag} 
+                                    imageUrl={event?.image_url}
                                     className="w-8 h-8 rounded-lg" 
                                     bgClass="bg-muted" 
                                   />

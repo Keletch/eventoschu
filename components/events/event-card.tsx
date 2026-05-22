@@ -18,6 +18,7 @@ interface EventCardProps {
   city: string;
   country: string;
   flag: string;
+  imageUrl?: string | null;
   date: string;
   time: string;
   duration: string;
@@ -45,6 +46,7 @@ export function EventCard({
   city,
   country,
   flag,
+  imageUrl,
   date,
   time,
   duration,
@@ -117,6 +119,7 @@ export function EventCard({
           <div className="flex items-start gap-3 md:gap-4 overflow-hidden w-full">
             <EventFlag 
               flag={flag} 
+              imageUrl={imageUrl}
               bgClass={bgClass} 
               className="size-12 md:size-14 rounded-[16px] md:rounded-[20px] p-2.5 md:p-3 shrink-0" 
             />

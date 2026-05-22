@@ -135,4 +135,13 @@ Antes de escribir **cualquier** bloque de código nuevo (componente, hook, anima
 
 > 💡 **Nota sobre Experimentos:** Para funcionalidades experimentales o pruebas A/B, consulta la sección de **Vercel Flags** en `ARCHITECTURE.md` antes de proceder con una implementación tradicional.
 
+## 9. 🦧 Modo Caveman Obligatorio (Tersura Absoluta)
+- **Regla de Comunicación Máxima**: Para reducir drásticamente el consumo de tokens y maximizar la eficiencia de procesamiento (reduciendo la latencia de respuesta), **todos los agentes** deben responder de forma extremadamente concisa y directa, acatando las pautas del skill `caveman` (Modo Caveman - Intensidad: **lite** por defecto, o **full** si el usuario lo solicita).
+- **Cómo estructurar las respuestas**:
+  - **Cero rodeos**: Elimina introducciones de cortesía ("¡Por supuesto!", "Con gusto te ayudo con...") y conclusiones redundantes.
+  - **Elimina el relleno**: Quita palabras como "básicamente", "simplemente", "realmente", "actualmente".
+  - **Precisión Técnica Absoluta**: Los nombres de archivos, funciones y bloques de código deben ser exactos e intactos. La explicación en prosa debe ser mínima, directa y usar viñetas cortas.
+  - **Consistencia**: Mantén este estilo de comunicación terso y compacto durante toda la sesión.
+
 *Si has entendido estas reglas, estás listo para programar sin romper la matrix.*
+

@@ -137,6 +137,7 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                         <div className="flex items-center gap-4">
                           <EventFlag 
                             flag={event?.flag} 
+                            imageUrl={event?.image_url}
                             className="w-12 h-12 rounded-2xl bg-card border border-border/50 group-hover:scale-110 transition-transform shadow-sm" 
                             bgClass="bg-card"
                           />

@@ -1,7 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { EventFlag } from "@/components/ui/event-flag";
+import { toast } from "sonner";
+import { uploadImage } from "@/app/actions/upload-image";
+import { convertToWebP } from "@/lib/image-utils";
+import { AVAILABLE_ICONS } from "@/lib/icons";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -111,6 +116,41 @@ export const EventDialog: React.FC<EventDialogProps> = ({
   const isOnline = selectedCategory?.slug === "online" || 
                    parentCategory?.slug === "online" || 
                    !!event.is_virtual;
+
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validación de tamaño original (Máximo 10MB para permitir que el conversor actúe sobre fotos pesadas)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("La imagen original es demasiado gigante. Máximo 10MB permitido.");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      // 1. Transformar a WebP (Codex) con max 800px para que pese súper poco
+      toast.info("Optimizando imagen...");
+      const optimizedFile = await convertToWebP(file, 800, 0.8);
+
+      // 2. Subir el archivo ya optimizado
+      const formData = new FormData();
+      formData.append("file", optimizedFile);
+      const res = await uploadImage(formData);
+      if (res.success && res.url) {
+        setEvent({ ...event, image_url: res.url });
+        toast.success("Imagen de evento subida con éxito.");
+      } else {
+        toast.error(res.error || "Error al subir imagen.");
+      }
+    } catch (error) {
+      toast.error("Error al subir la imagen.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <TooltipProvider delay={200}>
@@ -257,31 +297,96 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                             </Select>
                           </div>
 
-                          {/* Bandera (Ahora al lado de Categoría Principal) */}
-                          <div className="space-y-2">
+                          {/* Bandera / Imagen Personalizada */}
+                          <div className="space-y-2 relative">
                             <div className="flex items-center gap-1.5">
-                              <Label className="text-xs font-black uppercase text-muted-foreground">Código de Bandera (ISO)</Label>
-                              <InfoTooltip content="Código ISO de 2 letras del país. Ej: PE = Perú, MX = México, CO = Colombia, ES = España." />
+                              <Label className="text-xs font-black uppercase text-muted-foreground whitespace-nowrap">Imagen o Bandera</Label>
+                              <InfoTooltip content="Sube una imagen cuadrada (1:1) máximo 2MB, o usa un código ISO de 2 letras del país. Ej: PE = Perú, MX = México." />
                             </div>
+
                             <div className="flex gap-2 items-center">
-                              <EventFlag 
-                                flag={isOnline ? "WEB" : event.flag} 
-                                className="size-12 rounded-xl shrink-0 border border-border/50" 
-                                bgClass="bg-muted" 
-                              />
+                              {isOnline ? (
+                                <Popover>
+                                  <PopoverTrigger className="shrink-0 hover:scale-105 transition-transform outline-none focus:ring-2 focus:ring-primary/20 rounded-xl">
+                                    <EventFlag 
+                                      flag={event.flag?.startsWith("icon:") ? event.flag : "WEB"} 
+                                      imageUrl={event.image_url}
+                                      className="size-12 rounded-xl border border-border/50 pointer-events-none" 
+                                      bgClass="bg-muted" 
+                                    />
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-64 p-3 bg-popover border-border shadow-xl rounded-2xl" side="bottom" align="start">
+                                    <p className="text-xs font-bold text-muted-foreground mb-2">Seleccionar ícono</p>
+                                    <div className="grid grid-cols-4 gap-2">
+                                      {AVAILABLE_ICONS.map((item) => {
+                                        const IconComponent = item.icon;
+                                        // Considerar WEB como el equivalente a Globe por retrocompatibilidad visual
+                                        const isWebDefault = item.name === "Globe" && (!event.flag || event.flag === "WEB" || !event.flag.startsWith("icon:"));
+                                        const isActive = event.flag === `icon:${item.name}` || isWebDefault;
+                                        
+                                        return (
+                                          <button
+                                            key={item.name}
+                                            type="button"
+                                            onClick={() => setEvent({ ...event, flag: `icon:${item.name}` })}
+                                            className={cn(
+                                              "p-2 rounded-xl flex items-center justify-center border hover:bg-muted/50 transition-colors",
+                                              isActive ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground"
+                                            )}
+                                          >
+                                            <IconComponent className="size-5" strokeWidth={1.5} />
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                              ) : (
+                                <EventFlag 
+                                  flag={event.flag} 
+                                  imageUrl={event.image_url}
+                                  className="size-12 rounded-xl shrink-0 border border-border/50" 
+                                  bgClass="bg-muted" 
+                                />
+                              )}
                               {isOnline ? (
                                 <div className="flex-1 h-12 rounded-xl bg-muted border border-border flex items-center px-4">
                                   <span className="text-sm font-bold text-muted-foreground">Evento Global (Web)</span>
                                 </div>
                               ) : (
                                 <Input
-                                  required
+                                  required={!event.image_url}
                                   value={event.flag}
                                   onChange={(e) => setEvent({ ...event, flag: e.target.value.toUpperCase() })}
                                   className="rounded-xl border-border bg-muted/50 h-12 font-mono flex-1 focus:bg-background transition-all"
                                   placeholder="PE"
                                   maxLength={2}
                                 />
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 mt-1">
+                              <Label htmlFor="event-image-upload" className="cursor-pointer text-[10px] font-bold bg-muted hover:bg-muted/80 text-foreground px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5">
+                                {isUploading ? "Subiendo..." : "Subir Imagen Personalizada"}
+                              </Label>
+                              <Input 
+                                id="event-image-upload" 
+                                type="file" 
+                                accept="image/png, image/jpeg, image/webp" 
+                                className="hidden" 
+                                onChange={handleFileUpload}
+                                disabled={isUploading || isSubmitting}
+                              />
+                              {event.image_url && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  type="button"
+                                  className="h-7 px-2 text-destructive hover:bg-destructive/10 text-[10px] rounded-full"
+                                  onClick={() => setEvent({ ...event, image_url: null })}
+                                >
+                                  Quitar
+                                </Button>
                               )}
                             </div>
                           </div>

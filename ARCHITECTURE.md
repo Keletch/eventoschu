@@ -39,6 +39,7 @@ Contiene todas las rutas web accesibles y la lógica pesada ejecutada exclusivam
 
 #### `/app/actions` (Server Actions - El Motor Backend)
 Esta carpeta reemplaza las APIs REST tradicionales y brinda funciones de servidor ejecutables desde el cliente.
+- `admin-categories.ts`: Motor backend para la creación, edición y borrado de categorías.
 - `admin-check.ts`: Middleware de validación que verifica si el usuario autenticado tiene permisos de administrador.
 - `admin-mass-ops.ts`: Tareas pesadas o de mantenimiento (limpieza masiva, migraciones).
 - `admin-notifications.ts`: CRUD de notificaciones internas vistas en el panel de administrador.
@@ -142,6 +143,7 @@ Todos los archivos raíz de esta carpeta son **orquestadores** (`header.tsx`, `f
 
 #### `/components/providers` (Wrappers de Infraestructura)
 Componentes "use client" mínimos que envuelven servicios de terceros para poder usarlos en el Server Component `layout.tsx`.
+- `gtm-provider.tsx`: Envoltorio para inicializar Google Tag Manager.
 - `theme-provider.tsx`: Envoltorio cliente para configurar `next-themes` con soporte de 5 temas.
 - `vercel-analytics.tsx`: Wrapper de Vercel Analytics (excluye rutas `/admin`).
 - `vercel-speed-insights.tsx`: Wrapper de Vercel Speed Insights (excluye rutas `/admin`).
@@ -179,6 +181,7 @@ Componentes atómicos de diseño reutilizables en toda la app.
 ### 🛠️ `/lib` (Librerías, Backend Crudo y Utilidades Maestras)
 - `animations.ts`: Variables y tiempos mágicos compartidos para todas las librerías GSAP.
 - `constants.ts`: Tokens estáticos inmutables en la app.
+- `gtm-utils.ts`: Funciones de utilidad para inyectar eventos al DataLayer de Google Tag Manager.
 - `date-utils.ts`: Scripts a prueba de bombas para extraer y mostrar fechas sin el dolor de cabeza de las "Zonas Horarias".
 - `event-config.ts`: Decisiones puras (ej. Si el evento es gratis, cómo se debe tratar).
 - `event-transformers.ts`: **LA ÚNICA FUENTE DE VERDAD (SSoT)**. Es el archivo más crítico para formato. Una sola función (`transformEventForUI`) es llamada tanto por el carrusel de humanos, los buscadores de Google y el LLM de las IA's para garantizar que la información (`Por confirmar`, `Sin Costo`) sea 100% idéntica en todo el universo de internet. Incluye la constante `TIMEZONE_SHORT_CODES` que mapea zonas horarias IANA a etiquetas cortas legibles (ej: `America/Mexico_City` → `CDMX`, `America/New_York` → `EST`) que se inyectan automáticamente en el campo de hora de cada evento.

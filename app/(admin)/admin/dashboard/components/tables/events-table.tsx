@@ -64,6 +64,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                     <div className="flex items-center gap-3">
                       <EventFlag 
                         flag={event.flag} 
+                        imageUrl={event.image_url}
                         bgClass={event.bg_class || "bg-muted"} 
                         className="w-10 h-10"
                        />
