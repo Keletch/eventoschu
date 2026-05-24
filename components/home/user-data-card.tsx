@@ -51,7 +51,6 @@ export function UserDataCard({
   isSubmitting,
   handleUpdateRegistration,
   isSignedIn,
-  _eventConfig,
 }: UserDataCardProps) {
   const badgeConfig = STATUS_CONFIGS[(status as RegistrationStatus) || "pending"] ?? STATUS_CONFIGS.pending;
 

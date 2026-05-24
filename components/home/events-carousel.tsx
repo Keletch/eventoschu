@@ -63,7 +63,6 @@ export function EventsCarousel({
   handleScroll,
   availableMonths,
   handleMonthChange,
-  _formatSafeDate,
 }: EventsCarouselProps) {
   const { resolvedTheme } = useTheme();
   const cardsRef = useRef<HTMLDivElement>(null);

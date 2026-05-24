@@ -25,11 +25,10 @@ interface RegistrationFormProps {
 
 export function RegistrationForm({ 
   onSubmit, 
-  _onCheckRegistration,
   isLoading = false 
 }: RegistrationFormProps) {
   const { user, isSignedIn } = useUser();
-  const { _openSignIn } = useClerk();
+  const clerk = useClerk();
 
   const [hasTrackedInitiated, setHasTrackedInitiated] = useState(false);
 

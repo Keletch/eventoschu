@@ -493,7 +493,7 @@ export function useAdminDashboard() {
       setIsDialogOpen(true);
     },
     handleDuplicateEvent: async (event: any) => {
-      const { _id, _created_at, _categories, _event_tags, ...rest } = event;
+      const { id: _id, created_at: _created_at, categories: _categories, event_tags: _event_tags, ...rest } = event;
       setNewEvent({ 
         ...rest, 
         title: `${rest.title} (Copia)`, 

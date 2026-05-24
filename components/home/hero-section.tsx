@@ -18,7 +18,6 @@ interface HeroSectionProps {
 export function HeroSection({
   isSignedIn,
   user,
-  _isCheckMode,
   revalidateStatus,
   setIsCheckMode,
 }: HeroSectionProps) {

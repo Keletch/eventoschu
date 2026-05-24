@@ -56,8 +56,6 @@ interface PublicViewProps {
 export function PublicView({
   containerRef,
   scrollContainerRef,
-  _isPageReady,
-  _isRegistered,
   isSignedIn,
   user,
   revalidateStatus,
@@ -85,7 +83,6 @@ export function PublicView({
   handleRegistration,
   isSubmitting,
   formatSafeDate,
-  _isTransitioning,
 }: PublicViewProps) {
   const { openSignIn } = useClerk();
 

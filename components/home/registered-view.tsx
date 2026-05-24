@@ -44,7 +44,6 @@ export function RegisteredView({
   events,
   isLoadingEvents,
   startNewRegistration,
-  _eventDataMap,
   isEditing,
   editFormData,
   handleEditChange,
@@ -53,7 +52,6 @@ export function RegisteredView({
   isSubmitting,
   handleUpdateRegistration,
   isSignedIn,
-  _revalidateStatus,
   setIsSurveyOpen,
   surveyData,
 }: RegisteredViewProps) {

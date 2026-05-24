@@ -35,8 +35,6 @@ export const KeapTagPicker: React.FC<KeapTagPickerProps> = ({
   onChange,
   tags,
   isLoading = false,
-  _onRefresh,
-  _showRefresh = false,
 }) => {
   const [open, setOpen] = useState(false);
   const selectedTag = tags.find((t) => t.id === value);

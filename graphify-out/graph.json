@@ -4,87 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "label": "check_db.js",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L1",
-      "id": "check_db_js",
-      "community": 17,
-      "norm_label": "check_db.js"
-    },
-    {
-      "label": "envPath",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L6",
-      "id": "eventoschu_check_db_envpath",
-      "community": 17,
-      "norm_label": "envpath"
-    },
-    {
-      "label": "envContent",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L7",
-      "id": "eventoschu_check_db_envcontent",
-      "community": 17,
-      "norm_label": "envcontent"
-    },
-    {
-      "label": "env",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L8",
-      "id": "eventoschu_check_db_env",
-      "community": 17,
-      "norm_label": "env"
-    },
-    {
-      "label": "parts",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L10",
-      "id": "eventoschu_check_db_parts",
-      "community": 17,
-      "norm_label": "parts"
-    },
-    {
-      "label": "key",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L12",
-      "id": "eventoschu_check_db_key",
-      "community": 17,
-      "norm_label": "key"
-    },
-    {
-      "label": "val",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L13",
-      "id": "eventoschu_check_db_val",
-      "community": 17,
-      "norm_label": "val"
-    },
-    {
-      "label": "supabase",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L26",
-      "id": "eventoschu_check_db_supabase",
-      "community": 17,
-      "norm_label": "supabase"
-    },
-    {
-      "label": "test()",
-      "file_type": "code",
-      "source_file": "check_db.js",
-      "source_location": "L28",
-      "id": "eventoschu_check_db_test",
-      "community": 17,
-      "norm_label": "test()"
-    },
-    {
       "label": "components.json",
       "file_type": "code",
       "source_file": "components.json",
@@ -1204,7 +1123,7 @@
       "label": "AdminDashboard()",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/page.tsx",
-      "source_location": "L33",
+      "source_location": "L32",
       "id": "dashboard_page_admindashboard",
       "community": 3,
       "norm_label": "admindashboard()"
@@ -1474,7 +1393,7 @@
       "label": "RegistrationDialogProps",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/registration-dialog.tsx",
-      "source_location": "L29",
+      "source_location": "L28",
       "id": "forms_registration_dialog_registrationdialogprops",
       "community": 1,
       "norm_label": "registrationdialogprops"
@@ -1483,7 +1402,7 @@
       "label": "RegistrationDialog()",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/registration-dialog.tsx",
-      "source_location": "L40",
+      "source_location": "L39",
       "id": "forms_registration_dialog_registrationdialog",
       "community": 3,
       "norm_label": "registrationdialog()"
@@ -1654,7 +1573,7 @@
       "label": "EventsTableProps",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/tables/events-table.tsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "id": "tables_events_table_eventstableprops",
       "community": 7,
       "norm_label": "eventstableprops"
@@ -1663,7 +1582,7 @@
       "label": "EventsTable()",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/tables/events-table.tsx",
-      "source_location": "L31",
+      "source_location": "L30",
       "id": "tables_events_table_eventstable",
       "community": 3,
       "norm_label": "eventstable()"
@@ -1924,7 +1843,7 @@
       "label": "RootLayout()",
       "file_type": "code",
       "source_file": "app/(public)/layout.tsx",
-      "source_location": "L51",
+      "source_location": "L50",
       "id": "public_layout_rootlayout",
       "community": 5,
       "norm_label": "rootlayout()"
@@ -1942,7 +1861,7 @@
       "label": "HomeDataWrapper()",
       "file_type": "code",
       "source_file": "app/(public)/page.tsx",
-      "source_location": "L13",
+      "source_location": "L12",
       "id": "public_page_homedatawrapper",
       "community": 18,
       "norm_label": "homedatawrapper()"
@@ -1951,7 +1870,7 @@
       "label": "Page()",
       "file_type": "code",
       "source_file": "app/(public)/page.tsx",
-      "source_location": "L32",
+      "source_location": "L31",
       "id": "public_page_page",
       "community": 8,
       "norm_label": "page()"
@@ -2997,7 +2916,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L1",
       "id": "components_home_category_tabs_tsx",
-      "community": 19,
+      "community": 39,
       "norm_label": "category-tabs.tsx"
     },
     {
@@ -3006,7 +2925,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L9",
       "id": "home_category_tabs_all_lucide_icons",
-      "community": 19,
+      "community": 39,
       "norm_label": "all_lucide_icons"
     },
     {
@@ -3015,7 +2934,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L31",
       "id": "home_category_tabs_categorytabsprops",
-      "community": 19,
+      "community": 39,
       "norm_label": "categorytabsprops"
     },
     {
@@ -3024,7 +2943,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L41",
       "id": "home_category_tabs_category_icons",
-      "community": 19,
+      "community": 39,
       "norm_label": "category_icons"
     },
     {
@@ -3033,7 +2952,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L49",
       "id": "home_category_tabs_category_labels",
-      "community": 19,
+      "community": 39,
       "norm_label": "category_labels"
     },
     {
@@ -3042,7 +2961,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L54",
       "id": "home_category_tabs_categorytabs",
-      "community": 19,
+      "community": 39,
       "norm_label": "categorytabs()"
     },
     {
@@ -3112,7 +3031,7 @@
       "label": "ContactFooterCard()",
       "file_type": "code",
       "source_file": "components/home/contact-footer-card.tsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "id": "home_contact_footer_card_contactfootercard",
       "community": 4,
       "norm_label": "contactfootercard()"
@@ -3166,7 +3085,7 @@
       "label": "EventsSkeleton()",
       "file_type": "code",
       "source_file": "components/home/events-skeleton.tsx",
-      "source_location": "L5",
+      "source_location": "L4",
       "id": "home_events_skeleton_eventsskeleton",
       "community": 19,
       "norm_label": "eventsskeleton()"
@@ -3193,7 +3112,7 @@
       "label": "HeroSectionProps",
       "file_type": "code",
       "source_file": "components/home/hero-section.tsx",
-      "source_location": "L12",
+      "source_location": "L10",
       "id": "home_hero_section_herosectionprops",
       "community": 5,
       "norm_label": "herosectionprops"
@@ -3202,7 +3121,7 @@
       "label": "HeroSection()",
       "file_type": "code",
       "source_file": "components/home/hero-section.tsx",
-      "source_location": "L20",
+      "source_location": "L18",
       "id": "home_hero_section_herosection",
       "community": 19,
       "norm_label": "herosection()"
@@ -3213,7 +3132,7 @@
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L1",
       "id": "components_home_month_tabs_tsx",
-      "community": 2,
+      "community": 19,
       "norm_label": "month-tabs.tsx"
     },
     {
@@ -3222,7 +3141,7 @@
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L9",
       "id": "home_month_tabs_monthtabsprops",
-      "community": 2,
+      "community": 19,
       "norm_label": "monthtabsprops"
     },
     {
@@ -3231,7 +3150,7 @@
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L17",
       "id": "home_month_tabs_monthtabs",
-      "community": 2,
+      "community": 19,
       "norm_label": "monthtabs()"
     },
     {
@@ -3292,7 +3211,7 @@
       "label": "EventsCarousel",
       "file_type": "code",
       "source_file": "components/home/public-view.tsx",
-      "source_location": "L11",
+      "source_location": "L10",
       "id": "home_public_view_eventscarousel",
       "community": 19,
       "norm_label": "eventscarousel"
@@ -3301,7 +3220,7 @@
       "label": "PublicViewProps",
       "file_type": "code",
       "source_file": "components/home/public-view.tsx",
-      "source_location": "L22",
+      "source_location": "L21",
       "id": "home_public_view_publicviewprops",
       "community": 19,
       "norm_label": "publicviewprops"
@@ -3310,7 +3229,7 @@
       "label": "PublicView()",
       "file_type": "code",
       "source_file": "components/home/public-view.tsx",
-      "source_location": "L57",
+      "source_location": "L56",
       "id": "home_public_view_publicview",
       "community": 2,
       "norm_label": "publicview()"
@@ -3436,7 +3355,7 @@
       "label": "HeaderSkeleton()",
       "file_type": "code",
       "source_file": "components/home/skeletons.tsx",
-      "source_location": "L7",
+      "source_location": "L6",
       "id": "home_skeletons_headerskeleton",
       "community": 8,
       "norm_label": "headerskeleton()"
@@ -3445,7 +3364,7 @@
       "label": "HeroSkeleton()",
       "file_type": "code",
       "source_file": "components/home/skeletons.tsx",
-      "source_location": "L20",
+      "source_location": "L19",
       "id": "home_skeletons_heroskeleton",
       "community": 8,
       "norm_label": "heroskeleton()"
@@ -3454,7 +3373,7 @@
       "label": "CategoryTabsSkeleton()",
       "file_type": "code",
       "source_file": "components/home/skeletons.tsx",
-      "source_location": "L52",
+      "source_location": "L51",
       "id": "home_skeletons_categorytabsskeleton",
       "community": 8,
       "norm_label": "categorytabsskeleton()"
@@ -3463,7 +3382,7 @@
       "label": "MonthTabsSkeleton()",
       "file_type": "code",
       "source_file": "components/home/skeletons.tsx",
-      "source_location": "L66",
+      "source_location": "L65",
       "id": "home_skeletons_monthtabsskeleton",
       "community": 8,
       "norm_label": "monthtabsskeleton()"
@@ -3634,7 +3553,7 @@
       "label": "NotificationBellProps",
       "file_type": "code",
       "source_file": "components/notifications/notification-bell.tsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "id": "notifications_notification_bell_notificationbellprops",
       "community": 3,
       "norm_label": "notificationbellprops"
@@ -3643,7 +3562,7 @@
       "label": "NotificationBell()",
       "file_type": "code",
       "source_file": "components/notifications/notification-bell.tsx",
-      "source_location": "L27",
+      "source_location": "L26",
       "id": "notifications_notification_bell_notificationbell",
       "community": 3,
       "norm_label": "notificationbell()"
@@ -4174,7 +4093,7 @@
       "label": "CustomScrollbar()",
       "file_type": "code",
       "source_file": "components/ui/custom-scrollbar.tsx",
-      "source_location": "L15",
+      "source_location": "L14",
       "id": "ui_custom_scrollbar_customscrollbar",
       "community": 14,
       "norm_label": "customscrollbar()"
@@ -4462,7 +4381,7 @@
       "label": "EventFlagProps",
       "file_type": "code",
       "source_file": "components/ui/event-flag.tsx",
-      "source_location": "L10",
+      "source_location": "L9",
       "id": "ui_event_flag_eventflagprops",
       "community": 1,
       "norm_label": "eventflagprops"
@@ -4471,7 +4390,7 @@
       "label": "EventFlag()",
       "file_type": "code",
       "source_file": "components/ui/event-flag.tsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "id": "ui_event_flag_eventflag",
       "community": 1,
       "norm_label": "eventflag()"
@@ -5130,7 +5049,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L1",
       "id": "lib_animations_ts",
-      "community": 2,
+      "community": 19,
       "norm_label": "animations.ts"
     },
     {
@@ -5139,7 +5058,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L6",
       "id": "lib_animations_anim_config",
-      "community": 2,
+      "community": 19,
       "norm_label": "anim_config"
     },
     {
@@ -5148,7 +5067,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L35",
       "id": "lib_animations_anim_selectors",
-      "community": 2,
+      "community": 19,
       "norm_label": "anim_selectors"
     },
     {
@@ -6403,6 +6322,87 @@
       "norm_label": "\ud83d\udcdd reglas de oro para disenadores y agentes"
     },
     {
+      "label": "check_db.js",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L1",
+      "community": 17,
+      "norm_label": "check_db.js",
+      "id": "check_db_js"
+    },
+    {
+      "label": "envPath",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L6",
+      "community": 17,
+      "norm_label": "envpath",
+      "id": "eventoschu_check_db_envpath"
+    },
+    {
+      "label": "envContent",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L7",
+      "community": 17,
+      "norm_label": "envcontent",
+      "id": "eventoschu_check_db_envcontent"
+    },
+    {
+      "label": "env",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L8",
+      "community": 17,
+      "norm_label": "env",
+      "id": "eventoschu_check_db_env"
+    },
+    {
+      "label": "parts",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L10",
+      "community": 17,
+      "norm_label": "parts",
+      "id": "eventoschu_check_db_parts"
+    },
+    {
+      "label": "key",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L12",
+      "community": 17,
+      "norm_label": "key",
+      "id": "eventoschu_check_db_key"
+    },
+    {
+      "label": "val",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L13",
+      "community": 17,
+      "norm_label": "val",
+      "id": "eventoschu_check_db_val"
+    },
+    {
+      "label": "supabase",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L26",
+      "community": 17,
+      "norm_label": "supabase",
+      "id": "eventoschu_check_db_supabase"
+    },
+    {
+      "label": "test()",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L28",
+      "community": 17,
+      "norm_label": "test()",
+      "id": "eventoschu_check_db_test"
+    },
+    {
       "label": "AVAILABLE_ICONS",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
@@ -6650,86 +6650,6 @@
     }
   ],
   "links": [
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "check_db.js",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "check_db_js",
-      "target": "eventoschu_check_db_envpath"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "check_db.js",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "check_db_js",
-      "target": "eventoschu_check_db_envcontent"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "check_db.js",
-      "source_location": "L8",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "check_db_js",
-      "target": "eventoschu_check_db_env"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "check_db.js",
-      "source_location": "L10",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "check_db_js",
-      "target": "eventoschu_check_db_parts"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "check_db.js",
-      "source_location": "L12",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "check_db_js",
-      "target": "eventoschu_check_db_key"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "check_db.js",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "check_db_js",
-      "target": "eventoschu_check_db_val"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "check_db.js",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "check_db_js",
-      "target": "eventoschu_check_db_supabase"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "check_db.js",
-      "source_location": "L28",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "check_db_js",
-      "target": "eventoschu_check_db_test"
-    },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
@@ -10402,17 +10322,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "app_admin_admin_dashboard_components_forms_registration_dialog_tsx",
-      "target": "ui_dialog_dialogdescription"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/(admin)/admin/dashboard/components/forms/registration-dialog.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_admin_admin_dashboard_components_forms_registration_dialog_tsx",
       "target": "ui_dialog_dialogheader"
     },
     {
@@ -10687,6 +10596,17 @@
       "confidence_score": 1.0,
       "source": "app_admin_admin_dashboard_components_forms_registration_dialog_tsx",
       "target": "forms_registration_dialog_registrationdialog"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/registration-dialog.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_registration_dialog_tsx",
+      "target": "ui_dialog_dialogdescription"
     },
     {
       "relation": "imports_from",
@@ -11296,28 +11216,6 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/(admin)/admin/dashboard/components/tables/events-table.tsx",
-      "source_location": "L17",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_admin_admin_dashboard_components_tables_events_table_tsx",
-      "target": "lib_utils_ts"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/(admin)/admin/dashboard/components/tables/events-table.tsx",
-      "source_location": "L17",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_admin_admin_dashboard_components_tables_events_table_tsx",
-      "target": "lib_utils_cn"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/(admin)/admin/dashboard/components/tables/events-table.tsx",
       "source_location": "L18",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -11387,6 +11285,28 @@
       "confidence_score": 1.0,
       "source": "app_admin_admin_dashboard_components_tables_events_table_tsx",
       "target": "tables_events_table_eventstable"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/tables/events-table.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_tables_events_table_tsx",
+      "target": "lib_utils_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/tables/events-table.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_tables_events_table_tsx",
+      "target": "lib_utils_cn"
     },
     {
       "relation": "imports_from",
@@ -13141,28 +13061,6 @@
       "target": "seo_event_json_ld_eventjsonld"
     },
     {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/(public)/page.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_public_page_tsx",
-      "target": "components_home_events_skeleton_tsx"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/(public)/page.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_public_page_tsx",
-      "target": "home_events_skeleton_eventsskeleton"
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/(public)/page.tsx",
@@ -13203,6 +13101,28 @@
       "confidence_score": 1.0,
       "source": "app_public_page_tsx",
       "target": "public_page_page"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(public)/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_public_page_tsx",
+      "target": "components_home_events_skeleton_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(public)/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_public_page_tsx",
+      "target": "home_events_skeleton_eventsskeleton"
     },
     {
       "relation": "calls",
@@ -13662,28 +13582,6 @@
       "target": "actions_utils_realtime_broadcasttouser"
     },
     {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/actions/admin-mass-ops.ts",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_actions_admin_mass_ops_ts",
-      "target": "actions_utils_realtime_broadcasttopublic"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/actions/admin-mass-ops.ts",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "app_actions_admin_mass_ops_ts",
-      "target": "actions_utils_realtime_broadcasttoadmins"
-    },
-    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -13849,6 +13747,28 @@
       "confidence_score": 1.0,
       "source": "app_api_webhooks_clerk_route_ts",
       "target": "app_actions_admin_mass_ops_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/actions/admin-mass-ops.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_actions_admin_mass_ops_ts",
+      "target": "actions_utils_realtime_broadcasttopublic"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/actions/admin-mass-ops.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_actions_admin_mass_ops_ts",
+      "target": "actions_utils_realtime_broadcasttoadmins"
     },
     {
       "relation": "calls",
@@ -16522,9 +16442,9 @@
       "source_file": "components/header.tsx",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_header_tsx",
-      "target": "components_header_install_pwa_button_tsx",
-      "confidence_score": 1.0
+      "target": "components_header_install_pwa_button_tsx"
     },
     {
       "relation": "imports",
@@ -16533,9 +16453,9 @@
       "source_file": "components/header.tsx",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_header_tsx",
-      "target": "header_install_pwa_button_installpwabutton",
-      "confidence_score": 1.0
+      "target": "header_install_pwa_button_installpwabutton"
     },
     {
       "relation": "contains",
@@ -17122,9 +17042,9 @@
       "source_file": "components/header/install-pwa-button.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_header_install_pwa_button_tsx",
-      "target": "header_install_pwa_button_installpwabutton",
-      "confidence_score": 1.0
+      "target": "header_install_pwa_button_installpwabutton"
     },
     {
       "relation": "contains",
@@ -17703,17 +17623,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_home_events_carousel_tsx",
-      "target": "lib_animations_anim_config"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/home/events-carousel.tsx",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_home_events_carousel_tsx",
       "target": "lib_animations_anim_selectors"
     },
     {
@@ -17769,6 +17678,17 @@
       "target": "home_events_carousel_eventscarousel"
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/home/events-carousel.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_home_events_carousel_tsx",
+      "target": "lib_animations_anim_config"
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -17777,28 +17697,6 @@
       "source_location": "L265",
       "weight": 1.0,
       "source": "home_events_carousel_eventscarousel",
-      "target": "lib_utils_cn"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/home/events-skeleton.tsx",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_home_events_skeleton_tsx",
-      "target": "lib_utils_ts"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/home/events-skeleton.tsx",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_home_events_skeleton_tsx",
       "target": "lib_utils_cn"
     },
     {
@@ -17832,6 +17730,28 @@
       "confidence_score": 1.0,
       "source": "components_home_events_skeleton_tsx",
       "target": "home_events_skeleton_eventsskeleton"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/home/events-skeleton.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_home_events_skeleton_tsx",
+      "target": "lib_utils_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/home/events-skeleton.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_home_events_skeleton_tsx",
+      "target": "lib_utils_cn"
     },
     {
       "relation": "imports_from",
@@ -17886,6 +17806,37 @@
       "confidence_score": 1.0,
       "source": "components_home_hero_section_tsx",
       "target": "ui_button_button"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/home/hero-section.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_home_hero_section_tsx",
+      "target": "home_hero_section_herosectionprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "components/home/hero-section.tsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_home_hero_section_tsx",
+      "target": "home_hero_section_herosection"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/home/public-view.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_home_public_view_tsx",
+      "target": "components_home_hero_section_tsx"
     },
     {
       "relation": "imports_from",
@@ -17952,37 +17903,6 @@
       "confidence_score": 1.0,
       "source": "components_home_hero_section_tsx",
       "target": "ui_skeleton_skeleton"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/home/hero-section.tsx",
-      "source_location": "L12",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_home_hero_section_tsx",
-      "target": "home_hero_section_herosectionprops"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "components/home/hero-section.tsx",
-      "source_location": "L20",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_home_hero_section_tsx",
-      "target": "home_hero_section_herosection"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/home/public-view.tsx",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_home_public_view_tsx",
-      "target": "components_home_hero_section_tsx"
     },
     {
       "relation": "imports",
@@ -18683,28 +18603,6 @@
       "target": "ui_skeleton_skeleton"
     },
     {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/home/skeletons.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_home_skeletons_tsx",
-      "target": "lib_utils_ts"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/home/skeletons.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_home_skeletons_tsx",
-      "target": "lib_utils_cn"
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/home/skeletons.tsx",
@@ -18743,6 +18641,28 @@
       "confidence_score": 1.0,
       "source": "components_home_skeletons_tsx",
       "target": "home_skeletons_monthtabsskeleton"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/home/skeletons.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_home_skeletons_tsx",
+      "target": "lib_utils_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/home/skeletons.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_home_skeletons_tsx",
+      "target": "lib_utils_cn"
     },
     {
       "relation": "imports_from",
@@ -19177,28 +19097,6 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "components/notifications/notification-bell.tsx",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_notifications_notification_bell_tsx",
-      "target": "lib_utils_ts"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/notifications/notification-bell.tsx",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_notifications_notification_bell_tsx",
-      "target": "lib_utils_cn"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/notifications/notification-bell.tsx",
       "source_location": "L15",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -19235,6 +19133,28 @@
       "confidence_score": 1.0,
       "source": "components_notifications_notification_bell_tsx",
       "target": "notifications_notification_bell_notificationbell"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/notifications/notification-bell.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_notifications_notification_bell_tsx",
+      "target": "lib_utils_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/notifications/notification-bell.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_notifications_notification_bell_tsx",
+      "target": "lib_utils_cn"
     },
     {
       "relation": "imports_from",
@@ -24382,6 +24302,86 @@
       "target": "eventoschu_themes_3_efectos_visuales_css"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_envpath"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_envcontent"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_env"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_parts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_key"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_val"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_supabase"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_test"
+    },
+    {
       "relation": "conceptually_related_to",
       "confidence": "INFERRED",
       "confidence_score": 0.95,
@@ -24453,5 +24453,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "febe094a5ff2114841b8648b83def8e2033e65b7"
+  "built_at_commit": "4dc613c0b03e4b46c0f240bfe12b7a9ce60725f9"
 }

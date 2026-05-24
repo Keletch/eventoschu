@@ -1,16 +1,16 @@
 # Graph Report - eventosCHU  (2026-05-24)
 
 ## Corpus Check
-- 150 files · ~79,389 words
+- 149 files · ~79,276 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 729 nodes · 1672 edges · 39 communities (34 shown, 5 thin omitted)
+- 729 nodes · 1672 edges · 40 communities (35 shown, 5 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 8 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `febe094a`
+- Built from commit: `4dc613c0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -50,6 +50,7 @@
 - [[_COMMUNITY_Community 36|Community 36]]
 - [[_COMMUNITY_Community 37|Community 37]]
 - [[_COMMUNITY_Community 38|Community 38]]
+- [[_COMMUNITY_Community 39|Community 39]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 144 edges
@@ -75,7 +76,7 @@
 - `EventDetailItem()` --calls--> `cn()`  [EXTRACTED]
   components/events/event-card.tsx → lib/utils.ts
 
-## Communities (39 total, 5 thin omitted)
+## Communities (40 total, 5 thin omitted)
 
 ### Community 0 - "Admin Database Operations"
 Cohesion: 0.09
@@ -86,8 +87,8 @@ Cohesion: 0.07
 Nodes (62): uploadImage(), checkRegistration(), PickerOption, SearchablePicker(), SearchablePickerProps, DeleteEventDialogProps, BG_COLOR_OPTIONS, EventDialogProps (+54 more)
 
 ### Community 2 - "Event Fetching and State"
-Cohesion: 0.16
-Nodes (14): Footer(), SocialIcon(), SocialIconProps, MonthTabs(), MonthTabsProps, PublicView(), useHomeLogic(), ANIM_CONFIG (+6 more)
+Cohesion: 0.21
+Nodes (10): Footer(), SocialIcon(), SocialIconProps, PublicView(), useHomeLogic(), HomeClient(), HomeClientProps, RegisteredView (+2 more)
 
 ### Community 3 - "Global Header and Navigation"
 Cohesion: 0.05
@@ -154,8 +155,8 @@ Cohesion: 0.25
 Nodes (9): Event, getEvents(), redis, sitemap(), TIMEZONE_SHORT_CODES, transformEventForUI(), GET(), HomeDataWrapper() (+1 more)
 
 ### Community 19 - "Notification Bell and Alert UI"
-Cohesion: 0.15
-Nodes (12): ALL_LUCIDE_ICONS, CATEGORY_ICONS, CATEGORY_LABELS, CategoryTabs(), CategoryTabsProps, CheckRegistrationPanel(), EventsSkeleton(), HeroSection() (+4 more)
+Cohesion: 0.20
+Nodes (11): CheckRegistrationPanel(), EventsSkeleton(), HeroSection(), MonthTabs(), MonthTabsProps, EventsCarousel, PublicViewProps, RegistrationForm (+3 more)
 
 ### Community 20 - "PNPM Package Definition"
 Cohesion: 0.25
@@ -197,21 +198,25 @@ Nodes (4): StatCard(), StatCardProps, StatsGrid(), StatsGridProps
 Cohesion: 0.70
 Nodes (4): createCategory(), deleteCategory(), updateCategory(), clearEventsCache()
 
+### Community 39 - "Community 39"
+Cohesion: 0.33
+Nodes (5): ALL_LUCIDE_ICONS, CATEGORY_ICONS, CATEGORY_LABELS, CategoryTabs(), CategoryTabsProps
+
 ## Knowledge Gaps
-- **250 isolated node(s):** `envPath`, `envContent`, `env`, `parts`, `key` (+245 more)
+- **250 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+245 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `Primitive UI Components` to `Category and Event Dialogs`, `Event Fetching and State`, `Global Header and Navigation`, `Public Registration and Attendees`, `Community 37`, `Admin Layout and SEO`, `Admin Data Tables`, `Searchable Dropdowns and Pickers`, `Community 36`, `External Node Modules`, `Admin Login and Cards`, `Custom and Sidebar Scrollbars`, `Form Inputs and Textareas`, `Notification Bell and Alert UI`?**
+- **Why does `cn()` connect `Primitive UI Components` to `Category and Event Dialogs`, `Event Fetching and State`, `Global Header and Navigation`, `Public Registration and Attendees`, `Community 37`, `Admin Layout and SEO`, `Admin Data Tables`, `Community 39`, `Searchable Dropdowns and Pickers`, `Community 36`, `External Node Modules`, `Admin Login and Cards`, `Custom and Sidebar Scrollbars`, `Form Inputs and Textareas`, `Notification Bell and Alert UI`?**
   _High betweenness centrality (0.280) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `External Node Modules` to `PNPM Package Definition`?**
   _High betweenness centrality (0.102) - this node is a cross-community bridge._
 - **Why does `clsx` connect `External Node Modules` to `Primitive UI Components`?**
   _High betweenness centrality (0.099) - this node is a cross-community bridge._
-- **What connects `envPath`, `envContent`, `env` to the rest of the system?**
+- **What connects `$schema`, `style`, `rsc` to the rest of the system?**
   _253 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Admin Database Operations` be split into smaller, more focused modules?**
   _Cohesion score 0.0899100899100899 - nodes in this community are weakly interconnected._
