@@ -6,7 +6,6 @@ const RegistrationForm = dynamic(() => import("@/components/registration/registr
 import { HeroSection } from "@/components/home/hero-section";
 import { CheckRegistrationPanel } from "@/components/home/check-registration-panel";
 import { MonthTabs } from "@/components/home/month-tabs";
-import { EventsSkeleton } from "@/components/home/events-skeleton";
 
 const EventsCarousel = dynamic(() => import("@/components/home/events-carousel").then(mod => mod.EventsCarousel), { 
   ssr: false
@@ -57,8 +56,8 @@ interface PublicViewProps {
 export function PublicView({
   containerRef,
   scrollContainerRef,
-  isPageReady,
-  isRegistered,
+  _isPageReady,
+  _isRegistered,
   isSignedIn,
   user,
   revalidateStatus,
@@ -86,7 +85,7 @@ export function PublicView({
   handleRegistration,
   isSubmitting,
   formatSafeDate,
-  isTransitioning,
+  _isTransitioning,
 }: PublicViewProps) {
   const { openSignIn } = useClerk();
 

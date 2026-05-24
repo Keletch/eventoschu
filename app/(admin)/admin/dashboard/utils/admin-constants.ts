@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock, XCircle, RefreshCw } from "lucide-react";
+import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";
 import React from "react";
 
 export type AdminRegistrationStatus = "confirmed" | "cancelled" | "pending";

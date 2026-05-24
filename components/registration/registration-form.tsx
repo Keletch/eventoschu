@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Loader2, Edit3 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Turnstile from "react-turnstile";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -25,11 +25,11 @@ interface RegistrationFormProps {
 
 export function RegistrationForm({ 
   onSubmit, 
-  onCheckRegistration,
+  _onCheckRegistration,
   isLoading = false 
 }: RegistrationFormProps) {
   const { user, isSignedIn } = useUser();
-  const { openSignIn } = useClerk();
+  const { _openSignIn } = useClerk();
 
   const [hasTrackedInitiated, setHasTrackedInitiated] = useState(false);
 
@@ -78,7 +78,7 @@ export function RegistrationForm({
     } catch (err) {
       console.error("Error fetching user data from Supabase:", err);
     }
-  }, [user?.id, user?.firstName, user?.lastName, onCheckRegistration]);
+  }, [user]);
 
   // 💡 Mantenemos un registro del estado anterior de isSignedIn para detectar cambios reales
   const prevIsSignedInRef = useRef<boolean | undefined>(undefined);

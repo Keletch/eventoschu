@@ -26,7 +26,7 @@ export function Header({
   registrationId, 
   step, 
   onToggleSidebar, 
-  isSidebarOpen,
+  _isSidebarOpen,
   isSurveyMissing = false,
   setIsSurveyOpen
 }: HeaderProps) {
@@ -36,7 +36,7 @@ export function Header({
   const { 
     notifications, 
     unreadCount, 
-    isLoading,
+    _isLoading,
     handleMarkAsRead, 
     handleMarkAllRead, 
     isOpen, 

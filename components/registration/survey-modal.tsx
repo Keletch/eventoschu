@@ -59,7 +59,7 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
       } else {
         toast.error("Error al enviar: " + (res as any).error);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Ocurrió un error inesperado.");
     } finally {
       setIsSubmitting(false);

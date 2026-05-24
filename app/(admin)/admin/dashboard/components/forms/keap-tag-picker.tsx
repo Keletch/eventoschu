@@ -16,7 +16,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { ChevronsUpDown, RefreshCw, X } from "lucide-react";
+import { ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface KeapTagPickerProps {
@@ -35,8 +35,8 @@ export const KeapTagPicker: React.FC<KeapTagPickerProps> = ({
   onChange,
   tags,
   isLoading = false,
-  onRefresh,
-  showRefresh = false,
+  _onRefresh,
+  _showRefresh = false,
 }) => {
   const [open, setOpen] = useState(false);
   const selectedTag = tags.find((t) => t.id === value);

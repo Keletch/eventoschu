@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, createClerkClient } from "@clerk/nextjs/server";
+import { createClerkClient } from "@clerk/nextjs/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { getOrCreateContact, syncKeapTags, keapFetch } from "./keap";
 import { 
@@ -11,7 +11,7 @@ import {
   notifyAdminEventRemovedFromUser
 } from "./admin-notifications";
 import { formatEventForNotification } from "./utils";
-import { broadcastToUser, broadcastToPublic, broadcastToAdmins } from "./utils-realtime";
+import { broadcastToUser } from "./utils-realtime";
 import { dispatchSignal } from "@/lib/services/signal-dispatcher";
 import { clearEventsCache } from "./events";
 import { verifyAdminPermission } from "./admin-check";

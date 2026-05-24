@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Ticket, RefreshCw, ClipboardCheck, Calendar, XCircle } from "lucide-react";
+import { Users, RefreshCw, ClipboardCheck, Calendar, XCircle } from "lucide-react";
 import { StatCard } from "./stat-card";
 
 interface StatsGridProps {

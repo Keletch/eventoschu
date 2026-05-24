@@ -62,6 +62,16 @@ export default function AdminRootLayout({
       }}
     >
       <html lang="es" className={`${raleway.variable} antialiased`} suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                window.deferredPWAPrompt = e;
+              });
+            `
+          }} />
+        </head>
         <body className="flex flex-col font-sans bg-background text-foreground transition-colors duration-300 min-h-screen">
           <ThemeProvider
             attribute="class"

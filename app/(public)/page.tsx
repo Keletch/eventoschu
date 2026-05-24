@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { getEvents } from "@/app/actions/events";
 import { EventJsonLd } from "@/components/seo/event-json-ld";
 import { HomeClient } from "./home-client";
-import { EventsSkeleton } from "@/components/home/events-skeleton";
 
 export const dynamic = "force-dynamic";
 

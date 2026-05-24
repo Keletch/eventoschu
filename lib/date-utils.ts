@@ -13,7 +13,7 @@ export function formatSafeDate(dateStr: string | null | undefined): Date | null 
     }
     const d = new Date(dateStr);
     return isNaN(d.getTime()) ? null : d;
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 }
@@ -47,7 +47,7 @@ export function formatDateForInput(dateStr: string | null | undefined): string {
     // Tomamos solo la parte de la fecha antes de la T o el espacio
     const baseDate = dateStr.split("T")[0].split(" ")[0];
     return baseDate; // Formato YYYY-MM-DD
-  } catch (e) {
+  } catch (_e) {
     return "";
   }
 }

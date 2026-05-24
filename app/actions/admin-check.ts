@@ -32,7 +32,7 @@ export async function verifyAdminPermission() {
     }
 
     return { isAdmin: true, email: user.email };
-  } catch (err) {
+  } catch (_err) {
     return { isAdmin: false, email: null };
   }
 }

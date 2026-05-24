@@ -142,7 +142,7 @@ export function useAdminDashboard() {
       if (regsResult.success && regsResult.data) {
         setRegistrations(regsResult.data);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al sincronizar datos");
     } finally {
       setIsLoading(false);
@@ -154,7 +154,7 @@ export function useAdminDashboard() {
     try {
       const result = await getKeapTags();
       if (result.success) setKeapTags(result.tags || []);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al cargar tags de Keap");
     } finally {
       setIsTagsLoading(false);
@@ -180,6 +180,7 @@ export function useAdminDashboard() {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [registrations, editingReg?.id]);
 
   useEffect(() => {
@@ -222,7 +223,7 @@ export function useAdminDashboard() {
       } else {
         throw new Error("No se pudo limpiar la caché");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al limpiar caché de Redis");
     } finally {
       setIsCacheRefreshing(false);
@@ -492,7 +493,7 @@ export function useAdminDashboard() {
       setIsDialogOpen(true);
     },
     handleDuplicateEvent: async (event: any) => {
-      const { id, created_at, categories, event_tags, ...rest } = event;
+      const { _id, _created_at, _categories, _event_tags, ...rest } = event;
       setNewEvent({ 
         ...rest, 
         title: `${rest.title} (Copia)`, 

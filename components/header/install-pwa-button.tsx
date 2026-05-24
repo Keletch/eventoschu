@@ -31,6 +31,14 @@ export function InstallPwaButton() {
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
+    // Revisar si el evento ya se disparó antes de que React montara este componente
+    if (typeof window !== 'undefined' && (window as any).deferredPWAPrompt) {
+      setTimeout(() => {
+        setDeferredPrompt((window as any).deferredPWAPrompt);
+        setIsInstallable(true);
+      }, 0);
+    }
+
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     };

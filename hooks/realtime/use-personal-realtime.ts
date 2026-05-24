@@ -73,7 +73,7 @@ export function usePersonalRealtime({ userId, onUpdate, onNotification }: Person
           }
         );
 
-      channel.subscribe((status) => {
+      channel.subscribe((_status) => {
 
       });
       

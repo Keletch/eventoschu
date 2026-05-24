@@ -105,7 +105,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
 
       // Sincronización de Tags (Keap) y Notificaciones
       const newlyAddedEvents = allEventsInfo?.filter(e => newlyAddedIds.includes(e.id)) || [];
-      const alreadyInEvents = allEventsInfo?.filter(e => (existing.selected_events || []).includes(e.id)) || [];
+      const _alreadyInEvents = allEventsInfo?.filter(e => (existing.selected_events || []).includes(e.id)) || [];
 
       if (newlyAddedEvents.length > 0) {
         const tagsToAdd: string[] = [];

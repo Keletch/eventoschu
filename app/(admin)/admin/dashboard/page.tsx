@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { Plus, LogOut, Loader2, BarChart3, Users, Calendar, CheckCircle2, RefreshCw, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, LogOut, Loader2, Users, CheckCircle2, RefreshCw, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,13 +48,13 @@ export default function AdminDashboard() {
     isDeleteEventDialogOpen, setIsDeleteEventDialogOpen,
     isToggleDialogOpen, setIsToggleDialogOpen,
     isCategoriesDialogOpen, setIsCategoriesDialogOpen,
-    editingReg, setEditingReg, purgingReg, setPurgingReg,
-    deletingEvent, setDeletingEvent, togglingEvent,
+    editingReg, setEditingReg, purgingReg, _setPurgingReg,
+    deletingEvent, _setDeletingEvent, togglingEvent,
     newEvent, setNewEvent, keapTags, isTagsLoading, fetchTags,
     handleCreateEvent, handleDeleteEvent, handleConfirmEventPurge, handleDuplicateEvent,
     toggleEventStatus, handleConfirmToggleStatus, handleClearCache, isCacheRefreshing,
     handleUpdateReg, handleDeleteReg, handleConfirmPurge, 
-    handleEditEvent, handleEditReg, handleNewEvent, handleLogout, totalInscriptions,
+    handleEditEvent, handleEditReg, handleNewEvent, handleLogout, _totalInscriptions,
     pendingCount, approvedCount, cancelledCount, filteredEvents,
     notifications, unreadCount, handleMarkAsRead,
     handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData, resetRegsFilters, resetEventsFilters,

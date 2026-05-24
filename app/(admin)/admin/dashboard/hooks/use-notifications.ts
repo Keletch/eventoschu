@@ -47,6 +47,7 @@ export function useNotifications(isAdmin = true, ids?: { clerkId?: string, regis
     } finally {
       setIsLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ids?.clerkId, ids?.registrationId, isAdmin]);
 
   const handleMarkAsRead = async (id: string) => {

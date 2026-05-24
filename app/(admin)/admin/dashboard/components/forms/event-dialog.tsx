@@ -147,7 +147,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
       } else {
         toast.error(res.error || "Error al subir imagen.");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al subir la imagen.");
     } finally {
       setIsUploading(false);
@@ -309,12 +309,12 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                             <div className="flex gap-2 items-center">
                               {isOnline ? (
                                 <Popover>
-                                  <PopoverTrigger className="shrink-0 hover:scale-105 transition-transform outline-none focus:ring-2 focus:ring-primary/20 rounded-xl">
+                                  <PopoverTrigger className="shrink-0 group outline-none rounded-xl focus-visible:ring-2 focus-visible:ring-primary/50 transition-all">
                                     <EventFlag 
                                       flag={event.flag?.startsWith("icon:") ? event.flag : "WEB"} 
                                       imageUrl={event.image_url}
-                                      className="size-12 rounded-xl border border-border/50 pointer-events-none" 
-                                      bgClass="bg-muted" 
+                                      className="size-12 rounded-xl ring-1 ring-inset ring-border/50 group-hover:ring-primary/50 transition-all shadow-none pointer-events-none" 
+                                      bgClass="bg-muted/50" 
                                     />
                                   </PopoverTrigger>
                                   <PopoverContent className="w-64 p-3 bg-popover border-border shadow-xl rounded-2xl" side="bottom" align="start">
@@ -332,8 +332,10 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                                             type="button"
                                             onClick={() => setEvent({ ...event, flag: `icon:${item.name}` })}
                                             className={cn(
-                                              "p-2 rounded-xl flex items-center justify-center border hover:bg-muted/50 transition-colors",
-                                              isActive ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground"
+                                              "p-2 rounded-xl flex items-center justify-center transition-all outline-none",
+                                              isActive 
+                                                ? "bg-primary/15 text-primary ring-1 ring-inset ring-primary" 
+                                                : "bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                                             )}
                                           >
                                             <IconComponent className="size-5" strokeWidth={1.5} />

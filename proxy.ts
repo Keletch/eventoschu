@@ -1,5 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import { clerkMiddleware } from "@clerk/nextjs/server";
 
 /**
@@ -22,7 +22,7 @@ export default clerkMiddleware(async (auth, request) => {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value, _options }) => request.cookies.set(name, value))
           response = NextResponse.next({
             request: {
               headers: request.headers,

@@ -6,8 +6,6 @@ import dynamic from "next/dynamic";
 const WordRotator = dynamic(() => import("./word-rotator").then(mod => mod.WordRotator), { ssr: false });
 import { Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface HeroSectionProps {
   isSignedIn: boolean | undefined;
@@ -20,7 +18,7 @@ interface HeroSectionProps {
 export function HeroSection({
   isSignedIn,
   user,
-  isCheckMode,
+  _isCheckMode,
   revalidateStatus,
   setIsCheckMode,
 }: HeroSectionProps) {

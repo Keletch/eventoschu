@@ -44,7 +44,7 @@ export function RegisteredView({
   events,
   isLoadingEvents,
   startNewRegistration,
-  eventDataMap,
+  _eventDataMap,
   isEditing,
   editFormData,
   handleEditChange,
@@ -53,13 +53,13 @@ export function RegisteredView({
   isSubmitting,
   handleUpdateRegistration,
   isSignedIn,
-  revalidateStatus,
+  _revalidateStatus,
   setIsSurveyOpen,
   surveyData,
 }: RegisteredViewProps) {
   const currentStatus = eventStatuses[selectedCityId] || "pending";
   const cityName = displayData.city || "";
-  const isSurveyMissing = !surveyData || Object.keys(surveyData).length === 0;
+  const _isSurveyMissing = !surveyData || Object.keys(surveyData).length === 0;
 
   // 🎊 Efecto de Confetti elegante (cañones laterales potentes)
   useEffect(() => {

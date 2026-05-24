@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useNotifications } from '@/app/(admin)/admin/dashboard/hooks/use-notifications';
 import { usePersonalRealtime } from '../realtime/use-personal-realtime';
@@ -17,7 +17,7 @@ export function useUserNotifications(propRegistrationId?: string | null) {
         try {
           const parsed = JSON.parse(saved);
           return parsed.userData?.id;
-        } catch (e) {
+        } catch (_e) {
           return undefined;
         }
       }
@@ -56,7 +56,7 @@ export function useUserNotifications(propRegistrationId?: string | null) {
             }, 0);
             return () => clearTimeout(timer);
           }
-        } catch (e) {}
+        } catch (_e) {}
       }
     }
   }, [propRegistrationId, isSignedIn, isLoaded, clerkId]);
@@ -73,7 +73,7 @@ export function useUserNotifications(propRegistrationId?: string | null) {
               setStableUserId(parsed.userData.id);
             }, 0);
           }
-        } catch (e) {}
+        } catch (_e) {}
       }
     };
     window.addEventListener('registration-success', handleSuccess);
@@ -104,7 +104,7 @@ export function useUserNotifications(propRegistrationId?: string | null) {
     try {
       const saved = localStorage.getItem('chu_registration');
       return saved ? JSON.parse(saved).userData?.email : null;
-    } catch (e) { return null; }
+    } catch (_e) { return null; }
   })() : null;
 
   usePersonalRealtime({

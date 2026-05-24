@@ -33,7 +33,7 @@ export async function broadcastToAdmins(payload: any) {
             });
           }
           resolve(true);
-        } catch (err) {
+        } catch (_err) {
           resolve(false);
         } finally {
           supabaseAdmin.removeChannel(channel);

@@ -322,7 +322,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
           setEventDataMap(parsed.eventDataMap || {});
           setSurveyData(parsed.surveyData || null);
           setStep(2);
-        } catch (e) {
+        } catch (_e) {
           setStep(1);
         }
       } else {
@@ -345,7 +345,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
       try {
         const { userData: savedData } = JSON.parse(saved);
         emailToVerify = savedData?.email;
-      } catch (e) {}
+      } catch (_e) {}
     }
 
     if (emailToVerify) {
@@ -511,7 +511,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
       // 🧠 Usar el orquestador de eventos para el mensaje de éxito
       const firstEventId = selectedEvents[0];
       const eventInfo = events.find(e => e.id === firstEventId);
-      const eventConfig = getEventUIConfig(eventInfo);
+      const _eventConfig = getEventUIConfig(eventInfo);
 
       // 💡 NOTA: El toast de éxito ahora se maneja centralizadamente vía Realtime/Notification
       // para evitar duplicidad y mantener consistencia con el sistema premium.
@@ -599,7 +599,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
         startNewRegistration();
         toast.error(result.error || "No se encontró registro.");
       }
-    } catch (error: any) {
+    } catch (_error: any) {
       toast.error("Error al consultar el registro.");
     } finally {
       setIsChecking(false);
@@ -687,7 +687,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
           eventDataMap: payload.event_data ? { ...parsed.eventDataMap, ...payload.event_data } : parsed.eventDataMap,
           userData: (payload.userData || payload.email) ? { ...parsed.userData, ...(payload.userData || payload) } : parsed.userData
         }));
-      } catch (e) {}
+      } catch (_e) {}
     }
   }, [selectedCityId, startNewRegistration]);
 

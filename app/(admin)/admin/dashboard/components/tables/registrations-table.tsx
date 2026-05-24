@@ -19,8 +19,8 @@ import {
   MapPin,
   Mail,
   MessageCircle,
-  ClipboardCheck,
-  CheckCircle2
+  CheckCircle2,
+  Globe
 } from "lucide-react";
 import { 
   Tooltip, 
@@ -131,7 +131,11 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                                   <div>
                                     <p className="font-bold text-sm text-foreground">{event?.title}</p>
                                     <p className="text-[10px] text-muted-foreground/60 flex items-center gap-1 uppercase font-bold tracking-tighter">
-                                      <MapPin className="w-2.5 h-2.5" /> {event?.city}, {event?.country}
+                                      {event?.flag === 'WEB' ? (
+                                        <><Globe className="w-2.5 h-2.5" /> Online</>
+                                      ) : (
+                                        <><MapPin className="w-2.5 h-2.5" /> {[event?.city, event?.country].filter(Boolean).join(", ")}</>
+                                      )}
                                     </p>
                                   </div>
                                 </div>

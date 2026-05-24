@@ -99,7 +99,7 @@ export async function getEvents() {
         .gte('start_date', todayStr)
         .order('start_date', { ascending: true });
       return { success: true, data: data as Event[], source: "fallback" };
-    } catch (e) {
+    } catch (_e) {
       return { success: false, error: "Error al cargar eventos" };
     }
   }
@@ -112,7 +112,7 @@ export async function clearEventsCache() {
   try {
     await redis.del(EVENTS_CACHE_KEY);
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false };
   }
 }

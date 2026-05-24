@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ANIM_CONFIG, ANIM_SELECTORS } from "@/lib/animations";
+import { ANIM_SELECTORS } from "@/lib/animations";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { transformEventForUI } from "@/lib/event-transformers";
 
@@ -63,7 +63,7 @@ export function EventsCarousel({
   handleScroll,
   availableMonths,
   handleMonthChange,
-  formatSafeDate,
+  _formatSafeDate,
 }: EventsCarouselProps) {
   const { resolvedTheme } = useTheme();
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -99,6 +99,7 @@ export function EventsCarousel({
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monthEvents]);
 
   const onScrollInternal = (e: React.UIEvent<HTMLDivElement>) => {

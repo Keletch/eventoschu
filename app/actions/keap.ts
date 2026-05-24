@@ -122,7 +122,7 @@ export async function syncKeapTags(userData: any, oldTagIds: string[], newTagIds
     }
 
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false };
   }
 }

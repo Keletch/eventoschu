@@ -89,7 +89,7 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
           toast.error(result.error || "Error al crear la categoría.");
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error inesperado al procesar.");
     } finally {
       setIsSubmitting(false);
@@ -108,7 +108,7 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
       } else {
         toast.error(result.error || "Error al eliminar.");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error inesperado al eliminar.");
     } finally {
       setIsSubmitting(false);
@@ -140,7 +140,7 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
       } else {
         toast.error(res.error || "Error al subir imagen.");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al subir la imagen.");
     } finally {
       setIsUploading(false);

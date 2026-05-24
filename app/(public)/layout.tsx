@@ -29,7 +29,6 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-  manifest: "/manifest.webmanifest",
   robots: {
     index: true,
     follow: true,
@@ -91,6 +90,16 @@ export default function RootLayout({
       }}
     >
       <html lang="es" className={`${raleway.variable} antialiased`} suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                window.deferredPWAPrompt = e;
+              });
+            `
+          }} />
+        </head>
         <body className="flex flex-col font-sans bg-background text-foreground transition-colors duration-300 min-h-screen">
           <ThemeProvider
             attribute="class"

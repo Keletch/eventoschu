@@ -21,7 +21,7 @@ export function Logo({ onClick }: LogoProps) {
     return () => cancelAnimationFrame(handle);
   }, []);
 
-  const isDarkish = mounted && (theme === "dark" || theme === "synthwave");
+  const _isDarkish = mounted && (theme === "dark" || theme === "synthwave");
 
   return (
     <div className="flex items-center gap-2 shrink-0 min-w-[120px] md:min-w-[144px]">

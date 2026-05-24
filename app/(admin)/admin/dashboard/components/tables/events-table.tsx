@@ -14,7 +14,6 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, Copy, Edit, Trash2, Globe } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { formatSafeDate, formatDateToShort } from "@/lib/date-utils";
 import { EventFlag } from "@/components/ui/event-flag";
 
@@ -72,9 +71,9 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                         <div className="font-bold text-foreground">{event.title}</div>
                         <div className="text-xs text-muted-foreground flex items-center gap-1">
                           {event.flag === 'WEB' ? (
-                            <><Globe className="w-3 h-3" /> Evento en línea</>
+                            <><Globe className="w-3 h-3" /> Online</>
                           ) : (
-                            <><MapPin className="w-3 h-3" /> {event.city}, {event.country}</>
+                            <><MapPin className="w-3 h-3" /> {[event.city, event.country].filter(Boolean).join(', ')}</>
                           )}
                         </div>
                       </div>

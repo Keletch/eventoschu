@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 const SUPPORT_EMAIL = "soporte@elclubdeinversionistas.com";
 const SUPPORT_WHATSAPP = "573164770410";

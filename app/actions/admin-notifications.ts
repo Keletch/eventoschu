@@ -28,7 +28,7 @@ export async function notifyAdminNewRegistration(email: string, events: any[]) {
 
 export async function notifyAdminRegistrationModified(adminEmail: string, targetEmail: string, personalDataChanged: boolean, statusChanges: { event: any, status: string }[]) {
   const isFuture = (e: any) => new Date(e.start_date).getFullYear() === 2099;
-  const formatList = (evs: any[]) => evs.map(e => `\n• ${formatEventForNotification(e)}`).join('');
+  const _formatList = (evs: any[]) => evs.map(e => `\n• ${formatEventForNotification(e)}`).join('');
 
   let message = `El administrador ${adminEmail} modificó el registro de ${targetEmail}.`;
   

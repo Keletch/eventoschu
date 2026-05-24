@@ -1,6 +1,5 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DotScrollbar } from "./dot-scrollbar";

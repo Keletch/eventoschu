@@ -28,7 +28,7 @@ interface AuthSectionProps {
  */
 export function AuthSection({
   isSignedIn,
-  userId,
+  _userId,
   notifications,
   unreadCount,
   handleMarkAsRead,
