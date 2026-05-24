@@ -1,16 +1,16 @@
 # Graph Report - eventosCHU  (2026-05-24)
 
 ## Corpus Check
-- 149 files · ~79,165 words
+- 150 files · ~79,389 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 727 nodes · 1669 edges · 39 communities (34 shown, 5 thin omitted)
+- 729 nodes · 1672 edges · 39 communities (34 shown, 5 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 8 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5b4d3c12`
+- Built from commit: `febe094a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -33,6 +33,7 @@
 - [[_COMMUNITY_Form Inputs and Textareas|Form Inputs and Textareas]]
 - [[_COMMUNITY_Development Dependencies|Development Dependencies]]
 - [[_COMMUNITY_Metrics Dashboard and KPIs|Metrics Dashboard and KPIs]]
+- [[_COMMUNITY_Community 18|Community 18]]
 - [[_COMMUNITY_Notification Bell and Alert UI|Notification Bell and Alert UI]]
 - [[_COMMUNITY_PNPM Package Definition|PNPM Package Definition]]
 - [[_COMMUNITY_Build and Dev Scripts|Build and Dev Scripts]]
@@ -48,8 +49,7 @@
 - [[_COMMUNITY_Community 35|Community 35]]
 - [[_COMMUNITY_Community 36|Community 36]]
 - [[_COMMUNITY_Community 37|Community 37]]
-- [[_COMMUNITY_Community 39|Community 39]]
-- [[_COMMUNITY_Community 42|Community 42]]
+- [[_COMMUNITY_Community 38|Community 38]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 144 edges
@@ -78,24 +78,24 @@
 ## Communities (39 total, 5 thin omitted)
 
 ### Community 0 - "Admin Database Operations"
-Cohesion: 0.08
-Nodes (66): createCategory(), deleteCategory(), updateCategory(), supabaseAdmin, verifyAdminPermission(), adminAddEventToUser(), adminRemoveEventFromUser(), clerk (+58 more)
+Cohesion: 0.09
+Nodes (58): supabaseAdmin, verifyAdminPermission(), adminAddEventToUser(), adminRemoveEventFromUser(), clerk, deleteRegistration(), deleteRegistrationByClerkId(), massUpdateRegistrationStatus() (+50 more)
 
 ### Community 1 - "Category and Event Dialogs"
-Cohesion: 0.09
-Nodes (41): uploadImage(), DeleteEventDialogProps, BG_COLOR_OPTIONS, EventDialogProps, TIMEZONE_LABELS, AVAILABLE_ICONS, ManageCategoriesDialogProps, OperationProgressDialogProps (+33 more)
+Cohesion: 0.07
+Nodes (62): uploadImage(), checkRegistration(), PickerOption, SearchablePicker(), SearchablePickerProps, DeleteEventDialogProps, BG_COLOR_OPTIONS, EventDialogProps (+54 more)
 
 ### Community 2 - "Event Fetching and State"
-Cohesion: 0.05
-Nodes (40): Event, getEvents(), sitemap(), Footer(), SocialIcon(), SocialIconProps, ALL_LUCIDE_ICONS, CATEGORY_ICONS (+32 more)
+Cohesion: 0.16
+Nodes (14): Footer(), SocialIcon(), SocialIconProps, MonthTabs(), MonthTabsProps, PublicView(), useHomeLogic(), ANIM_CONFIG (+6 more)
 
 ### Community 3 - "Global Header and Navigation"
 Cohesion: 0.05
-Nodes (40): Header(), HeaderProps, AdminDashboard(), DeleteEventDialog(), EventDialog(), ManageCategoriesDialog(), OperationProgressDialog(), PurgeUserDialog() (+32 more)
+Nodes (44): deleteNotification(), getNotifications(), markAllAsRead(), markAsRead(), Header(), HeaderProps, AdminDashboard(), DeleteEventDialog() (+36 more)
 
 ### Community 4 - "Public Registration and Attendees"
-Cohesion: 0.07
-Nodes (34): getRegistrationsCount(), checkRegistration(), EventCard(), CitySelector(), CitySelectorProps, ContactFooterCard(), isSurveyCompleted(), NextStepsPanel() (+26 more)
+Cohesion: 0.08
+Nodes (32): getRegistrationsCount(), CitySelector(), CitySelectorProps, ContactFooterCard(), isSurveyCompleted(), NextStepsPanel(), NextStepsPanelProps, RegisteredView() (+24 more)
 
 ### Community 5 - "Admin Layout and SEO"
 Cohesion: 0.10
@@ -110,36 +110,36 @@ Cohesion: 0.16
 Nodes (18): formatDateForInput(), formatDateToShort(), formatSafeDate(), EventsTableProps, RegistrationsTableProps, Badge(), badgeVariants, Table() (+10 more)
 
 ### Community 8 - "Searchable Dropdowns and Pickers"
-Cohesion: 0.21
-Nodes (14): PickerOption, SearchablePicker(), SearchablePickerProps, KeapTagPicker(), KeapTagPickerProps, Command(), CommandDialog(), CommandEmpty() (+6 more)
+Cohesion: 0.17
+Nodes (6): EventCard(), EventsCarousel(), EventsCarouselProps, HeaderSkeleton(), EventJsonLd(), Skeleton()
 
 ### Community 9 - "Shadcn Components Schema"
 Cohesion: 0.09
 Nodes (21): aliases, components, hooks, lib, ui, utils, iconLibrary, menuAccent (+13 more)
 
 ### Community 10 - "Architecture and Principles Documentation"
-Cohesion: 0.15
-Nodes (13): DRY and Domain-Driven Colocation, Hybrid Animation Philosophy, LCP & TBT Performance Optimization, SOLID React & Next.js Principles, SSoT via transformEventForUI, Keap CRM Real-Time Sync, llms.txt AI Optimization (AIO), Server Actions Data Access Layer (+5 more)
+Cohesion: 0.05
+Nodes (38): DRY and Domain-Driven Colocation, Hybrid Animation Philosophy, LCP & TBT Performance Optimization, SOLID React & Next.js Principles, SSoT via transformEventForUI, Dual Identity and Authentication Strategy, Keap CRM Real-Time Sync, llms.txt AI Optimization (AIO) (+30 more)
 
 ### Community 11 - "Primitive UI Components"
-Cohesion: 0.12
-Nodes (20): cn(), DialogOverlay(), DropdownMenuCheckboxItem(), DropdownMenuContent(), DropdownMenuItem(), DropdownMenuLabel(), DropdownMenuRadioItem(), DropdownMenuSeparator() (+12 more)
+Cohesion: 0.13
+Nodes (15): cn(), Checkbox(), CommandDialog(), CommandSeparator(), CommandShortcut(), DialogOverlay(), DropdownMenuCheckboxItem(), DropdownMenuContent() (+7 more)
 
 ### Community 12 - "TypeScript Project Configuration"
 Cohesion: 0.10
 Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
 
 ### Community 13 - "Admin Login and Cards"
-Cohesion: 0.18
-Nodes (11): StatCard(), StatCardProps, StatsGrid(), StatsGridProps, Card(), CardAction(), CardContent(), CardDescription() (+3 more)
+Cohesion: 0.31
+Nodes (7): Card(), CardAction(), CardContent(), CardDescription(), CardFooter(), CardHeader(), CardTitle()
 
 ### Community 14 - "Custom and Sidebar Scrollbars"
 Cohesion: 0.21
 Nodes (7): Sidebar(), SIDEBAR_LINKS, SidebarProps, DotScrollbar(), DotScrollbarProps, SidebarScrollbar(), SidebarScrollbarProps
 
 ### Community 15 - "Form Inputs and Textareas"
-Cohesion: 0.24
-Nodes (7): EventCardProps, EventDetailItem(), EventProgressBar(), EventProgressBarProps, EventSoldOutOverlay(), EventFlag(), EventFlagProps
+Cohesion: 0.32
+Nodes (5): EventCardProps, EventDetailItem(), EventProgressBar(), EventProgressBarProps, EventSoldOutOverlay()
 
 ### Community 16 - "Development Dependencies"
 Cohesion: 0.20
@@ -149,9 +149,13 @@ Nodes (10): devDependencies, eslint, eslint-config-next, tailwindcss, @tailwindc
 Cohesion: 0.22
 Nodes (7): env, envContent, envPath, key, parts, supabase, val
 
+### Community 18 - "Community 18"
+Cohesion: 0.25
+Nodes (9): Event, getEvents(), redis, sitemap(), TIMEZONE_SHORT_CODES, transformEventForUI(), GET(), HomeDataWrapper() (+1 more)
+
 ### Community 19 - "Notification Bell and Alert UI"
-Cohesion: 0.18
-Nodes (12): Notification, formatRelativeTime(), NotificationBellProps, NotificationItem(), NotificationItemProps, Checkbox(), Popover(), PopoverContent() (+4 more)
+Cohesion: 0.15
+Nodes (12): ALL_LUCIDE_ICONS, CATEGORY_ICONS, CATEGORY_LABELS, CategoryTabs(), CategoryTabsProps, CheckRegistrationPanel(), EventsSkeleton(), HeroSection() (+4 more)
 
 ### Community 20 - "PNPM Package Definition"
 Cohesion: 0.25
@@ -174,28 +178,24 @@ Cohesion: 0.10
 Nodes (21): 1. ⚡ Optimización de Rendimiento (LCP & TBT), 2. 🎨 Filosofía de Animación (Híbrida), 3. 🧩 SSoT (Única Fuente de Verdad), 4. 🗄️ Acceso a Datos, 5. 💅 Consistencia Visual, 6. 🏗️ Arquitectura DRY y Domain-Driven Colocation, 7. 🔩 Principios SOLID (Adaptados a React / Next.js), 8. 📚 Consulta Obligatoria de Skills Antes de Implementar (+13 more)
 
 ### Community 33 - "Community 33"
-Cohesion: 0.22
-Nodes (9): 🧱 `/components` (Biblioteca de Interfaces Reutilizables), `/components/events` (Motor Visual de Tarjetas), `/components/footer` & `/components/header`, `/components/home` (Bloques de la Página de Inicio), `/components/notifications`, `/components/providers` (Wrappers de Infraestructura), `/components/registration` (Motor de Formularios), `/components/seo` (+1 more)
+Cohesion: 0.08
+Nodes (26): 1. Base de Datos Relacional (PostgreSQL), 2. Canales de Progreso en Tiempo Real (Keap CRM Sync), 3. Lógica de Negocio en Inteligencia y Métricas, `/app/actions` (Server Actions - El Motor Backend), `/app/api` (Endpoints de API tradicionales HTTP), 🌐 `/app` (App Router - Rutas y Server Actions), Archivos de Configuración Raíz, Archivos Principales y Rutas Raíz de `/app` (+18 more)
 
 ### Community 34 - "Community 34"
 Cohesion: 0.25
-Nodes (8): `/app/actions` (Server Actions - El Motor Backend), `/app/api` (Endpoints de API tradicionales HTTP), 🌐 `/app` (App Router - Rutas y Server Actions), Archivos de Configuración Raíz, Archivos Principales y Rutas Raíz de `/app`, 📂 Estructura Exhaustiva del Proyecto, 🎣 `/hooks` (Lógica Reactiva del Cliente), 🛠️ `/lib` (Librerías, Backend Crudo y Utilidades Maestras)
+Nodes (5): HomeSyncProps, AdminRealtimeProps, useAdminRealtime(), supabase, PersonalRealtimeProps
 
 ### Community 36 - "Community 36"
-Cohesion: 0.17
-Nodes (12): 1. 🖌️ Identidad Visual, Paleta de Colores y Tailwind CSS v4, 2. 🔤 Tipografía, 3. 📐 Formas, Sombras y Geometría (Borders & Layout), 4. ✨ Sistema de Animaciones, 5. 🏗️ Arquitectura de Componentes del Home (`/components/home`), 6. 🏢 Diseño Administrativo Multi-Tema & Camaleónico, Animaciones de Interacción (GSAP), Animaciones Nativas (Tailwind / CSS) (+4 more)
+Cohesion: 0.24
+Nodes (9): InputGroup(), InputGroupAddon(), inputGroupAddonVariants, InputGroupButton(), inputGroupButtonVariants, InputGroupInput(), InputGroupText(), InputGroupTextarea() (+1 more)
 
 ### Community 37 - "Community 37"
-Cohesion: 0.20
-Nodes (9): 🏗️ Arquitectura del Sistema, ⚡ Capa de Rendimiento (Redis), 🧩 Capas de la Aplicación, 🔐 Estrategia de Identidad Dual, Eventos Chu - Plataforma de Gestión de Eventos Premium, 🛠️ Gestión Operativa (Admin Dashboard), ⚙️ Integraciones y Flujo de Datos, 🔗 Sincronización Keap (CRM) (+1 more)
+Cohesion: 0.40
+Nodes (4): StatCard(), StatCardProps, StatsGrid(), StatsGridProps
 
-### Community 39 - "Community 39"
-Cohesion: 0.22
-Nodes (9): 1. Base de Datos Relacional (PostgreSQL), 2. Canales de Progreso en Tiempo Real (Keap CRM Sync), 3. Lógica de Negocio en Inteligencia y Métricas, 🏛️ Arquitectura Técnica: Eventos HyenUk Chu, 📚 Documentación de Contexto Adicional, ⚡ Estrategia de SEO & AIO (Artificial Intelligence Optimization), 💡 Ideas y Patrones para el Futuro, 🗄️ Modelado de Datos y Sincronización Realtime (+1 more)
-
-### Community 42 - "Community 42"
-Cohesion: 0.50
-Nodes (4): Dual Identity and Authentication Strategy, Clerk Theme Propagation, Camaleonic Multi-Theme Engine, Camaleonic SVG Styling Rule
+### Community 38 - "Community 38"
+Cohesion: 0.70
+Nodes (4): createCategory(), deleteCategory(), updateCategory(), clearEventsCache()
 
 ## Knowledge Gaps
 - **250 isolated node(s):** `envPath`, `envContent`, `env`, `parts`, `key` (+245 more)
@@ -205,17 +205,17 @@ Nodes (4): Dual Identity and Authentication Strategy, Clerk Theme Propagation, C
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `Primitive UI Components` to `Category and Event Dialogs`, `Event Fetching and State`, `Global Header and Navigation`, `Public Registration and Attendees`, `Admin Layout and SEO`, `External Node Modules`, `Admin Data Tables`, `Searchable Dropdowns and Pickers`, `Admin Login and Cards`, `Custom and Sidebar Scrollbars`, `Form Inputs and Textareas`, `Notification Bell and Alert UI`?**
+- **Why does `cn()` connect `Primitive UI Components` to `Category and Event Dialogs`, `Event Fetching and State`, `Global Header and Navigation`, `Public Registration and Attendees`, `Community 37`, `Admin Layout and SEO`, `Admin Data Tables`, `Searchable Dropdowns and Pickers`, `Community 36`, `External Node Modules`, `Admin Login and Cards`, `Custom and Sidebar Scrollbars`, `Form Inputs and Textareas`, `Notification Bell and Alert UI`?**
   _High betweenness centrality (0.280) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `External Node Modules` to `PNPM Package Definition`?**
   _High betweenness centrality (0.102) - this node is a cross-community bridge._
 - **Why does `clsx` connect `External Node Modules` to `Primitive UI Components`?**
-  _High betweenness centrality (0.100) - this node is a cross-community bridge._
+  _High betweenness centrality (0.099) - this node is a cross-community bridge._
 - **What connects `envPath`, `envContent`, `env` to the rest of the system?**
   _253 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Admin Database Operations` be split into smaller, more focused modules?**
-  _Cohesion score 0.07732497387669801 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0899100899100899 - nodes in this community are weakly interconnected._
 - **Should `Category and Event Dialogs` be split into smaller, more focused modules?**
-  _Cohesion score 0.0937766410912191 - nodes in this community are weakly interconnected._
-- **Should `Event Fetching and State` be split into smaller, more focused modules?**
-  _Cohesion score 0.053939714436805924 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0661512027491409 - nodes in this community are weakly interconnected._
+- **Should `Global Header and Navigation` be split into smaller, more focused modules?**
+  _Cohesion score 0.05263157894736842 - nodes in this community are weakly interconnected._

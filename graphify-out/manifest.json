@@ -180,9 +180,9 @@
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(public)\\layout.tsx": {
-    "mtime": 1779240856.0158782,
-    "ast_hash": "9f49fe30db8c0c1dc83b0856c3382788",
-    "semantic_hash": "9f49fe30db8c0c1dc83b0856c3382788"
+    "mtime": 1779644614.336086,
+    "ast_hash": "b05a1abd68f365578383e4ed36c910d7",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(public)\\page.tsx": {
     "mtime": 1778685692.3254733,
@@ -275,9 +275,9 @@
     "semantic_hash": "3f479c71652b5b486d41d65cf7797779"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\header.tsx": {
-    "mtime": 1779205094.7535446,
-    "ast_hash": "f9de00cddea1bf695d69bd680dd3cc7b",
-    "semantic_hash": "f9de00cddea1bf695d69bd680dd3cc7b"
+    "mtime": 1779644941.2155712,
+    "ast_hash": "06b29baa3f3fe3a9c2aea6b98cc9bea7",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\events\\event-card.tsx": {
     "mtime": 1779485006.1772108,
@@ -767,6 +767,11 @@
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\check_db.js": {
     "mtime": 1779643212.8522382,
     "ast_hash": "cc818479bc5c876f4ff224e0d7525bb1",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\header\\install-pwa-button.tsx": {
+    "mtime": 1779644979.2110543,
+    "ast_hash": "a5835f66118b34223f275774d82c9017",
     "semantic_hash": ""
   }
 }
