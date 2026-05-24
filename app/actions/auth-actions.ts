@@ -34,7 +34,7 @@ export async function updateUserEmail(clerkId: string, newEmail: string, fromWeb
       return { success: true, message: "El correo ya está actualizado" };
     }
 
-    let updatedEventData = existing.event_data || {};
+    const updatedEventData = existing.event_data || {};
     if (existing.event_data) {
       Object.keys(updatedEventData).forEach(eventId => {
         if (updatedEventData[eventId]) updatedEventData[eventId].email = emailFormatted;

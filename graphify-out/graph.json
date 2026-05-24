@@ -4,6 +4,87 @@
   "graph": {},
   "nodes": [
     {
+      "label": "check_db.js",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L1",
+      "id": "check_db_js",
+      "community": 17,
+      "norm_label": "check_db.js"
+    },
+    {
+      "label": "envPath",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L6",
+      "id": "eventoschu_check_db_envpath",
+      "community": 17,
+      "norm_label": "envpath"
+    },
+    {
+      "label": "envContent",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L7",
+      "id": "eventoschu_check_db_envcontent",
+      "community": 17,
+      "norm_label": "envcontent"
+    },
+    {
+      "label": "env",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L8",
+      "id": "eventoschu_check_db_env",
+      "community": 17,
+      "norm_label": "env"
+    },
+    {
+      "label": "parts",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L10",
+      "id": "eventoschu_check_db_parts",
+      "community": 17,
+      "norm_label": "parts"
+    },
+    {
+      "label": "key",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L12",
+      "id": "eventoschu_check_db_key",
+      "community": 17,
+      "norm_label": "key"
+    },
+    {
+      "label": "val",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L13",
+      "id": "eventoschu_check_db_val",
+      "community": 17,
+      "norm_label": "val"
+    },
+    {
+      "label": "supabase",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L26",
+      "id": "eventoschu_check_db_supabase",
+      "community": 17,
+      "norm_label": "supabase"
+    },
+    {
+      "label": "test()",
+      "file_type": "code",
+      "source_file": "check_db.js",
+      "source_location": "L28",
+      "id": "eventoschu_check_db_test",
+      "community": 17,
+      "norm_label": "test()"
+    },
+    {
       "label": "components.json",
       "file_type": "code",
       "source_file": "components.json",
@@ -247,10 +328,19 @@
       "norm_label": "next.config.ts"
     },
     {
+      "label": "withSerwist",
+      "file_type": "code",
+      "source_file": "next.config.ts",
+      "source_location": "L4",
+      "id": "eventoschu_next_config_withserwist",
+      "community": 28,
+      "norm_label": "withserwist"
+    },
+    {
       "label": "nextConfig",
       "file_type": "code",
       "source_file": "next.config.ts",
-      "source_location": "L3",
+      "source_location": "L10",
       "id": "next_config_ts_eventoschu_next_config_nextconfig",
       "community": 28,
       "norm_label": "nextconfig"
@@ -400,10 +490,28 @@
       "norm_label": "@gsap/react"
     },
     {
-      "label": "@supabase/ssr",
+      "label": "@serwist/next",
       "file_type": "code",
       "source_file": "package.json",
       "source_location": "L18",
+      "id": "eventoschu_package_dependencies_serwist_next",
+      "community": 6,
+      "norm_label": "@serwist/next"
+    },
+    {
+      "label": "@serwist/window",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L19",
+      "id": "eventoschu_package_dependencies_serwist_window",
+      "community": 6,
+      "norm_label": "@serwist/window"
+    },
+    {
+      "label": "@supabase/ssr",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L20",
       "id": "eventoschu_package_dependencies_supabase_ssr",
       "community": 6,
       "norm_label": "@supabase/ssr"
@@ -412,7 +520,7 @@
       "label": "@supabase/supabase-js",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L19",
+      "source_location": "L21",
       "id": "eventoschu_package_dependencies_supabase_supabase_js",
       "community": 6,
       "norm_label": "@supabase/supabase-js"
@@ -421,7 +529,7 @@
       "label": "@upstash/redis",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L20",
+      "source_location": "L22",
       "id": "eventoschu_package_dependencies_upstash_redis",
       "community": 6,
       "norm_label": "@upstash/redis"
@@ -430,7 +538,7 @@
       "label": "@vercel/analytics",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L21",
+      "source_location": "L23",
       "id": "eventoschu_package_dependencies_vercel_analytics",
       "community": 6,
       "norm_label": "@vercel/analytics"
@@ -439,7 +547,7 @@
       "label": "@vercel/speed-insights",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L24",
       "id": "eventoschu_package_dependencies_vercel_speed_insights",
       "community": 6,
       "norm_label": "@vercel/speed-insights"
@@ -448,7 +556,7 @@
       "label": "canvas-confetti",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L25",
       "id": "eventoschu_package_dependencies_canvas_confetti",
       "community": 6,
       "norm_label": "canvas-confetti"
@@ -457,7 +565,7 @@
       "label": "class-variance-authority",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L26",
       "id": "eventoschu_package_dependencies_class_variance_authority",
       "community": 6,
       "norm_label": "class-variance-authority"
@@ -466,7 +574,7 @@
       "label": "clsx",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "id": "eventoschu_package_dependencies_clsx",
       "community": 6,
       "norm_label": "clsx"
@@ -475,7 +583,7 @@
       "label": "cmdk",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L28",
       "id": "eventoschu_package_dependencies_cmdk",
       "community": 6,
       "norm_label": "cmdk"
@@ -484,7 +592,7 @@
       "label": "country-flag-icons",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L27",
+      "source_location": "L29",
       "id": "eventoschu_package_dependencies_country_flag_icons",
       "community": 6,
       "norm_label": "country-flag-icons"
@@ -493,7 +601,7 @@
       "label": "gsap",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L28",
+      "source_location": "L30",
       "id": "eventoschu_package_dependencies_gsap",
       "community": 6,
       "norm_label": "gsap"
@@ -502,7 +610,7 @@
       "label": "lucide-react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L31",
       "id": "eventoschu_package_dependencies_lucide_react",
       "community": 6,
       "norm_label": "lucide-react"
@@ -511,7 +619,7 @@
       "label": "next",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L32",
       "id": "eventoschu_package_dependencies_next",
       "community": 6,
       "norm_label": "next"
@@ -520,7 +628,7 @@
       "label": "next-themes",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L31",
+      "source_location": "L33",
       "id": "eventoschu_package_dependencies_next_themes",
       "community": 6,
       "norm_label": "next-themes"
@@ -529,7 +637,7 @@
       "label": "react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L32",
+      "source_location": "L34",
       "id": "eventoschu_package_dependencies_react",
       "community": 6,
       "norm_label": "react"
@@ -538,7 +646,7 @@
       "label": "react-dom",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L33",
+      "source_location": "L35",
       "id": "eventoschu_package_dependencies_react_dom",
       "community": 6,
       "norm_label": "react-dom"
@@ -547,16 +655,25 @@
       "label": "react-turnstile",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L34",
+      "source_location": "L36",
       "id": "eventoschu_package_dependencies_react_turnstile",
       "community": 6,
       "norm_label": "react-turnstile"
     },
     {
+      "label": "serwist",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L37",
+      "id": "eventoschu_package_dependencies_serwist",
+      "community": 6,
+      "norm_label": "serwist"
+    },
+    {
       "label": "shadcn",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L35",
+      "source_location": "L38",
       "id": "eventoschu_package_dependencies_shadcn",
       "community": 6,
       "norm_label": "shadcn"
@@ -565,7 +682,7 @@
       "label": "sonner",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L36",
+      "source_location": "L39",
       "id": "eventoschu_package_dependencies_sonner",
       "community": 6,
       "norm_label": "sonner"
@@ -574,7 +691,7 @@
       "label": "svix",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L37",
+      "source_location": "L40",
       "id": "eventoschu_package_dependencies_svix",
       "community": 6,
       "norm_label": "svix"
@@ -583,7 +700,7 @@
       "label": "tailwind-merge",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L38",
+      "source_location": "L41",
       "id": "eventoschu_package_dependencies_tailwind_merge",
       "community": 6,
       "norm_label": "tailwind-merge"
@@ -592,7 +709,7 @@
       "label": "tw-animate-css",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L39",
+      "source_location": "L42",
       "id": "eventoschu_package_dependencies_tw_animate_css",
       "community": 6,
       "norm_label": "tw-animate-css"
@@ -601,7 +718,7 @@
       "label": "zod",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L40",
+      "source_location": "L43",
       "id": "eventoschu_package_dependencies_zod",
       "community": 6,
       "norm_label": "zod"
@@ -610,7 +727,7 @@
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L42",
+      "source_location": "L45",
       "id": "eventoschu_package_devdependencies",
       "community": 16,
       "norm_label": "devdependencies"
@@ -619,7 +736,7 @@
       "label": "@tailwindcss/postcss",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L43",
+      "source_location": "L46",
       "id": "eventoschu_package_devdependencies_tailwindcss_postcss",
       "community": 16,
       "norm_label": "@tailwindcss/postcss"
@@ -628,7 +745,7 @@
       "label": "@types/canvas-confetti",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L44",
+      "source_location": "L47",
       "id": "eventoschu_package_devdependencies_types_canvas_confetti",
       "community": 16,
       "norm_label": "@types/canvas-confetti"
@@ -637,7 +754,7 @@
       "label": "@types/node",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L45",
+      "source_location": "L48",
       "id": "eventoschu_package_devdependencies_types_node",
       "community": 16,
       "norm_label": "@types/node"
@@ -646,7 +763,7 @@
       "label": "@types/react",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L46",
+      "source_location": "L49",
       "id": "eventoschu_package_devdependencies_types_react",
       "community": 16,
       "norm_label": "@types/react"
@@ -655,7 +772,7 @@
       "label": "@types/react-dom",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L47",
+      "source_location": "L50",
       "id": "eventoschu_package_devdependencies_types_react_dom",
       "community": 16,
       "norm_label": "@types/react-dom"
@@ -664,7 +781,7 @@
       "label": "eslint",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L48",
+      "source_location": "L51",
       "id": "eventoschu_package_devdependencies_eslint",
       "community": 16,
       "norm_label": "eslint"
@@ -673,7 +790,7 @@
       "label": "eslint-config-next",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L49",
+      "source_location": "L52",
       "id": "eventoschu_package_devdependencies_eslint_config_next",
       "community": 16,
       "norm_label": "eslint-config-next"
@@ -682,7 +799,7 @@
       "label": "tailwindcss",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L50",
+      "source_location": "L53",
       "id": "eventoschu_package_devdependencies_tailwindcss",
       "community": 16,
       "norm_label": "tailwindcss"
@@ -691,7 +808,7 @@
       "label": "typescript",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L51",
+      "source_location": "L54",
       "id": "eventoschu_package_devdependencies_typescript",
       "community": 16,
       "norm_label": "typescript"
@@ -700,7 +817,7 @@
       "label": "pnpm",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L53",
+      "source_location": "L56",
       "id": "eventoschu_package_pnpm",
       "community": 20,
       "norm_label": "pnpm"
@@ -709,7 +826,7 @@
       "label": "overrides",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L54",
+      "source_location": "L57",
       "id": "eventoschu_package_pnpm_overrides",
       "community": 20,
       "norm_label": "overrides"
@@ -718,7 +835,7 @@
       "label": "@tanstack/query-core",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L55",
+      "source_location": "L58",
       "id": "eventoschu_package_overrides_tanstack_query_core",
       "community": 20,
       "norm_label": "@tanstack/query-core"
@@ -1012,6 +1129,33 @@
       "norm_label": "sitemap()"
     },
     {
+      "label": "sw.ts",
+      "file_type": "code",
+      "source_file": "app/sw.ts",
+      "source_location": "L1",
+      "id": "app_sw_ts",
+      "community": 35,
+      "norm_label": "sw.ts"
+    },
+    {
+      "label": "WorkerGlobalScope",
+      "file_type": "code",
+      "source_file": "app/sw.ts",
+      "source_location": "L7",
+      "id": "app_sw_workerglobalscope",
+      "community": 35,
+      "norm_label": "workerglobalscope"
+    },
+    {
+      "label": "serwist",
+      "file_type": "code",
+      "source_file": "app/sw.ts",
+      "source_location": "L14",
+      "id": "app_sw_serwist",
+      "community": 35,
+      "norm_label": "serwist"
+    },
+    {
       "label": "layout.tsx",
       "file_type": "code",
       "source_file": "app/(admin)/layout.tsx",
@@ -1053,7 +1197,7 @@
       "source_file": "app/(admin)/admin/dashboard/page.tsx",
       "source_location": "L1",
       "id": "app_admin_admin_dashboard_page_tsx",
-      "community": 1,
+      "community": 3,
       "norm_label": "page.tsx"
     },
     {
@@ -1089,7 +1233,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/filters/search-input.tsx",
       "source_location": "L21",
       "id": "filters_search_input_searchinput",
-      "community": 1,
+      "community": 5,
       "norm_label": "searchinput()"
     },
     {
@@ -1152,7 +1296,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/forms/delete-event-dialog.tsx",
       "source_location": "L30",
       "id": "forms_delete_event_dialog_deleteeventdialog",
-      "community": 1,
+      "community": 3,
       "norm_label": "deleteeventdialog()"
     },
     {
@@ -1168,7 +1312,7 @@
       "label": "InfoTooltip()",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
-      "source_location": "L35",
+      "source_location": "L40",
       "id": "forms_event_dialog_infotooltip",
       "community": 1,
       "norm_label": "infotooltip()"
@@ -1177,7 +1321,7 @@
       "label": "EventDialogProps",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
-      "source_location": "L51",
+      "source_location": "L56",
       "id": "forms_event_dialog_eventdialogprops",
       "community": 1,
       "norm_label": "eventdialogprops"
@@ -1186,7 +1330,7 @@
       "label": "BG_COLOR_OPTIONS",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
-      "source_location": "L65",
+      "source_location": "L70",
       "id": "forms_event_dialog_bg_color_options",
       "community": 1,
       "norm_label": "bg_color_options"
@@ -1195,7 +1339,7 @@
       "label": "TIMEZONE_LABELS",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
-      "source_location": "L74",
+      "source_location": "L79",
       "id": "forms_event_dialog_timezone_labels",
       "community": 1,
       "norm_label": "timezone_labels"
@@ -1204,9 +1348,9 @@
       "label": "EventDialog()",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
-      "source_location": "L84",
+      "source_location": "L89",
       "id": "forms_event_dialog_eventdialog",
-      "community": 1,
+      "community": 3,
       "norm_label": "eventdialog()"
     },
     {
@@ -1246,19 +1390,10 @@
       "norm_label": "manage-categories-dialog.tsx"
     },
     {
-      "label": "AVAILABLE_ICONS",
-      "file_type": "code",
-      "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
-      "source_location": "L13",
-      "id": "forms_manage_categories_dialog_available_icons",
-      "community": 1,
-      "norm_label": "available_icons"
-    },
-    {
       "label": "ManageCategoriesDialogProps",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
-      "source_location": "L34",
+      "source_location": "L17",
       "id": "forms_manage_categories_dialog_managecategoriesdialogprops",
       "community": 1,
       "norm_label": "managecategoriesdialogprops"
@@ -1267,9 +1402,9 @@
       "label": "ManageCategoriesDialog()",
       "file_type": "code",
       "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
-      "source_location": "L41",
+      "source_location": "L24",
       "id": "forms_manage_categories_dialog_managecategoriesdialog",
-      "community": 1,
+      "community": 3,
       "norm_label": "managecategoriesdialog()"
     },
     {
@@ -1296,7 +1431,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/forms/operation-progress-dialog.tsx",
       "source_location": "L21",
       "id": "forms_operation_progress_dialog_operationprogressdialog",
-      "community": 1,
+      "community": 3,
       "norm_label": "operationprogressdialog()"
     },
     {
@@ -1323,7 +1458,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/forms/purge-user-dialog.tsx",
       "source_location": "L24",
       "id": "forms_purge_user_dialog_purgeuserdialog",
-      "community": 1,
+      "community": 3,
       "norm_label": "purgeuserdialog()"
     },
     {
@@ -1350,7 +1485,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/forms/registration-dialog.tsx",
       "source_location": "L40",
       "id": "forms_registration_dialog_registrationdialog",
-      "community": 1,
+      "community": 3,
       "norm_label": "registrationdialog()"
     },
     {
@@ -1377,7 +1512,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/forms/toggle-event-dialog.tsx",
       "source_location": "L28",
       "id": "forms_toggle_event_dialog_toggleeventdialog",
-      "community": 1,
+      "community": 3,
       "norm_label": "toggleeventdialog()"
     },
     {
@@ -1386,7 +1521,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/metrics/metrics-view.tsx",
       "source_location": "L1",
       "id": "app_admin_admin_dashboard_components_metrics_metrics_view_tsx",
-      "community": 17,
+      "community": 3,
       "norm_label": "metrics-view.tsx"
     },
     {
@@ -1395,7 +1530,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/metrics/metrics-view.tsx",
       "source_location": "L8",
       "id": "metrics_metrics_view_metricsviewprops",
-      "community": 17,
+      "community": 3,
       "norm_label": "metricsviewprops"
     },
     {
@@ -1404,7 +1539,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/metrics/metrics-view.tsx",
       "source_location": "L19",
       "id": "metrics_metrics_view_metricsview",
-      "community": 17,
+      "community": 3,
       "norm_label": "metricsview()"
     },
     {
@@ -1413,7 +1548,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/metrics/metrics-view.tsx",
       "source_location": "L257",
       "id": "metrics_metrics_view_metrickpicard",
-      "community": 17,
+      "community": 3,
       "norm_label": "metrickpicard()"
     },
     {
@@ -1422,7 +1557,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/metrics/metrics-view.tsx",
       "source_location": "L294",
       "id": "metrics_metrics_view_metricbox",
-      "community": 17,
+      "community": 3,
       "norm_label": "metricbox()"
     },
     {
@@ -1431,7 +1566,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/metrics/metrics-view.tsx",
       "source_location": "L306",
       "id": "metrics_metrics_view_simpleprogressbar",
-      "community": 17,
+      "community": 3,
       "norm_label": "simpleprogressbar()"
     },
     {
@@ -1440,7 +1575,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/metrics/metrics-view.tsx",
       "source_location": "L337",
       "id": "metrics_metrics_view_expandablecountrylist",
-      "community": 17,
+      "community": 3,
       "norm_label": "expandablecountrylist()"
     },
     {
@@ -1449,7 +1584,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/metrics/metrics-view.tsx",
       "source_location": "L376",
       "id": "metrics_metrics_view_trendchart",
-      "community": 17,
+      "community": 3,
       "norm_label": "trendchart()"
     },
     {
@@ -1530,7 +1665,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/tables/events-table.tsx",
       "source_location": "L31",
       "id": "tables_events_table_eventstable",
-      "community": 1,
+      "community": 3,
       "norm_label": "eventstable()"
     },
     {
@@ -1557,7 +1692,7 @@
       "source_file": "app/(admin)/admin/dashboard/components/tables/registrations-table.tsx",
       "source_location": "L45",
       "id": "tables_registrations_table_registrationstable",
-      "community": 1,
+      "community": 3,
       "norm_label": "registrationstable()"
     },
     {
@@ -1584,7 +1719,7 @@
       "source_file": "app/(admin)/admin/dashboard/hooks/use-dashboard-filters.ts",
       "source_location": "L1",
       "id": "app_admin_admin_dashboard_hooks_use_dashboard_filters_ts",
-      "community": 0,
+      "community": 3,
       "norm_label": "use-dashboard-filters.ts"
     },
     {
@@ -1593,7 +1728,7 @@
       "source_file": "app/(admin)/admin/dashboard/hooks/use-dashboard-filters.ts",
       "source_location": "L3",
       "id": "hooks_use_dashboard_filters_usedashboardfilters",
-      "community": 0,
+      "community": 3,
       "norm_label": "usedashboardfilters()"
     },
     {
@@ -1611,7 +1746,7 @@
       "source_file": "app/(admin)/admin/dashboard/hooks/use-metrics.ts",
       "source_location": "L5",
       "id": "hooks_use_metrics_usemetrics",
-      "community": 17,
+      "community": 3,
       "norm_label": "usemetrics()"
     },
     {
@@ -1728,7 +1863,7 @@
       "source_file": "app/(public)/home-client.tsx",
       "source_location": "L1",
       "id": "app_public_home_client_tsx",
-      "community": 33,
+      "community": 2,
       "norm_label": "home-client.tsx"
     },
     {
@@ -1737,7 +1872,7 @@
       "source_file": "app/(public)/home-client.tsx",
       "source_location": "L17",
       "id": "public_home_client_registeredview",
-      "community": 33,
+      "community": 2,
       "norm_label": "registeredview"
     },
     {
@@ -1746,7 +1881,7 @@
       "source_file": "app/(public)/home-client.tsx",
       "source_location": "L25",
       "id": "public_home_client_homeclientprops",
-      "community": 33,
+      "community": 2,
       "norm_label": "homeclientprops"
     },
     {
@@ -1755,7 +1890,7 @@
       "source_file": "app/(public)/home-client.tsx",
       "source_location": "L29",
       "id": "public_home_client_homeclient",
-      "community": 33,
+      "community": 2,
       "norm_label": "homeclient()"
     },
     {
@@ -1800,7 +1935,7 @@
       "source_file": "app/(public)/page.tsx",
       "source_location": "L1",
       "id": "app_public_page_tsx",
-      "community": 35,
+      "community": 2,
       "norm_label": "page.tsx"
     },
     {
@@ -1809,7 +1944,7 @@
       "source_file": "app/(public)/page.tsx",
       "source_location": "L13",
       "id": "public_page_homedatawrapper",
-      "community": 35,
+      "community": 2,
       "norm_label": "homedatawrapper()"
     },
     {
@@ -1818,7 +1953,7 @@
       "source_file": "app/(public)/page.tsx",
       "source_location": "L32",
       "id": "public_page_page",
-      "community": 35,
+      "community": 2,
       "norm_label": "page()"
     },
     {
@@ -1827,34 +1962,34 @@
       "source_file": "app/actions/admin-categories.ts",
       "source_location": "L1",
       "id": "app_actions_admin_categories_ts",
-      "community": 1,
+      "community": 0,
       "norm_label": "admin-categories.ts"
     },
     {
       "label": "createCategory()",
       "file_type": "code",
       "source_file": "app/actions/admin-categories.ts",
-      "source_location": "L6",
+      "source_location": "L7",
       "id": "actions_admin_categories_createcategory",
-      "community": 1,
+      "community": 0,
       "norm_label": "createcategory()"
     },
     {
       "label": "deleteCategory()",
       "file_type": "code",
       "source_file": "app/actions/admin-categories.ts",
-      "source_location": "L31",
+      "source_location": "L33",
       "id": "actions_admin_categories_deletecategory",
-      "community": 1,
+      "community": 0,
       "norm_label": "deletecategory()"
     },
     {
       "label": "updateCategory()",
       "file_type": "code",
       "source_file": "app/actions/admin-categories.ts",
-      "source_location": "L48",
+      "source_location": "L51",
       "id": "actions_admin_categories_updatecategory",
-      "community": 1,
+      "community": 0,
       "norm_label": "updatecategory()"
     },
     {
@@ -2187,7 +2322,7 @@
       "source_file": "app/actions/events.ts",
       "source_location": "L1",
       "id": "app_actions_events_ts",
-      "community": 2,
+      "community": 0,
       "norm_label": "events.ts"
     },
     {
@@ -2196,7 +2331,7 @@
       "source_file": "app/actions/events.ts",
       "source_location": "L5",
       "id": "actions_events_redis",
-      "community": 2,
+      "community": 0,
       "norm_label": "redis"
     },
     {
@@ -2398,6 +2533,24 @@
       "norm_label": "validateturnstiletoken()"
     },
     {
+      "label": "upload-image.ts",
+      "file_type": "code",
+      "source_file": "app/actions/upload-image.ts",
+      "source_location": "L1",
+      "id": "app_actions_upload_image_ts",
+      "community": 1,
+      "norm_label": "upload-image.ts"
+    },
+    {
+      "label": "uploadImage()",
+      "file_type": "code",
+      "source_file": "app/actions/upload-image.ts",
+      "source_location": "L5",
+      "id": "actions_upload_image_uploadimage",
+      "community": 1,
+      "norm_label": "uploadimage()"
+    },
+    {
       "label": "user-registration.ts",
       "file_type": "code",
       "source_file": "app/actions/user-registration.ts",
@@ -2547,7 +2700,7 @@
       "source_file": "components/footer.tsx",
       "source_location": "L1",
       "id": "components_footer_tsx",
-      "community": 33,
+      "community": 2,
       "norm_label": "footer.tsx"
     },
     {
@@ -2556,7 +2709,7 @@
       "source_file": "components/footer.tsx",
       "source_location": "L10",
       "id": "components_footer_footer",
-      "community": 33,
+      "community": 2,
       "norm_label": "footer()"
     },
     {
@@ -2592,7 +2745,7 @@
       "source_file": "components/events/event-card.tsx",
       "source_location": "L1",
       "id": "components_events_event_card_tsx",
-      "community": 18,
+      "community": 15,
       "norm_label": "event-card.tsx"
     },
     {
@@ -2601,14 +2754,14 @@
       "source_file": "components/events/event-card.tsx",
       "source_location": "L15",
       "id": "events_event_card_eventcardprops",
-      "community": 18,
+      "community": 15,
       "norm_label": "eventcardprops"
     },
     {
       "label": "EventCard()",
       "file_type": "code",
       "source_file": "components/events/event-card.tsx",
-      "source_location": "L42",
+      "source_location": "L43",
       "id": "events_event_card_eventcard",
       "community": 4,
       "norm_label": "eventcard()"
@@ -2617,9 +2770,9 @@
       "label": "EventDetailItem()",
       "file_type": "code",
       "source_file": "components/events/event-card.tsx",
-      "source_location": "L253",
+      "source_location": "L256",
       "id": "events_event_card_eventdetailitem",
-      "community": 18,
+      "community": 15,
       "norm_label": "eventdetailitem()"
     },
     {
@@ -2628,7 +2781,7 @@
       "source_file": "components/events/event-progress-bar.tsx",
       "source_location": "L1",
       "id": "components_events_event_progress_bar_tsx",
-      "community": 18,
+      "community": 15,
       "norm_label": "event-progress-bar.tsx"
     },
     {
@@ -2637,7 +2790,7 @@
       "source_file": "components/events/event-progress-bar.tsx",
       "source_location": "L6",
       "id": "events_event_progress_bar_eventprogressbarprops",
-      "community": 18,
+      "community": 15,
       "norm_label": "eventprogressbarprops"
     },
     {
@@ -2646,7 +2799,7 @@
       "source_file": "components/events/event-progress-bar.tsx",
       "source_location": "L13",
       "id": "events_event_progress_bar_eventprogressbar",
-      "community": 18,
+      "community": 15,
       "norm_label": "eventprogressbar()"
     },
     {
@@ -2655,7 +2808,7 @@
       "source_file": "components/events/event-sold-out-overlay.tsx",
       "source_location": "L1",
       "id": "components_events_event_sold_out_overlay_tsx",
-      "community": 18,
+      "community": 15,
       "norm_label": "event-sold-out-overlay.tsx"
     },
     {
@@ -2664,7 +2817,7 @@
       "source_file": "components/events/event-sold-out-overlay.tsx",
       "source_location": "L3",
       "id": "events_event_sold_out_overlay_eventsoldoutoverlay",
-      "community": 18,
+      "community": 15,
       "norm_label": "eventsoldoutoverlay()"
     },
     {
@@ -2673,7 +2826,7 @@
       "source_file": "components/footer/social-icon.tsx",
       "source_location": "L1",
       "id": "components_footer_social_icon_tsx",
-      "community": 33,
+      "community": 2,
       "norm_label": "social-icon.tsx"
     },
     {
@@ -2682,7 +2835,7 @@
       "source_file": "components/footer/social-icon.tsx",
       "source_location": "L5",
       "id": "footer_social_icon_socialiconprops",
-      "community": 33,
+      "community": 2,
       "norm_label": "socialiconprops"
     },
     {
@@ -2691,7 +2844,7 @@
       "source_file": "components/footer/social-icon.tsx",
       "source_location": "L10",
       "id": "footer_social_icon_socialicon",
-      "community": 33,
+      "community": 2,
       "norm_label": "socialicon()"
     },
     {
@@ -2826,7 +2979,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L1",
       "id": "components_home_category_tabs_tsx",
-      "community": 34,
+      "community": 2,
       "norm_label": "category-tabs.tsx"
     },
     {
@@ -2835,7 +2988,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L9",
       "id": "home_category_tabs_all_lucide_icons",
-      "community": 34,
+      "community": 2,
       "norm_label": "all_lucide_icons"
     },
     {
@@ -2844,7 +2997,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L31",
       "id": "home_category_tabs_categorytabsprops",
-      "community": 34,
+      "community": 2,
       "norm_label": "categorytabsprops"
     },
     {
@@ -2853,7 +3006,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L41",
       "id": "home_category_tabs_category_icons",
-      "community": 34,
+      "community": 2,
       "norm_label": "category_icons"
     },
     {
@@ -2862,7 +3015,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L49",
       "id": "home_category_tabs_category_labels",
-      "community": 34,
+      "community": 2,
       "norm_label": "category_labels"
     },
     {
@@ -2871,7 +3024,7 @@
       "source_file": "components/home/category-tabs.tsx",
       "source_location": "L54",
       "id": "home_category_tabs_categorytabs",
-      "community": 34,
+      "community": 2,
       "norm_label": "categorytabs()"
     },
     {
@@ -2898,7 +3051,7 @@
       "source_file": "components/home/check-registration-panel.tsx",
       "source_location": "L18",
       "id": "home_check_registration_panel_checkregistrationpanel",
-      "community": 34,
+      "community": 2,
       "norm_label": "checkregistrationpanel()"
     },
     {
@@ -2952,7 +3105,7 @@
       "source_file": "components/home/events-carousel.tsx",
       "source_location": "L1",
       "id": "components_home_events_carousel_tsx",
-      "community": 38,
+      "community": 2,
       "norm_label": "events-carousel.tsx"
     },
     {
@@ -2961,7 +3114,7 @@
       "source_file": "components/home/events-carousel.tsx",
       "source_location": "L16",
       "id": "home_events_carousel_eventskeleton",
-      "community": 38,
+      "community": 2,
       "norm_label": "eventskeleton()"
     },
     {
@@ -2970,7 +3123,7 @@
       "source_file": "components/home/events-carousel.tsx",
       "source_location": "L41",
       "id": "home_events_carousel_eventscarouselprops",
-      "community": 38,
+      "community": 2,
       "norm_label": "eventscarouselprops"
     },
     {
@@ -2979,7 +3132,7 @@
       "source_file": "components/home/events-carousel.tsx",
       "source_location": "L55",
       "id": "home_events_carousel_eventscarousel",
-      "community": 38,
+      "community": 2,
       "norm_label": "eventscarousel()"
     },
     {
@@ -2988,7 +3141,7 @@
       "source_file": "components/home/events-skeleton.tsx",
       "source_location": "L1",
       "id": "components_home_events_skeleton_tsx",
-      "community": 35,
+      "community": 2,
       "norm_label": "events-skeleton.tsx"
     },
     {
@@ -2997,7 +3150,7 @@
       "source_file": "components/home/events-skeleton.tsx",
       "source_location": "L5",
       "id": "home_events_skeleton_eventsskeleton",
-      "community": 35,
+      "community": 2,
       "norm_label": "eventsskeleton()"
     },
     {
@@ -3033,7 +3186,7 @@
       "source_file": "components/home/hero-section.tsx",
       "source_location": "L20",
       "id": "home_hero_section_herosection",
-      "community": 34,
+      "community": 2,
       "norm_label": "herosection()"
     },
     {
@@ -3042,7 +3195,7 @@
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L1",
       "id": "components_home_month_tabs_tsx",
-      "community": 38,
+      "community": 2,
       "norm_label": "month-tabs.tsx"
     },
     {
@@ -3051,7 +3204,7 @@
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L9",
       "id": "home_month_tabs_monthtabsprops",
-      "community": 38,
+      "community": 2,
       "norm_label": "monthtabsprops"
     },
     {
@@ -3060,7 +3213,7 @@
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L17",
       "id": "home_month_tabs_monthtabs",
-      "community": 34,
+      "community": 2,
       "norm_label": "monthtabs()"
     },
     {
@@ -3105,7 +3258,7 @@
       "source_file": "components/home/public-view.tsx",
       "source_location": "L1",
       "id": "components_home_public_view_tsx",
-      "community": 34,
+      "community": 2,
       "norm_label": "public-view.tsx"
     },
     {
@@ -3114,7 +3267,7 @@
       "source_file": "components/home/public-view.tsx",
       "source_location": "L5",
       "id": "home_public_view_registrationform",
-      "community": 34,
+      "community": 2,
       "norm_label": "registrationform"
     },
     {
@@ -3123,7 +3276,7 @@
       "source_file": "components/home/public-view.tsx",
       "source_location": "L11",
       "id": "home_public_view_eventscarousel",
-      "community": 34,
+      "community": 2,
       "norm_label": "eventscarousel"
     },
     {
@@ -3132,7 +3285,7 @@
       "source_file": "components/home/public-view.tsx",
       "source_location": "L22",
       "id": "home_public_view_publicviewprops",
-      "community": 34,
+      "community": 2,
       "norm_label": "publicviewprops"
     },
     {
@@ -3141,7 +3294,7 @@
       "source_file": "components/home/public-view.tsx",
       "source_location": "L57",
       "id": "home_public_view_publicview",
-      "community": 33,
+      "community": 2,
       "norm_label": "publicview()"
     },
     {
@@ -3258,7 +3411,7 @@
       "source_file": "components/home/skeletons.tsx",
       "source_location": "L1",
       "id": "components_home_skeletons_tsx",
-      "community": 35,
+      "community": 2,
       "norm_label": "skeletons.tsx"
     },
     {
@@ -3267,7 +3420,7 @@
       "source_file": "components/home/skeletons.tsx",
       "source_location": "L7",
       "id": "home_skeletons_headerskeleton",
-      "community": 35,
+      "community": 2,
       "norm_label": "headerskeleton()"
     },
     {
@@ -3276,7 +3429,7 @@
       "source_file": "components/home/skeletons.tsx",
       "source_location": "L20",
       "id": "home_skeletons_heroskeleton",
-      "community": 35,
+      "community": 2,
       "norm_label": "heroskeleton()"
     },
     {
@@ -3285,7 +3438,7 @@
       "source_file": "components/home/skeletons.tsx",
       "source_location": "L52",
       "id": "home_skeletons_categorytabsskeleton",
-      "community": 35,
+      "community": 2,
       "norm_label": "categorytabsskeleton()"
     },
     {
@@ -3294,7 +3447,7 @@
       "source_file": "components/home/skeletons.tsx",
       "source_location": "L66",
       "id": "home_skeletons_monthtabsskeleton",
-      "community": 35,
+      "community": 2,
       "norm_label": "monthtabsskeleton()"
     },
     {
@@ -3681,7 +3834,7 @@
       "source_file": "components/registration/registration-form.tsx",
       "source_location": "L26",
       "id": "registration_registration_form_registrationform",
-      "community": 11,
+      "community": 1,
       "norm_label": "registrationform()"
     },
     {
@@ -3708,7 +3861,7 @@
       "source_file": "components/registration/survey-modal.tsx",
       "source_location": "L19",
       "id": "registration_survey_modal_surveymodal",
-      "community": 33,
+      "community": 2,
       "norm_label": "surveymodal()"
     },
     {
@@ -3870,7 +4023,7 @@
       "source_file": "components/ui/checkbox.tsx",
       "source_location": "L1",
       "id": "components_ui_checkbox_tsx",
-      "community": 11,
+      "community": 19,
       "norm_label": "checkbox.tsx"
     },
     {
@@ -3879,7 +4032,7 @@
       "source_file": "components/ui/checkbox.tsx",
       "source_location": "L8",
       "id": "ui_checkbox_checkbox",
-      "community": 11,
+      "community": 19,
       "norm_label": "checkbox()"
     },
     {
@@ -4284,25 +4437,25 @@
       "source_file": "components/ui/event-flag.tsx",
       "source_location": "L1",
       "id": "components_ui_event_flag_tsx",
-      "community": 7,
+      "community": 15,
       "norm_label": "event-flag.tsx"
     },
     {
       "label": "EventFlagProps",
       "file_type": "code",
       "source_file": "components/ui/event-flag.tsx",
-      "source_location": "L8",
+      "source_location": "L10",
       "id": "ui_event_flag_eventflagprops",
-      "community": 7,
+      "community": 15,
       "norm_label": "eventflagprops"
     },
     {
       "label": "EventFlag()",
       "file_type": "code",
       "source_file": "components/ui/event-flag.tsx",
-      "source_location": "L14",
+      "source_location": "L17",
       "id": "ui_event_flag_eventflag",
-      "community": 7,
+      "community": 15,
       "norm_label": "eventflag()"
     },
     {
@@ -4311,7 +4464,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L1",
       "id": "components_ui_input_group_tsx",
-      "community": 15,
+      "community": 11,
       "norm_label": "input-group.tsx"
     },
     {
@@ -4320,7 +4473,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L11",
       "id": "ui_input_group_inputgroup",
-      "community": 15,
+      "community": 11,
       "norm_label": "inputgroup()"
     },
     {
@@ -4329,7 +4482,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L25",
       "id": "ui_input_group_inputgroupaddonvariants",
-      "community": 15,
+      "community": 11,
       "norm_label": "inputgroupaddonvariants"
     },
     {
@@ -4338,7 +4491,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L46",
       "id": "ui_input_group_inputgroupaddon",
-      "community": 15,
+      "community": 11,
       "norm_label": "inputgroupaddon()"
     },
     {
@@ -4347,7 +4500,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L68",
       "id": "ui_input_group_inputgroupbuttonvariants",
-      "community": 15,
+      "community": 11,
       "norm_label": "inputgroupbuttonvariants"
     },
     {
@@ -4356,7 +4509,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L86",
       "id": "ui_input_group_inputgroupbutton",
-      "community": 15,
+      "community": 11,
       "norm_label": "inputgroupbutton()"
     },
     {
@@ -4365,7 +4518,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L107",
       "id": "ui_input_group_inputgrouptext",
-      "community": 15,
+      "community": 11,
       "norm_label": "inputgrouptext()"
     },
     {
@@ -4374,7 +4527,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L119",
       "id": "ui_input_group_inputgroupinput",
-      "community": 15,
+      "community": 11,
       "norm_label": "inputgroupinput()"
     },
     {
@@ -4383,7 +4536,7 @@
       "source_file": "components/ui/input-group.tsx",
       "source_location": "L135",
       "id": "ui_input_group_inputgrouptextarea",
-      "community": 15,
+      "community": 11,
       "norm_label": "inputgrouptextarea()"
     },
     {
@@ -4581,7 +4734,7 @@
       "source_file": "components/ui/skeleton.tsx",
       "source_location": "L1",
       "id": "components_ui_skeleton_tsx",
-      "community": 35,
+      "community": 2,
       "norm_label": "skeleton.tsx"
     },
     {
@@ -4590,7 +4743,7 @@
       "source_file": "components/ui/skeleton.tsx",
       "source_location": "L3",
       "id": "ui_skeleton_skeleton",
-      "community": 35,
+      "community": 2,
       "norm_label": "skeleton()"
     },
     {
@@ -4716,7 +4869,7 @@
       "source_file": "components/ui/tabs.tsx",
       "source_location": "L1",
       "id": "components_ui_tabs_tsx",
-      "community": 11,
+      "community": 3,
       "norm_label": "tabs.tsx"
     },
     {
@@ -4725,7 +4878,7 @@
       "source_file": "components/ui/tabs.tsx",
       "source_location": "L8",
       "id": "ui_tabs_tabs",
-      "community": 11,
+      "community": 3,
       "norm_label": "tabs()"
     },
     {
@@ -4734,7 +4887,7 @@
       "source_file": "components/ui/tabs.tsx",
       "source_location": "L26",
       "id": "ui_tabs_tabslistvariants",
-      "community": 11,
+      "community": 3,
       "norm_label": "tabslistvariants"
     },
     {
@@ -4743,7 +4896,7 @@
       "source_file": "components/ui/tabs.tsx",
       "source_location": "L41",
       "id": "ui_tabs_tabslist",
-      "community": 11,
+      "community": 3,
       "norm_label": "tabslist()"
     },
     {
@@ -4752,7 +4905,7 @@
       "source_file": "components/ui/tabs.tsx",
       "source_location": "L56",
       "id": "ui_tabs_tabstrigger",
-      "community": 11,
+      "community": 3,
       "norm_label": "tabstrigger()"
     },
     {
@@ -4761,7 +4914,7 @@
       "source_file": "components/ui/tabs.tsx",
       "source_location": "L71",
       "id": "ui_tabs_tabscontent",
-      "community": 11,
+      "community": 3,
       "norm_label": "tabscontent()"
     },
     {
@@ -4770,7 +4923,7 @@
       "source_file": "components/ui/textarea.tsx",
       "source_location": "L1",
       "id": "components_ui_textarea_tsx",
-      "community": 15,
+      "community": 11,
       "norm_label": "textarea.tsx"
     },
     {
@@ -4779,7 +4932,7 @@
       "source_file": "components/ui/textarea.tsx",
       "source_location": "L5",
       "id": "ui_textarea_textarea",
-      "community": 15,
+      "community": 11,
       "norm_label": "textarea()"
     },
     {
@@ -4788,7 +4941,7 @@
       "source_file": "components/ui/theme-toggle.tsx",
       "source_location": "L1",
       "id": "components_ui_theme_toggle_tsx",
-      "community": 1,
+      "community": 3,
       "norm_label": "theme-toggle.tsx"
     },
     {
@@ -4797,7 +4950,7 @@
       "source_file": "components/ui/theme-toggle.tsx",
       "source_location": "L8",
       "id": "ui_theme_toggle_themetoggle",
-      "community": 1,
+      "community": 3,
       "norm_label": "themetoggle()"
     },
     {
@@ -4860,7 +5013,7 @@
       "source_file": "hooks/home/use-home-logic.ts",
       "source_location": "L18",
       "id": "home_use_home_logic_usehomelogic",
-      "community": 33,
+      "community": 2,
       "norm_label": "usehomelogic()"
     },
     {
@@ -4932,7 +5085,7 @@
       "source_file": "hooks/realtime/use-public-realtime.ts",
       "source_location": "L11",
       "id": "realtime_use_public_realtime_usepublicrealtime",
-      "community": 33,
+      "community": 2,
       "norm_label": "usepublicrealtime()"
     },
     {
@@ -4959,7 +5112,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L1",
       "id": "lib_animations_ts",
-      "community": 38,
+      "community": 2,
       "norm_label": "animations.ts"
     },
     {
@@ -4968,7 +5121,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L6",
       "id": "lib_animations_anim_config",
-      "community": 38,
+      "community": 2,
       "norm_label": "anim_config"
     },
     {
@@ -4977,7 +5130,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L35",
       "id": "lib_animations_anim_selectors",
-      "community": 38,
+      "community": 2,
       "norm_label": "anim_selectors"
     },
     {
@@ -4986,7 +5139,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L49",
       "id": "lib_animations_reveal_config",
-      "community": 34,
+      "community": 2,
       "norm_label": "reveal_config"
     },
     {
@@ -5013,7 +5166,7 @@
       "source_file": "lib/constants.ts",
       "source_location": "L24",
       "id": "lib_constants_social_links",
-      "community": 33,
+      "community": 2,
       "norm_label": "social_links"
     },
     {
@@ -5067,7 +5220,7 @@
       "source_file": "lib/date-utils.ts",
       "source_location": "L44",
       "id": "lib_date_utils_formatdateforinput",
-      "community": 0,
+      "community": 7,
       "norm_label": "formatdateforinput()"
     },
     {
@@ -5170,6 +5323,42 @@
       "norm_label": "trackgtmevent()"
     },
     {
+      "label": "icons.ts",
+      "file_type": "code",
+      "source_file": "lib/icons.ts",
+      "source_location": "L1",
+      "id": "lib_icons_ts",
+      "community": 1,
+      "norm_label": "icons.ts"
+    },
+    {
+      "label": "AVAILABLE_ICONS",
+      "file_type": "code",
+      "source_file": "lib/icons.ts",
+      "source_location": "L3",
+      "id": "lib_icons_available_icons",
+      "community": 1,
+      "norm_label": "available_icons"
+    },
+    {
+      "label": "image-utils.ts",
+      "file_type": "code",
+      "source_file": "lib/image-utils.ts",
+      "source_location": "L1",
+      "id": "lib_image_utils_ts",
+      "community": 1,
+      "norm_label": "image-utils.ts"
+    },
+    {
+      "label": "convertToWebP()",
+      "file_type": "code",
+      "source_file": "lib/image-utils.ts",
+      "source_location": "L6",
+      "id": "lib_image_utils_converttowebp",
+      "community": 1,
+      "norm_label": "converttowebp()"
+    },
+    {
       "label": "supabase-admin.ts",
       "file_type": "code",
       "source_file": "lib/supabase-admin.ts",
@@ -5229,7 +5418,7 @@
       "source_file": "lib/utils.ts",
       "source_location": "L1",
       "id": "lib_utils_ts",
-      "community": 1,
+      "community": 19,
       "norm_label": "utils.ts"
     },
     {
@@ -5562,7 +5751,7 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L17",
       "id": "eventoschu_architecture_estructura_exhaustiva_del_proyecto",
-      "community": 41,
+      "community": 34,
       "norm_label": "\ud83d\udcc2 estructura exhaustiva del proyecto"
     },
     {
@@ -5571,7 +5760,7 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L19",
       "id": "eventoschu_architecture_archivos_de_configuraci\u00f3n_ra\u00edz",
-      "community": 41,
+      "community": 34,
       "norm_label": "archivos de configuracion raiz"
     },
     {
@@ -5580,7 +5769,7 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L37",
       "id": "eventoschu_architecture_app_app_router_rutas_y_server_actions",
-      "community": 41,
+      "community": 34,
       "norm_label": "\ud83c\udf10 `/app` (app router - rutas y server actions)"
     },
     {
@@ -5589,131 +5778,131 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L40",
       "id": "eventoschu_architecture_app_actions_server_actions_el_motor_backend",
-      "community": 41,
+      "community": 34,
       "norm_label": "`/app/actions` (server actions - el motor backend)"
     },
     {
       "label": "`/app/api` (Endpoints de API tradicionales HTTP)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L85",
+      "source_location": "L86",
       "id": "eventoschu_architecture_app_api_endpoints_de_api_tradicionales_http",
-      "community": 41,
+      "community": 34,
       "norm_label": "`/app/api` (endpoints de api tradicionales http)"
     },
     {
       "label": "Archivos Principales y Rutas Ra\u00edz de `/app`",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L88",
+      "source_location": "L89",
       "id": "eventoschu_architecture_archivos_principales_y_rutas_ra\u00edz_de_app",
-      "community": 41,
+      "community": 34,
       "norm_label": "archivos principales y rutas raiz de `/app`"
     },
     {
       "label": "\ud83e\uddf1 `/components` (Biblioteca de Interfaces Reutilizables)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L103",
+      "source_location": "L104",
       "id": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "community": 40,
+      "community": 33,
       "norm_label": "\ud83e\uddf1 `/components` (biblioteca de interfaces reutilizables)"
     },
     {
       "label": "`/components/events` (Motor Visual de Tarjetas)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L107",
+      "source_location": "L108",
       "id": "eventoschu_architecture_components_events_motor_visual_de_tarjetas",
-      "community": 40,
+      "community": 33,
       "norm_label": "`/components/events` (motor visual de tarjetas)"
     },
     {
       "label": "`/components/footer` & `/components/header`",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L112",
+      "source_location": "L113",
       "id": "eventoschu_architecture_components_footer_components_header",
-      "community": 40,
+      "community": 33,
       "norm_label": "`/components/footer` & `/components/header`"
     },
     {
       "label": "`/components/home` (Bloques de la P\u00e1gina de Inicio)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L120",
+      "source_location": "L121",
       "id": "eventoschu_architecture_components_home_bloques_de_la_p\u00e1gina_de_inicio",
-      "community": 40,
+      "community": 33,
       "norm_label": "`/components/home` (bloques de la pagina de inicio)"
     },
     {
       "label": "`/components/notifications`",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L139",
+      "source_location": "L140",
       "id": "eventoschu_architecture_components_notifications",
-      "community": 40,
+      "community": 33,
       "norm_label": "`/components/notifications`"
     },
     {
       "label": "`/components/providers` (Wrappers de Infraestructura)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L143",
+      "source_location": "L144",
       "id": "eventoschu_architecture_components_providers_wrappers_de_infraestructura",
-      "community": 40,
+      "community": 33,
       "norm_label": "`/components/providers` (wrappers de infraestructura)"
     },
     {
       "label": "`/components/registration` (Motor de Formularios)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L149",
+      "source_location": "L151",
       "id": "eventoschu_architecture_components_registration_motor_de_formularios",
-      "community": 40,
+      "community": 33,
       "norm_label": "`/components/registration` (motor de formularios)"
     },
     {
       "label": "`/components/seo`",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L156",
+      "source_location": "L158",
       "id": "eventoschu_architecture_components_seo",
-      "community": 40,
+      "community": 33,
       "norm_label": "`/components/seo`"
     },
     {
       "label": "`/components/ui` (Base de Componentes UI Shadcn/Radix)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L159",
+      "source_location": "L161",
       "id": "eventoschu_architecture_components_ui_base_de_componentes_ui_shadcn_radix",
-      "community": 40,
+      "community": 33,
       "norm_label": "`/components/ui` (base de componentes ui shadcn/radix)"
     },
     {
       "label": "\ud83c\udfa3 `/hooks` (L\u00f3gica Reactiva del Cliente)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L171",
+      "source_location": "L173",
       "id": "eventoschu_architecture_hooks_l\u00f3gica_reactiva_del_cliente",
-      "community": 41,
+      "community": 34,
       "norm_label": "\ud83c\udfa3 `/hooks` (logica reactiva del cliente)"
     },
     {
       "label": "\ud83d\udee0\ufe0f `/lib` (Librer\u00edas, Backend Crudo y Utilidades Maestras)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L179",
+      "source_location": "L181",
       "id": "eventoschu_architecture_lib_librer\u00edas_backend_crudo_y_utilidades_maestras",
-      "community": 41,
+      "community": 34,
       "norm_label": "\ud83d\udee0\ufe0f `/lib` (librerias, backend crudo y utilidades maestras)"
     },
     {
       "label": "\ud83d\uddc4\ufe0f Modelado de Datos y Sincronizaci\u00f3n Realtime",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L194",
+      "source_location": "L197",
       "id": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime",
       "community": 39,
       "norm_label": "\ud83d\uddc4\ufe0f modelado de datos y sincronizacion realtime"
@@ -5722,7 +5911,7 @@
       "label": "1. Base de Datos Relacional (PostgreSQL)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L196",
+      "source_location": "L199",
       "id": "eventoschu_architecture_1_base_de_datos_relacional_postgresql",
       "community": 39,
       "norm_label": "1. base de datos relacional (postgresql)"
@@ -5731,7 +5920,7 @@
       "label": "2. Canales de Progreso en Tiempo Real (Keap CRM Sync)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L201",
+      "source_location": "L204",
       "id": "eventoschu_architecture_2_canales_de_progreso_en_tiempo_real_keap_crm_sync",
       "community": 39,
       "norm_label": "2. canales de progreso en tiempo real (keap crm sync)"
@@ -5740,7 +5929,7 @@
       "label": "3. L\u00f3gica de Negocio en Inteligencia y M\u00e9tricas",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L207",
+      "source_location": "L210",
       "id": "eventoschu_architecture_3_l\u00f3gica_de_negocio_en_inteligencia_y_m\u00e9tricas",
       "community": 39,
       "norm_label": "3. logica de negocio en inteligencia y metricas"
@@ -5749,7 +5938,7 @@
       "label": "\ud83d\udcc1 `/public` (Directorio de Est\u00e1ticos Globales)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L213",
+      "source_location": "L216",
       "id": "eventoschu_architecture_public_directorio_de_est\u00e1ticos_globales",
       "community": 39,
       "norm_label": "\ud83d\udcc1 `/public` (directorio de estaticos globales)"
@@ -5758,7 +5947,7 @@
       "label": "\u26a1 Estrategia de SEO & AIO (Artificial Intelligence Optimization)",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L219",
+      "source_location": "L222",
       "id": "eventoschu_architecture_estrategia_de_seo_aio_artificial_intelligence_optimization",
       "community": 39,
       "norm_label": "\u26a1 estrategia de seo & aio (artificial intelligence optimization)"
@@ -5767,7 +5956,7 @@
       "label": "\ud83d\udca1 Ideas y Patrones para el Futuro",
       "file_type": "document",
       "source_file": "ARCHITECTURE.md",
-      "source_location": "L238",
+      "source_location": "L241",
       "id": "eventoschu_architecture_ideas_y_patrones_para_el_futuro",
       "community": 39,
       "norm_label": "\ud83d\udca1 ideas y patrones para el futuro"
@@ -6196,6 +6385,15 @@
       "norm_label": "\ud83d\udcdd reglas de oro para disenadores y agentes"
     },
     {
+      "label": "AVAILABLE_ICONS",
+      "file_type": "code",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
+      "source_location": "L13",
+      "community": 1,
+      "norm_label": "available_icons",
+      "id": "forms_manage_categories_dialog_available_icons"
+    },
+    {
       "label": "pnpm-workspace.yaml",
       "file_type": "document",
       "source_file": "pnpm-workspace.yaml",
@@ -6437,6 +6635,86 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_envpath",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_envcontent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_env",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_parts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_val",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_supabase",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "check_db.js",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "check_db_js",
+      "target": "eventoschu_check_db_test",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "components.json",
       "source_location": "L2",
       "weight": 1.0,
@@ -6668,6 +6946,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "next.config.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "next_config_ts",
+      "target": "eventoschu_next_config_withserwist"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "next.config.ts",
       "source_location": "L3",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -6852,6 +7140,26 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "eventoschu_package_dependencies",
+      "target": "eventoschu_package_dependencies_serwist_next"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eventoschu_package_dependencies",
+      "target": "eventoschu_package_dependencies_serwist_window"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eventoschu_package_dependencies",
       "target": "eventoschu_package_dependencies_supabase_ssr"
     },
     {
@@ -7013,6 +7321,16 @@
       "confidence_score": 1.0,
       "source": "eventoschu_package_dependencies",
       "target": "eventoschu_package_dependencies_react_turnstile"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L37",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "eventoschu_package_dependencies",
+      "target": "eventoschu_package_dependencies_serwist"
     },
     {
       "relation": "contains",
@@ -7487,6 +7805,26 @@
       "weight": 1.0,
       "source": "app_sitemap_sitemap",
       "target": "actions_events_getevents"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/sw.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_sw_ts",
+      "target": "app_sw_workerglobalscope"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/sw.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_sw_ts",
+      "target": "app_sw_serwist"
     },
     {
       "relation": "imports_from",
@@ -8703,6 +9041,116 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "app_actions_upload_image_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "actions_upload_image_uploadimage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "lib_image_utils_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "lib_image_utils_converttowebp"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "lib_icons_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "lib_icons_available_icons"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "components_ui_popover_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "ui_popover_popover"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "ui_popover_popovertrigger"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_event_dialog_tsx",
+      "target": "ui_popover_popovercontent"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/event-dialog.tsx",
       "source_location": "L5",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -9550,14 +9998,70 @@
       "target": "ui_select_selectvalue"
     },
     {
-      "relation": "contains",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_manage_categories_dialog_tsx",
+      "target": "app_actions_upload_image_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_manage_categories_dialog_tsx",
+      "target": "actions_upload_image_uploadimage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
       "source_location": "L13",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "app_admin_admin_dashboard_components_forms_manage_categories_dialog_tsx",
-      "target": "forms_manage_categories_dialog_available_icons"
+      "target": "lib_image_utils_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_manage_categories_dialog_tsx",
+      "target": "lib_image_utils_converttowebp"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_manage_categories_dialog_tsx",
+      "target": "lib_icons_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_manage_categories_dialog_tsx",
+      "target": "lib_icons_available_icons"
     },
     {
       "relation": "imports_from",
@@ -9600,6 +10104,16 @@
       "confidence_score": 1.0,
       "source": "app_admin_admin_dashboard_components_forms_manage_categories_dialog_tsx",
       "target": "forms_manage_categories_dialog_managecategoriesdialog"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/(admin)/admin/dashboard/components/forms/manage-categories-dialog.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_admin_admin_dashboard_components_forms_manage_categories_dialog_tsx",
+      "target": "forms_manage_categories_dialog_available_icons"
     },
     {
       "relation": "imports_from",
@@ -12706,6 +13220,28 @@
       "target": "lib_supabase_admin_supabaseadmin"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/actions/admin-categories.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_actions_admin_categories_ts",
+      "target": "app_actions_events_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/actions/admin-categories.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_actions_admin_categories_ts",
+      "target": "actions_events_cleareventscache"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/actions/admin-categories.ts",
@@ -12734,6 +13270,39 @@
       "confidence_score": 1.0,
       "source": "app_actions_admin_categories_ts",
       "target": "actions_admin_categories_updatecategory"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/actions/admin-categories.ts",
+      "source_location": "L24",
+      "weight": 1.0,
+      "source": "actions_admin_categories_createcategory",
+      "target": "actions_events_cleareventscache"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/actions/admin-categories.ts",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "actions_admin_categories_deletecategory",
+      "target": "actions_events_cleareventscache"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/actions/admin-categories.ts",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "actions_admin_categories_updatecategory",
+      "target": "actions_events_cleareventscache"
     },
     {
       "relation": "imports_from",
@@ -15175,6 +15744,38 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "app/actions/upload-image.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_actions_upload_image_ts",
+      "target": "lib_supabase_admin_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/actions/upload-image.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_actions_upload_image_ts",
+      "target": "lib_supabase_admin_supabaseadmin"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/actions/upload-image.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_actions_upload_image_ts",
+      "target": "actions_upload_image_uploadimage"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "app/actions/user-registration.ts",
       "source_location": "L12",
       "weight": 1.0,
@@ -15247,6 +15848,17 @@
       "confidence_score": 1.0,
       "source": "app_actions_user_registration_ts",
       "target": "lib_event_config_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/actions/user-registration.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "app_actions_user_registration_ts",
+      "target": "lib_event_config_geteventuiconfig"
     },
     {
       "relation": "imports_from",
@@ -17772,6 +18384,17 @@
       "confidence_score": 1.0,
       "source": "components_home_registered_view_tsx",
       "target": "home_registered_view_registeredview"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "components/home/registered-view.tsx",
+      "source_location": "L111",
+      "weight": 1.0,
+      "source": "home_registered_view_registeredview",
+      "target": "lib_event_config_geteventuiconfig"
     },
     {
       "relation": "contains",
@@ -20784,6 +21407,28 @@
       "target": "lib_utils_cn"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/event-flag.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_ui_event_flag_tsx",
+      "target": "lib_icons_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/ui/event-flag.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_ui_event_flag_tsx",
+      "target": "lib_icons_available_icons"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/ui/event-flag.tsx",
@@ -22374,6 +23019,26 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "lib/icons.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_icons_ts",
+      "target": "lib_icons_available_icons"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/image-utils.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_image_utils_ts",
+      "target": "lib_image_utils_converttowebp"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "lib/supabase-admin.ts",
       "source_location": "L8",
       "weight": 1.0,
@@ -22542,9 +23207,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_md",
-      "target": "eventoschu_agents_this_is_not_the_next_js_you_know",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_this_is_not_the_next_js_you_know"
     },
     {
       "relation": "contains",
@@ -22552,9 +23217,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "agents_md",
-      "target": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu"
     },
     {
       "relation": "references",
@@ -22642,9 +23307,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_1_optimizaci\u00f3n_de_rendimiento_lcp_tbt",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_1_optimizaci\u00f3n_de_rendimiento_lcp_tbt"
     },
     {
       "relation": "contains",
@@ -22652,9 +23317,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_2_filosof\u00eda_de_animaci\u00f3n_h\u00edbrida",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_2_filosof\u00eda_de_animaci\u00f3n_h\u00edbrida"
     },
     {
       "relation": "contains",
@@ -22662,9 +23327,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_3_ssot_\u00fanica_fuente_de_verdad",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_3_ssot_\u00fanica_fuente_de_verdad"
     },
     {
       "relation": "contains",
@@ -22672,9 +23337,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_4_acceso_a_datos",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_4_acceso_a_datos"
     },
     {
       "relation": "contains",
@@ -22682,9 +23347,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_5_consistencia_visual",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_5_consistencia_visual"
     },
     {
       "relation": "contains",
@@ -22692,9 +23357,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_6_arquitectura_dry_y_domain_driven_colocation",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_6_arquitectura_dry_y_domain_driven_colocation"
     },
     {
       "relation": "contains",
@@ -22702,9 +23367,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L71",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_7_principios_solid_adaptados_a_react_next_js",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_7_principios_solid_adaptados_a_react_next_js"
     },
     {
       "relation": "contains",
@@ -22712,9 +23377,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L99",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_8_consulta_obligatoria_de_skills_antes_de_implementar",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_8_consulta_obligatoria_de_skills_antes_de_implementar"
     },
     {
       "relation": "contains",
@@ -22722,9 +23387,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L138",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_reglas_maestras_para_agentes_ia_eventos_hyenuk_chu",
-      "target": "eventoschu_agents_9_modo_caveman_obligatorio_tersura_absoluta",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_9_modo_caveman_obligatorio_tersura_absoluta"
     },
     {
       "relation": "contains",
@@ -22732,9 +23397,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_6_arquitectura_dry_y_domain_driven_colocation",
-      "target": "eventoschu_agents_estructura_de_components",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_estructura_de_components"
     },
     {
       "relation": "contains",
@@ -22742,9 +23407,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_6_arquitectura_dry_y_domain_driven_colocation",
-      "target": "eventoschu_agents_reglas_dry_don_t_repeat_yourself",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_reglas_dry_don_t_repeat_yourself"
     },
     {
       "relation": "contains",
@@ -22752,9 +23417,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L58",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_6_arquitectura_dry_y_domain_driven_colocation",
-      "target": "eventoschu_agents_regla_de_auditor\u00eda_obligatoria",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_regla_de_auditor\u00eda_obligatoria"
     },
     {
       "relation": "contains",
@@ -22762,9 +23427,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_6_arquitectura_dry_y_domain_driven_colocation",
-      "target": "eventoschu_agents_componentes_de_infraestructura_existentes_no_duplicar",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_componentes_de_infraestructura_existentes_no_duplicar"
     },
     {
       "relation": "contains",
@@ -22772,9 +23437,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L75",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_7_principios_solid_adaptados_a_react_next_js",
-      "target": "eventoschu_agents_s_single_responsibility_una_sola_raz\u00f3n_para_cambiar",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_s_single_responsibility_una_sola_raz\u00f3n_para_cambiar"
     },
     {
       "relation": "contains",
@@ -22782,9 +23447,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_7_principios_solid_adaptados_a_react_next_js",
-      "target": "eventoschu_agents_o_open_closed_abierto_para_extensi\u00f3n_cerrado_para_modificaci\u00f3n",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_o_open_closed_abierto_para_extensi\u00f3n_cerrado_para_modificaci\u00f3n"
     },
     {
       "relation": "contains",
@@ -22792,9 +23457,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_7_principios_solid_adaptados_a_react_next_js",
-      "target": "eventoschu_agents_i_interface_segregation_no_fuerces_props_innecesarias",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_i_interface_segregation_no_fuerces_props_innecesarias"
     },
     {
       "relation": "contains",
@@ -22802,9 +23467,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L91",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_7_principios_solid_adaptados_a_react_next_js",
-      "target": "eventoschu_agents_d_dependency_inversion_depende_de_abstracciones_no_implementaciones",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_d_dependency_inversion_depende_de_abstracciones_no_implementaciones"
     },
     {
       "relation": "contains",
@@ -22812,9 +23477,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_8_consulta_obligatoria_de_skills_antes_de_implementar",
-      "target": "eventoschu_agents_el_protocolo_de_skills",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_el_protocolo_de_skills"
     },
     {
       "relation": "contains",
@@ -22822,9 +23487,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L111",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_8_consulta_obligatoria_de_skills_antes_de_implementar",
-      "target": "eventoschu_agents_skills_disponibles_en_agents_skills",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_skills_disponibles_en_agents_skills"
     },
     {
       "relation": "contains",
@@ -22832,9 +23497,9 @@
       "source_file": "AGENTS.md",
       "source_location": "L133",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_agents_8_consulta_obligatoria_de_skills_antes_de_implementar",
-      "target": "eventoschu_agents_ejemplo_de_c\u00f3mo_recomendar_una_mejora",
-      "confidence_score": 1.0
+      "target": "eventoschu_agents_ejemplo_de_c\u00f3mo_recomendar_una_mejora"
     },
     {
       "relation": "contains",
@@ -22842,9 +23507,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "architecture_md",
-      "target": "eventoschu_architecture_arquitectura_t\u00e9cnica_eventos_hyenuk_chu",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_arquitectura_t\u00e9cnica_eventos_hyenuk_chu"
     },
     {
       "relation": "references",
@@ -22932,9 +23597,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_arquitectura_t\u00e9cnica_eventos_hyenuk_chu",
-      "target": "eventoschu_architecture_documentaci\u00f3n_de_contexto_adicional",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_documentaci\u00f3n_de_contexto_adicional"
     },
     {
       "relation": "contains",
@@ -22942,9 +23607,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_arquitectura_t\u00e9cnica_eventos_hyenuk_chu",
-      "target": "eventoschu_architecture_estructura_exhaustiva_del_proyecto",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_estructura_exhaustiva_del_proyecto"
     },
     {
       "relation": "contains",
@@ -22952,9 +23617,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L194",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_arquitectura_t\u00e9cnica_eventos_hyenuk_chu",
-      "target": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime"
     },
     {
       "relation": "contains",
@@ -22962,9 +23627,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_estructura_exhaustiva_del_proyecto",
-      "target": "eventoschu_architecture_archivos_de_configuraci\u00f3n_ra\u00edz",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_archivos_de_configuraci\u00f3n_ra\u00edz"
     },
     {
       "relation": "contains",
@@ -22972,9 +23637,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_estructura_exhaustiva_del_proyecto",
-      "target": "eventoschu_architecture_app_app_router_rutas_y_server_actions",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_app_app_router_rutas_y_server_actions"
     },
     {
       "relation": "contains",
@@ -22982,9 +23647,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_estructura_exhaustiva_del_proyecto",
-      "target": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables"
     },
     {
       "relation": "contains",
@@ -22992,9 +23657,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L171",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_estructura_exhaustiva_del_proyecto",
-      "target": "eventoschu_architecture_hooks_l\u00f3gica_reactiva_del_cliente",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_hooks_l\u00f3gica_reactiva_del_cliente"
     },
     {
       "relation": "contains",
@@ -23002,9 +23667,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L179",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_estructura_exhaustiva_del_proyecto",
-      "target": "eventoschu_architecture_lib_librer\u00edas_backend_crudo_y_utilidades_maestras",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_lib_librer\u00edas_backend_crudo_y_utilidades_maestras"
     },
     {
       "relation": "contains",
@@ -23012,9 +23677,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_app_app_router_rutas_y_server_actions",
-      "target": "eventoschu_architecture_app_actions_server_actions_el_motor_backend",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_app_actions_server_actions_el_motor_backend"
     },
     {
       "relation": "contains",
@@ -23022,9 +23687,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_app_app_router_rutas_y_server_actions",
-      "target": "eventoschu_architecture_app_api_endpoints_de_api_tradicionales_http",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_app_api_endpoints_de_api_tradicionales_http"
     },
     {
       "relation": "contains",
@@ -23032,9 +23697,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L88",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_app_app_router_rutas_y_server_actions",
-      "target": "eventoschu_architecture_archivos_principales_y_rutas_ra\u00edz_de_app",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_archivos_principales_y_rutas_ra\u00edz_de_app"
     },
     {
       "relation": "contains",
@@ -23042,9 +23707,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L107",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "target": "eventoschu_architecture_components_events_motor_visual_de_tarjetas",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_events_motor_visual_de_tarjetas"
     },
     {
       "relation": "contains",
@@ -23052,9 +23717,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L112",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "target": "eventoschu_architecture_components_footer_components_header",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_footer_components_header"
     },
     {
       "relation": "contains",
@@ -23062,9 +23727,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L120",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "target": "eventoschu_architecture_components_home_bloques_de_la_p\u00e1gina_de_inicio",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_home_bloques_de_la_p\u00e1gina_de_inicio"
     },
     {
       "relation": "contains",
@@ -23072,9 +23737,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L139",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "target": "eventoschu_architecture_components_notifications",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_notifications"
     },
     {
       "relation": "contains",
@@ -23082,9 +23747,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L143",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "target": "eventoschu_architecture_components_providers_wrappers_de_infraestructura",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_providers_wrappers_de_infraestructura"
     },
     {
       "relation": "contains",
@@ -23092,9 +23757,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L149",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "target": "eventoschu_architecture_components_registration_motor_de_formularios",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_registration_motor_de_formularios"
     },
     {
       "relation": "contains",
@@ -23102,9 +23767,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L156",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "target": "eventoschu_architecture_components_seo",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_seo"
     },
     {
       "relation": "contains",
@@ -23112,9 +23777,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L159",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_components_biblioteca_de_interfaces_reutilizables",
-      "target": "eventoschu_architecture_components_ui_base_de_componentes_ui_shadcn_radix",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_components_ui_base_de_componentes_ui_shadcn_radix"
     },
     {
       "relation": "contains",
@@ -23122,9 +23787,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L196",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime",
-      "target": "eventoschu_architecture_1_base_de_datos_relacional_postgresql",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_1_base_de_datos_relacional_postgresql"
     },
     {
       "relation": "contains",
@@ -23132,9 +23797,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L201",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime",
-      "target": "eventoschu_architecture_2_canales_de_progreso_en_tiempo_real_keap_crm_sync",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_2_canales_de_progreso_en_tiempo_real_keap_crm_sync"
     },
     {
       "relation": "contains",
@@ -23142,9 +23807,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L207",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime",
-      "target": "eventoschu_architecture_3_l\u00f3gica_de_negocio_en_inteligencia_y_m\u00e9tricas",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_3_l\u00f3gica_de_negocio_en_inteligencia_y_m\u00e9tricas"
     },
     {
       "relation": "contains",
@@ -23152,9 +23817,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L213",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime",
-      "target": "eventoschu_architecture_public_directorio_de_est\u00e1ticos_globales",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_public_directorio_de_est\u00e1ticos_globales"
     },
     {
       "relation": "contains",
@@ -23162,9 +23827,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L219",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime",
-      "target": "eventoschu_architecture_estrategia_de_seo_aio_artificial_intelligence_optimization",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_estrategia_de_seo_aio_artificial_intelligence_optimization"
     },
     {
       "relation": "contains",
@@ -23172,9 +23837,9 @@
       "source_file": "ARCHITECTURE.md",
       "source_location": "L238",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_architecture_modelado_de_datos_y_sincronizaci\u00f3n_realtime",
-      "target": "eventoschu_architecture_ideas_y_patrones_para_el_futuro",
-      "confidence_score": 1.0
+      "target": "eventoschu_architecture_ideas_y_patrones_para_el_futuro"
     },
     {
       "relation": "contains",
@@ -23182,9 +23847,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "design_md",
-      "target": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu"
     },
     {
       "relation": "rationale_for",
@@ -23222,9 +23887,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu",
-      "target": "eventoschu_design_1_identidad_visual_paleta_de_colores_y_tailwind_css_v4",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_1_identidad_visual_paleta_de_colores_y_tailwind_css_v4"
     },
     {
       "relation": "contains",
@@ -23232,9 +23897,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu",
-      "target": "eventoschu_design_2_tipograf\u00eda",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_2_tipograf\u00eda"
     },
     {
       "relation": "contains",
@@ -23242,9 +23907,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu",
-      "target": "eventoschu_design_3_formas_sombras_y_geometr\u00eda_borders_layout",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_3_formas_sombras_y_geometr\u00eda_borders_layout"
     },
     {
       "relation": "contains",
@@ -23252,9 +23917,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu",
-      "target": "eventoschu_design_4_sistema_de_animaciones",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_4_sistema_de_animaciones"
     },
     {
       "relation": "contains",
@@ -23262,9 +23927,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L79",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu",
-      "target": "eventoschu_design_5_arquitectura_de_componentes_del_home_components_home",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_5_arquitectura_de_componentes_del_home_components_home"
     },
     {
       "relation": "contains",
@@ -23272,9 +23937,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L105",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu",
-      "target": "eventoschu_design_6_dise\u00f1o_administrativo_multi_tema_camale\u00f3nico",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_6_dise\u00f1o_administrativo_multi_tema_camale\u00f3nico"
     },
     {
       "relation": "contains",
@@ -23282,9 +23947,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_1_identidad_visual_paleta_de_colores_y_tailwind_css_v4",
-      "target": "eventoschu_design_colores_clave_din\u00e1micos_resueltos_por_variable_del_tema",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_colores_clave_din\u00e1micos_resueltos_por_variable_del_tema"
     },
     {
       "relation": "contains",
@@ -23292,9 +23957,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_4_sistema_de_animaciones",
-      "target": "eventoschu_design_animaciones_nativas_tailwind_css",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_animaciones_nativas_tailwind_css"
     },
     {
       "relation": "contains",
@@ -23302,9 +23967,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_4_sistema_de_animaciones",
-      "target": "eventoschu_design_animaciones_de_interacci\u00f3n_gsap",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_animaciones_de_interacci\u00f3n_gsap"
     },
     {
       "relation": "contains",
@@ -23312,9 +23977,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L109",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_6_dise\u00f1o_administrativo_multi_tema_camale\u00f3nico",
-      "target": "eventoschu_design_reglas_de_oro_para_componentes_administrativos",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_reglas_de_oro_para_componentes_administrativos"
     },
     {
       "relation": "contains",
@@ -23322,9 +23987,9 @@
       "source_file": "DESIGN.md",
       "source_location": "L120",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_design_6_dise\u00f1o_administrativo_multi_tema_camale\u00f3nico",
-      "target": "eventoschu_design_visualizaci\u00f3n_de_datos_y_gr\u00e1ficos_svg_camale\u00f3nicos",
-      "confidence_score": 1.0
+      "target": "eventoschu_design_visualizaci\u00f3n_de_datos_y_gr\u00e1ficos_svg_camale\u00f3nicos"
     },
     {
       "relation": "contains",
@@ -23332,9 +23997,9 @@
       "source_file": "README.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_md",
-      "target": "eventoschu_readme_eventos_chu_plataforma_de_gesti\u00f3n_de_eventos_premium",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_eventos_chu_plataforma_de_gesti\u00f3n_de_eventos_premium"
     },
     {
       "relation": "contains",
@@ -23342,9 +24007,9 @@
       "source_file": "README.md",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_readme_eventos_chu_plataforma_de_gesti\u00f3n_de_eventos_premium",
-      "target": "eventoschu_readme_arquitectura_del_sistema",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_arquitectura_del_sistema"
     },
     {
       "relation": "contains",
@@ -23352,9 +24017,9 @@
       "source_file": "README.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_readme_eventos_chu_plataforma_de_gesti\u00f3n_de_eventos_premium",
-      "target": "eventoschu_readme_estrategia_de_identidad_dual",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_estrategia_de_identidad_dual"
     },
     {
       "relation": "contains",
@@ -23362,9 +24027,9 @@
       "source_file": "README.md",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_readme_eventos_chu_plataforma_de_gesti\u00f3n_de_eventos_premium",
-      "target": "eventoschu_readme_integraciones_y_flujo_de_datos",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_integraciones_y_flujo_de_datos"
     },
     {
       "relation": "contains",
@@ -23372,9 +24037,9 @@
       "source_file": "README.md",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_readme_eventos_chu_plataforma_de_gesti\u00f3n_de_eventos_premium",
-      "target": "eventoschu_readme_gesti\u00f3n_operativa_admin_dashboard",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_gesti\u00f3n_operativa_admin_dashboard"
     },
     {
       "relation": "contains",
@@ -23382,9 +24047,9 @@
       "source_file": "README.md",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_readme_arquitectura_del_sistema",
-      "target": "eventoschu_readme_capas_de_la_aplicaci\u00f3n",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_capas_de_la_aplicaci\u00f3n"
     },
     {
       "relation": "contains",
@@ -23392,9 +24057,9 @@
       "source_file": "README.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_readme_integraciones_y_flujo_de_datos",
-      "target": "eventoschu_readme_sincronizaci\u00f3n_keap_crm",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_sincronizaci\u00f3n_keap_crm"
     },
     {
       "relation": "contains",
@@ -23402,9 +24067,9 @@
       "source_file": "README.md",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_readme_integraciones_y_flujo_de_datos",
-      "target": "eventoschu_readme_capa_de_rendimiento_redis",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_capa_de_rendimiento_redis"
     },
     {
       "relation": "contains",
@@ -23412,9 +24077,9 @@
       "source_file": "README.md",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_readme_integraciones_y_flujo_de_datos",
-      "target": "eventoschu_readme_sistema_de_auditor\u00eda_y_notificaciones",
-      "confidence_score": 1.0
+      "target": "eventoschu_readme_sistema_de_auditor\u00eda_y_notificaciones"
     },
     {
       "relation": "contains",
@@ -23422,9 +24087,9 @@
       "source_file": "THEMES.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "themes_md",
-      "target": "eventoschu_themes_arquitectura_y_gu\u00eda_t\u00e9cnica_de_temas_eventos_hyenuk_chu",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_arquitectura_y_gu\u00eda_t\u00e9cnica_de_temas_eventos_hyenuk_chu"
     },
     {
       "relation": "rationale_for",
@@ -23462,9 +24127,9 @@
       "source_file": "THEMES.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_arquitectura_y_gu\u00eda_t\u00e9cnica_de_temas_eventos_hyenuk_chu",
-      "target": "eventoschu_themes_arquitectura_t\u00e9cnica_del_motor_de_temas",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_arquitectura_t\u00e9cnica_del_motor_de_temas"
     },
     {
       "relation": "contains",
@@ -23472,9 +24137,9 @@
       "source_file": "THEMES.md",
       "source_location": "L41",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_arquitectura_y_gu\u00eda_t\u00e9cnica_de_temas_eventos_hyenuk_chu",
-      "target": "eventoschu_themes_definiciones_de_los_5_temas_reales",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_definiciones_de_los_5_temas_reales"
     },
     {
       "relation": "contains",
@@ -23482,9 +24147,9 @@
       "source_file": "THEMES.md",
       "source_location": "L75",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_arquitectura_y_gu\u00eda_t\u00e9cnica_de_temas_eventos_hyenuk_chu",
-      "target": "eventoschu_themes_mapeo_de_tailwind_css_v4_y_clerk",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_mapeo_de_tailwind_css_v4_y_clerk"
     },
     {
       "relation": "contains",
@@ -23492,9 +24157,9 @@
       "source_file": "THEMES.md",
       "source_location": "L202",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_arquitectura_y_gu\u00eda_t\u00e9cnica_de_temas_eventos_hyenuk_chu",
-      "target": "eventoschu_themes_plantilla_de_referencia_de_tokens_sem\u00e1nticos",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_plantilla_de_referencia_de_tokens_sem\u00e1nticos"
     },
     {
       "relation": "contains",
@@ -23502,9 +24167,9 @@
       "source_file": "THEMES.md",
       "source_location": "L226",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_arquitectura_y_gu\u00eda_t\u00e9cnica_de_temas_eventos_hyenuk_chu",
-      "target": "eventoschu_themes_reglas_de_oro_para_dise\u00f1adores_y_agentes",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_reglas_de_oro_para_dise\u00f1adores_y_agentes"
     },
     {
       "relation": "contains",
@@ -23512,9 +24177,9 @@
       "source_file": "THEMES.md",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_arquitectura_t\u00e9cnica_del_motor_de_temas",
-      "target": "eventoschu_themes_codeblock_1",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_codeblock_1"
     },
     {
       "relation": "contains",
@@ -23522,9 +24187,9 @@
       "source_file": "THEMES.md",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_arquitectura_t\u00e9cnica_del_motor_de_temas",
-      "target": "eventoschu_themes_1_inyecci\u00f3n_en_el_layout_app_public_layout_tsx",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_1_inyecci\u00f3n_en_el_layout_app_public_layout_tsx"
     },
     {
       "relation": "contains",
@@ -23532,9 +24197,9 @@
       "source_file": "THEMES.md",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_1_inyecci\u00f3n_en_el_layout_app_public_layout_tsx",
-      "target": "eventoschu_themes_codeblock_2",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_codeblock_2"
     },
     {
       "relation": "contains",
@@ -23542,9 +24207,9 @@
       "source_file": "THEMES.md",
       "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_definiciones_de_los_5_temas_reales",
-      "target": "eventoschu_themes_1_tema_light_est\u00e1ndar_default",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_1_tema_light_est\u00e1ndar_default"
     },
     {
       "relation": "contains",
@@ -23552,9 +24217,9 @@
       "source_file": "THEMES.md",
       "source_location": "L50",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_definiciones_de_los_5_temas_reales",
-      "target": "eventoschu_themes_2_tema_dark_libro_viejo",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_2_tema_dark_libro_viejo"
     },
     {
       "relation": "contains",
@@ -23562,9 +24227,9 @@
       "source_file": "THEMES.md",
       "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_definiciones_de_los_5_temas_reales",
-      "target": "eventoschu_themes_3_tema_synthwave_retro_futurismo",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_3_tema_synthwave_retro_futurismo"
     },
     {
       "relation": "contains",
@@ -23572,9 +24237,9 @@
       "source_file": "THEMES.md",
       "source_location": "L62",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_definiciones_de_los_5_temas_reales",
-      "target": "eventoschu_themes_4_tema_hacker_matrix",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_4_tema_hacker_matrix"
     },
     {
       "relation": "contains",
@@ -23582,9 +24247,9 @@
       "source_file": "THEMES.md",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_definiciones_de_los_5_temas_reales",
-      "target": "eventoschu_themes_5_tema_coffee_milk_coffee",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_5_tema_coffee_milk_coffee"
     },
     {
       "relation": "contains",
@@ -23592,9 +24257,9 @@
       "source_file": "THEMES.md",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_mapeo_de_tailwind_css_v4_y_clerk",
-      "target": "eventoschu_themes_mapeo_de_tokens_de_tailwind_v4_app_globals_css",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_mapeo_de_tokens_de_tailwind_v4_app_globals_css"
     },
     {
       "relation": "contains",
@@ -23602,9 +24267,9 @@
       "source_file": "THEMES.md",
       "source_location": "L171",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_mapeo_de_tailwind_css_v4_y_clerk",
-      "target": "eventoschu_themes_integraci\u00f3n_de_clerk_clerkprovider_en_layout_tsx",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_integraci\u00f3n_de_clerk_clerkprovider_en_layout_tsx"
     },
     {
       "relation": "contains",
@@ -23612,9 +24277,9 @@
       "source_file": "THEMES.md",
       "source_location": "L193",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_mapeo_de_tailwind_css_v4_y_clerk",
-      "target": "eventoschu_themes_estilizaci\u00f3n_camale\u00f3nica_de_elementos_svg_nativos",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_estilizaci\u00f3n_camale\u00f3nica_de_elementos_svg_nativos"
     },
     {
       "relation": "contains",
@@ -23622,9 +24287,9 @@
       "source_file": "THEMES.md",
       "source_location": "L79",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_mapeo_de_tokens_de_tailwind_v4_app_globals_css",
-      "target": "eventoschu_themes_codeblock_3",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_codeblock_3"
     },
     {
       "relation": "contains",
@@ -23632,9 +24297,9 @@
       "source_file": "THEMES.md",
       "source_location": "L173",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_integraci\u00f3n_de_clerk_clerkprovider_en_layout_tsx",
-      "target": "eventoschu_themes_codeblock_4",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_codeblock_4"
     },
     {
       "relation": "contains",
@@ -23642,9 +24307,9 @@
       "source_file": "THEMES.md",
       "source_location": "L206",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_plantilla_de_referencia_de_tokens_sem\u00e1nticos",
-      "target": "eventoschu_themes_1_variables_de_estructura_e_interfaz",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_1_variables_de_estructura_e_interfaz"
     },
     {
       "relation": "contains",
@@ -23652,9 +24317,9 @@
       "source_file": "THEMES.md",
       "source_location": "L214",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_plantilla_de_referencia_de_tokens_sem\u00e1nticos",
-      "target": "eventoschu_themes_2_variables_de_scrollbar_y_navegaci\u00f3n_gsap",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_2_variables_de_scrollbar_y_navegaci\u00f3n_gsap"
     },
     {
       "relation": "contains",
@@ -23662,9 +24327,9 @@
       "source_file": "THEMES.md",
       "source_location": "L220",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "eventoschu_themes_plantilla_de_referencia_de_tokens_sem\u00e1nticos",
-      "target": "eventoschu_themes_3_efectos_visuales_css",
-      "confidence_score": 1.0
+      "target": "eventoschu_themes_3_efectos_visuales_css"
     },
     {
       "relation": "conceptually_related_to",
@@ -23738,5 +24403,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "fffa97499ed33f1bb30a7498e79ff39b936c2975"
+  "built_at_commit": "5b4d3c12c1a22abf42f2777b6f72506b04a99847"
 }

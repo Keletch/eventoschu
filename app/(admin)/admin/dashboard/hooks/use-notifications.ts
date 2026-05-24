@@ -91,9 +91,12 @@ export function useNotifications(isAdmin = true, ids?: { clerkId?: string, regis
 
   useEffect(() => {
     // Limpiar datos inmediatamente al cambiar de ID para evitar "stackeo" de notificaciones de usuarios distintos
-    setNotifications([]);
-    setUnreadCount(0);
-    fetchNotifications();
+    const timer = setTimeout(() => {
+      setNotifications([]);
+      setUnreadCount(0);
+      fetchNotifications();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [fetchNotifications]);
 
   return {

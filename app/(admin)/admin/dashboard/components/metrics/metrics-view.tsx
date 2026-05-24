@@ -402,13 +402,15 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
   const toRad = (deg: number) => (deg * Math.PI) / 180;
 
   const slices = (() => {
-    let startAngle = -90; // empieza desde arriba
-    return data.map((d, i) => {
+    let currentAngle = -90;
+    const result = [];
+    for (let i = 0; i < data.length; i++) {
+      const d = data[i];
       const pct = d.count / total;
       const sweep = pct * 360;
-      const endAngle = startAngle + sweep;
+      const endAngle = currentAngle + sweep;
 
-      const startRad = toRad(startAngle);
+      const startRad = toRad(currentAngle);
       const endRad = toRad(endAngle);
       const largeArc = sweep > 180 ? 1 : 0;
 
@@ -419,18 +421,18 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
 
       const x1i = CX + R_INNER * Math.cos(endRad);
       const y1i = CY + R_INNER * Math.sin(endRad);
-      const x2i = CX + R_INNER * Math.cos(startRad);
-      const y2i = CY + R_INNER * Math.sin(startRad);
+      const x2i = CX + R_INNER * Math.cos(currentAngle);
+      const y2i = CY + R_INNER * Math.sin(currentAngle);
 
       const path = `M ${x1o} ${y1o} A ${R_OUTER} ${R_OUTER} 0 ${largeArc} 1 ${x2o} ${y2o} L ${x1i} ${y1i} A ${R_INNER} ${R_INNER} 0 ${largeArc} 0 ${x2i} ${y2i} Z`;
 
       // Punto medio del arco para la leyenda
-      const midAngle = toRad(startAngle + sweep / 2);
+      const midAngle = toRad(currentAngle + sweep / 2);
 
-      const result = { path, color: COLORS[i % COLORS.length], pct, midAngle, ...d };
-      startAngle = endAngle;
-      return result;
-    });
+      result.push({ path, color: COLORS[i % COLORS.length], pct, midAngle, ...d });
+      currentAngle = endAngle;
+    }
+    return result;
   })();
 
   const active = activeIdx !== null ? slices[activeIdx] : null;

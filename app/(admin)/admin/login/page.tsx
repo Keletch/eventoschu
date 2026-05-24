@@ -25,7 +25,10 @@ export default function AdminLogin() {
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setIsReady(true);
+    const handle = requestAnimationFrame(() => {
+      setIsReady(true);
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
  
   useEffect(() => {

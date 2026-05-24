@@ -174,7 +174,9 @@ export function useAdminDashboard() {
         // Solo actualizamos si realmente hay un cambio en eventos o estados para evitar loops
         if (JSON.stringify(updated.selected_events) !== JSON.stringify(editingReg.selected_events) ||
             JSON.stringify(updated.event_statuses) !== JSON.stringify(editingReg.event_statuses)) {
-          setEditingReg(updated);
+          setTimeout(() => {
+            setEditingReg(updated);
+          }, 0);
         }
       }
     }

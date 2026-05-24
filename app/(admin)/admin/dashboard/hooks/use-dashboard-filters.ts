@@ -78,7 +78,10 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
 
   // Reset page when filters change
   useEffect(() => {
-    setCurrentPage(1);
+    const timer = setTimeout(() => {
+      setCurrentPage(1);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsClerkFilter]);
 
   const totalPages = Math.ceil(filteredRegs.length / pageSize);

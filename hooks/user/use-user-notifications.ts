@@ -32,7 +32,10 @@ export function useUserNotifications(propRegistrationId?: string | null) {
 
     if (propRegistrationId) {
       // Si el componente padre nos da un ID oficial, lo usamos de inmediato
-      setStableUserId(propRegistrationId);
+      const timer = setTimeout(() => {
+        setStableUserId(propRegistrationId);
+      }, 0);
+      return () => clearTimeout(timer);
     } else if (isSignedIn && clerkId) {
       // Si estamos logueados pero no hay propRegistrationId, 
       // esperamos un momento antes de usar el clerkId para dar tiempo al sync de useHomeLogic
@@ -48,7 +51,10 @@ export function useUserNotifications(propRegistrationId?: string | null) {
           const parsed = JSON.parse(saved);
           // Usamos el ID de registro para mantener la sincronización aunque no haya sesión
           if (parsed.userData?.id) {
-            setStableUserId(parsed.userData.id);
+            const timer = setTimeout(() => {
+              setStableUserId(parsed.userData.id);
+            }, 0);
+            return () => clearTimeout(timer);
           }
         } catch (e) {}
       }
@@ -62,7 +68,11 @@ export function useUserNotifications(propRegistrationId?: string | null) {
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          if (parsed.userData?.id) setStableUserId(parsed.userData.id);
+          if (parsed.userData?.id) {
+            setTimeout(() => {
+              setStableUserId(parsed.userData.id);
+            }, 0);
+          }
         } catch (e) {}
       }
     };

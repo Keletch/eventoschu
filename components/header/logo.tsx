@@ -15,7 +15,10 @@ export function Logo({ onClick }: LogoProps) {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    setMounted(true);
+    const handle = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
 
   const isDarkish = mounted && (theme === "dark" || theme === "synthwave");

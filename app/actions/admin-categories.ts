@@ -2,6 +2,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
+import { clearEventsCache } from "@/app/actions/events";
 
 export async function createCategory(name: string, parent_category_id: string | null = null, icon: string | null = null, slug?: string) {
   try {
@@ -20,6 +21,7 @@ export async function createCategory(name: string, parent_category_id: string | 
 
     if (error) throw error;
 
+    await clearEventsCache();
     revalidatePath("/admin/dashboard");
     return { success: true, data };
   } catch (error: any) {
@@ -37,6 +39,7 @@ export async function deleteCategory(id: string) {
 
     if (error) throw error;
 
+    await clearEventsCache();
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (error: any) {
@@ -61,6 +64,7 @@ export async function updateCategory(id: string, name: string, parent_category_i
 
     if (error) throw error;
 
+    await clearEventsCache();
     revalidatePath("/admin/dashboard");
     return { success: true, data };
   } catch (error: any) {

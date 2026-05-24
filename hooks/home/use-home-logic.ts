@@ -49,11 +49,19 @@ export function useHomeLogic(initialEvents: any[] = []) {
   // Refs for realtime comparison (avoiding closures issues in callbacks)
   const eventStatusesRef = useRef(eventStatuses);
   const eventDataMapRef = useRef(eventDataMap);
+  const userDataRef = useRef(userData);
+  const selectedEventsRef = useRef(selectedEvents);
+  const surveyDataRef = useRef(surveyData);
+  const userRef = useRef(user);
 
   useEffect(() => {
     eventStatusesRef.current = eventStatuses;
     eventDataMapRef.current = eventDataMap;
-  }, [eventStatuses, eventDataMap]);
+    userDataRef.current = userData;
+    selectedEventsRef.current = selectedEvents;
+    surveyDataRef.current = surveyData;
+    userRef.current = user;
+  }, [eventStatuses, eventDataMap, userData, selectedEvents, surveyData, user]);
 
   // --- Helpers ---
   const changeStep = useCallback((newStep: number | null) => {
@@ -194,19 +202,25 @@ export function useHomeLogic(initialEvents: any[] = []) {
 
   // Reset subcategory ONLY when main category changes
   useEffect(() => {
-    setActiveSubcategory("Todos");
+    const timer = setTimeout(() => {
+      setActiveSubcategory("Todos");
+    }, 0);
+    return () => clearTimeout(timer);
   }, [activeCategory]);
 
   // Adjust active month when availableMonths changes
   useEffect(() => {
-    if (availableMonths.length > 0) {
-      // Intentar mantener el mes si existe en la nueva categoría, si no, ir al primero
-      if (!availableMonths.includes(activeMonth)) {
-        setActiveMonth(availableMonths[0]);
+    const timer = setTimeout(() => {
+      if (availableMonths.length > 0) {
+        // Intentar mantener el mes si existe en la nueva categoría, si no, ir al primero
+        if (!availableMonths.includes(activeMonth)) {
+          setActiveMonth(availableMonths[0]);
+        }
+      } else {
+        setActiveMonth("");
       }
-    } else {
-      setActiveMonth("");
-    }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [availableMonths, activeMonth]);
 
   // 🔄 Efecto para sincronizar el estado de carga global con CustomEvents
@@ -262,49 +276,67 @@ export function useHomeLogic(initialEvents: any[] = []) {
     }
   }, [activeMonth]);
 
+  const startNewRegistration = useCallback(() => {
+    localStorage.removeItem(HOME_STORAGE_KEY);
+    // 🎯 En lugar de remover el paso, lo fijamos en 1 para que sea persistente tras recarga
+    changeStep(1); 
+    setUserData(null);
+    setSelectedEvents([]);
+    setEventStatuses({});
+    setEventDataMap({});
+    setSelectedCityId("");
+    setIsCheckMode(false);
+  }, [changeStep]);
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchData]);
 
   // --- Hydration & Sync Logic ---
   useEffect(() => {
-    const activeStep = localStorage.getItem(HOME_STEP_KEY);
-    const saved = localStorage.getItem(HOME_STORAGE_KEY);
-    
-    // 🧠 Limpieza proactiva: Si Clerk terminó de cargar y no hay sesión, 
-    // pero tenemos datos en localStorage de una sesión previa, limpiamos.
-    if (isLoaded && !isSignedIn && saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.userData?.clerk_id) { // Solo si los datos pertenecían a un usuario logueado
-        startNewRegistration();
-        return;
-      }
-    }
-
-    if (activeStep) {
-      setStep(parseInt(activeStep));
-    } else if (saved) {
-      try {
+    const timer = setTimeout(() => {
+      const activeStep = localStorage.getItem(HOME_STEP_KEY);
+      const saved = localStorage.getItem(HOME_STORAGE_KEY);
+      
+      // 🧠 Limpieza proactiva: Si Clerk terminó de cargar y no hay sesión, 
+      // pero tenemos datos en localStorage de una sesión previa, limpiamos.
+      if (isLoaded && !isSignedIn && saved) {
         const parsed = JSON.parse(saved);
-        setUserData(parsed.userData);
-        setSelectedEvents(parsed.selectedEvents);
-        setEventStatuses(parsed.eventStatuses || {});
-        setEventDataMap(parsed.eventDataMap || {});
-        setSurveyData(parsed.surveyData || null);
-        setStep(2);
-      } catch (e) {
+        if (parsed.userData?.clerk_id) { // Solo si los datos pertenecían a un usuario logueado
+          startNewRegistration();
+          return;
+        }
+      }
+
+      if (activeStep) {
+        setStep(parseInt(activeStep));
+      } else if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setUserData(parsed.userData);
+          setSelectedEvents(parsed.selectedEvents);
+          setEventStatuses(parsed.eventStatuses || {});
+          setEventDataMap(parsed.eventDataMap || {});
+          setSurveyData(parsed.surveyData || null);
+          setStep(2);
+        } catch (e) {
+          setStep(1);
+        }
+      } else {
         setStep(1);
       }
-    } else {
-      setStep(1);
-    }
-  }, []);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [isLoaded, isSignedIn, startNewRegistration]);
 
   const syncRegistration = useCallback(async () => {
     if (!isLoaded) return;
     
     const saved = localStorage.getItem(HOME_STORAGE_KEY);
-    const clerkEmail = user?.primaryEmailAddress?.emailAddress;
+    const clerkEmail = userRef.current?.primaryEmailAddress?.emailAddress;
     let emailToVerify = clerkEmail;
 
     if (clerkEmail) {
@@ -318,15 +350,15 @@ export function useHomeLogic(initialEvents: any[] = []) {
 
     if (emailToVerify) {
       try {
-        const result = await checkRegistration(emailToVerify, user?.id);
+        const result = await checkRegistration(emailToVerify, userRef.current?.id);
         if (result.success) {
           const statuses = (result as any).eventStatuses || {};
           const dataMap = (result as any).eventData || {};
           const survey = (result as any).surveyData || null;
 
           // PRIORIDAD: El nombre de Clerk manda sobre el de Supabase para mantenerlo actualizado
-          const finalFirstName = user?.firstName || result.userData.first_name;
-          const finalLastName = user?.lastName || result.userData.last_name;
+          const finalFirstName = userRef.current?.firstName || result.userData.first_name;
+          const finalLastName = userRef.current?.lastName || result.userData.last_name;
 
           // Mapeo profesional de datos para el formulario y el sistema de notificaciones
           const sanitizedUserData = {
@@ -342,7 +374,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
           };
 
           // Evitar actualizaciones si los datos son idénticos para prevenir ráfagas de carga
-          if (JSON.stringify(sanitizedUserData) !== JSON.stringify(userData)) {
+          if (JSON.stringify(sanitizedUserData) !== JSON.stringify(userDataRef.current)) {
             setUserData(sanitizedUserData);
           }
           
@@ -352,21 +384,21 @@ export function useHomeLogic(initialEvents: any[] = []) {
             
             if (activeStep === '1') {
               // Aún así sincronizamos los datos en segundo plano para que el State sea correcto
-              if (JSON.stringify(sanitizedUserData) !== JSON.stringify(userData)) setUserData(sanitizedUserData);
+              if (JSON.stringify(sanitizedUserData) !== JSON.stringify(userDataRef.current)) setUserData(sanitizedUserData);
               return; 
             }
 
             if (result.selectedEvents?.length > 0) {
-              if (JSON.stringify(result.selectedEvents) !== JSON.stringify(selectedEvents)) {
+              if (JSON.stringify(result.selectedEvents) !== JSON.stringify(selectedEventsRef.current)) {
                 setSelectedEvents(result.selectedEvents || []);
               }
-              if (JSON.stringify(statuses) !== JSON.stringify(eventStatuses)) {
+              if (JSON.stringify(statuses) !== JSON.stringify(eventStatusesRef.current)) {
                 setEventStatuses(statuses);
               }
-              if (JSON.stringify(dataMap) !== JSON.stringify(eventDataMap)) {
+              if (JSON.stringify(dataMap) !== JSON.stringify(eventDataMapRef.current)) {
                 setEventDataMap(dataMap);
               }
-              if (JSON.stringify(survey) !== JSON.stringify(surveyData)) {
+              if (JSON.stringify(survey) !== JSON.stringify(surveyDataRef.current)) {
                 setSurveyData(survey);
               }
               
@@ -399,10 +431,13 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } else {
       setStep(1);
     }
-  }, [isLoaded, user?.id, changeStep]);
+  }, [isLoaded, changeStep]);
 
   useEffect(() => {
-    syncRegistration();
+    const timer = setTimeout(() => {
+      syncRegistration();
+    }, 0);
+    return () => clearTimeout(timer);
   }, [isLoaded, user?.id, syncRegistration]);
 
   // --- Handlers ---
@@ -449,7 +484,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } finally {
       setIsChecking(false);
     }
-  }, [user?.id, user?.firstName, user?.lastName, changeStep]);
+  }, [user, changeStep]);
 
   const handleRegistration = async (data: any, turnstileToken: string): Promise<{ success: boolean }> => {
     if (selectedEvents.length === 0) {
@@ -569,18 +604,6 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } finally {
       setIsChecking(false);
     }
-  };
-
-  const startNewRegistration = () => {
-    localStorage.removeItem(HOME_STORAGE_KEY);
-    // 🎯 En lugar de remover el paso, lo fijamos en 1 para que sea persistente tras recarga
-    changeStep(1); 
-    setUserData(null);
-    setSelectedEvents([]);
-    setEventStatuses({});
-    setEventDataMap({});
-    setSelectedCityId("");
-    setIsCheckMode(false);
   };
 
   const handleUpdateRegistration = async () => {

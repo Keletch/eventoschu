@@ -93,106 +93,112 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     }
   }, [home.isLoaded, home.step]);
 
-  const handleRegistrationSubmit = contextSafe(async (data: any, token: string) => {
-    const res = await home.handleRegistration(data, token);
-    if (res.success) {
-      if (!home.isSignedIn) {
-        toast.success("¡Registro Exitoso!", {
-          description: "Tu solicitud ha sido recibida correctamente.",
-          duration: 8000,
+  const handleRegistrationSubmit = async (data: any, token: string) => {
+    return contextSafe(async () => {
+      const res = await home.handleRegistration(data, token);
+      if (res.success) {
+        if (!home.isSignedIn) {
+          toast.success("¡Registro Exitoso!", {
+            description: "Tu solicitud ha sido recibida correctamente.",
+            duration: 8000,
+          });
+        }
+
+        gsap.to(ANIM_SELECTORS.step1, { 
+          opacity: 0, 
+          y: -ANIM_CONFIG.offset.sweep, 
+          duration: ANIM_CONFIG.duration.normal, 
+          onComplete: () => {
+            home.setStep(2);
+            window.scrollTo(0, 0);
+            setTimeout(() => { 
+              gsap.fromTo(ANIM_SELECTORS.step2, 
+                { opacity: 0, y: ANIM_CONFIG.offset.sweep }, 
+                { opacity: 1, y: 0, duration: ANIM_CONFIG.duration.slow }
+              ); 
+            }, 50);
+          }
         });
       }
+      return res;
+    })();
+  };
 
-      gsap.to(ANIM_SELECTORS.step1, { 
+  const handleBackToStep1 = () => {
+    contextSafe(() => {
+      gsap.to(ANIM_SELECTORS.step2, { 
         opacity: 0, 
-        y: -ANIM_CONFIG.offset.sweep, 
+        y: ANIM_CONFIG.offset.sweep, 
         duration: ANIM_CONFIG.duration.normal, 
         onComplete: () => {
-          home.setStep(2);
+          home.startNewRegistration();
           window.scrollTo(0, 0);
-          setTimeout(() => { 
-            gsap.fromTo(ANIM_SELECTORS.step2, 
+          setTimeout(() => {
+            gsap.fromTo(ANIM_SELECTORS.step1, 
               { opacity: 0, y: ANIM_CONFIG.offset.sweep }, 
-              { opacity: 1, y: 0, duration: ANIM_CONFIG.duration.slow }
-            ); 
+              { opacity: 1, y: 0, duration: ANIM_CONFIG.duration.slow, ease: ANIM_CONFIG.ease.out }
+            );
           }, 50);
         }
       });
-    }
-    return res;
-  });
-
-  const handleBackToStep1 = contextSafe(() => {
-    gsap.to(ANIM_SELECTORS.step2, { 
-      opacity: 0, 
-      y: ANIM_CONFIG.offset.sweep, 
-      duration: ANIM_CONFIG.duration.normal, 
-      onComplete: () => {
-        home.startNewRegistration();
-        window.scrollTo(0, 0);
-        setTimeout(() => {
-          gsap.fromTo(ANIM_SELECTORS.step1, 
-            { opacity: 0, y: ANIM_CONFIG.offset.sweep }, 
-            { opacity: 1, y: 0, duration: ANIM_CONFIG.duration.slow, ease: ANIM_CONFIG.ease.out }
-          );
-        }, 50);
-      }
-    });
-  });
+    })();
+  };
 
   // 🛠️ Orquestador Maestro de Transiciones (DRY)
-  const animateCardsTransition = contextSafe((stateUpdater: () => void, animateMonths: boolean = false) => {
-    if (home.isTransitioning) return;
-    home.setIsTransitioning(true);
-    
-    const isMobile = window.innerWidth < 768;
-    const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
-    
-    const tl = gsap.timeline({
-      onComplete: () => {
-        // 1. Aplicamos el cambio de estado (React re-renderiza)
-        stateUpdater();
-        
-        // 2. Reseteamos la barra de scroll al inicio
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollLeft = 0;
-          gsap.set('.scroll-progress-fill', { width: '0%' });
-        }
-        
-        // 3. Animación de Entrada
-        setTimeout(() => {
-          gsap.fromTo(ANIM_SELECTORS.card, 
-            { opacity: 0, x: xOffset }, 
-            { 
-              opacity: 1, 
-              x: 0, 
-              duration: ANIM_CONFIG.duration.normal, 
-              stagger: ANIM_CONFIG.offset.stagger,
-              ease: ANIM_CONFIG.ease.out,
-              onComplete: () => home.setIsTransitioning(false)
-            }
-          );
+  const animateCardsTransition = (stateUpdater: () => void, animateMonths: boolean = false) => {
+    contextSafe(() => {
+      if (home.isTransitioning) return;
+      home.setIsTransitioning(true);
+      
+      const isMobile = window.innerWidth < 768;
+      const xOffset = isMobile ? 0 : ANIM_CONFIG.offset.sweep;
+      
+      const tl = gsap.timeline({
+        onComplete: () => {
+          // 1. Aplicamos el cambio de estado (React re-renderiza)
+          stateUpdater();
           
-          if (animateMonths) {
-            gsap.to(ANIM_SELECTORS.monthTab, { opacity: 1, duration: ANIM_CONFIG.duration.normal });
+          // 2. Reseteamos la barra de scroll al inicio
+          if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollLeft = 0;
+            gsap.set('.scroll-progress-fill', { width: '0%' });
           }
-        }, 50);
+          
+          // 3. Animación de Entrada
+          setTimeout(() => {
+            gsap.fromTo(ANIM_SELECTORS.card, 
+              { opacity: 0, x: xOffset }, 
+              { 
+                opacity: 1, 
+                x: 0, 
+                duration: ANIM_CONFIG.duration.normal, 
+                stagger: ANIM_CONFIG.offset.stagger,
+                ease: ANIM_CONFIG.ease.out,
+                onComplete: () => home.setIsTransitioning(false)
+              }
+            );
+            
+            if (animateMonths) {
+              gsap.to(ANIM_SELECTORS.monthTab, { opacity: 1, duration: ANIM_CONFIG.duration.normal });
+            }
+          }, 50);
+        }
+      });
+
+      // Animación de Salida
+      tl.to(ANIM_SELECTORS.card, { 
+        opacity: 0, 
+        x: -xOffset, 
+        duration: ANIM_CONFIG.duration.normal, 
+        stagger: ANIM_CONFIG.offset.stagger,
+        ease: ANIM_CONFIG.ease.in
+      }, 0);
+
+      if (animateMonths) {
+        tl.to(ANIM_SELECTORS.monthTab, { opacity: 0, duration: ANIM_CONFIG.duration.fast, ease: "none" }, 0);
       }
-    });
-
-    // Animación de Salida
-    tl.to(ANIM_SELECTORS.card, { 
-      opacity: 0, 
-      x: -xOffset, 
-      duration: ANIM_CONFIG.duration.normal, 
-      stagger: ANIM_CONFIG.offset.stagger,
-      ease: ANIM_CONFIG.ease.in
-    }, 0);
-
-    if (animateMonths) {
-      tl.to(ANIM_SELECTORS.monthTab, { opacity: 0, duration: ANIM_CONFIG.duration.fast, ease: "none" }, 0);
-    }
-  });
+    })();
+  };
 
   const handleMonthChange = (month: string) => {
     if (month !== home.activeMonth) animateCardsTransition(() => home.setActiveMonth(month), false);
@@ -206,18 +212,20 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     if (sub !== home.activeSubcategory) animateCardsTransition(() => home.setActiveSubcategory(sub), false);
   };
 
-  const handleScroll = contextSafe((e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.currentTarget;
-    const maxScroll = target.scrollWidth - target.clientWidth;
-    if (maxScroll <= 0) return;
-    const scrollPercent = (target.scrollLeft / maxScroll) * 100;
-    gsap.to('.scroll-progress-fill', { 
-      width: `${scrollPercent}%`,
-      duration: 0.1,
-      ease: "none",
-      overwrite: "auto"
-    });
-  });
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    contextSafe(() => {
+      const target = e.currentTarget;
+      const maxScroll = target.scrollWidth - target.clientWidth;
+      if (maxScroll <= 0) return;
+      const scrollPercent = (target.scrollLeft / maxScroll) * 100;
+      gsap.to('.scroll-progress-fill', { 
+        width: `${scrollPercent}%`,
+        duration: 0.1,
+        ease: "none",
+        overwrite: "auto"
+      });
+    })();
+  };
 
   const isSurveyMissing = (home.step === 2 || home.isSignedIn) && 
     home.isLoaded && 

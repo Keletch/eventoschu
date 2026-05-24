@@ -114,7 +114,9 @@ export const EventDialog: React.FC<EventDialogProps> = ({
     : null;
     
   const isOnline = selectedCategory?.slug === "online" || 
+                   selectedCategory?.slug === "eventos-en-linea" ||
                    parentCategory?.slug === "online" || 
+                   parentCategory?.slug === "eventos-en-linea" ||
                    !!event.is_virtual;
 
   const [isUploading, setIsUploading] = useState(false);
@@ -275,7 +277,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                               value={currentParentId?.toString()}
                               onValueChange={(v) => {
                                 const cat = categories.find((c: any) => c.id.toString() === v);
-                                const isOnlineCat = cat?.slug === "online";
+                                const isOnlineCat = cat?.slug === "online" || cat?.slug === "eventos-en-linea";
                                 setEvent({
                                   ...event,
                                   category_id: v, // Se asigna al padre por defecto

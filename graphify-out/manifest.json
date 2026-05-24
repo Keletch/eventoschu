@@ -5,9 +5,9 @@
     "semantic_hash": "63b2c4fcf776fec9dbc76e94ea0d70c6"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\eslint.config.mjs": {
-    "mtime": 1777417035.0,
-    "ast_hash": "dfa1f5f6a7037bf39dc510f30b180002",
-    "semantic_hash": "dfa1f5f6a7037bf39dc510f30b180002"
+    "mtime": 1779488652.3247547,
+    "ast_hash": "762ef6510d72abb2978818939b06acef",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\next.config.js": {
     "mtime": 1778181956.9644942,
@@ -15,14 +15,14 @@
     "semantic_hash": "d8936f6a415dbe1976648c89445e4fcc"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\next.config.ts": {
-    "mtime": 1777633541.704993,
-    "ast_hash": "9b77af189a21a7a64e4bd7a426f64176",
-    "semantic_hash": "9b77af189a21a7a64e4bd7a426f64176"
+    "mtime": 1779479440.067637,
+    "ast_hash": "06f0cb42a84e670ac304aa09b637f293",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\package.json": {
-    "mtime": 1778859635.6250615,
-    "ast_hash": "06ab0d62a658cb24828dcebebfb3ba02",
-    "semantic_hash": "06ab0d62a658cb24828dcebebfb3ba02"
+    "mtime": 1779487686.7415133,
+    "ast_hash": "9c8b7ae78fd4649b61172ab21c171fe0",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\postcss.config.mjs": {
     "mtime": 1777417035.0,
@@ -40,9 +40,9 @@
     "semantic_hash": "02fc19ad21338c2ab820a70136310db4"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\manifest.ts": {
-    "mtime": 1778209687.1050515,
-    "ast_hash": "3cc4ec8223a1e6fedf37c47fb8a4d5f1",
-    "semantic_hash": "3cc4ec8223a1e6fedf37c47fb8a4d5f1"
+    "mtime": 1779479460.2330725,
+    "ast_hash": "b96f4169b78bf455be921b7762ab2f37",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\robots.ts": {
     "mtime": 1778495673.263553,
@@ -80,9 +80,9 @@
     "semantic_hash": "90b775d49408c92f6f3e4916a335d2c4"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\forms\\event-dialog.tsx": {
-    "mtime": 1779247714.847579,
-    "ast_hash": "41d50bb4094ac3e929ca95b0cb545044",
-    "semantic_hash": "41d50bb4094ac3e929ca95b0cb545044"
+    "mtime": 1779643272.8401992,
+    "ast_hash": "050ea0afe71094997a98fa06dcfb8b46",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\forms\\keap-tag-picker.tsx": {
     "mtime": 1778698621.5295794,
@@ -90,9 +90,9 @@
     "semantic_hash": "806b4da125d5e43221b56a60eff10421"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\forms\\manage-categories-dialog.tsx": {
-    "mtime": 1779211208.8990068,
-    "ast_hash": "8c389cddc9d639e36b260173707b1535",
-    "semantic_hash": "8c389cddc9d639e36b260173707b1535"
+    "mtime": 1779487588.8336804,
+    "ast_hash": "6d6f8c8d0a1970468a8d982f7af2a674",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\forms\\operation-progress-dialog.tsx": {
     "mtime": 1779286244.305338,
@@ -105,9 +105,9 @@
     "semantic_hash": "5741e5cf04bd2cf9902918318c2ca3a7"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\forms\\registration-dialog.tsx": {
-    "mtime": 1778698601.9839976,
-    "ast_hash": "7b1585453b54338bda7738bb688e1027",
-    "semantic_hash": "7b1585453b54338bda7738bb688e1027"
+    "mtime": 1779485111.9456062,
+    "ast_hash": "32f578d04550f58da66aceb2e4d534ab",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\forms\\toggle-event-dialog.tsx": {
     "mtime": 1779121178.428831,
@@ -115,9 +115,9 @@
     "semantic_hash": "9c5da741bdb339dd7a172eb55f41d326"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\metrics\\metrics-view.tsx": {
-    "mtime": 1779308001.3959932,
-    "ast_hash": "916f01121435439a75f5b5c3b1c4a7ba",
-    "semantic_hash": "916f01121435439a75f5b5c3b1c4a7ba"
+    "mtime": 1779488847.4915805,
+    "ast_hash": "98cd8020e4237c54c616c84762458030",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\stats\\stat-card.tsx": {
     "mtime": 1778691942.2278144,
@@ -130,24 +130,24 @@
     "semantic_hash": "9a03be72c5e2c43470cdeb416db783c4"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\tables\\events-table.tsx": {
-    "mtime": 1778871599.339462,
-    "ast_hash": "59f9ac9eb0dabb6a17a7565ec440a9cc",
-    "semantic_hash": "59f9ac9eb0dabb6a17a7565ec440a9cc"
+    "mtime": 1779485088.6528237,
+    "ast_hash": "92cb1bcc7309b31d9a57dd9ca71e8bdb",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\components\\tables\\registrations-table.tsx": {
-    "mtime": 1779212132.7794735,
-    "ast_hash": "6d583ffa495a4f5981b4c6f09df3bd5e",
-    "semantic_hash": "6d583ffa495a4f5981b4c6f09df3bd5e"
+    "mtime": 1779485100.17739,
+    "ast_hash": "798b7f378a9f23cc048bea3d1dd782e0",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\hooks\\use-admin-dashboard.ts": {
-    "mtime": 1779286356.701462,
-    "ast_hash": "edbc37bf4b53eefa87195c8a775427af",
-    "semantic_hash": "edbc37bf4b53eefa87195c8a775427af"
+    "mtime": 1779488850.4942791,
+    "ast_hash": "316d787ab49bca0b622c6de398c2a6be",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\hooks\\use-dashboard-filters.ts": {
-    "mtime": 1779287046.6013236,
-    "ast_hash": "14e077fea366bf75bdca174d6ccdecc6",
-    "semantic_hash": "14e077fea366bf75bdca174d6ccdecc6"
+    "mtime": 1779488918.2112188,
+    "ast_hash": "e1d4b18c1e14452035f7b94cea786665",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\hooks\\use-metrics.ts": {
     "mtime": 1779288761.3627696,
@@ -155,9 +155,9 @@
     "semantic_hash": "082d8e4a5b5d86fa7317993117fa787f"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\hooks\\use-notifications.ts": {
-    "mtime": 1778685664.2871952,
-    "ast_hash": "ec0c766208493e7a4bfcfbd3e7d779ca",
-    "semantic_hash": "ec0c766208493e7a4bfcfbd3e7d779ca"
+    "mtime": 1779488923.721483,
+    "ast_hash": "265642a25660f593f9088c7e080d7299",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\dashboard\\hooks\\use-realtime-sync.ts": {
     "mtime": 1779257267.083386,
@@ -170,14 +170,14 @@
     "semantic_hash": "4fdae86f5a112e4d4e6b0d8e2000cead"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(admin)\\admin\\login\\page.tsx": {
-    "mtime": 1778691698.299086,
-    "ast_hash": "db99ed3405ddddf5eca6d2f8bd9a685f",
-    "semantic_hash": "db99ed3405ddddf5eca6d2f8bd9a685f"
+    "mtime": 1779488925.5170522,
+    "ast_hash": "2cb1b42eba0c18a2c9a07d2c0645088f",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(public)\\home-client.tsx": {
-    "mtime": 1779247840.2632475,
-    "ast_hash": "18a125a0af7f85548133cc2a9f5c92f6",
-    "semantic_hash": "18a125a0af7f85548133cc2a9f5c92f6"
+    "mtime": 1779488938.0251856,
+    "ast_hash": "584fec7ab7a82b1dc5cebe28de8be380",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(public)\\layout.tsx": {
     "mtime": 1779240856.0158782,
@@ -190,9 +190,9 @@
     "semantic_hash": "9696ad926d2740387c31f38bac1c7c2a"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\actions\\admin-categories.ts": {
-    "mtime": 1779211154.7473073,
-    "ast_hash": "4744b4cbcde4fb67668a1ab18c465648",
-    "semantic_hash": "4744b4cbcde4fb67668a1ab18c465648"
+    "mtime": 1779642810.1012197,
+    "ast_hash": "1d61bd01fd8eaa10db12d8ced6cd4e10",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\actions\\admin-check.ts": {
     "mtime": 1778066066.740032,
@@ -215,9 +215,9 @@
     "semantic_hash": "3f4fc27be12ab5c4f83d2cc27b3ac5a6"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\actions\\auth-actions.ts": {
-    "mtime": 1778094485.954643,
-    "ast_hash": "40a49c28a86149f6b980a932e914c357",
-    "semantic_hash": "40a49c28a86149f6b980a932e914c357"
+    "mtime": 1779488941.9509702,
+    "ast_hash": "7c76b7928b05eb66fcc4fe847f9b823c",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\actions\\events.ts": {
     "mtime": 1779247627.0283425,
@@ -280,9 +280,9 @@
     "semantic_hash": "f9de00cddea1bf695d69bd680dd3cc7b"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\events\\event-card.tsx": {
-    "mtime": 1779256282.5585132,
-    "ast_hash": "7beb0086a734751dca87356552dfca16",
-    "semantic_hash": "7beb0086a734751dca87356552dfca16"
+    "mtime": 1779485006.1772108,
+    "ast_hash": "8451d0d109e310a1b2a100297cfff6c9",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\events\\event-progress-bar.tsx": {
     "mtime": 1778863893.6092384,
@@ -310,9 +310,9 @@
     "semantic_hash": "70d5d199b89daaa6608d3e95c8454238"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\header\\logo.tsx": {
-    "mtime": 1778870101.0621727,
-    "ast_hash": "c8e13e7e65c8bb4ea847c8d8363b2057",
-    "semantic_hash": "c8e13e7e65c8bb4ea847c8d8363b2057"
+    "mtime": 1779488947.3865077,
+    "ast_hash": "82dd7ff2cc92c99aac2603fc83cfaa5d",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\header\\sidebar.tsx": {
     "mtime": 1778864761.8272398,
@@ -320,9 +320,9 @@
     "semantic_hash": "7044f8792078e9d5bbc7f8061b5256c2"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\home\\category-tabs.tsx": {
-    "mtime": 1779256959.1937153,
-    "ast_hash": "646836badea3f5d0b10eb660a7928380",
-    "semantic_hash": "646836badea3f5d0b10eb660a7928380"
+    "mtime": 1779485133.0050304,
+    "ast_hash": "378267289cf62423f530e8106a217be7",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\home\\check-registration-panel.tsx": {
     "mtime": 1778868025.2797737,
@@ -340,9 +340,9 @@
     "semantic_hash": "7009f8c5c01c2c0175a3aa724dab3439"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\home\\events-carousel.tsx": {
-    "mtime": 1779247818.4084601,
-    "ast_hash": "906d0b4858a45519cb6718030b98db5f",
-    "semantic_hash": "906d0b4858a45519cb6718030b98db5f"
+    "mtime": 1779485026.764498,
+    "ast_hash": "ee3a95f04df6b9063e49e74f06a6ad9d",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\home\\events-skeleton.tsx": {
     "mtime": 1778666637.561764,
@@ -465,9 +465,9 @@
     "semantic_hash": "86be3a485d0ab71a74f5f27861b64bfa"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\registration\\registration-form.tsx": {
-    "mtime": 1779240971.8032718,
-    "ast_hash": "f7c62e4a3c84fc56e077163ccb3d2c07",
-    "semantic_hash": "f7c62e4a3c84fc56e077163ccb3d2c07"
+    "mtime": 1779489230.14876,
+    "ast_hash": "239faddd59b50bc6868e58aabe4ef97a",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\registration\\survey-modal.tsx": {
     "mtime": 1778658606.278092,
@@ -530,9 +530,9 @@
     "semantic_hash": "e6107cbb2088437e76a858f75b5a0280"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\ui\\event-flag.tsx": {
-    "mtime": 1778658705.495967,
-    "ast_hash": "ae9ad5f7c60f70456f6d35bff53d7ff3",
-    "semantic_hash": "ae9ad5f7c60f70456f6d35bff53d7ff3"
+    "mtime": 1779487082.7539685,
+    "ast_hash": "7a41e2079b55b5cd18ef1150f40ad31c",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\ui\\input-group.tsx": {
     "mtime": 1777446314.6657274,
@@ -595,9 +595,9 @@
     "semantic_hash": "d448d2a90e48542e51b93a1189127bf2"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\ui\\theme-toggle.tsx": {
-    "mtime": 1778861229.86396,
-    "ast_hash": "b1f61b0f7520d160f74d5cc08f9ec575",
-    "semantic_hash": "b1f61b0f7520d160f74d5cc08f9ec575"
+    "mtime": 1779488968.4786954,
+    "ast_hash": "61f2c222a6381c0610702575297455d0",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\ui\\tooltip.tsx": {
     "mtime": 1777969286.1483674,
@@ -605,9 +605,9 @@
     "semantic_hash": "e3f520daa68d5b7696dc40f7db4e5061"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\hooks\\home\\use-home-logic.ts": {
-    "mtime": 1779256394.1875255,
-    "ast_hash": "cf19ee16c8a200969d7a3f752b2f37d3",
-    "semantic_hash": "cf19ee16c8a200969d7a3f752b2f37d3"
+    "mtime": 1779489071.8734553,
+    "ast_hash": "63565cf822d5e2f6c7caeea7b5601caf",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\hooks\\home\\use-home-sync.ts": {
     "mtime": 1779257255.832897,
@@ -625,9 +625,9 @@
     "semantic_hash": "81eda57e6db506a79ebacebaaa2e5d11"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\hooks\\user\\use-user-notifications.ts": {
-    "mtime": 1778689634.148173,
-    "ast_hash": "837fc4fb39cf1b1efa4032cd09ecf1db",
-    "semantic_hash": "837fc4fb39cf1b1efa4032cd09ecf1db"
+    "mtime": 1779489119.9444368,
+    "ast_hash": "4271e567f1b7122c02105770a6f2a595",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\lib\\animations.ts": {
     "mtime": 1778669125.8494213,
@@ -695,9 +695,9 @@
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\ARCHITECTURE.md": {
-    "mtime": 1779311470.6020596,
-    "ast_hash": "5b5ce916cb2ba1cb3b54b44c1e99e7db",
-    "semantic_hash": "5b5ce916cb2ba1cb3b54b44c1e99e7db"
+    "mtime": 1779471625.3290668,
+    "ast_hash": "a1b5e71c6d4ade26d2213345f93fe7dc",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\CLAUDE.md": {
     "mtime": 1777417035.0,
@@ -720,9 +720,9 @@
     "semantic_hash": "f4c6f3a750f03ddadf3f8abeeb6702b9"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\THEMES.md": {
-    "mtime": 1779311490.1521282,
-    "ast_hash": "356f5d450ebf28e2237b1070b6a7f6fc",
-    "semantic_hash": "356f5d450ebf28e2237b1070b6a7f6fc"
+    "mtime": 1779471848.6809719,
+    "ast_hash": "3db1b908c4ca6ec2011130a35a016441",
+    "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\opengraph-image.png": {
     "mtime": 1778208188.7047384,
@@ -733,5 +733,40 @@
     "mtime": 1777569043.5076582,
     "ast_hash": "69d8ee44b00691c43d1c8fa186db7b77",
     "semantic_hash": "69d8ee44b00691c43d1c8fa186db7b77"
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\sw.ts": {
+    "mtime": 1779487803.7762377,
+    "ast_hash": "6980b8121959f58d062686aa461e8b9d",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\actions\\upload-image.ts": {
+    "mtime": 1779485396.9546037,
+    "ast_hash": "0431784dc3fa94187d7c631f5f6597bf",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\lib\\icons.ts": {
+    "mtime": 1779487057.0824564,
+    "ast_hash": "569e064730df69aafb300bcf1826eaec",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\lib\\image-utils.ts": {
+    "mtime": 1779486239.2363417,
+    "ast_hash": "16ae07cf634056a8a30f1ebb2182eb4b",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\public\\icon-192x192.png": {
+    "mtime": 1779478238.4099166,
+    "ast_hash": "595a994ae58413c5bfb34aace569f38e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\public\\icon-512x512.png": {
+    "mtime": 1779478206.8957777,
+    "ast_hash": "e40a3c10bcc37f352063eb5effed30f3",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\check_db.js": {
+    "mtime": 1779643212.8522382,
+    "ast_hash": "cc818479bc5c876f4ff224e0d7525bb1",
+    "semantic_hash": ""
   }
 }

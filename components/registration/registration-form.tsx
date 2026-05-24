@@ -90,34 +90,48 @@ export function RegistrationForm({
     // Detectamos si el usuario acaba de cerrar sesión (Pasó de true a false)
     const justLoggedOut = prevIsSignedInRef.current === true && isSignedIn === false;
 
+    let timer: NodeJS.Timeout;
+    let fetchTimer: NodeJS.Timeout;
+
     if (isSignedIn && user) {
       const email = user.primaryEmailAddress?.emailAddress || "";
-      setFormData(prev => ({
-        ...prev,
-        firstName: user.firstName || prev.firstName,
-        lastName: user.lastName || prev.lastName,
-        email: email || prev.email,
-      }));
+      timer = setTimeout(() => {
+        setFormData(prev => ({
+          ...prev,
+          firstName: user.firstName || prev.firstName,
+          lastName: user.lastName || prev.lastName,
+          email: email || prev.email,
+        }));
+      }, 0);
 
       if (email) {
-        fetchSupabaseData(email);
+        fetchTimer = setTimeout(() => {
+          fetchSupabaseData(email);
+        }, 0);
       }
     } else if (justLoggedOut) {
       // SOLO reseteamos si realmente el usuario cerró sesión
       // No reseteamos si ya estaba en false y hubo un re-render
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        country: "",
-        phoneCode: "+51",
-        phone: "",
-      });
-      setIsOtherCountry(false);
+      timer = setTimeout(() => {
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          country: "",
+          phoneCode: "+51",
+          phone: "",
+        });
+        setIsOtherCountry(false);
+      }, 0);
     }
 
     // Actualizamos el ref para la próxima ejecución
     prevIsSignedInRef.current = isSignedIn;
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (fetchTimer) clearTimeout(fetchTimer);
+    };
   }, [isSignedIn, user, fetchSupabaseData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
