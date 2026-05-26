@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export function HeaderSkeleton() {
   return (
-    <header className="fixed top-0 left-0 right-0 h-20 border-b border-border bg-background/80 backdrop-blur-md z-[100] px-4 md:px-8 lg:px-12">
+    <header className="fixed top-0 left-0 right-0 h-20 border-b border-border bg-background/80 backdrop-blur-md z-[150] px-4 md:px-8 lg:px-12">
       <div className="max-w-[1512px] h-full mx-auto flex items-center justify-between">
         {/* Header bar space reserved, no skeletons as requested */}
       </div>

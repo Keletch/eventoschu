@@ -1,7 +1,7 @@
-# Graph Report - eventosCHU  (2026-05-25)
+# Graph Report - eventosCHU  (2026-05-26)
 
 ## Corpus Check
-- 150 files · ~81,485 words
+- 148 files · ~81,257 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `72cac996`
+- Built from commit: `5eb95fec`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -103,8 +103,8 @@ Cohesion: 0.09
 Nodes (42): uploadImage(), DeleteEventDialogProps, BG_COLOR_OPTIONS, EventDialogProps, TIMEZONE_LABELS, AVAILABLE_ICONS, ManageCategoriesDialogProps, OperationProgressDialogProps (+34 more)
 
 ### Community 2 - "Event Fetching and State"
-Cohesion: 0.19
-Nodes (5): EventsCarousel(), EventsCarouselProps, EventsSkeleton(), HeaderSkeleton(), Skeleton()
+Cohesion: 0.24
+Nodes (4): EventsSkeleton(), HeaderSkeleton(), EventJsonLd(), Skeleton()
 
 ### Community 3 - "Global Header and Navigation"
 Cohesion: 0.21
@@ -203,8 +203,8 @@ Cohesion: 0.08
 Nodes (26): 1. Base de Datos Relacional (PostgreSQL), 2. Canales de Progreso en Tiempo Real (Keap CRM Sync), 3. Lógica de Negocio en Inteligencia y Métricas, `/app/actions` (Server Actions - El Motor Backend), `/app/api` (Endpoints de API tradicionales HTTP), 🌐 `/app` (App Router - Rutas y Server Actions), Archivos de Configuración Raíz, Archivos Principales y Rutas Raíz de `/app` (+18 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.13
-Nodes (16): ALL_LUCIDE_ICONS, CATEGORY_ICONS, CATEGORY_LABELS, CategoryTabs(), CategoryTabsProps, CheckRegistrationPanel(), HeroSection(), MonthTabs() (+8 more)
+Cohesion: 0.15
+Nodes (12): ALL_LUCIDE_ICONS, CATEGORY_ICONS, CATEGORY_LABELS, CategoryTabs(), CategoryTabsProps, CheckRegistrationPanel(), HeroSection(), MonthTabs() (+4 more)
 
 ### Community 36 - "Community 36"
 Cohesion: 0.19
@@ -223,16 +223,16 @@ Cohesion: 0.19
 Nodes (13): addEntry(), eu(), getDb(), getEntryCountByQueueName(), getFirstEntryId(), _getId(), getTimestamp(), isURLExpired() (+5 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.22
-Nodes (10): Event, getEvents(), redis, sitemap(), TIMEZONE_SHORT_CODES, transformEventForUI(), GET(), HomeDataWrapper() (+2 more)
+Cohesion: 0.25
+Nodes (9): Event, getEvents(), redis, sitemap(), TIMEZONE_SHORT_CODES, transformEventForUI(), GET(), HomeDataWrapper() (+1 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.20
 Nodes (10): SOLID React & Next.js Principles, SSoT via transformEventForUI, Dual Identity and Authentication Strategy, Keap CRM Real-Time Sync, llms.txt AI Optimization (AIO), Server Actions Data Access Layer, Upstash Redis Cache Layer, Clerk Theme Propagation (+2 more)
 
 ### Community 42 - "Community 42"
-Cohesion: 0.50
-Nodes (3): Footer(), SocialIcon(), SocialIconProps
+Cohesion: 0.19
+Nodes (9): Footer(), SocialIcon(), SocialIconProps, EventsCarousel(), EventsCarouselProps, MonthTabsProps, ANIM_CONFIG, ANIM_SELECTORS (+1 more)
 
 ### Community 43 - "Community 43"
 Cohesion: 0.31
@@ -294,7 +294,7 @@ Nodes (5): 7. 🔩 Principios SOLID (Adaptados a React / Next.js), D — Depende
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `Primitive UI Components` to `Admin Database Operations`, `Category and Event Dialogs`, `Event Fetching and State`, `Global Header and Navigation`, `Community 36`, `Public Registration and Attendees`, `Admin Layout and SEO`, `Admin Data Tables`, `External Node Modules`, `Community 34`, `Community 44`, `Admin Login and Cards`, `Community 46`, `Community 45`, `Form Inputs and Textareas`, `Custom and Sidebar Scrollbars`, `Community 18`?**
+- **Why does `cn()` connect `Primitive UI Components` to `Admin Database Operations`, `Category and Event Dialogs`, `Event Fetching and State`, `Global Header and Navigation`, `Community 36`, `Public Registration and Attendees`, `Admin Layout and SEO`, `Admin Data Tables`, `External Node Modules`, `Community 34`, `Community 42`, `Community 44`, `Admin Login and Cards`, `Community 46`, `Community 45`, `Form Inputs and Textareas`, `Custom and Sidebar Scrollbars`, `Community 18`?**
   _High betweenness centrality (0.246) - this node is a cross-community bridge._
 - **Why does `fetch()` connect `Notification Bell and Alert UI` to `Admin Database Operations`, `Community 38`, `Community 39`, `Searchable Dropdowns and Pickers`, `Community 43`?**
   _High betweenness centrality (0.178) - this node is a cross-community bridge._

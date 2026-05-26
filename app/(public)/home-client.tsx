@@ -334,7 +334,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
             </div>
             
             {home.isLoaded && (
-              <div className="footer-reveal opacity-0 translate-y-10 relative z-[200]">
+              <div className="footer-reveal opacity-0 translate-y-10 relative z-[100]">
                 <Footer />
               </div>
             )}

@@ -92,22 +92,12 @@ export function useHomeLogic(initialEvents: any[] = []) {
     }).filter(Boolean);
     
     const uniqueCats = Array.from(new Set(cats));
-    
-    // Verificar si hay eventos con el tag "Pago"
-    const hasPaidEvents = activeEvents.some(e => {
-      const tagsList = e.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
-      return tagsList.some((t: any) => t.slug === 'pago');
-    });
-
-    if (hasPaidEvents) {
-      uniqueCats.push("Pago");
-    }
 
     return ["Todos", ...uniqueCats];
   }, [events]);
 
   const availableCategoryIcons = useMemo(() => {
-    const icons: Record<string, string> = { "Todos": "Calendar", "Pago": "CircleDollarSign" };
+    const icons: Record<string, string> = { "Todos": "Calendar" };
     events.filter(e => e.active !== false).forEach(e => {
       const parentName = e.categories?.parent_category?.name;
       const parentIcon = e.categories?.parent_category?.icon;
@@ -123,20 +113,6 @@ export function useHomeLogic(initialEvents: any[] = []) {
   const availableSubcategories = useMemo(() => {
     if (activeCategory === "Todos") return [];
     const activeEvents = events.filter(e => e.active !== false);
-    
-    if (activeCategory === "Pago") {
-      // Obtener subcategorías de los eventos que tengan el tag de pago
-      const paidEvents = activeEvents.filter(e => {
-        const tagsList = e.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
-        return tagsList.some((t: any) => t.slug === 'pago');
-      });
-      const subcats = paidEvents
-        .filter(e => e.categories?.parent_category)
-        .map(e => e.categories?.name)
-        .filter(Boolean);
-      if (subcats.length === 0) return [];
-      return ["Todos", ...Array.from(new Set(subcats))];
-    }
 
     // Obtenemos todos los eventos que pertenecen a esta macro-categoría
     const eventsInCat = activeEvents.filter(e => {
@@ -184,17 +160,10 @@ export function useHomeLogic(initialEvents: any[] = []) {
 
     // 2. Filtro por Categoría
     if (activeCategory !== "Todos") {
-      if (activeCategory === "Pago") {
-        filtered = filtered.filter(e => {
-          const tagsList = e.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
-          return tagsList.some((t: any) => t.slug === 'pago');
-        });
-      } else {
-        filtered = filtered.filter(e => {
-          const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
-          return mainCatName === activeCategory;
-        });
-      }
+      filtered = filtered.filter(e => {
+        const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
+        return mainCatName === activeCategory;
+      });
     }
 
     // 3. Filtro por Sub-Categoría
