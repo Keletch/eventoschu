@@ -13,6 +13,9 @@ export function InstallPwaButton() {
     setTimeout(() => {
       // Verificamos si ya está instalada
       const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
+                               window.matchMedia('(display-mode: minimal-ui)').matches || 
+                               window.matchMedia('(display-mode: fullscreen)').matches || 
+                               window.matchMedia('(display-mode: window-controls-overlay)').matches || 
                                (window.navigator as any).standalone || 
                                document.referrer.includes('android-app://');
       setIsStandalone(isStandaloneMode);
