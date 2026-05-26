@@ -28,6 +28,8 @@ export function useHomeLogic(initialEvents: any[] = []) {
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
   const [activeSubcategory, setActiveSubcategory] = useState<string>("Todos");
   const [activeMonth, setActiveMonth] = useState("");
+  const [activeTag, setActiveTag] = useState<string>("Todos");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPageReady, setIsPageReady] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
@@ -152,32 +154,77 @@ export function useHomeLogic(initialEvents: any[] = []) {
     return ["Todos", ...Array.from(new Set(subcats))];
   }, [events, activeCategory]);
 
+  const availableTags = useMemo(() => {
+    const tagsMap = new Map<string, { id: string, name: string, slug: string, color_hex: string }>();
+    events.filter(e => e.active !== false).forEach(e => {
+      e.event_tags?.forEach((et: any) => {
+        if (et.tags) {
+          tagsMap.set(et.tags.id, et.tags);
+        }
+      });
+    });
+    return Array.from(tagsMap.values());
+  }, [events]);
+
   const filteredEventsByCategory = useMemo(() => {
     const activeEvents = events.filter(e => e.active !== false);
     
-    // Filtro Nivel 1: Macro-Categoría
+    // 1. Filtro por Búsqueda (Texto)
     let filtered = activeEvents;
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(e => {
+        const title = (e.title || "").toLowerCase();
+        const city = (e.city || "").toLowerCase();
+        const country = (e.country || "").toLowerCase();
+        const location = (e.location || "").toLowerCase();
+        return title.includes(query) || city.includes(query) || country.includes(query) || location.includes(query);
+      });
+    }
+
+    // 2. Filtro por Categoría
     if (activeCategory !== "Todos") {
       if (activeCategory === "Pago") {
-        filtered = activeEvents.filter(e => {
+        filtered = filtered.filter(e => {
           const tagsList = e.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
           return tagsList.some((t: any) => t.slug === 'pago');
         });
       } else {
-        filtered = activeEvents.filter(e => {
+        filtered = filtered.filter(e => {
           const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
           return mainCatName === activeCategory;
         });
       }
     }
 
-    // Filtro Nivel 2: Sub-Categoría (Pills)
+    // 3. Filtro por Sub-Categoría
     if (activeSubcategory !== "Todos") {
       filtered = filtered.filter(e => e.categories?.name === activeSubcategory);
     }
 
+    // 4. Filtro por Etiqueta (Tags)
+    if (activeTag !== "Todos") {
+      filtered = filtered.filter(e => 
+        e.event_tags?.some((et: any) => et.tags?.id === activeTag)
+      );
+    }
+
     return filtered;
-  }, [events, activeCategory, activeSubcategory]);
+  }, [events, searchQuery, activeCategory, activeSubcategory, activeTag]);
+
+  const filteredEvents = useMemo(() => {
+    if (!activeMonth) return filteredEventsByCategory;
+    return filteredEventsByCategory.filter(e => {
+      const d = new Date(e.start_date);
+      let label = "";
+      if (d.getFullYear() === 2099) label = "Eventos Futuros";
+      else {
+        const m = d.toLocaleDateString("es-ES", { month: "long" });
+        label = m.charAt(0).toUpperCase() + m.slice(1);
+      }
+      return label === activeMonth;
+    });
+  }, [filteredEventsByCategory, activeMonth]);
 
   const availableMonths = useMemo(() => {
     const monthsSet = new Set<string>();
@@ -208,15 +255,10 @@ export function useHomeLogic(initialEvents: any[] = []) {
     return () => clearTimeout(timer);
   }, [activeCategory]);
 
-  // Adjust active month when availableMonths changes
+  // Adjust active month when availableMonths changes. If selected month is no longer available, reset to empty (all months).
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (availableMonths.length > 0) {
-        // Intentar mantener el mes si existe en la nueva categoría, si no, ir al primero
-        if (!availableMonths.includes(activeMonth)) {
-          setActiveMonth(availableMonths[0]);
-        }
-      } else {
+      if (activeMonth !== "" && !availableMonths.includes(activeMonth)) {
         setActiveMonth("");
       }
     }, 0);
@@ -245,11 +287,6 @@ export function useHomeLogic(initialEvents: any[] = []) {
 
       if (eventsRes.success && eventsRes.data) {
         setEvents(eventsRes.data);
-        if (eventsRes.data.length > 0 && !activeMonth) {
-          const firstDate = new Date(eventsRes.data[0].start_date);
-          const firstMonth = firstDate.toLocaleDateString('es-ES', { month: 'long' });
-          setActiveMonth(firstMonth.charAt(0).toUpperCase() + firstMonth.slice(1));
-        }
       }
 
       if (countsRes.success && countsRes.data) {
@@ -274,7 +311,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } finally {
       setIsLoadingEvents(false);
     }
-  }, [activeMonth]);
+  }, []);
 
   const startNewRegistration = useCallback(() => {
     localStorage.removeItem(HOME_STORAGE_KEY);
@@ -691,6 +728,14 @@ export function useHomeLogic(initialEvents: any[] = []) {
     }
   }, [selectedCityId, startNewRegistration]);
 
+  const resetAllFilters = useCallback(() => {
+    setSearchQuery("");
+    setActiveCategory("Todos");
+    setActiveSubcategory("Todos");
+    setActiveMonth("");
+    setActiveTag("Todos");
+  }, []);
+
   return {
     // States
     step, setStep: changeStep,
@@ -700,6 +745,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     isLoadingEvents,
     isSubmitting,
     activeMonth, setActiveMonth,
+    searchQuery, setSearchQuery,
     isTransitioning, setIsTransitioning,
     isPageReady,
     isChecking,
@@ -732,9 +778,13 @@ export function useHomeLogic(initialEvents: any[] = []) {
     setActiveCategory,
     activeSubcategory,
     setActiveSubcategory,
+    activeTag,
+    setActiveTag,
     availableCategories,
     availableCategoryIcons,
     availableSubcategories,
-    filteredEvents: filteredEventsByCategory
+    availableTags,
+    resetAllFilters,
+    filteredEvents
   };
 }

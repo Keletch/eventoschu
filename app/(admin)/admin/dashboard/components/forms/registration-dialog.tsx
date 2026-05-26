@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { EventFlag } from "@/components/ui/event-flag";
 import { adminAddEventToUser, adminRemoveEventFromUser } from "@/app/actions/admin-mass-ops";
 import { toast } from "sonner";
-import { SearchablePicker } from "../filters/searchable-picker";
+import { SearchablePicker } from "@/components/ui/searchable-picker";
 
 
 interface RegistrationDialogProps {

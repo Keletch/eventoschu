@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass, ExternalLink, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { trackPaidEventClick } from "@/app/actions/user-registration";
 
 // Modular Components
 import { EventProgressBar } from "@/components/events/event-progress-bar";
@@ -120,8 +121,12 @@ export function EventCard({
             <EventFlag 
               flag={flag} 
               imageUrl={imageUrl}
-              bgClass={bgClass} 
-              className="size-12 md:size-14 rounded-[16px] md:rounded-[20px] p-2.5 md:p-3 shrink-0" 
+              bgClass={bgClass}
+              largeIcon
+              className={cn(
+                "size-12 md:size-14 rounded-[16px] md:rounded-[20px] shrink-0",
+                imageUrl ? "p-0" : "p-2.5 md:p-3"
+              )} 
             />
             <div className="flex flex-col gap-0.5 overflow-hidden w-full">
               <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-card-badge-text">
@@ -218,7 +223,7 @@ export function EventCard({
                 )}
               </div>
             ) : (
-              <EventDetailItem icon={<MapPin className="w-4 h-4 text-card-icon shrink-0 mt-1" />} label="Sitio" value={location} isMultiLine />
+              <EventDetailItem icon={<MapPin className="w-4 h-4 text-card-icon shrink-0" />} label="Sitio" value={location} />
             )}
             <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-card-icon shrink-0" />} label="Precio" value={price} />
           </div>
@@ -231,6 +236,7 @@ export function EventCard({
               onClick={(e) => {
                 e.stopPropagation();
                 if (externalUrl) {
+                  trackPaidEventClick(id).catch((err) => console.error("Failed to track click:", err));
                   window.open(externalUrl, "_blank", "noopener,noreferrer");
                 }
               }}

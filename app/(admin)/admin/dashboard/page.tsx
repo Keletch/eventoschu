@@ -13,8 +13,8 @@ import gsap from "gsap";
 // Modular Components
 import { Logo } from "@/components/header/logo";
 import { StatsGrid } from "./components/stats/stats-grid";
-import { SearchInput } from "./components/filters/search-input";
-import { SearchablePicker } from "./components/filters/searchable-picker";
+import { SearchInput } from "@/components/ui/search-input";
+import { SearchablePicker } from "@/components/ui/searchable-picker";
 import { EventsTable } from "./components/tables/events-table";
 import { RegistrationsTable } from "./components/tables/registrations-table";
 import { MetricsView } from "./components/metrics/metrics-view";
@@ -41,6 +41,7 @@ export default function AdminDashboard() {
     regsLoyaltyFilter, setRegsLoyaltyFilter,
     regsSurveyCompleteFilter, setRegsSurveyCompleteFilter,
     regsTodayFilter, setRegsTodayFilter,
+    regsDateFilter, setRegsDateFilter,
     regsClerkFilter, setRegsClerkFilter,
     currentPage, setCurrentPage, pageSize, setPageSize, totalPages, paginatedRegs, filteredRegs,
     isDialogOpen, setIsDialogOpen,
@@ -59,7 +60,7 @@ export default function AdminDashboard() {
     notifications, unreadCount, handleMarkAsRead,
     handleMarkAllRead, handleDeleteNotification, isNotifOpen, setIsNotifOpen, fetchData, resetRegsFilters, resetEventsFilters,
     removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle, removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge,
-    progressState
+    progressState, eventClicks
   } = useAdminDashboard();
 
   const categoryOptions = React.useMemo(() => {
@@ -451,6 +452,7 @@ export default function AdminDashboard() {
                   events={filteredEvents}
                   isLoading={isDataLoading}
                   registrations={registrations}
+                  eventClicks={eventClicks}
                   toggleEventStatus={toggleEventStatus}
                   handleDuplicateEvent={handleDuplicateEvent}
                   handleEditEvent={handleEditEvent}
@@ -643,6 +645,21 @@ export default function AdminDashboard() {
                       </button>
                     </div>
                   )}
+
+                  {regsDateFilter && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-violet-500/10 border border-violet-500/20 rounded-full w-fit animate-in fade-in slide-in-from-left-4 text-violet-500">
+                      <span className="text-[9px] font-black uppercase tracking-wider opacity-60">Día:</span>
+                      <span className="text-[11px] font-bold">
+                        {new Date(regsDateFilter + "T12:00:00").toLocaleDateString("es-MX", { weekday: "short", day: "numeric", month: "short" })}
+                      </span>
+                      <button 
+                        onClick={() => setRegsDateFilter(null)}
+                        className="p-0.5 hover:bg-violet-500/20 rounded-md transition-colors"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Derecha: Acciones (Solo Clerk y Resetear Filtros) */}
@@ -746,6 +763,7 @@ export default function AdminDashboard() {
               <MetricsView 
                 registrations={registrations}
                 events={events}
+                eventClicks={eventClicks}
                 onCountryClick={(country) => {
                   setRegsCountryFilter(country);
                   setActiveTab("registrations");
@@ -768,6 +786,10 @@ export default function AdminDashboard() {
                 }}
                 onTodayClick={() => {
                   setRegsTodayFilter(true);
+                  setActiveTab("registrations");
+                }}
+                onDayClick={(date) => {
+                  setRegsDateFilter(date);
                   setActiveTab("registrations");
                 }}
               />

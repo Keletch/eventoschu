@@ -14,6 +14,7 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://calendario.chu.mx"),
   title: "Panel de Gestión | Club de Inversionistas",
   description: "Administración centralizada de eventos e inscripciones.",
   robots: { index: false, follow: false } // No queremos que Google indexe el admin
@@ -78,7 +79,7 @@ export default function AdminRootLayout({
             defaultTheme="light"
             enableSystem
             disableTransitionOnChange
-            themes={["light", "dark", "synthwave", "hacker", "coffee"]}
+            themes={["light", "dark", "synthwave", "hacker", "coffee", "citric"]}
           >
             <TooltipProvider>
               <div className="retro-grid" />

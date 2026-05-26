@@ -8,6 +8,7 @@ const raleway = Raleway({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://calendario.chu.mx"),
   title: "Calendario de Eventos HyenUk Chu | Club de Inversionistas",
   description: "Reserva tu cupo para las giras y talleres presenciales de HyenUk Chu. Únete a la comunidad del Club de Inversionistas y fortalece tus conexiones.",
   keywords: ["HyenUk Chu", "Club de Inversionistas", "Inversiones", "Eventos Presenciales", "Trading", "Talleres de Inversión"],
@@ -97,6 +98,14 @@ export default function RootLayout({
                 e.preventDefault();
                 window.deferredPWAPrompt = e;
               });
+              // 🧹 Limpieza automática de Service Workers huérfanos en localhost en modo dev
+              if (location.hostname === 'localhost' && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  for (var registration of registrations) {
+                    registration.unregister();
+                  }
+                });
+              }
             `
           }} />
         </head>
@@ -106,7 +115,7 @@ export default function RootLayout({
             defaultTheme="light"
             enableSystem
             disableTransitionOnChange
-            themes={["light", "dark", "synthwave", "hacker", "coffee"]}
+            themes={["light", "dark", "synthwave", "hacker", "coffee", "citric"]}
           >
             <TooltipProvider>
               <div className="retro-grid" />

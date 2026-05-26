@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useMetrics } from "../../hooks/use-metrics";
 import { cn } from "@/lib/utils";
 import { Users, Ticket, CheckCircle2, MapPin, BarChart3, TrendingUp, PieChart, AlertTriangle, ChevronDown, ChevronUp, Tag } from "lucide-react";
@@ -8,19 +8,35 @@ import { Users, Ticket, CheckCircle2, MapPin, BarChart3, TrendingUp, PieChart, A
 interface MetricsViewProps {
   registrations: any[];
   events: any[];
+  eventClicks?: any[];
   onCountryClick?: (country: string) => void;
   onEventClick?: (eventId: string) => void;
   onSurveyClick?: (questionId: string, answer: string) => void;
   onLoyaltyClick?: () => void;
   onSurveyCompleteClick?: () => void;
   onTodayClick?: () => void;
+  onDayClick?: (date: string) => void;
 }
 
 export function MetricsView({ 
-  registrations, events, onCountryClick, onEventClick, onSurveyClick,
-  onLoyaltyClick, onSurveyCompleteClick, onTodayClick
+  registrations, events, eventClicks = [], onCountryClick, onEventClick, onSurveyClick,
+  onLoyaltyClick, onSurveyCompleteClick, onTodayClick, onDayClick
 }: MetricsViewProps) {
-  const stats = useMetrics(registrations, events);
+  const [eventScope, setEventScope] = useState<'all' | 'active' | 'past'>('all');
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const filteredEventsForMetrics = useMemo(() => {
+    if (eventScope === 'all') return events;
+    return events.filter(ev => {
+      const isPast = !ev.active || (ev.start_date && new Date(ev.start_date) < today);
+      return eventScope === 'past' ? isPast : !isPast;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, eventScope]);
+
+  const stats = useMetrics(registrations, filteredEventsForMetrics, eventClicks);
 
   if (!stats) return (
     <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
@@ -31,6 +47,33 @@ export function MetricsView({
 
   return (
     <div className="space-y-8 pb-12">
+
+      {/* 🎛️ Selector de ámbito de eventos */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mr-1">Ver eventos:</span>
+        {([['all', 'Todos'], ['active', 'Activos / Futuros'], ['past', 'Pasados']] as const).map(([val, label]) => (
+          <button
+            key={val}
+            onClick={() => setEventScope(val)}
+            className={cn(
+              "h-7 px-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border",
+              eventScope === val
+                ? val === 'active' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/25 shadow-sm"
+                  : val === 'past' ? "bg-amber-500/10 text-amber-500 border-amber-500/25 shadow-sm"
+                  : "bg-primary/10 text-primary border-primary/25 shadow-sm"
+                : "text-muted-foreground/60 border-transparent hover:text-muted-foreground hover:border-border bg-transparent"
+            )}
+          >
+            {label}
+            {eventScope !== val && <span className="ml-1 opacity-0"> </span>}
+          </button>
+        ))}
+        {eventScope !== 'all' && (
+          <span className="text-[10px] font-medium text-muted-foreground/50 ml-1">
+            ({filteredEventsForMetrics.length} de {events.length} eventos)
+          </span>
+        )}
+      </div>
       {/* 🚀 Top KPIs Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <MetricKpiCard 
@@ -82,11 +125,35 @@ export function MetricsView({
           data={stats.trendData} 
           weeklyDelta={stats.weeklyDelta}
           thisWeekTotal={stats.thisWeekTotal}
+          onDayClick={onDayClick}
         />
       </MetricBox>
 
+      {/* 📊 Tabla de Rendimiento por Evento */}
+      <ExpandableEventTable 
+        events={stats.eventPerformance} 
+        onEventClick={onEventClick}
+      />
+
+      {/* Grid 2 cols: Popularidad + País */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* 🗺️ Distribución Geográfica con Top 5 + Expandir */}
+        {/* 🏆 Popularidad de Eventos */}
+        <MetricBox title="Popularidad de Eventos" icon={<TrendingUp className="size-5" />}>
+          <div className="space-y-4">
+            {stats.eventPerformance.slice(0, 5).map((item: any) => (
+              <SimpleProgressBar 
+                key={item.id} 
+                label={`${item.city ? `${item.city} - ` : ""}${item.title}`} 
+                value={item.total} 
+                total={stats.global.totalInscriptions || 1} 
+                colorClass="bg-blue-500"
+                onClick={() => onEventClick?.(item.id)}
+              />
+            ))}
+          </div>
+        </MetricBox>
+
+        {/* 🗺️ Distribución Geográfica */}
         <MetricBox title="Distribución por País" icon={<MapPin className="size-5" />}>
           <ExpandableCountryList 
             countries={stats.countryDistribution} 
@@ -94,7 +161,10 @@ export function MetricsView({
             onCountryClick={onCountryClick}
           />
         </MetricBox>
+      </div>
 
+      {/* Grid 2 cols: Encuestas y Categoría */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* 📋 Relación con el Club */}
         <MetricBox title="Relación con el Club" icon={<PieChart className="size-5" />}>
           <div className="space-y-4">
@@ -159,22 +229,6 @@ export function MetricsView({
           </div>
         </MetricBox>
 
-        {/* 🏆 Popularidad de Eventos */}
-        <MetricBox title="Popularidad de Eventos" icon={<TrendingUp className="size-5" />}>
-          <div className="space-y-4">
-            {stats.eventPerformance.slice(0, 5).map((item: any) => (
-              <SimpleProgressBar 
-                key={item.id} 
-                label={`${item.city ? `${item.city} - ` : ""}${item.title}`} 
-                value={item.total} 
-                total={stats.global.totalInscriptions || 1} 
-                colorClass="bg-blue-500"
-                onClick={() => onEventClick?.(item.id)}
-              />
-            ))}
-          </div>
-        </MetricBox>
-
         {/* 🏷️ Interés por Categoría */}
         {stats.categoryDistribution.length > 0 && (
           <MetricBox title="Interés por Categoría" icon={<Tag className="size-5" />}>
@@ -192,62 +246,6 @@ export function MetricsView({
           </MetricBox>
         )}
       </div>
-
-      {/* 📊 Tabla de Rendimiento por Evento */}
-      <MetricBox title="Rendimiento por Evento" icon={<Ticket className="size-5" />}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-border text-[10px] font-black uppercase text-muted-foreground tracking-widest">
-                <th className="py-4 px-2">Evento</th>
-                <th className="py-4 px-2">Ciudad</th>
-                <th className="py-4 px-2">Ocupación</th>
-                <th className="py-4 px-2 text-right">Confirmados</th>
-                <th className="py-4 px-2 text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {stats.eventPerformance.map((ev) => (
-                <tr 
-                  key={ev.id} 
-                  onClick={() => onEventClick?.(ev.id)}
-                  className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer group"
-                >
-                  <td className="py-4 px-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-foreground group-hover:text-primary transition-colors">{ev.title}</span>
-                      <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[9px] font-black uppercase tracking-wider text-muted-foreground">(Filtrar)</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-2 text-muted-foreground font-medium">{ev.city || "—"}</td>
-                  <td className="py-4 px-2 min-w-[140px]">
-                    {ev.isUnlimited ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-violet-500 text-[10px] font-black uppercase tracking-wider">
-                        ∞ Ilimitado
-                      </span>
-                    ) : (
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className={cn(
-                              "h-full rounded-full transition-all duration-1000",
-                              (ev.occupancyRate ?? 0) >= 100 ? "bg-emerald-500" : "bg-primary"
-                            )}
-                            style={{ width: `${Math.min(ev.occupancyRate ?? 0, 100)}%` }}
-                          />
-                        </div>
-                        <span className="text-[11px] font-black text-foreground/80">{Math.round(ev.occupancyRate ?? 0)}%</span>
-                      </div>
-                    )}
-                  </td>
-                  <td className="py-4 px-2 text-right font-black text-emerald-500">{ev.confirmed}</td>
-                  <td className="py-4 px-2 text-right font-medium text-muted-foreground/60">{ev.total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </MetricBox>
     </div>
   );
 }
@@ -334,6 +332,96 @@ function SimpleProgressBar({ label, value, total, colorClass, onClick }: {
   );
 }
 
+function ExpandableEventTable({ events, onEventClick }: {
+  events: any[];
+  onEventClick?: (eventId: string) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const TOP_N = 5;
+  const visible = expanded ? events : events.slice(0, TOP_N);
+  const remaining = events.length - TOP_N;
+
+  return (
+    <MetricBox title="Rendimiento por Evento" icon={<Ticket className="size-5" />}>
+      <div className="space-y-4">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-border text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                <th className="py-4 px-2">Evento</th>
+                <th className="py-4 px-2">Ciudad</th>
+                <th className="py-4 px-2">Ocupación</th>
+                <th className="py-4 px-2 text-right">Confirmados</th>
+                <th className="py-4 px-2 text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm">
+              {visible.map((ev) => (
+                <tr 
+                  key={ev.id} 
+                  onClick={() => onEventClick?.(ev.id)}
+                  className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer group"
+                >
+                  <td className="py-4 px-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-foreground group-hover:text-primary transition-colors">{ev.title}</span>
+                      <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[9px] font-black uppercase tracking-wider text-muted-foreground">(Filtrar)</span>
+                    </div>
+                  </td>
+                  <td className="py-4 px-2 text-muted-foreground font-medium">{ev.city || "—"}</td>
+                  <td className="py-4 px-2 min-w-[140px]">
+                    {ev.isUnlimited ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-violet-500/10 border border-violet-500/20 rounded-full text-violet-500 text-[10px] font-black uppercase tracking-wider">
+                        ∞ Ilimitado
+                      </span>
+                    ) : ev.isPaid ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] font-black uppercase tracking-wider">
+                        💳 Clics de Compra
+                      </span>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className={cn(
+                              "h-full rounded-full transition-all duration-1000",
+                              (ev.occupancyRate ?? 0) >= 100 ? "bg-emerald-500" : "bg-primary"
+                            )}
+                            style={{ width: `${Math.min(ev.occupancyRate ?? 0, 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-[11px] font-black text-foreground/80">{Math.round(ev.occupancyRate ?? 0)}%</span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="py-4 px-2 text-right font-black text-emerald-500">
+                    {ev.isPaid ? `${ev.clicksUnique} ún.` : ev.confirmed}
+                  </td>
+                  <td className="py-4 px-2 text-right font-medium text-muted-foreground/60">
+                    {ev.isPaid ? `${ev.clicksTotal} tot.` : ev.total}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {remaining > 0 && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors mt-2"
+          >
+            {expanded ? (
+              <><ChevronUp className="size-3.5" /> Ocultar</>
+            ) : (
+              <><ChevronDown className="size-3.5" /> + Ver otros {remaining} eventos</>
+            )}
+          </button>
+        )}
+      </div>
+    </MetricBox>
+  );
+}
+
 function ExpandableCountryList({ countries, total, onCountryClick }: {
   countries: { name: string; value: number }[];
   total: number;
@@ -373,10 +461,11 @@ function ExpandableCountryList({ countries, total, onCountryClick }: {
   );
 }
 
-function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
+function TrendChart({ data, weeklyDelta, thisWeekTotal, onDayClick }: {
   data: { date: string; label: string; count: number }[];
   weeklyDelta: number;
   thisWeekTotal: number;
+  onDayClick?: (date: string) => void;
 }) {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
@@ -421,8 +510,8 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
 
       const x1i = CX + R_INNER * Math.cos(endRad);
       const y1i = CY + R_INNER * Math.sin(endRad);
-      const x2i = CX + R_INNER * Math.cos(currentAngle);
-      const y2i = CY + R_INNER * Math.sin(currentAngle);
+      const x2i = CX + R_INNER * Math.cos(startRad);
+      const y2i = CY + R_INNER * Math.sin(startRad);
 
       const path = `M ${x1o} ${y1o} A ${R_OUTER} ${R_OUTER} 0 ${largeArc} 1 ${x2o} ${y2o} L ${x1i} ${y1i} A ${R_INNER} ${R_INNER} 0 ${largeArc} 0 ${x2i} ${y2i} Z`;
 
@@ -470,10 +559,11 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
                   transition: 'opacity 0.2s, transform 0.2s',
                   transform: activeIdx === i ? `scale(1.04)` : 'scale(1)',
                   transformOrigin: `${CX}px ${CY}px`,
-                  cursor: s.count > 0 ? 'pointer' : 'default',
+                  cursor: s.count > 0 && onDayClick ? 'pointer' : 'default',
                 }}
                 onMouseEnter={() => s.count > 0 && setActiveIdx(i)}
                 onMouseLeave={() => setActiveIdx(null)}
+                onClick={() => s.count > 0 && onDayClick?.(s.date)}
               />
             ))}
 
@@ -578,11 +668,13 @@ function TrendChart({ data, weeklyDelta, thisWeekTotal }: {
               <div
                 key={s.date}
                 className={cn(
-                  "flex items-center justify-between gap-3 px-3 py-2 rounded-2xl transition-all duration-200 cursor-default",
+                  "flex items-center justify-between gap-3 px-3 py-2 rounded-2xl transition-all duration-200",
+                  s.count > 0 && onDayClick ? "cursor-pointer" : "cursor-default",
                   isActive ? "bg-muted/60" : "hover:bg-muted/30"
                 )}
                 onMouseEnter={() => s.count > 0 && setActiveIdx(i)}
                 onMouseLeave={() => setActiveIdx(null)}
+                onClick={() => s.count > 0 && onDayClick?.(s.date)}
               >
                 {/* Color dot + label */}
                 <div className="flex items-center gap-2.5 min-w-0">

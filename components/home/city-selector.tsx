@@ -4,8 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { getFlagCode, FlagIcon } from "@/components/home/utils/flag-helpers";
 import { STATUS_CONFIGS, RegistrationStatus } from "@/components/home/utils/home-constants";
+import { EventFlag } from "@/components/ui/event-flag";
 
 interface CitySelectorProps {
   events: any[];
@@ -98,12 +98,14 @@ export function CitySelector({
                 )}
                 style={isActive ? { borderColor: statusKey === 'confirmed' ? '#0F9700' : undefined, color: statusKey === 'confirmed' ? '#0F9700' : undefined } : {}}
               >
-                <FlagIcon
-                  code={getFlagCode(e.city)}
-                  className="size-5 rounded-[4px] shadow-sm shrink-0"
+                <EventFlag
+                  flag={e.flag}
+                  imageUrl={e.image_url}
+                  bgClass={e.bg_class}
+                  className="size-7 rounded-lg shadow-sm shrink-0"
                 />
                 <span className={cn(
-                  "font-bold text-base md:text-lg leading-tight max-w-[200px] md:max-w-[240px] text-left",
+                  "font-semibold text-[13px] md:text-sm leading-tight max-w-[200px] md:max-w-[240px] text-left",
                   isActive ? "" : "text-muted-foreground/70"
                 )}>
                   {e.title}
@@ -123,3 +125,4 @@ export function CitySelector({
     </div>
   );
 }
+

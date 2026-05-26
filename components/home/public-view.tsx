@@ -5,13 +5,12 @@ import dynamic from "next/dynamic";
 const RegistrationForm = dynamic(() => import("@/components/registration/registration-form").then(mod => mod.RegistrationForm), { ssr: false });
 import { HeroSection } from "@/components/home/hero-section";
 import { CheckRegistrationPanel } from "@/components/home/check-registration-panel";
-import { MonthTabs } from "@/components/home/month-tabs";
+import { EventsFilterBar } from "./events-filter-bar";
 
 const EventsCarousel = dynamic(() => import("@/components/home/events-carousel").then(mod => mod.EventsCarousel), { 
   ssr: false
 });
 
-import { CategoryTabs } from "./category-tabs";
 import { useClerk } from "@clerk/nextjs";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -33,8 +32,7 @@ interface PublicViewProps {
   availableMonths: string[];
   activeMonth: string;
   handleMonthChange: (month: string) => void;
-  events: any[]; // Todos los eventos
-  filteredEvents: any[]; // Eventos filtrados por categoría
+  filteredEvents: any[];
   activeCategory: string;
   setActiveCategory: (cat: string) => void;
   availableCategories: string[];
@@ -51,6 +49,12 @@ interface PublicViewProps {
   isSubmitting: boolean;
   formatSafeDate: (dateStr: string) => Date | null;
   isTransitioning: boolean;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  resetAllFilters: () => void;
+  activeTag?: string;
+  setActiveTag?: (tag: string) => void;
+  availableTags?: any[];
 }
 
 export function PublicView({
@@ -66,12 +70,10 @@ export function PublicView({
   availableMonths,
   activeMonth,
   handleMonthChange,
-  events,
   filteredEvents,
   activeCategory,
   setActiveCategory,
   availableCategories,
-  availableCategoryIcons,
   activeSubcategory,
   setActiveSubcategory,
   availableSubcategories,
@@ -83,8 +85,33 @@ export function PublicView({
   handleRegistration,
   isSubmitting,
   formatSafeDate,
+  searchQuery,
+  setSearchQuery,
+  resetAllFilters,
+  activeTag,
+  setActiveTag,
+  availableTags,
 }: PublicViewProps) {
   const { openSignIn } = useClerk();
+
+  const filterBarWrapperRef = React.useRef<HTMLDivElement>(null);
+  const hasInteractedRef = React.useRef(false);
+
+  const handleFilterBarInteraction = React.useCallback(() => {
+    if (hasInteractedRef.current) return;
+    hasInteractedRef.current = true;
+
+    if (window.scrollY < 200 && filterBarWrapperRef.current) {
+      const rect = filterBarWrapperRef.current.getBoundingClientRect();
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const targetScrollY = rect.top + scrollTop - 96;
+
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: "smooth"
+      });
+    }
+  }, []);
 
   useGSAP((context: any, contextSafe: any) => {
     const tl = gsap.timeline({
@@ -112,32 +139,35 @@ export function PublicView({
       </div>
 
       {/* ── Contenido principal ─────────────────────────────────── */}
-      <div className="pt-[140px]">
+      <div className="pt-[90px]">
         {/* ── Tabs de Categoría + Tabs de mes + Carrusel de eventos + Formulario */}
         <div className="flex flex-col">
-          <div className="relative z-30 mb-2 reveal-item"> {/* Categorías */}
-            <CategoryTabs
-              availableCategories={availableCategories}
-              availableCategoryIcons={availableCategoryIcons}
+          <div 
+            ref={filterBarWrapperRef}
+            className="relative z-30 mb-6 reveal-item"
+            onClickCapture={handleFilterBarInteraction}
+            onFocusCapture={handleFilterBarInteraction}
+          >
+            <EventsFilterBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
               activeCategory={activeCategory}
               setActiveCategory={setActiveCategory}
-              activeSubcategory={activeSubcategory}
-              setActiveSubcategory={setActiveSubcategory}
-              availableSubcategories={availableSubcategories}
-            />
-          </div>
-
-          <div className="relative z-20 reveal-item"> {/* Meses */}
-            <MonthTabs
-              availableMonths={availableMonths}
+              availableCategories={availableCategories}
+              activeSubcategory={activeSubcategory || "Todos"}
+              setActiveSubcategory={setActiveSubcategory || (() => {})}
+              availableSubcategories={availableSubcategories || []}
               activeMonth={activeMonth}
-              handleMonthChange={handleMonthChange}
-              events={events}
-              selectedEvents={selectedEvents}
+              setActiveMonth={handleMonthChange}
+              availableMonths={availableMonths}
+              resetAllFilters={resetAllFilters}
+              activeTag={activeTag || "Todos"}
+              setActiveTag={setActiveTag || (() => {})}
+              availableTags={availableTags || []}
             />
           </div>
 
-          <div className="events-section relative z-10 bg-surface rounded-[48px] rounded-tl-none rounded-tr-none md:rounded-tr-[48px] px-4 py-10 md:p-16 border border-surface-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px] reveal-item overflow-hidden">
+          <div className="events-section relative z-10 bg-surface rounded-[48px] px-4 py-10 md:p-16 border border-surface-border shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-16 mt-[-1px] reveal-item overflow-hidden">
             {/* Carrusel de eventos (Usa solo los eventos filtrados por categoría) */}
             <EventsCarousel
               scrollContainerRef={scrollContainerRef}

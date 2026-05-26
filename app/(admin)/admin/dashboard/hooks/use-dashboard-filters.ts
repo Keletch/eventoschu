@@ -17,6 +17,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
   const [regsLoyaltyFilter, setRegsLoyaltyFilter] = useState(false);
   const [regsSurveyCompleteFilter, setRegsSurveyCompleteFilter] = useState("all");
   const [regsTodayFilter, setRegsTodayFilter] = useState(false);
+  const [regsDateFilter, setRegsDateFilter] = useState<string | null>(null);
   const [regsClerkFilter, setRegsClerkFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -57,6 +58,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
                                     (regsSurveyCompleteFilter === "completed" ? (reg.survey_data && Object.keys(reg.survey_data).length > 0) : (!reg.survey_data || Object.keys(reg.survey_data).length === 0));
       const today = new Date().toISOString().split('T')[0];
       const matchesToday = !regsTodayFilter || reg.created_at?.startsWith(today);
+      const matchesDate = !regsDateFilter || reg.created_at?.startsWith(regsDateFilter);
       const matchesClerk = regsClerkFilter === "all" || 
                            (regsClerkFilter === "registered" ? !!reg.clerk_id : !reg.clerk_id);
 
@@ -72,9 +74,9 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
         });
       }
 
-      return matchesSearch && matchesEvent && matchesStatus && matchesCat && matchesCountry && matchesSurvey && matchesLoyalty && matchesSurveyComplete && matchesToday && matchesClerk;
+      return matchesSearch && matchesEvent && matchesStatus && matchesCat && matchesCountry && matchesSurvey && matchesLoyalty && matchesSurveyComplete && matchesToday && matchesDate && matchesClerk;
     });
-  }, [events, registrations, regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsClerkFilter]);
+  }, [events, registrations, regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsDateFilter, regsClerkFilter]);
 
   // Reset page when filters change
   useEffect(() => {
@@ -82,7 +84,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
       setCurrentPage(1);
     }, 0);
     return () => clearTimeout(timer);
-  }, [regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsClerkFilter]);
+  }, [regsSearch, regsEventFilter, regsStatusFilter, regsCategoryFilter, regsCountryFilter, regsSurveyFilter, regsLoyaltyFilter, regsSurveyCompleteFilter, regsTodayFilter, regsDateFilter, regsClerkFilter]);
 
   const totalPages = Math.ceil(filteredRegs.length / pageSize);
   const paginatedRegs = useMemo(() => {
@@ -104,6 +106,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
     regsLoyaltyFilter, setRegsLoyaltyFilter,
     regsSurveyCompleteFilter, setRegsSurveyCompleteFilter,
     regsTodayFilter, setRegsTodayFilter,
+    regsDateFilter, setRegsDateFilter,
     regsClerkFilter, setRegsClerkFilter,
     currentPage, setCurrentPage,
     pageSize, setPageSize,
@@ -121,6 +124,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
       setRegsLoyaltyFilter(false);
       setRegsSurveyCompleteFilter("all");
       setRegsTodayFilter(false);
+      setRegsDateFilter(null);
       setRegsClerkFilter("all");
       setCurrentPage(1);
     },

@@ -16,11 +16,13 @@ import { Card } from "@/components/ui/card";
 import { MapPin, Copy, Edit, Trash2, Globe } from "lucide-react";
 import { formatSafeDate, formatDateToShort } from "@/lib/date-utils";
 import { EventFlag } from "@/components/ui/event-flag";
+import { transformEventForUI } from "@/lib/event-transformers";
 
 interface EventsTableProps {
   events: any[];
   isLoading: boolean;
   registrations: any[];
+  eventClicks?: any[];
   toggleEventStatus: (event: any) => void;
   handleDuplicateEvent: (event: any) => void;
   handleEditEvent: (event: any) => void;
@@ -31,6 +33,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
   events,
   isLoading,
   registrations,
+  eventClicks = [],
   toggleEventStatus,
   handleDuplicateEvent,
   handleEditEvent,
@@ -51,10 +54,24 @@ export const EventsTable: React.FC<EventsTableProps> = ({
         <TableBody>
           {!isLoading && events.length > 0 ? (
             events.map((event) => {
+              const data = transformEventForUI(event);
+              const isPaid = event.event_tags?.some((et: any) => et.tags?.slug === 'pago');
+              
               const regCount = registrations.filter((r: any) =>
                 r.selected_events?.includes(event.id) && r.event_statuses?.[event.id] === "confirmed"
               ).length;
               
+              // Clics analíticos para eventos de pago
+              const clicks = eventClicks.filter((c: any) => c.event_id === event.id);
+              const clicksTotal = clicks.length;
+              const uniqueIdentifiers = new Set();
+              clicks.forEach((c: any) => {
+                if (c.clerk_id) uniqueIdentifiers.add(c.clerk_id);
+                else if (c.ip_hash) uniqueIdentifiers.add(c.ip_hash);
+                else uniqueIdentifiers.add(c.id);
+              });
+              const clicksUnique = uniqueIdentifiers.size;
+
               const formattedDate = formatDateToShort(formatSafeDate(event.start_date));
 
               return (
@@ -70,7 +87,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                       <div>
                         <div className="font-bold text-foreground">{event.title}</div>
                         <div className="text-xs text-muted-foreground flex items-center gap-1">
-                          {event.flag === 'WEB' ? (
+                          {data.isOnline ? (
                             <><Globe className="w-3 h-3" /> Online</>
                           ) : (
                             <><MapPin className="w-3 h-3" /> {[event.city, event.country].filter(Boolean).join(', ')}</>
@@ -83,9 +100,15 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                     {formattedDate}
                   </TableCell>
                    <TableCell className="text-center font-bold">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-none">
-                      {regCount} / {event.capacity >= 9999 ? "∞" : event.capacity}
-                    </Badge>
+                    {isPaid ? (
+                      <Badge variant="secondary" className="bg-primary/10 text-primary border-none" title="Clics únicos / clics totales">
+                        💳 {clicksUnique} ún. / {clicksTotal} tot.
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="bg-primary/10 text-primary border-none">
+                        {regCount} / {event.capacity >= 9999 ? "∞" : event.capacity}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-center">
                     <Switch

@@ -27,6 +27,7 @@ export function useAdminDashboard() {
   const [isCacheRefreshing, setIsCacheRefreshing] = useState(false);
   const [keapTags, setKeapTags] = useState<any[]>([]);
   const [isTagsLoading, setIsTagsLoading] = useState(false);
+  const [eventClicks, setEventClicks] = useState<any[]>([]);
 
   // Dialogs & UI State
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -129,11 +130,12 @@ export function useAdminDashboard() {
   const fetchData = useCallback(async () => {
     if (events.length === 0) setIsLoading(true);
     try {
-      const [{ data: eventsData }, { data: catsData }, { data: tagsData }, regsResult] = await Promise.all([
+      const [{ data: eventsData }, { data: catsData }, { data: tagsData }, regsResult, { data: clicksData }] = await Promise.all([
         supabase.from("events").select("*, categories:category_id(*, parent_category:parent_category_id(id, name, icon)), event_tags(tags(*))").order("start_date", { ascending: true }),
         supabase.from("categories").select("*").order("name"),
         supabase.from("tags").select("*").order("name"),
-        getRegistrations()
+        getRegistrations(),
+        supabase.from("event_clicks").select("*")
       ]);
 
       if (eventsData) setEvents(eventsData);
@@ -142,6 +144,7 @@ export function useAdminDashboard() {
       if (regsResult.success && regsResult.data) {
         setRegistrations(regsResult.data);
       }
+      if (clicksData) setEventClicks(clicksData);
     } catch (_error) {
       toast.error("Error al sincronizar datos");
     } finally {
@@ -450,6 +453,7 @@ export function useAdminDashboard() {
     // Data
     events, registrations, categories, systemTags, isLoading, isSubmitting, isCacheRefreshing,
     keapTags, isTagsLoading, totalInscriptions, pendingCount, approvedCount, cancelledCount,
+    eventClicks,
     
     // Filters sub-hook
     ...filters,

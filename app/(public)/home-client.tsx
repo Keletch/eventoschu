@@ -212,6 +212,10 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     if (sub !== home.activeSubcategory) animateCardsTransition(() => home.setActiveSubcategory(sub), false);
   };
 
+  const handleTagChange = (tag: string) => {
+    if (tag !== home.activeTag) animateCardsTransition(() => home.setActiveTag(tag), false);
+  };
+
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     contextSafe(() => {
       const target = e.currentTarget;
@@ -271,12 +275,10 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     availableMonths={home.availableMonths}
                     activeMonth={home.activeMonth}
                     handleMonthChange={handleMonthChange}
-                    events={home.events}
                     filteredEvents={home.filteredEvents}
                     activeCategory={home.activeCategory}
                     setActiveCategory={handleCategoryChange}
                     availableCategories={home.availableCategories}
-                    availableCategoryIcons={home.availableCategoryIcons}
                     activeSubcategory={home.activeSubcategory}
                     setActiveSubcategory={handleSubcategoryChange}
                     availableSubcategories={home.availableSubcategories}
@@ -295,6 +297,12 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     isSubmitting={home.isSubmitting}
                     formatSafeDate={formatSafeDate}
                     isTransitioning={home.isTransitioning}
+                    searchQuery={home.searchQuery}
+                    setSearchQuery={home.setSearchQuery}
+                    resetAllFilters={home.resetAllFilters}
+                    activeTag={home.activeTag}
+                    setActiveTag={handleTagChange}
+                    availableTags={home.availableTags}
                   />
                 </div>
               ) : (

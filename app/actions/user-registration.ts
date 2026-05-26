@@ -1,6 +1,8 @@
 'use server';
 
 import { auth } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
+import crypto from "crypto";
 import { registrationSchema } from "./schemas";
 import { validateTurnstileToken } from "./turnstile";
 import { syncKeapTags } from "./keap";
@@ -332,3 +334,30 @@ export async function updateEventSpecificData(email: string, eventId: string, ne
     return { success: false, error: err.message };
   }
 }
+
+/**
+ * 📊 Registra un clic analítico para eventos de pago
+ */
+export async function trackPaidEventClick(eventId: string) {
+  try {
+    const { userId } = await auth();
+    const reqHeaders = await headers();
+    const ip = reqHeaders.get("x-forwarded-for") || reqHeaders.get("x-real-ip") || "127.0.0.1";
+    
+    // Generar un hash de la IP
+    const ipHash = crypto.createHash("sha256").update(ip).digest("hex");
+
+    const { error } = await supabaseAdmin.from('event_clicks').insert({
+      event_id: eventId,
+      clerk_id: userId || null,
+      ip_hash: ipHash
+    });
+
+    if (error) throw error;
+    return { success: true };
+  } catch (err: any) {
+    console.error("Error tracking paid event click:", err);
+    return { success: false, error: err.message };
+  }
+}
+

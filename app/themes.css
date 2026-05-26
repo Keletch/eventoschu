@@ -316,6 +316,84 @@
   --scrollbar-track: #EFEBE9;
 }
 
+/* 🍊 TEMA CITRIC (Citrus & Fresh Vibes) */
+.citric {
+  /* Base */
+  --background: #F7FBEA;
+  --foreground: #1A2F0F;
+  --surface: #F0F6D5;
+  --surface-foreground: #1A2F0F;
+  --surface-border: rgba(132, 204, 22, 0.2);
+  --border: #D2E69F;
+  --ring: #FF6B00;
+  --radius: 32px;
+  --card: #FFFFFF;
+  --card-foreground: #1A2F0F;
+  --logo-color: #FF6B00;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A2F0F;
+
+  /* Hero */
+  --hero-badge-bg: #ECF8CD;
+  --hero-badge-text: #65A30D;
+  --hero-badge-border: #D2E69F;
+  --hero-title: #1A2F0F;
+  --hero-desc: #4D653E;
+  --hero-btn-bg: #FF6B00;
+  --hero-btn-text: #FFFFFF;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #84CC16;
+  --tab-active-text: #FFFFFF;
+  --category-tab-active-bg: #84CC16;
+  --category-tab-active-text: #FFFFFF;
+  --tab-inactive-bg: #FFFFFF;
+  --tab-inactive-text: #FF6B00;
+  --tab-border: #D2E69F;
+
+  /* Event Cards (Step 1) */
+  --card-border: #E1ECC4;
+  --card-title: #1A2F0F;
+  --card-text: #4D653E;
+  --card-icon: #FF6B00;
+  --card-badge-text: #65A30D;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #FFFFFF;
+  --form-card-border: #D2E69F;
+  --form-label: #1A2F0F;
+  --form-input-bg: #F7FBEA;
+  --form-input-border: #D2E69F;
+  --form-input-text: #1A2F0F;
+  --form-btn-bg: #FF6B00;
+  --form-btn-text: #FFFFFF;
+
+  /* Footer & Socials */
+  --footer-text-primary: #1A2F0F;
+  --footer-text-secondary: rgba(26, 47, 15, 0.4);
+  --social-bg: #ECF8CD;
+  --social-color: #65A30D;
+  --social-hover-bg: #FF6B00;
+  --social-hover-color: #FFFFFF;
+
+  /* Global Fallbacks */
+  --primary: #FF6B00;
+  --primary-foreground: #FFFFFF;
+  --secondary: #65A30D;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F0F6D5;
+  --muted-foreground: #4D653E;
+  --accent: #E1ECC4;
+  --accent-foreground: #1A2F0F;
+  --scrollbar-dot: #FF6B00;
+  --scrollbar-dot-muted: rgba(255, 107, 0, 0.2);
+  --scrollbar-sidebar-dot: #65A30D;
+  --sidebar-bg: #D2E69F;
+  --sidebar-foreground: #1A2F0F;
+  --footer-bg: #F0F6D5;
+  --scrollbar-track: rgba(255, 107, 0, 0.1);
+}
+
 /* --- EFECTOS ESPECÍFICOS --- */
 .synthwave .retro-grid {
   display: block;

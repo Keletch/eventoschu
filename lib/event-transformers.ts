@@ -16,7 +16,13 @@ const TIMEZONE_SHORT_CODES: Record<string, string> = {
  */
 export function transformEventForUI(event: Event) {
   const isFutureEvent = new Date(event.start_date).getFullYear() === 2099;
-  const isOnline = event.flag === "WEB";
+  const isOnline = 
+    event.flag === "WEB" || 
+    !!event.is_virtual || 
+    event.categories?.slug === "online" || 
+    event.categories?.slug === "eventos-en-linea" ||
+    event.categories?.parent_category?.name === "Eventos en linea" ||
+    event.categories?.parent_category?.name === "Eventos en línea";
 
   const categoryName = event.categories?.parent_category ? event.categories.parent_category.name : (event.categories?.name || "General");
   const subcategoryName = event.categories?.parent_category ? event.categories.name : null;
@@ -52,11 +58,7 @@ export function transformEventForUI(event: Event) {
     // Horario
     displayTime,
     // Ubicación exacta — para eventos presenciales
-    displayLocation: isOnline
-      ? null
-      : (!event.location || event.location.toLowerCase().includes('confirmar') || event.location.toLowerCase().includes('compartiremos')
-        ? `Sitio por confirmar en ${event.city}, ${event.country}`
-        : `${event.location}, ${event.city}, ${event.country}`),
+    displayLocation: isOnline ? null : (event.location || null),
     // Enlace — para eventos en línea (location guarda la URL, subtitle guarda el título)
     displayLinkTitle: isOnline ? (event.subtitle || "Acceder al evento") : null,
     displayLinkUrl: isOnline ? (event.location || null) : null,

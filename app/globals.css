@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 @custom-variant synthwave (&:is(.synthwave *));
 @custom-variant hacker (&:is(.hacker *));
+@custom-variant citric (&:is(.citric *));
 
 @theme inline {
   --color-background: var(--background);

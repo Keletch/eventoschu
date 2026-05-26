@@ -70,20 +70,9 @@ export function EventsCarousel({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Filtrar eventos del mes activo
-  const monthEvents = events.filter((e: any) => {
-    // 🛡️ Seguridad total: Si el evento está marcado como inactivo, lo ignoramos de inmediato
-    if (e.active === false) return false;
-
-    const d = new Date(e.start_date);
-    let label = "";
-    if (d.getFullYear() === 2099) label = "Eventos Futuros";
-    else {
-      const m = d.toLocaleDateString("es-ES", { month: "long" });
-      label = m.charAt(0).toUpperCase() + m.slice(1);
-    }
-    return label === activeMonth;
-  });
+  // En Next.js App Router y SOLID, delegamos el filtrado completo al hook useHomeLogic.
+  // monthEvents ahora es directamente la lista pre-filtrada que recibimos.
+  const monthEvents = events;
 
   // Verificar límites de scroll
   const checkScroll = () => {

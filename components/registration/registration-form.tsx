@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import Turnstile from "react-turnstile";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useUser, useClerk } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { checkRegistration } from "@/app/actions/user-registration";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,6 @@ export function RegistrationForm({
   isLoading = false 
 }: RegistrationFormProps) {
   const { user, isSignedIn } = useUser();
-  const clerk = useClerk();
 
   const [hasTrackedInitiated, setHasTrackedInitiated] = useState(false);
 
@@ -258,7 +257,7 @@ export function RegistrationForm({
           <Turnstile
             sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
             onVerify={(token) => setTurnstileToken(token)}
-            theme={(resolvedTheme === "light" || resolvedTheme === "coffee") ? "light" : "dark"}
+            theme={(resolvedTheme === "light" || resolvedTheme === "coffee" || resolvedTheme === "citric") ? "light" : "dark"}
           />
         </div>
       </div>

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { SURVEY_QUESTIONS } from "@/lib/constants";
 import { transformEventForUI } from "@/lib/event-transformers";
 
-export function useMetrics(registrations: any[], events: any[]) {
+export function useMetrics(registrations: any[], events: any[], eventClicks: any[] = []) {
   return useMemo(() => {
     if (!registrations.length) return null;
 
@@ -55,6 +55,18 @@ export function useMetrics(registrations: any[], events: any[]) {
       const confirmed = eventRegs.reduce((acc, r) => 
         acc + (r.event_statuses?.[event.id] === 'confirmed' ? 1 : 0), 0);
       
+      // Filtrar y calcular clics para este evento
+      const clicks = eventClicks.filter(c => c.event_id === event.id);
+      const clicksTotal = clicks.length;
+      
+      const uniqueIdentifiers = new Set();
+      clicks.forEach(c => {
+        if (c.clerk_id) uniqueIdentifiers.add(c.clerk_id);
+        else if (c.ip_hash) uniqueIdentifiers.add(c.ip_hash);
+        else uniqueIdentifiers.add(c.id);
+      });
+      const clicksUnique = uniqueIdentifiers.size;
+      
       return {
         id: event.id,
         title: uiData.title,
@@ -64,9 +76,16 @@ export function useMetrics(registrations: any[], events: any[]) {
         total: eventRegs.length,
         confirmed,
         occupancyRate: isUnlimited ? null : (confirmed / (event.capacity || 25)) * 100,
-        active: event.active
+        active: event.active,
+        isPaid: uiData.isPaid,
+        clicksTotal,
+        clicksUnique
       };
-    }).sort((a, b) => b.confirmed - a.confirmed);
+    }).sort((a, b) => {
+      const metricA = a.isPaid ? a.clicksUnique : a.confirmed;
+      const metricB = b.isPaid ? b.clicksUnique : b.confirmed;
+      return metricB - metricA;
+    });
 
     // 5. Tendencia de Registros (Últimos 14 días — mostramos 7 días pero calculamos 14 para el delta)
     const trendData: { date: string; label: string; count: number }[] = [];
@@ -126,5 +145,5 @@ export function useMetrics(registrations: any[], events: any[]) {
       thisWeekTotal,
       categoryDistribution,
     };
-  }, [registrations, events]);
+  }, [registrations, events, eventClicks]);
 }
