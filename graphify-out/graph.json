@@ -1017,7 +1017,7 @@
       "source_file": "app/sitemap.ts",
       "source_location": "L1",
       "id": "app_sitemap_ts",
-      "community": 40,
+      "community": 2,
       "norm_label": "sitemap.ts"
     },
     {
@@ -1026,7 +1026,7 @@
       "source_file": "app/sitemap.ts",
       "source_location": "L6",
       "id": "app_sitemap_sitemap",
-      "community": 40,
+      "community": 2,
       "norm_label": "sitemap()"
     },
     {
@@ -1593,7 +1593,7 @@
       "source_file": "app/(admin)/admin/dashboard/hooks/use-metrics.ts",
       "source_location": "L1",
       "id": "app_admin_admin_dashboard_hooks_use_metrics_ts",
-      "community": 40,
+      "community": 2,
       "norm_label": "use-metrics.ts"
     },
     {
@@ -1800,7 +1800,7 @@
       "source_file": "app/(public)/page.tsx",
       "source_location": "L12",
       "id": "public_page_homedatawrapper",
-      "community": 40,
+      "community": 2,
       "norm_label": "homedatawrapper()"
     },
     {
@@ -2178,7 +2178,7 @@
       "source_file": "app/actions/events.ts",
       "source_location": "L1",
       "id": "app_actions_events_ts",
-      "community": 40,
+      "community": 2,
       "norm_label": "events.ts"
     },
     {
@@ -2187,7 +2187,7 @@
       "source_file": "app/actions/events.ts",
       "source_location": "L5",
       "id": "actions_events_redis",
-      "community": 40,
+      "community": 2,
       "norm_label": "redis"
     },
     {
@@ -2196,7 +2196,7 @@
       "source_file": "app/actions/events.ts",
       "source_location": "L15",
       "id": "actions_events_event",
-      "community": 40,
+      "community": 2,
       "norm_label": "event"
     },
     {
@@ -2205,7 +2205,7 @@
       "source_file": "app/actions/events.ts",
       "source_location": "L59",
       "id": "actions_events_getevents",
-      "community": 40,
+      "community": 2,
       "norm_label": "getevents()"
     },
     {
@@ -2547,7 +2547,7 @@
       "source_file": "app/llms.txt/route.ts",
       "source_location": "L1",
       "id": "app_llms_txt_route_ts",
-      "community": 40,
+      "community": 2,
       "norm_label": "route.ts"
     },
     {
@@ -2556,7 +2556,7 @@
       "source_file": "app/llms.txt/route.ts",
       "source_location": "L7",
       "id": "llms_txt_route_get",
-      "community": 40,
+      "community": 2,
       "norm_label": "get()"
     },
     {
@@ -2565,7 +2565,7 @@
       "source_file": "components/footer.tsx",
       "source_location": "L1",
       "id": "components_footer_tsx",
-      "community": 45,
+      "community": 40,
       "norm_label": "footer.tsx"
     },
     {
@@ -2574,7 +2574,7 @@
       "source_file": "components/footer.tsx",
       "source_location": "L10",
       "id": "components_footer_footer",
-      "community": 45,
+      "community": 40,
       "norm_label": "footer()"
     },
     {
@@ -2590,7 +2590,7 @@
       "label": "HeaderProps",
       "file_type": "code",
       "source_file": "components/header.tsx",
-      "source_location": "L12",
+      "source_location": "L11",
       "id": "components_header_headerprops",
       "community": 36,
       "norm_label": "headerprops"
@@ -2599,7 +2599,7 @@
       "label": "Header()",
       "file_type": "code",
       "source_file": "components/header.tsx",
-      "source_location": "L25",
+      "source_location": "L24",
       "id": "components_header_header",
       "community": 36,
       "norm_label": "header()"
@@ -2691,7 +2691,7 @@
       "source_file": "components/footer/social-icon.tsx",
       "source_location": "L1",
       "id": "components_footer_social_icon_tsx",
-      "community": 45,
+      "community": 40,
       "norm_label": "social-icon.tsx"
     },
     {
@@ -2700,7 +2700,7 @@
       "source_file": "components/footer/social-icon.tsx",
       "source_location": "L5",
       "id": "footer_social_icon_socialiconprops",
-      "community": 45,
+      "community": 40,
       "norm_label": "socialiconprops"
     },
     {
@@ -2709,7 +2709,7 @@
       "source_file": "components/footer/social-icon.tsx",
       "source_location": "L10",
       "id": "footer_social_icon_socialicon",
-      "community": 45,
+      "community": 40,
       "norm_label": "socialicon()"
     },
     {
@@ -2781,7 +2781,7 @@
       "source_file": "components/header/install-pwa-button.tsx",
       "source_location": "L1",
       "id": "components_header_install_pwa_button_tsx",
-      "community": 36,
+      "community": 3,
       "norm_label": "install-pwa-button.tsx"
     },
     {
@@ -2790,7 +2790,7 @@
       "source_file": "components/header/install-pwa-button.tsx",
       "source_location": "L6",
       "id": "header_install_pwa_button_installpwabutton",
-      "community": 36,
+      "community": 3,
       "norm_label": "installpwabutton()"
     },
     {
@@ -2833,7 +2833,7 @@
       "label": "SidebarProps",
       "file_type": "code",
       "source_file": "components/header/sidebar.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "id": "header_sidebar_sidebarprops",
       "community": 3,
       "norm_label": "sidebarprops"
@@ -2842,7 +2842,7 @@
       "label": "SIDEBAR_LINKS",
       "file_type": "code",
       "source_file": "components/header/sidebar.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "id": "header_sidebar_sidebar_links",
       "community": 3,
       "norm_label": "sidebar_links"
@@ -2851,7 +2851,7 @@
       "label": "Sidebar()",
       "file_type": "code",
       "source_file": "components/header/sidebar.tsx",
-      "source_location": "L72",
+      "source_location": "L73",
       "id": "header_sidebar_sidebar",
       "community": 3,
       "norm_label": "sidebar()"
@@ -3717,7 +3717,7 @@
       "source_file": "components/seo/event-json-ld.tsx",
       "source_location": "L1",
       "id": "components_seo_event_json_ld_tsx",
-      "community": 40,
+      "community": 2,
       "norm_label": "event-json-ld.tsx"
     },
     {
@@ -3726,7 +3726,7 @@
       "source_file": "components/seo/event-json-ld.tsx",
       "source_location": "L5",
       "id": "seo_event_json_ld_eventjsonldprops",
-      "community": 40,
+      "community": 2,
       "norm_label": "eventjsonldprops"
     },
     {
@@ -5022,7 +5022,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L1",
       "id": "lib_animations_ts",
-      "community": 34,
+      "community": 40,
       "norm_label": "animations.ts"
     },
     {
@@ -5031,7 +5031,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L6",
       "id": "lib_animations_anim_config",
-      "community": 34,
+      "community": 40,
       "norm_label": "anim_config"
     },
     {
@@ -5040,7 +5040,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L35",
       "id": "lib_animations_anim_selectors",
-      "community": 34,
+      "community": 40,
       "norm_label": "anim_selectors"
     },
     {
@@ -5049,7 +5049,7 @@
       "source_file": "lib/animations.ts",
       "source_location": "L49",
       "id": "lib_animations_reveal_config",
-      "community": 34,
+      "community": 40,
       "norm_label": "reveal_config"
     },
     {
@@ -5076,7 +5076,7 @@
       "source_file": "lib/constants.ts",
       "source_location": "L24",
       "id": "lib_constants_social_links",
-      "community": 45,
+      "community": 40,
       "norm_label": "social_links"
     },
     {
@@ -5184,7 +5184,7 @@
       "source_file": "lib/event-transformers.ts",
       "source_location": "L1",
       "id": "lib_event_transformers_ts",
-      "community": 40,
+      "community": 2,
       "norm_label": "event-transformers.ts"
     },
     {
@@ -5193,7 +5193,7 @@
       "source_file": "lib/event-transformers.ts",
       "source_location": "L4",
       "id": "lib_event_transformers_timezone_short_codes",
-      "community": 40,
+      "community": 2,
       "norm_label": "timezone_short_codes"
     },
     {
@@ -5202,7 +5202,7 @@
       "source_file": "lib/event-transformers.ts",
       "source_location": "L17",
       "id": "lib_event_transformers_transformeventforui",
-      "community": 40,
+      "community": 2,
       "norm_label": "transformeventforui()"
     },
     {
@@ -6606,7 +6606,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L1",
       "id": "agents_md",
-      "community": 49,
+      "community": 41,
       "norm_label": "agents.md"
     },
     {
@@ -6615,7 +6615,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L2",
       "id": "eventoschu_agents_this_is_not_the_next_js_you_know",
-      "community": 49,
+      "community": 41,
       "norm_label": "this is not the next.js you know"
     },
     {
@@ -6678,7 +6678,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L36",
       "id": "eventoschu_agents_6_arquitectura_dry_y_domain_driven_colocation",
-      "community": 47,
+      "community": 32,
       "norm_label": "6. \ud83c\udfd7\ufe0f arquitectura dry y domain-driven colocation"
     },
     {
@@ -6687,7 +6687,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L40",
       "id": "eventoschu_agents_estructura_de_components",
-      "community": 47,
+      "community": 32,
       "norm_label": "estructura de `/components`"
     },
     {
@@ -6696,7 +6696,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L51",
       "id": "eventoschu_agents_reglas_dry_don_t_repeat_yourself",
-      "community": 47,
+      "community": 32,
       "norm_label": "reglas dry (don't repeat yourself)"
     },
     {
@@ -6705,7 +6705,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L58",
       "id": "eventoschu_agents_regla_de_auditor\u00eda_obligatoria",
-      "community": 47,
+      "community": 32,
       "norm_label": "regla de auditoria obligatoria"
     },
     {
@@ -6714,7 +6714,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L61",
       "id": "eventoschu_agents_componentes_de_infraestructura_existentes_no_duplicar",
-      "community": 47,
+      "community": 32,
       "norm_label": "\ud83d\udd29 componentes de infraestructura existentes (no duplicar)"
     },
     {
@@ -6723,7 +6723,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L71",
       "id": "eventoschu_agents_7_principios_solid_adaptados_a_react_next_js",
-      "community": 50,
+      "community": 32,
       "norm_label": "7. \ud83d\udd29 principios solid (adaptados a react / next.js)"
     },
     {
@@ -6732,7 +6732,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L75",
       "id": "eventoschu_agents_s_single_responsibility_una_sola_raz\u00f3n_para_cambiar",
-      "community": 50,
+      "community": 32,
       "norm_label": "s \u2014 single responsibility (una sola razon para cambiar)"
     },
     {
@@ -6741,7 +6741,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L80",
       "id": "eventoschu_agents_o_open_closed_abierto_para_extensi\u00f3n_cerrado_para_modificaci\u00f3n",
-      "community": 50,
+      "community": 32,
       "norm_label": "o \u2014 open/closed (abierto para extension, cerrado para modificacion)"
     },
     {
@@ -6750,7 +6750,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L85",
       "id": "eventoschu_agents_i_interface_segregation_no_fuerces_props_innecesarias",
-      "community": 50,
+      "community": 32,
       "norm_label": "i \u2014 interface segregation (no fuerces props innecesarias)"
     },
     {
@@ -6759,7 +6759,7 @@
       "source_file": "AGENTS.md",
       "source_location": "L91",
       "id": "eventoschu_agents_d_dependency_inversion_depende_de_abstracciones_no_implementaciones",
-      "community": 50,
+      "community": 32,
       "norm_label": "d \u2014 dependency inversion (depende de abstracciones, no implementaciones)"
     },
     {
@@ -7056,7 +7056,7 @@
       "source_file": "CLAUDE.md",
       "source_location": "L1",
       "id": "claude_md",
-      "community": 49,
+      "community": 41,
       "norm_label": "claude.md"
     },
     {
@@ -7065,7 +7065,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L1",
       "id": "design_md",
-      "community": 49,
+      "community": 41,
       "norm_label": "design.md"
     },
     {
@@ -7074,7 +7074,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L1",
       "id": "eventoschu_design_design_system_ui_architecture_eventos_hyenuk_chu",
-      "community": 48,
+      "community": 41,
       "norm_label": "\ud83c\udfa8 design system & ui architecture (eventos hyenuk chu)"
     },
     {
@@ -7083,7 +7083,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L7",
       "id": "eventoschu_design_1_identidad_visual_paleta_de_colores_y_tailwind_css_v4",
-      "community": 48,
+      "community": 41,
       "norm_label": "1. \ud83d\udd8c\ufe0f identidad visual, paleta de colores y tailwind css v4"
     },
     {
@@ -7092,7 +7092,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L13",
       "id": "eventoschu_design_colores_clave_din\u00e1micos_resueltos_por_variable_del_tema",
-      "community": 48,
+      "community": 41,
       "norm_label": "colores clave dinamicos (resueltos por variable del tema)"
     },
     {
@@ -7101,7 +7101,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L24",
       "id": "eventoschu_design_2_tipograf\u00eda",
-      "community": 48,
+      "community": 41,
       "norm_label": "2. \ud83d\udd24 tipografia"
     },
     {
@@ -7110,7 +7110,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L39",
       "id": "eventoschu_design_3_formas_sombras_y_geometr\u00eda_borders_layout",
-      "community": 48,
+      "community": 41,
       "norm_label": "3. \ud83d\udcd0 formas, sombras y geometria (borders & layout)"
     },
     {
@@ -7119,7 +7119,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L55",
       "id": "eventoschu_design_4_sistema_de_animaciones",
-      "community": 48,
+      "community": 41,
       "norm_label": "4. \u2728 sistema de animaciones"
     },
     {
@@ -7128,7 +7128,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L59",
       "id": "eventoschu_design_animaciones_nativas_tailwind_css",
-      "community": 48,
+      "community": 41,
       "norm_label": "animaciones nativas (tailwind / css)"
     },
     {
@@ -7137,7 +7137,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L65",
       "id": "eventoschu_design_animaciones_de_interacci\u00f3n_gsap",
-      "community": 48,
+      "community": 41,
       "norm_label": "animaciones de interaccion (gsap)"
     },
     {
@@ -7146,7 +7146,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L79",
       "id": "eventoschu_design_5_arquitectura_de_componentes_del_home_components_home",
-      "community": 48,
+      "community": 41,
       "norm_label": "5. \ud83c\udfd7\ufe0f arquitectura de componentes del home (`/components/home`)"
     },
     {
@@ -7155,7 +7155,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L105",
       "id": "eventoschu_design_6_dise\u00f1o_administrativo_multi_tema_camale\u00f3nico",
-      "community": 48,
+      "community": 41,
       "norm_label": "6. \ud83c\udfe2 diseno administrativo multi-tema & camaleonico"
     },
     {
@@ -7164,7 +7164,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L109",
       "id": "eventoschu_design_reglas_de_oro_para_componentes_administrativos",
-      "community": 48,
+      "community": 41,
       "norm_label": "reglas de oro para componentes administrativos:"
     },
     {
@@ -7173,7 +7173,7 @@
       "source_file": "DESIGN.md",
       "source_location": "L120",
       "id": "eventoschu_design_visualizaci\u00f3n_de_datos_y_gr\u00e1ficos_svg_camale\u00f3nicos",
-      "community": 48,
+      "community": 41,
       "norm_label": "visualizacion de datos y graficos svg camaleonicos:"
     },
     {
@@ -7182,7 +7182,7 @@
       "source_file": "README.md",
       "source_location": "L1",
       "id": "readme_md",
-      "community": 51,
+      "community": 41,
       "norm_label": "readme.md"
     },
     {
@@ -7191,7 +7191,7 @@
       "source_file": "README.md",
       "source_location": "L1",
       "id": "eventoschu_readme_eventos_chu_plataforma_de_gesti\u00f3n_de_eventos_premium",
-      "community": 51,
+      "community": 41,
       "norm_label": "eventos chu - plataforma de gestion de eventos premium"
     },
     {
@@ -7200,7 +7200,7 @@
       "source_file": "README.md",
       "source_location": "L5",
       "id": "eventoschu_readme_arquitectura_del_sistema",
-      "community": 51,
+      "community": 41,
       "norm_label": "\ud83c\udfd7\ufe0f arquitectura del sistema"
     },
     {
@@ -7209,7 +7209,7 @@
       "source_file": "README.md",
       "source_location": "L9",
       "id": "eventoschu_readme_capas_de_la_aplicaci\u00f3n",
-      "community": 51,
+      "community": 41,
       "norm_label": "\ud83e\udde9 capas de la aplicacion"
     },
     {
@@ -7218,7 +7218,7 @@
       "source_file": "README.md",
       "source_location": "L16",
       "id": "eventoschu_readme_estrategia_de_identidad_dual",
-      "community": 51,
+      "community": 41,
       "norm_label": "\ud83d\udd10 estrategia de identidad dual"
     },
     {
@@ -7227,7 +7227,7 @@
       "source_file": "README.md",
       "source_location": "L22",
       "id": "eventoschu_readme_integraciones_y_flujo_de_datos",
-      "community": 51,
+      "community": 41,
       "norm_label": "\u2699\ufe0f integraciones y flujo de datos"
     },
     {
@@ -7236,7 +7236,7 @@
       "source_file": "README.md",
       "source_location": "L24",
       "id": "eventoschu_readme_sincronizaci\u00f3n_keap_crm",
-      "community": 51,
+      "community": 41,
       "norm_label": "\ud83d\udd17 sincronizacion keap (crm)"
     },
     {
@@ -7245,7 +7245,7 @@
       "source_file": "README.md",
       "source_location": "L30",
       "id": "eventoschu_readme_capa_de_rendimiento_redis",
-      "community": 51,
+      "community": 41,
       "norm_label": "\u26a1 capa de rendimiento (redis)"
     },
     {
@@ -7254,7 +7254,7 @@
       "source_file": "README.md",
       "source_location": "L34",
       "id": "eventoschu_readme_sistema_de_auditor\u00eda_y_notificaciones",
-      "community": 51,
+      "community": 41,
       "norm_label": "\ud83d\udef0\ufe0f sistema de auditoria y notificaciones"
     },
     {
@@ -7263,7 +7263,7 @@
       "source_file": "README.md",
       "source_location": "L38",
       "id": "eventoschu_readme_gesti\u00f3n_operativa_admin_dashboard",
-      "community": 51,
+      "community": 41,
       "norm_label": "\ud83d\udee0\ufe0f gestion operativa (admin dashboard)"
     },
     {
@@ -7712,7 +7712,7 @@
       "file_type": "code",
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L1",
-      "community": 34,
+      "community": 40,
       "norm_label": "month-tabs.tsx",
       "id": "components_home_month_tabs_tsx"
     },
@@ -7721,7 +7721,7 @@
       "file_type": "code",
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L9",
-      "community": 34,
+      "community": 40,
       "norm_label": "monthtabsprops",
       "id": "home_month_tabs_monthtabsprops"
     },
@@ -7730,7 +7730,7 @@
       "file_type": "code",
       "source_file": "components/home/month-tabs.tsx",
       "source_location": "L17",
-      "community": 34,
+      "community": 40,
       "norm_label": "monthtabs()",
       "id": "home_month_tabs_monthtabs"
     },
@@ -7883,7 +7883,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Prevents injection of heavy libraries like GSAP on the main thread or Root Layout to avoid blocking cellular load times (Total Blocking Time). Forces dynamic loading or use-client wrappers for heavy components.",
-      "community": 49,
+      "community": 41,
       "norm_label": "lcp & tbt performance optimization",
       "id": "agents_lcp_tbt_optimization"
     },
@@ -7897,7 +7897,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Optimizes First Contentful Paint (FCP) to near 0ms by using pure Tailwind CSS utility animations for initial mounting. Limits interactive GSAP animations to user actions like scroll, hover, or micro-nudges.",
-      "community": 49,
+      "community": 41,
       "norm_label": "hybrid animation philosophy",
       "id": "agents_hybrid_animation"
     },
@@ -7925,7 +7925,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Eliminates clutter in the components/ folder by colocating domain components inside folders and reserving the root for page-level orchestrators. Promotes modular reuse and strictly segregated domain hooks.",
-      "community": 49,
+      "community": 41,
       "norm_label": "dry and domain-driven colocation",
       "id": "agents_dry_colocation"
     },
@@ -8009,7 +8009,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Utilizes Tailwind CSS v4's direct CSS variables and @theme inline declarations to support multi-theme adaptability natively, removing the need for a tailwind.config.js file.",
-      "community": 49,
+      "community": 41,
       "norm_label": "tailwind v4 css variable-based tokens",
       "id": "design_tokens_v4"
     },
@@ -8023,7 +8023,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Acts as the single, reusable custom scroll indicator. It scales and stretches vertically via GSAP to reflect scroll speed and plays a loading wave upon initial load.",
-      "community": 49,
+      "community": 41,
       "norm_label": "dotscrollbar elastic scroll system",
       "id": "design_dot_scrollbar"
     },
@@ -8037,7 +8037,7 @@
       "author": null,
       "contributor": null,
       "rationale": "Centralizes filter-based GSAP transition sequences, ensuring that changes to categories, subcategories, or months play identical animations without code replication.",
-      "community": 49,
+      "community": 41,
       "norm_label": "animatecardstransition filter orchestrator",
       "id": "design_animate_cards_transition"
     },
@@ -17711,28 +17711,6 @@
       "target": "header_auth_section_authsection"
     },
     {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/header.tsx",
-      "source_location": "L10",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_header_tsx",
-      "target": "components_header_install_pwa_button_tsx"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "components/header.tsx",
-      "source_location": "L10",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "components_header_tsx",
-      "target": "header_install_pwa_button_installpwabutton"
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/header.tsx",
@@ -17773,6 +17751,28 @@
       "confidence_score": 1.0,
       "source": "components_header_tsx",
       "target": "components_header_header"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/header.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header_tsx",
+      "target": "components_header_install_pwa_button_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/header.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "components_header_tsx",
+      "target": "header_install_pwa_button_installpwabutton"
     },
     {
       "relation": "calls",
@@ -18320,6 +18320,28 @@
       "confidence_score": 1.0,
       "source": "components_header_install_pwa_button_tsx",
       "target": "header_install_pwa_button_installpwabutton"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/header/sidebar.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "components_header_sidebar_tsx",
+      "target": "components_header_install_pwa_button_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "components/header/sidebar.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "source": "components_header_sidebar_tsx",
+      "target": "header_install_pwa_button_installpwabutton",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -26428,9 +26450,9 @@
       "source_file": "public/sw.js",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "public_sw_js",
-      "target": "public_sw_es",
-      "confidence_score": 1.0
+      "target": "public_sw_es"
     },
     {
       "relation": "contains",
@@ -29862,5 +29884,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c76edf91ca3bf9615cebba2cec77065d8f37b38e"
+  "built_at_commit": "6719b799439592d3121cb3b81659d07c7586464e"
 }

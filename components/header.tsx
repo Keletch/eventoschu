@@ -7,7 +7,6 @@ import { useUserNotifications } from "@/hooks/user/use-user-notifications";
 // Modular Components
 import { Logo } from "./header/logo";
 import { AuthSection } from "./header/auth-section";
-import { InstallPwaButton } from "./header/install-pwa-button";
 
 interface HeaderProps {
   registrationId?: string | null;
@@ -105,7 +104,6 @@ export function Header({
             setIsSurveyOpen={setIsSurveyOpen}
           />
           <div className="header-animate-item opacity-0 flex items-center gap-2">
-            <InstallPwaButton />
             <ThemeToggle />
           </div>
         </div>

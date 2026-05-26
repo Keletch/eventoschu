@@ -15,6 +15,7 @@ import {
   Target
 } from "lucide-react";
 import { SidebarScrollbar } from "@/components/ui/sidebar-scrollbar";
+import { InstallPwaButton } from "./install-pwa-button";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -85,6 +86,10 @@ export function Sidebar({ isOpen }: SidebarProps) {
         className="h-full overflow-y-auto p-4 pb-24 space-y-6 scrollbar-none relative"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
+        <div className="px-2">
+          <InstallPwaButton />
+        </div>
+
         {SIDEBAR_LINKS.map((group, idx) => (
           <div key={idx} className="space-y-1.5">
             <h3 className="px-4 py-1 text-[10px] font-bold text-sidebar-foreground/50 uppercase tracking-[0.15em]">

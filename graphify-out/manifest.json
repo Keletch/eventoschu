@@ -260,8 +260,8 @@
     "semantic_hash": "3f479c71652b5b486d41d65cf7797779"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\header.tsx": {
-    "mtime": 1779811809.9949465,
-    "ast_hash": "070eedc1268a4ea614f3c4057b0083fb",
+    "mtime": 1779818968.4986238,
+    "ast_hash": "eb3c9c85bf47bdea4f2da820b3365e5a",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\events\\event-card.tsx": {
@@ -300,8 +300,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\header\\sidebar.tsx": {
-    "mtime": 1779811814.4945552,
-    "ast_hash": "e3565f953e722f1c3a106ba3b1eeb53b",
+    "mtime": 1779819000.0052946,
+    "ast_hash": "c4f687bb0047fa6769513e5b4c098237",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\home\\check-registration-panel.tsx": {
@@ -735,13 +735,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\header\\install-pwa-button.tsx": {
-    "mtime": 1779818163.7909918,
-    "ast_hash": "ed674d9a33590fde4af44147e35c92e1",
+    "mtime": 1779818986.485131,
+    "ast_hash": "621828153a45bce23df5c5b088d6e284",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\public\\sw.js": {
-    "mtime": 1779817671.2446141,
-    "ast_hash": "b6ec1cee7866b86d2eaf5eb81572c6cb",
+    "mtime": 1779818234.620811,
+    "ast_hash": "8b9195aff69e7c83bafcb93e98fbe2c5",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(public)\\opengraph-image.png": {

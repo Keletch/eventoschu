@@ -1,16 +1,16 @@
 # Graph Report - eventosCHU  (2026-05-26)
 
 ## Corpus Check
-- 149 files · ~75,901 words
+- 149 files · ~75,913 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 890 nodes · 2046 edges · 56 communities (53 shown, 3 thin omitted)
+- 890 nodes · 2048 edges · 51 communities (48 shown, 3 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 10 edges (avg confidence: 0.89)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c76edf91`
+- Built from commit: `6719b799`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -58,11 +58,6 @@
 - [[_COMMUNITY_Community 44|Community 44]]
 - [[_COMMUNITY_Community 45|Community 45]]
 - [[_COMMUNITY_Community 46|Community 46]]
-- [[_COMMUNITY_Community 47|Community 47]]
-- [[_COMMUNITY_Community 48|Community 48]]
-- [[_COMMUNITY_Community 49|Community 49]]
-- [[_COMMUNITY_Community 50|Community 50]]
-- [[_COMMUNITY_Community 51|Community 51]]
 - [[_COMMUNITY_Community 52|Community 52]]
 - [[_COMMUNITY_Community 53|Community 53]]
 - [[_COMMUNITY_Community 54|Community 54]]
@@ -92,7 +87,7 @@
 - `keapFetch()` --calls--> `fetch()`  [INFERRED]
   app/actions/keap.ts → public/sw.js
 
-## Communities (56 total, 3 thin omitted)
+## Communities (51 total, 3 thin omitted)
 
 ### Community 0 - "Admin Database Operations"
 Cohesion: 0.07
@@ -103,12 +98,12 @@ Cohesion: 0.09
 Nodes (43): uploadImage(), DeleteEventDialogProps, BG_COLOR_OPTIONS, EventDialogProps, TIMEZONE_LABELS, AVAILABLE_ICONS, ManageCategoriesDialogProps, OperationProgressDialogProps (+35 more)
 
 ### Community 2 - "Event Fetching and State"
-Cohesion: 0.17
-Nodes (6): EventsCarousel(), EventsCarouselProps, EventsSkeleton(), HeaderSkeleton(), EventJsonLd(), Skeleton()
+Cohesion: 0.11
+Nodes (15): Event, getEvents(), redis, sitemap(), EventsCarousel(), EventsCarouselProps, EventsSkeleton(), HeaderSkeleton() (+7 more)
 
 ### Community 3 - "Global Header and Navigation"
-Cohesion: 0.21
-Nodes (7): Sidebar(), SIDEBAR_LINKS, SidebarProps, DotScrollbar(), DotScrollbarProps, SidebarScrollbar(), SidebarScrollbarProps
+Cohesion: 0.19
+Nodes (8): InstallPwaButton(), Sidebar(), SIDEBAR_LINKS, SidebarProps, DotScrollbar(), DotScrollbarProps, SidebarScrollbar(), SidebarScrollbarProps
 
 ### Community 4 - "Public Registration and Attendees"
 Cohesion: 0.06
@@ -195,24 +190,24 @@ Cohesion: 0.09
 Nodes (22): 1. Inyección en el Layout (`app/(public)/layout.tsx`), ☀️ 1. Tema Light (Estándar/Default), 1. Variables de Estructura e Interfaz, 📚 2. Tema Dark ("Libro Viejo"), 2. Variables de Scrollbar y Navegación (GSAP), 3. Efectos Visuales CSS, 🌃 3. Tema Synthwave ("Retro-futurismo"), 📟 4. Tema Hacker ("Matrix") (+14 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.18
-Nodes (11): 1. ⚡ Optimización de Rendimiento (LCP & TBT), 2. 🎨 Filosofía de Animación (Híbrida), 3. 🧩 SSoT (Única Fuente de Verdad), 4. 🗄️ Acceso a Datos, 5. 💅 Consistencia Visual, 8. 📚 Consulta Obligatoria de Skills Antes de Implementar, 9. 🦧 Modo Caveman Obligatorio (Tersura Absoluta), Ejemplo de cómo recomendar una mejora (+3 more)
+Cohesion: 0.10
+Nodes (21): 1. ⚡ Optimización de Rendimiento (LCP & TBT), 2. 🎨 Filosofía de Animación (Híbrida), 3. 🧩 SSoT (Única Fuente de Verdad), 4. 🗄️ Acceso a Datos, 5. 💅 Consistencia Visual, 6. 🏗️ Arquitectura DRY y Domain-Driven Colocation, 7. 🔩 Principios SOLID (Adaptados a React / Next.js), 8. 📚 Consulta Obligatoria de Skills Antes de Implementar (+13 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.13
 Nodes (18): AdminDashboard(), SearchInput(), DeleteEventDialog(), EventDialog(), ManageCategoriesDialog(), OperationProgressDialog(), PurgeUserDialog(), RegistrationDialog() (+10 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.13
-Nodes (16): ALL_LUCIDE_ICONS, CATEGORY_ICONS, CATEGORY_LABELS, CategoryTabs(), CategoryTabsProps, CheckRegistrationPanel(), HeroSection(), MonthTabs() (+8 more)
+Cohesion: 0.17
+Nodes (11): ALL_LUCIDE_ICONS, CATEGORY_ICONS, CATEGORY_LABELS, CategoryTabs(), CategoryTabsProps, CheckRegistrationPanel(), HeroSection(), EventsCarousel (+3 more)
 
 ### Community 35 - "Community 35"
 Cohesion: 0.50
 Nodes (3): customCache, serwist, WorkerGlobalScope
 
 ### Community 36 - "Community 36"
-Cohesion: 0.22
-Nodes (9): Header(), HeaderProps, InstallPwaButton(), Logo(), LogoProps, useNotifications(), usePersonalRealtime(), ThemeToggle() (+1 more)
+Cohesion: 0.26
+Nodes (8): Header(), HeaderProps, Logo(), LogoProps, useNotifications(), usePersonalRealtime(), ThemeToggle(), useUserNotifications()
 
 ### Community 37 - "Community 37"
 Cohesion: 0.14
@@ -227,12 +222,12 @@ Cohesion: 0.19
 Nodes (13): addEntry(), eu(), getDb(), getEntryCountByQueueName(), getFirstEntryId(), _getId(), getTimestamp(), isURLExpired() (+5 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.24
-Nodes (9): Event, getEvents(), redis, sitemap(), TIMEZONE_SHORT_CODES, transformEventForUI(), GET(), HomeDataWrapper() (+1 more)
+Cohesion: 0.21
+Nodes (9): Footer(), SocialIcon(), SocialIconProps, MonthTabs(), MonthTabsProps, ANIM_CONFIG, ANIM_SELECTORS, REVEAL_CONFIG (+1 more)
 
 ### Community 41 - "Community 41"
-Cohesion: 0.20
-Nodes (10): SOLID React & Next.js Principles, SSoT via transformEventForUI, Dual Identity and Authentication Strategy, Keap CRM Real-Time Sync, llms.txt AI Optimization (AIO), Server Actions Data Access Layer, Upstash Redis Cache Layer, Clerk Theme Propagation (+2 more)
+Cohesion: 0.05
+Nodes (38): DRY and Domain-Driven Colocation, Hybrid Animation Philosophy, LCP & TBT Performance Optimization, SOLID React & Next.js Principles, SSoT via transformEventForUI, Dual Identity and Authentication Strategy, Keap CRM Real-Time Sync, llms.txt AI Optimization (AIO) (+30 more)
 
 ### Community 42 - "Community 42"
 Cohesion: 0.40
@@ -247,32 +242,12 @@ Cohesion: 0.22
 Nodes (6): useMetrics(), MetricKpiCard(), MetricsView(), MetricsViewProps, SimpleProgressBar(), TrendChart()
 
 ### Community 45 - "Community 45"
-Cohesion: 0.21
-Nodes (10): Footer(), SocialIcon(), SocialIconProps, useHomeLogic(), SOCIAL_LINKS, HomeClient(), HomeClientProps, RegisteredView (+2 more)
+Cohesion: 0.38
+Nodes (6): useHomeLogic(), HomeClient(), HomeClientProps, RegisteredView, usePublicRealtime(), SurveyModal()
 
 ### Community 46 - "Community 46"
 Cohesion: 0.21
 Nodes (14): PickerOption, SearchablePicker(), SearchablePickerProps, KeapTagPicker(), KeapTagPickerProps, Command(), CommandDialog(), CommandEmpty() (+6 more)
-
-### Community 47 - "Community 47"
-Cohesion: 0.40
-Nodes (5): 6. 🏗️ Arquitectura DRY y Domain-Driven Colocation, 🔩 Componentes de Infraestructura Existentes (No Duplicar), Estructura de `/components`, Regla de Auditoría Obligatoria, Reglas DRY (Don't Repeat Yourself)
-
-### Community 48 - "Community 48"
-Cohesion: 0.17
-Nodes (12): 1. 🖌️ Identidad Visual, Paleta de Colores y Tailwind CSS v4, 2. 🔤 Tipografía, 3. 📐 Formas, Sombras y Geometría (Borders & Layout), 4. ✨ Sistema de Animaciones, 5. 🏗️ Arquitectura de Componentes del Home (`/components/home`), 6. 🏢 Diseño Administrativo Multi-Tema & Camaleónico, Animaciones de Interacción (GSAP), Animaciones Nativas (Tailwind / CSS) (+4 more)
-
-### Community 49 - "Community 49"
-Cohesion: 0.24
-Nodes (7): DRY and Domain-Driven Colocation, Hybrid Animation Philosophy, LCP & TBT Performance Optimization, animateCardsTransition Filter Orchestrator, DotScrollbar Elastic Scroll System, Tailwind v4 CSS Variable-Based Tokens, This is NOT the Next.js you know
-
-### Community 50 - "Community 50"
-Cohesion: 0.40
-Nodes (5): 7. 🔩 Principios SOLID (Adaptados a React / Next.js), D — Dependency Inversion (Depende de abstracciones, no implementaciones), I — Interface Segregation (No fuerces props innecesarias), O — Open/Closed (Abierto para extensión, cerrado para modificación), S — Single Responsibility (Una sola razón para cambiar)
-
-### Community 51 - "Community 51"
-Cohesion: 0.20
-Nodes (9): 🏗️ Arquitectura del Sistema, ⚡ Capa de Rendimiento (Redis), 🧩 Capas de la Aplicación, 🔐 Estrategia de Identidad Dual, Eventos Chu - Plataforma de Gestión de Eventos Premium, 🛠️ Gestión Operativa (Admin Dashboard), ⚙️ Integraciones y Flujo de Datos, 🔗 Sincronización Keap (CRM) (+1 more)
 
 ### Community 52 - "Community 52"
 Cohesion: 0.29
@@ -298,7 +273,7 @@ Nodes (4): fs, p192, p512, path
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `Primitive UI Components` to `Community 33`, `Category and Event Dialogs`, `Global Header and Navigation`, `Public Registration and Attendees`, `Event Fetching and State`, `Admin Layout and SEO`, `Admin Data Tables`, `External Node Modules`, `Community 34`, `Community 42`, `Community 10`, `Community 44`, `Admin Login and Cards`, `Community 46`, `Community 45`, `Form Inputs and Textareas`?**
+- **Why does `cn()` connect `Primitive UI Components` to `Community 33`, `Category and Event Dialogs`, `Global Header and Navigation`, `Public Registration and Attendees`, `Event Fetching and State`, `Admin Layout and SEO`, `Admin Data Tables`, `External Node Modules`, `Community 34`, `Community 42`, `Community 10`, `Community 44`, `Admin Login and Cards`, `Community 46`, `Community 45`, `Form Inputs and Textareas`, `Community 40`?**
   _High betweenness centrality (0.242) - this node is a cross-community bridge._
 - **Why does `fetch()` connect `Notification Bell and Alert UI` to `Searchable Dropdowns and Pickers`, `Admin Database Operations`, `Community 43`, `Community 39`?**
   _High betweenness centrality (0.176) - this node is a cross-community bridge._
@@ -310,5 +285,5 @@ _Questions this graph is uniquely positioned to answer:_
   _Cohesion score 0.07190635451505016 - nodes in this community are weakly interconnected._
 - **Should `Category and Event Dialogs` be split into smaller, more focused modules?**
   _Cohesion score 0.09070714550166604 - nodes in this community are weakly interconnected._
-- **Should `Public Registration and Attendees` be split into smaller, more focused modules?**
-  _Cohesion score 0.05925925925925926 - nodes in this community are weakly interconnected._
+- **Should `Event Fetching and State` be split into smaller, more focused modules?**
+  _Cohesion score 0.11397849462365592 - nodes in this community are weakly interconnected._
