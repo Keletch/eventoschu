@@ -35,8 +35,8 @@
     "semantic_hash": "02fc19ad21338c2ab820a70136310db4"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\manifest.ts": {
-    "mtime": 1779479460.2330725,
-    "ast_hash": "b96f4169b78bf455be921b7762ab2f37",
+    "mtime": 1779817595.9286678,
+    "ast_hash": "041a44467bd0e9793e827c740f624e80",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\robots.ts": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(public)\\layout.tsx": {
-    "mtime": 1779766518.2740982,
-    "ast_hash": "09530cb829b3832a891a394357ebcf89",
+    "mtime": 1779816943.171322,
+    "ast_hash": "819ea1482ac15b57640bdfb71911a812",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(public)\\page.tsx": {
@@ -705,8 +705,8 @@
     "semantic_hash": "69d8ee44b00691c43d1c8fa186db7b77"
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\sw.ts": {
-    "mtime": 1779487803.7762377,
-    "ast_hash": "6980b8121959f58d062686aa461e8b9d",
+    "mtime": 1779817344.0836174,
+    "ast_hash": "6e7f67980c353ee483171d8d98ff93d6",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\actions\\upload-image.ts": {
@@ -730,8 +730,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\public\\icon-512x512.png": {
-    "mtime": 1779478206.8957777,
-    "ast_hash": "e40a3c10bcc37f352063eb5effed30f3",
+    "mtime": 1779816130.807132,
+    "ast_hash": "837972e030bc17fd562db0fee8be2fe6",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\header\\install-pwa-button.tsx": {
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\public\\sw.js": {
-    "mtime": 1779763001.8392997,
-    "ast_hash": "3fada8100e7f4ee7162b1244a7ea170c",
+    "mtime": 1779817373.6652865,
+    "ast_hash": "24309931f31e6bc662da2df2b57ac0ab",
     "semantic_hash": ""
   },
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\app\\(public)\\opengraph-image.png": {
@@ -762,6 +762,11 @@
   "C:\\Users\\LowMo\\Documents\\eventosCHU\\components\\ui\\searchable-picker.tsx": {
     "mtime": 1779762567.069165,
     "ast_hash": "4dda6f1b8baac8ea916516b95ea20052",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\LowMo\\Documents\\eventosCHU\\scratch\\check-images.js": {
+    "mtime": 1779816133.8305857,
+    "ast_hash": "048392b64755a192ffdc57d9a2521582",
     "semantic_hash": ""
   }
 }

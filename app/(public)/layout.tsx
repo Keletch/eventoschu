@@ -92,19 +92,32 @@ export default function RootLayout({
     >
       <html lang="es" className={`${raleway.variable} antialiased`} suppressHydrationWarning>
         <head>
+          <link rel="manifest" href="/manifest.webmanifest" />
           <script dangerouslySetInnerHTML={{
             __html: `
               window.addEventListener('beforeinstallprompt', function(e) {
                 e.preventDefault();
                 window.deferredPWAPrompt = e;
               });
-              // 🧹 Limpieza automática de Service Workers huérfanos en localhost en modo dev
-              if (location.hostname === 'localhost' && 'serviceWorker' in navigator) {
+              // 🧹 Limpieza automática de Service Workers huérfanos en modo dev
+              if (${process.env.NODE_ENV === 'development'} && 'serviceWorker' in navigator) {
                 navigator.serviceWorker.getRegistrations().then(function(registrations) {
                   for (var registration of registrations) {
                     registration.unregister();
                   }
                 });
+              } else if ('serviceWorker' in navigator) {
+                // Registrar Service Worker en producción / build local
+                var registerSW = function() {
+                  navigator.serviceWorker.register('/sw.js').catch(function(err) {
+                    console.error('Service Worker registration failed:', err);
+                  });
+                };
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                  registerSW();
+                } else {
+                  window.addEventListener('load', registerSW);
+                }
               }
             `
           }} />
