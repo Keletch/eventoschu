@@ -25,6 +25,9 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
     setShowDescription(checked);
     if (!checked) {
       setEvent((prev: any) => ({ ...prev, description: "" }));
+    } else {
+      setShowInfoUrl(false);
+      setEvent((prev: any) => ({ ...prev, description: prev.description, info_url: "" }));
     }
   };
 
@@ -32,6 +35,9 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
     setShowInfoUrl(checked);
     if (!checked) {
       setEvent((prev: any) => ({ ...prev, info_url: "" }));
+    } else {
+      setShowDescription(false);
+      setEvent((prev: any) => ({ ...prev, info_url: prev.info_url, description: "" }));
     }
   };
 

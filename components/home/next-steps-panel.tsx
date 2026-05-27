@@ -87,14 +87,14 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen }: NextStepsPanelPr
                     >
                       Completar datos
                     </button>
-                    <p className="text-sm md:text-base text-gray-400 italic">
+                    <p className="text-sm md:text-base text-muted-foreground italic">
                       ¡Gracias! Disfruta ser parte de la comunidad CDI!
                     </p>
                   </div>
                 )}
 
                 {surveyDone && (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-600 dark:text-green-400 rounded-full text-sm font-bold border border-green-500/20">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-sm font-bold border border-emerald-500/20">
                     <Check className="size-4" />
                     Perfil validado correctamente
                   </div>

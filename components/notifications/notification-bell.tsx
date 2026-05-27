@@ -64,7 +64,7 @@ export function NotificationBell({
           </span>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-[320px] md:w-[380px] p-0 rounded-[24px] border-border bg-popover shadow-2xl overflow-hidden z-[70]" align="end" sideOffset={8}>
+      <PopoverContent className="w-[320px] md:w-[380px] p-0 rounded-[24px] border-border bg-popover shadow-2xl overflow-hidden z-[200]" align="end" sideOffset={8}>
         <div className="p-4 bg-popover border-b border-border flex items-center justify-between">
           <h3 className="font-bold text-foreground">Notificaciones</h3>
           {unreadCount > 0 && (

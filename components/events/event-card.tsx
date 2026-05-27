@@ -78,17 +78,55 @@ export function EventCard({
   const titleRef = useRef<HTMLHeadingElement>(null);
 
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [iframeLoading, setIframeLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (isInfoOpen) {
+      setIframeLoading(true);
+      setLoadingProgress(0);
+      
+      let currentProgress = 0;
+      progressIntervalRef.current = setInterval(() => {
+        if (currentProgress < 30) {
+          currentProgress += Math.random() * 15;
+        } else if (currentProgress < 60) {
+          currentProgress += Math.random() * 5;
+        } else if (currentProgress < 85) {
+          currentProgress += Math.random() * 2;
+        } else if (currentProgress < 95) {
+          currentProgress += 0.2;
+        }
+        setLoadingProgress(Math.min(currentProgress, 95));
+      }, 100);
+
+      return () => {
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+        }
+      };
+    }
+  }, [isInfoOpen]);
+
+  const handleIframeLoad = () => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    setLoadingProgress(100);
+    setTimeout(() => {
+      setIframeLoading(false);
+    }, 400);
+  };
+
   const hasDescription = !!description && description.trim().length > 0;
   const hasInfoUrl = !!infoUrl && infoUrl.trim().length > 0;
   const showInfoIcon = hasDescription || hasInfoUrl;
 
   const handleInfoClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (hasDescription) {
-      setIsInfoOpen(true);
-    } else if (hasInfoUrl) {
-      window.open(infoUrl, "_blank", "noopener,noreferrer");
-    }
+    setIsInfoOpen(true);
   };
 
   const eventConfig = getEventUIConfig({ initial_status: initialStatus });
@@ -214,44 +252,100 @@ export function EventCard({
                 </button>
 
                 <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
-                  <DialogContent className="max-w-md rounded-[32px] border-none shadow-2xl p-6 bg-card text-foreground gap-4">
-                    <DialogHeader className="space-y-2">
-                      <DialogTitle className="text-2xl font-black text-left flex items-center gap-2">
-                        <span className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
-                          <Info className="size-5" />
-                        </span>
-                        <span className="line-clamp-2 leading-tight">{title}</span>
-                      </DialogTitle>
-                      <DialogDescription className="text-left text-sm font-medium text-muted-foreground">
-                        Detalles e información adicional del evento.
-                      </DialogDescription>
-                    </DialogHeader>
+                  <DialogContent 
+                    className={cn(
+                      "border-none shadow-2xl bg-card text-foreground transition-all duration-300",
+                      hasInfoUrl 
+                        ? "max-w-[1400px] w-[96vw] h-[90vh] flex flex-col p-0 gap-0 overflow-hidden rounded-[32px]" 
+                        : "max-w-md rounded-[32px] p-6 gap-4"
+                    )}
+                  >
+                    {hasInfoUrl ? (
+                      <>
+                        <DialogHeader className="px-6 py-2 md:py-2.5 shrink-0 pr-20 flex flex-col justify-end gap-0 relative">
+                          <DialogTitle className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted-foreground/80">
+                            Información del Evento
+                          </DialogTitle>
+                          <DialogDescription className="text-sm md:text-base font-bold text-foreground line-clamp-1 leading-tight">
+                            {title}
+                          </DialogDescription>
+                          <style dangerouslySetInnerHTML={{__html: `
+                            [data-slot="dialog-content"]:has(iframe) [data-slot="dialog-close"] {
+                              top: 10px !important;
+                              right: 24px !important;
+                            }
+                            @media (max-width: 768px) {
+                              [data-slot="dialog-content"]:has(iframe) [data-slot="dialog-close"] {
+                                top: 6px !important;
+                                  right: 12px !important;
+                                  transform: scale(0.8) !important;
+                              }
+                            }
+                            .no-scrollbar::-webkit-scrollbar {
+                              display: none !important;
+                            }
+                            .no-scrollbar {
+                              -ms-overflow-style: none !important;
+                              scrollbar-width: none !important;
+                            }
+                          `}} />
+                        </DialogHeader>
 
-                    <div className="py-2 text-left text-sm leading-relaxed text-foreground whitespace-pre-wrap max-h-[40vh] overflow-y-auto pr-1">
-                      {description}
-                    </div>
-
-                    <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-2">
-                      <button
-                        type="button"
-                        onClick={() => setIsInfoOpen(false)}
-                        className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-border bg-transparent hover:bg-muted text-foreground text-xs font-bold transition-all"
-                      >
-                        Cerrar
-                      </button>
-                      {hasInfoUrl && (
-                        <a
-                          href={infoUrl!}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={() => setIsInfoOpen(false)}
-                          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-black shadow-md shadow-primary/10 transition-all text-center flex items-center justify-center gap-1.5"
+                        {/* Progress Bar physically between Header and Iframe */}
+                        <div 
+                          className={cn(
+                            "w-full bg-primary/10 shrink-0 overflow-hidden relative transition-all duration-500 ease-in-out",
+                            iframeLoading ? "h-[3px] opacity-100" : "h-0 opacity-0 pointer-events-none"
+                          )}
                         >
-                          Ver más
-                          <ExternalLink className="size-3.5" strokeWidth={2.5} />
-                        </a>
-                      )}
-                    </DialogFooter>
+                          <div 
+                            className="h-full bg-primary transition-all duration-300 ease-out" 
+                            style={{ width: `${loadingProgress}%` }}
+                          />
+                        </div>
+
+                        {isInfoOpen && (
+                          <div className="flex-1 w-full bg-background rounded-b-[32px] overflow-y-auto relative no-scrollbar">
+                            <iframe 
+                              src={infoUrl!} 
+                              loading="lazy" 
+                              scrolling="no"
+                              sandbox="allow-scripts allow-same-origin allow-forms" 
+                              className="w-full h-[3500px] border-none pointer-events-none select-none"
+                              onLoad={handleIframeLoad}
+                            />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <DialogHeader className="space-y-2">
+                          <DialogTitle className="text-2xl font-black text-left flex items-center gap-2">
+                            <span className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
+                              <Info className="size-5" />
+                            </span>
+                            <span className="line-clamp-2 leading-tight">{title}</span>
+                          </DialogTitle>
+                          <DialogDescription className="text-left text-sm font-medium text-muted-foreground">
+                            Detalles e información adicional del evento.
+                          </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="py-2 text-left text-sm leading-relaxed text-foreground whitespace-pre-wrap max-h-[40vh] overflow-y-auto pr-1">
+                          {description}
+                        </div>
+
+                        <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-2">
+                          <button
+                            type="button"
+                            onClick={() => setIsInfoOpen(false)}
+                            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-border bg-transparent hover:bg-muted text-foreground text-xs font-bold transition-all"
+                          >
+                            Cerrar
+                          </button>
+                        </DialogFooter>
+                      </>
+                    )}
                   </DialogContent>
                 </Dialog>
               </>

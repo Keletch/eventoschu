@@ -41,8 +41,8 @@ export const StatsGrid: React.FC<StatsGridProps> = ({
         label="Usuarios únicos"
         value={registrationsCount}
         icon={Users}
-        colorClass="text-primary"
-        bgClass="bg-primary/10"
+        colorClass="text-sky-500"
+        bgClass="bg-sky-500/10"
         onClick={onUsersClick}
       />
       <StatCard
@@ -65,8 +65,8 @@ export const StatsGrid: React.FC<StatsGridProps> = ({
         label="Inscripciones canceladas"
         value={cancelledCount}
         icon={XCircle}
-        colorClass="text-destructive"
-        bgClass="bg-destructive/10"
+        colorClass="text-rose-500"
+        bgClass="bg-rose-500/10"
         onClick={onCancelledClick}
       />
     </div>

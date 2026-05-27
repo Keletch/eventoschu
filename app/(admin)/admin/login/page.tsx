@@ -119,8 +119,8 @@ export default function AdminLogin() {
     <div ref={containerRef} className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden px-4 selection:bg-primary/30 font-sans opacity-0">
       {/* Subtle Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full opacity-40 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-sky-200/50 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-100/50 rounded-full blur-[120px]" />
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary/15 rounded-full blur-[120px]" />
       </div>
 
 

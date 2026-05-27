@@ -30,14 +30,14 @@ function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        "flex w-full h-16 items-center justify-between gap-2 rounded-[24px] border border-neutral-200 bg-neutral-50/50 px-6 text-base md:text-lg transition-colors outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        "flex w-full h-16 items-center justify-between gap-2 rounded-[24px] border border-border bg-card px-6 text-base md:text-lg transition-colors outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon>
-        <ChevronDownIcon className="size-5 text-gray-400" />
+        <ChevronDownIcon className="size-5 text-muted-foreground" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )

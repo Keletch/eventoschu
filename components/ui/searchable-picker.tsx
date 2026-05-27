@@ -96,7 +96,6 @@ export const SearchablePicker: React.FC<SearchablePickerProps> = ({
           align="start"
           finalFocus={false}
           initialFocus={false}
-          container={portalContainerRef}
         >
           <div ref={containerRef}>
             <Command>

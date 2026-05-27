@@ -193,17 +193,17 @@ export default function AdminDashboard() {
                   <div className="flex items-center gap-3">
                     <div className="size-10 bg-muted rounded-xl animate-pulse" />
                     <div className="space-y-2">
-                      <div className="h-4 w-40 bg-neutral-100 rounded animate-pulse" />
-                      <div className="h-3 w-24 bg-neutral-50 rounded animate-pulse" />
+                      <div className="h-4 w-40 bg-muted rounded animate-pulse" />
+                      <div className="h-3 w-24 bg-muted/50 rounded animate-pulse" />
                     </div>
                   </div>
-                  <div className="h-4 w-24 bg-neutral-50 rounded animate-pulse ml-12" />
-                  <div className="h-6 w-16 bg-blue-50 rounded-full animate-pulse ml-auto" />
-                  <div className="h-6 w-10 bg-neutral-50 rounded-full animate-pulse mx-12" />
+                  <div className="h-4 w-24 bg-muted/50 rounded animate-pulse ml-12" />
+                  <div className="h-6 w-16 bg-muted/70 rounded-full animate-pulse ml-auto" />
+                  <div className="h-6 w-10 bg-muted/50 rounded-full animate-pulse mx-12" />
                   <div className="flex gap-2">
-                    <div className="size-9 bg-neutral-50 rounded-xl animate-pulse" />
-                    <div className="size-9 bg-neutral-100 rounded-xl animate-pulse" />
-                    <div className="size-9 bg-neutral-50 rounded-xl animate-pulse" />
+                    <div className="size-9 bg-muted/50 rounded-xl animate-pulse" />
+                    <div className="size-9 bg-muted rounded-xl animate-pulse" />
+                    <div className="size-9 bg-muted/50 rounded-xl animate-pulse" />
                   </div>
                 </div>
               ))}
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
                     variant="ghost" 
                     size="sm"
                     onClick={resetEventsFilters}
-                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-red-500 transition-all gap-1.5 cursor-pointer"
+                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-red-500 transition-all gap-1.5 cursor-pointer"
                     title="Limpiar todos los filtros"
                   >
                     <RefreshCw className="w-3 h-3" />
@@ -438,7 +438,7 @@ export default function AdminDashboard() {
                     size="sm"
                     onClick={handleClearCache}
                     disabled={isCacheRefreshing}
-                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-primary transition-all gap-1.5 cursor-pointer"
+                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-all gap-1.5 cursor-pointer"
                     title="Limpiar Caché de Redis"
                   >
                     {isCacheRefreshing ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
@@ -684,7 +684,7 @@ export default function AdminDashboard() {
                     variant="ghost" 
                     size="sm"
                     onClick={resetRegsFilters}
-                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-red-500 transition-all gap-1.5 cursor-pointer"
+                    className="h-6 px-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-red-500 transition-all gap-1.5 cursor-pointer"
                     title="Limpiar todos los filtros"
                   >
                     <RefreshCw className="w-3 h-3" />

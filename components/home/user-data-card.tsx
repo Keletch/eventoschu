@@ -93,7 +93,7 @@ export function UserDataCard({
                 {displayLabel}
               </div>
               {badgeConfig.description && (
-                <p className={cn("text-[13px] font-medium animate-in fade-in slide-in-from-top-1", badgeConfig.descriptionColor || "text-slate-500/80")}>
+                <p className={cn("text-[13px] font-medium animate-in fade-in slide-in-from-top-1", badgeConfig.descriptionColor || "text-muted-foreground/80")}>
                   {badgeConfig.description}
                 </p>
               )}
@@ -202,23 +202,23 @@ export function UserDataCard({
                   <SignInButton mode="modal">
                     <button 
                       onClick={() => trackGTMEvent("clerk_auth_initiated")}
-                      className="flex items-center gap-2 text-[#0F923D] font-bold text-base underline"
+                      className="flex items-center gap-2 text-secondary font-bold text-base underline hover:opacity-80 transition-opacity"
                     >
                       <Edit3 className="size-5" />
                       Inicia sesión para editar tu información
                     </button>
                   </SignInButton>
-                  <p className="text-[11px] text-gray-400 font-medium flex items-center gap-1 animate-in fade-in slide-in-from-top-1">
+                  <p className="text-[11px] text-muted-foreground font-medium flex items-center gap-1 animate-in fade-in slide-in-from-top-1">
                     <Info className="size-3" />
                     Usa el mismo correo con el que te inscribiste para poder editar.
                   </p>
                 </>
               ) : isEditing ? (
                 <div className="flex gap-3">
-                  <Button onClick={handleUpdateRegistration} disabled={isSubmitting} className="bg-[#00A650] hover:bg-[#008540] text-white font-bold rounded-xl">
+                  <Button onClick={handleUpdateRegistration} disabled={isSubmitting} className="bg-primary hover:opacity-90 text-primary-foreground font-bold rounded-xl">
                     {isSubmitting ? <Loader2 className="animate-spin size-4" /> : "Guardar cambios"}
                   </Button>
-                  <Button variant="ghost" onClick={() => setIsEditing(false)} className="text-gray-500 font-bold">Cancelar</Button>
+                  <Button variant="ghost" onClick={() => setIsEditing(false)} className="text-muted-foreground hover:text-foreground font-bold">Cancelar</Button>
                 </div>
               ) : (
                 <button
