@@ -94,12 +94,29 @@ export function AuthSection({
           {isSignedIn ? (
             <UserButton 
               appearance={{
+                variables: {
+                  colorForeground: "hsl(var(--foreground))",
+                  colorMutedForeground: "hsl(var(--muted-foreground))",
+                  colorBackground: "hsl(var(--card))",
+                  colorPrimary: "hsl(var(--primary))"
+                },
                 elements: {
                   rootBox: "user-button-root-custom",
                   userButtonTrigger: "user-button-trigger-custom",
                   userButtonAvatarBox: "user-button-avatar-box-custom",
                   avatarBox: "size-10 rounded-xl",
-                  userButtonPopoverCard: "shadow-xl border border-border bg-card text-foreground"
+                  userButtonPopoverCard: "shadow-xl border border-border bg-card text-foreground",
+                  userButtonPopoverActions: "bg-card text-foreground",
+                  userButtonPopoverActionButton: "text-foreground hover:bg-muted hover:text-foreground transition-colors",
+                  userButtonPopoverActionButtonText: "text-foreground font-medium",
+                  userButtonPopoverActionButtonIcon: "text-muted-foreground",
+                  userButtonPopoverFooter: "bg-muted border-t border-border text-muted-foreground",
+                  userButtonPopoverFooterButton: "text-muted-foreground hover:text-foreground",
+                  userButtonPopoverUserPreview: "bg-card text-foreground border-b border-border",
+                  userButtonPopoverUserPreviewTitle: "text-foreground font-semibold",
+                  userButtonPopoverUserPreviewSubtitle: "text-muted-foreground",
+                  userButtonPopoverMain: "bg-card text-foreground",
+                  userButtonPopoverMainButton: "text-foreground hover:bg-muted"
                 }
               }}
             />

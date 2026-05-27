@@ -240,6 +240,8 @@ export function EventsCarousel({
                       isPaid={data.isPaid}
                       externalUrl={data.externalUrl}
                       externalButtonText={data.externalButtonText}
+                      description={data.description}
+                      infoUrl={data.infoUrl}
                     />
                   </div>
                 );

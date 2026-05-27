@@ -259,9 +259,49 @@ body {
 }
 
 /* 🎨 Clerk Universal Theme System */
-.cl-card {
+.cl-card,
+.cl-userButtonPopoverCard {
   background-color: var(--card) !important;
   border: 1px solid var(--border) !important;
+  color: var(--foreground) !important;
+}
+
+.cl-userButtonPopoverActionButton {
+  color: var(--foreground) !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+
+.cl-userButtonPopoverActionButton:hover {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+}
+
+.cl-userButtonPopoverActionButtonText {
+  color: var(--foreground) !important;
+}
+
+.cl-userButtonPopoverActionButtonIcon,
+.cl-userButtonPopoverFooterButton {
+  color: var(--muted-foreground) !important;
+}
+
+.cl-userButtonPopoverFooterButton:hover {
+  color: var(--foreground) !important;
+}
+
+.cl-userButtonPopoverUserPreviewTitle {
+  color: var(--foreground) !important;
+}
+
+.cl-userButtonPopoverUserPreviewSubtitle {
+  color: var(--muted-foreground) !important;
+}
+
+.cl-badge {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  font-weight: 600 !important;
+  border-radius: 9999px !important;
 }
 
 

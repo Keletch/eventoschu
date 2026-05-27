@@ -216,13 +216,19 @@ export function useHomeLogic(initialEvents: any[] = []) {
     return months;
   }, [filteredEventsByCategory]);
 
-  // Reset subcategory ONLY when main category changes
+  const prevCategoryRef = useRef(activeCategory);
+
+  // Reset subcategory ONLY when main category changes (skipping initial mount / URL hydration)
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (isLoadingEvents) {
+      prevCategoryRef.current = activeCategory;
+      return;
+    }
+    if (prevCategoryRef.current !== activeCategory) {
       setActiveSubcategory("Todos");
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [activeCategory]);
+      prevCategoryRef.current = activeCategory;
+    }
+  }, [activeCategory, isLoadingEvents]);
 
   // Adjust active month when availableMonths changes. If selected month is no longer available, reset to empty (all months).
   useEffect(() => {
@@ -262,8 +268,9 @@ export function useHomeLogic(initialEvents: any[] = []) {
         setEventCounts(countsRes.data);
       }
 
-      // Handle referral link
       const params = new URLSearchParams(window.location.search);
+
+      // Handle referral link
       const cityId = params.get('city');
       if (cityId && eventsRes.data) {
         const event = (eventsRes.data as any[]).find(e => e.id === cityId);
@@ -275,12 +282,145 @@ export function useHomeLogic(initialEvents: any[] = []) {
           setActiveMonth(month.charAt(0).toUpperCase() + month.slice(1));
         }
       }
+
+      // Parse and apply URL filters (?filter=giras&Mayo&Pago or similar)
+      if (eventsRes.data && eventsRes.data.length > 0) {
+        const allQueryTerms: string[] = [];
+        params.forEach((value, key) => {
+          if (value) {
+            value.split(/[\s,]+/).forEach(v => allQueryTerms.push(v.toLowerCase().replace(/_/g, ' ')));
+          }
+          if (key && key !== 'city' && key !== 'filter') {
+            allQueryTerms.push(key.toLowerCase().replace(/_/g, ' '));
+          }
+        });
+
+        const activeEvents = (eventsRes.data as any[]).filter(e => e.active !== false);
+
+        // 1. Match category & subcategory
+        const uniqueCats = Array.from(new Set(activeEvents.map(e => {
+          return e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
+        }).filter(Boolean))) as string[];
+
+        const matchedCat = uniqueCats.find(cat => 
+          allQueryTerms.includes(cat.toLowerCase())
+        );
+        if (matchedCat) {
+          setActiveCategory(matchedCat);
+
+          // Buscar subcategoría correspondiente bajo la categoría principal
+          const eventsInCat = activeEvents.filter(e => {
+            const mainCatName = e.categories?.parent_category ? e.categories.parent_category.name : e.categories?.name;
+            return mainCatName === matchedCat;
+          });
+          const uniqueSubcats = Array.from(new Set(eventsInCat
+             .filter(e => e.categories?.parent_category)
+             .map(e => e.categories?.name)
+             .filter(Boolean))) as string[];
+
+          const matchedSubcat = uniqueSubcats.find(subcat => 
+            allQueryTerms.includes(subcat.toLowerCase())
+          );
+          if (matchedSubcat) {
+            setActiveSubcategory(matchedSubcat);
+          }
+        }
+
+        // 2. Match month
+        const monthsSet = new Set<string>();
+        let hasFutureEvents = false;
+        activeEvents.forEach(e => {
+          const d = new Date(e.start_date);
+          if (d.getFullYear() === 2099) {
+            hasFutureEvents = true;
+          } else {
+            const m = d.toLocaleDateString('es-ES', { month: 'long' });
+            monthsSet.add(m.charAt(0).toUpperCase() + m.slice(1));
+          }
+        });
+        const possibleMonths = Array.from(monthsSet);
+        if (hasFutureEvents) possibleMonths.push("Eventos Futuros");
+
+        const matchedMonth = possibleMonths.find(m => 
+          allQueryTerms.includes(m.toLowerCase())
+        );
+        if (matchedMonth) {
+          setActiveMonth(matchedMonth);
+        }
+
+        // 3. Match tag
+        const tagsMap = new Map<string, { id: string, name: string, slug: string }>();
+        activeEvents.forEach(e => {
+          e.event_tags?.forEach((et: any) => {
+            if (et.tags) {
+              tagsMap.set(et.tags.id, et.tags);
+            }
+          });
+        });
+        const possibleTags = Array.from(tagsMap.values());
+        const matchedTag = possibleTags.find(tag => 
+          allQueryTerms.includes(tag.name.toLowerCase()) || allQueryTerms.includes(tag.slug.toLowerCase())
+        );
+        if (matchedTag) {
+          setActiveTag(matchedTag.id);
+        }
+      }
     } catch (err) {
       console.error('Fetch error:', err);
     } finally {
       setIsLoadingEvents(false);
     }
   }, []);
+
+  // Dynamically update URL query parameters based on active filters for easy sharing
+  useEffect(() => {
+    if (!isPageReady || isLoadingEvents) return;
+
+    // Preservar parámetros no relacionados como 'city' (referencia)
+    const currentParams = new URLSearchParams(window.location.search);
+    const cityId = currentParams.get('city');
+
+    const filterTerms: string[] = [];
+    
+    if (activeCategory !== "Todos") {
+      filterTerms.push(activeCategory.toLowerCase().replace(/\s+/g, '_'));
+    }
+
+    if (activeSubcategory !== "Todos") {
+      filterTerms.push(activeSubcategory.toLowerCase().replace(/\s+/g, '_'));
+    }
+    
+    if (activeMonth) {
+      filterTerms.push(activeMonth.toLowerCase().replace(/\s+/g, '_'));
+    }
+    
+    if (activeTag !== "Todos") {
+      const activeTagObj = availableTags.find(t => t.id === activeTag);
+      if (activeTagObj) {
+        filterTerms.push(activeTagObj.name.toLowerCase().replace(/\s+/g, '_'));
+      }
+    }
+
+    // Construir la Query string de forma manual limpia sin acumulación recursiva
+    const queryParts: string[] = [];
+
+    if (cityId) {
+      queryParts.push(`city=${encodeURIComponent(cityId)}`);
+    }
+
+    if (filterTerms.length > 0) {
+      // El primero entra como ?filter=valor
+      queryParts.push(`filter=${encodeURIComponent(filterTerms[0])}`);
+      // Los siguientes entran como flags puros sin '=' (ej. &Mayo&Pago)
+      filterTerms.slice(1).forEach(term => {
+        queryParts.push(encodeURIComponent(term));
+      });
+    }
+
+    const queryString = queryParts.length > 0 ? '?' + queryParts.join('&') : '';
+    const newRelativePathQuery = window.location.pathname + queryString;
+    window.history.replaceState(null, '', newRelativePathQuery);
+  }, [activeCategory, activeSubcategory, activeMonth, activeTag, isPageReady, isLoadingEvents, availableTags]);
 
   const startNewRegistration = useCallback(() => {
     localStorage.removeItem(HOME_STORAGE_KEY);

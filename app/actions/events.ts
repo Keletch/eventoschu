@@ -41,6 +41,8 @@ export interface Event {
     parent_category?: { id: string; name: string; icon?: string | null; };
   } | any;
   performer?: string;
+  description?: string | null;
+  info_url?: string | null;
   external_url?: string | null;
   external_button_text?: string | null;
   event_tags?: {

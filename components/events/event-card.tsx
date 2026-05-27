@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass, ExternalLink, Plus, Minus } from "lucide-react";
+import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass, ExternalLink, Plus, Minus, Info } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { trackPaidEventClick } from "@/app/actions/user-registration";
 
@@ -39,6 +40,8 @@ interface EventCardProps {
   isPaid?: boolean;
   externalUrl?: string | null;
   externalButtonText?: string | null;
+  description?: string | null;
+  infoUrl?: string | null;
 }
 
 export function EventCard({
@@ -66,11 +69,27 @@ export function EventCard({
   isPaid = false,
   externalUrl,
   externalButtonText,
+  description,
+  infoUrl,
 }: EventCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [canExpand, setCanExpand] = useState(false);
   const titleRef = useRef<HTMLHeadingElement>(null);
+
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const hasDescription = !!description && description.trim().length > 0;
+  const hasInfoUrl = !!infoUrl && infoUrl.trim().length > 0;
+  const showInfoIcon = hasDescription || hasInfoUrl;
+
+  const handleInfoClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (hasDescription) {
+      setIsInfoOpen(true);
+    } else if (hasInfoUrl) {
+      window.open(infoUrl, "_blank", "noopener,noreferrer");
+    }
+  };
 
   const eventConfig = getEventUIConfig({ initial_status: initialStatus });
   const isUnlimited = capacity >= 9999;
@@ -182,19 +201,76 @@ export function EventCard({
             </div>
           </div>
         
-          {!isSoldOut && !isPaid && (
-            <div className={cn(
-              "w-6 h-6 md:w-7 md:h-7 rounded-[20px] border-2 flex items-center justify-center transition-all shrink-0",
-              selected ? "bg-primary border-primary" : "border-primary"
-            )}>
-              {selected && <Check className="w-4 h-4 md:w-5 md:h-5 text-primary-foreground" strokeWidth={3} />}
-            </div>
-          )}
-          {isPaid && (
-            <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider shrink-0 select-none">
-              Pago
-            </div>
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            {showInfoIcon && (
+              <>
+                <button
+                  type="button"
+                  onClick={handleInfoClick}
+                  className="size-7 md:size-8 rounded-full bg-muted/80 hover:bg-primary/20 text-muted-foreground hover:text-primary transition-all flex items-center justify-center shrink-0 border border-border shadow-sm"
+                  title="Más información"
+                >
+                  <Info className="size-4" strokeWidth={2.5} />
+                </button>
+
+                <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
+                  <DialogContent className="max-w-md rounded-[32px] border-none shadow-2xl p-6 bg-card text-foreground gap-4">
+                    <DialogHeader className="space-y-2">
+                      <DialogTitle className="text-2xl font-black text-left flex items-center gap-2">
+                        <span className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
+                          <Info className="size-5" />
+                        </span>
+                        <span className="line-clamp-2 leading-tight">{title}</span>
+                      </DialogTitle>
+                      <DialogDescription className="text-left text-sm font-medium text-muted-foreground">
+                        Detalles e información adicional del evento.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="py-2 text-left text-sm leading-relaxed text-foreground whitespace-pre-wrap max-h-[40vh] overflow-y-auto pr-1">
+                      {description}
+                    </div>
+
+                    <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsInfoOpen(false)}
+                        className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-border bg-transparent hover:bg-muted text-foreground text-xs font-bold transition-all"
+                      >
+                        Cerrar
+                      </button>
+                      {hasInfoUrl && (
+                        <a
+                          href={infoUrl!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setIsInfoOpen(false)}
+                          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-black shadow-md shadow-primary/10 transition-all text-center flex items-center justify-center gap-1.5"
+                        >
+                          Ver más
+                          <ExternalLink className="size-3.5" strokeWidth={2.5} />
+                        </a>
+                      )}
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
+
+            {!isSoldOut && !isPaid && (
+              <div className={cn(
+                "w-6 h-6 md:w-7 md:h-7 rounded-[20px] border-2 flex items-center justify-center transition-all shrink-0",
+                selected ? "bg-primary border-primary" : "border-primary"
+              )}>
+                {selected && <Check className="w-4 h-4 md:w-5 md:h-5 text-primary-foreground" strokeWidth={3} />}
+              </div>
+            )}
+            {isPaid && (
+              <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-wider shrink-0 select-none">
+                Pago
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="space-y-4 text-sm md:text-[16px] leading-relaxed text-card-text">

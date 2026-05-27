@@ -38,7 +38,7 @@ function SurveyReminderNudge({ onClick }: { onClick: () => void }) {
           <AlertCircle className="h-5.5 w-5.5 text-amber-500 animate-pulse-gentle" />
           <span className="absolute top-1 right-1 size-2 bg-amber-400 rounded-full animate-ping opacity-75" />
         </TooltipTrigger>
-        <TooltipContent side="bottom" align="end" className="p-4 rounded-2xl shadow-2xl bg-white border-neutral-100 z-[150] max-w-[280px]">
+        <TooltipContent side="bottom" align="end" className="p-4 rounded-2xl shadow-2xl bg-white border-neutral-100 z-[200] max-w-[280px]">
           <div className="space-y-3">
             <div className="space-y-1">
               <p className="text-sm font-bold text-neutral-800">¡Queremos conocerte mejor!</p>

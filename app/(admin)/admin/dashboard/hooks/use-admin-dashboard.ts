@@ -44,7 +44,7 @@ export function useAdminDashboard() {
     title: "", city: "", country: "", category_id: "", start_date: "",
     time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
     price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: null, flag: "PE", bg_class: "bg-sky-100", active: true,
-    external_url: "", external_button_text: "", tag_ids: []
+    external_url: "", external_button_text: "", description: "", info_url: "", tag_ids: []
   });
   
   // Toggles para acciones destructivas en Keap
@@ -479,6 +479,8 @@ export function useAdminDashboard() {
         start_date: formatDateForInput(event.start_date),
         external_url: event.external_url || "",
         external_button_text: event.external_button_text || "",
+        description: event.description || "",
+        info_url: event.info_url || "",
         tag_ids: event.event_tags?.map((et: any) => et.tags?.id).filter(Boolean) || []
       }); 
       setIsDialogOpen(true); 
@@ -492,6 +494,8 @@ export function useAdminDashboard() {
         initial_status: "confirmed",
         external_url: "",
         external_button_text: "",
+        description: "",
+        info_url: "",
         tag_ids: []
       });
       setIsDialogOpen(true);
@@ -505,6 +509,8 @@ export function useAdminDashboard() {
         start_date: formatDateForInput(rest.start_date),
         external_url: rest.external_url || "",
         external_button_text: rest.external_button_text || "",
+        description: rest.description || "",
+        info_url: rest.info_url || "",
         tag_ids: event.event_tags?.map((et: any) => et.tags?.id).filter(Boolean) || []
       });
       setIsDialogOpen(true);

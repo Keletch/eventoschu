@@ -77,6 +77,8 @@ export function transformEventForUI(event: Event) {
     tags: tagsList,
     isPaid,
     externalUrl: event.external_url || null,
-    externalButtonText: event.external_button_text || "Adquirir entrada"
+    externalButtonText: event.external_button_text || "Adquirir entrada",
+    description: event.description || null,
+    infoUrl: event.info_url || null
   };
 }
