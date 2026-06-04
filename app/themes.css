@@ -76,6 +76,7 @@
   --sidebar-foreground: #FFFFFF;
   --footer-bg: #3154DC;
   --scrollbar-track: rgba(0, 0, 0, 0.05);
+  --input: #FFFFFF;
 }
 
 /* 📚 TEMA DARK (Libro Viejo) */
@@ -155,6 +156,7 @@
   --sidebar-foreground: #E6E2D3;
   --footer-bg: #151210;
   --scrollbar-track: rgba(255, 255, 255, 0.05);
+  --input: #241F1C;
 }
 
 /* 🌃 TEMA SYNTHWAVE (84 Retro-futurismo) */
@@ -234,6 +236,7 @@
   --sidebar-foreground: #fffaff;
   --footer-bg: #13062d;
   --scrollbar-track: rgba(189, 0, 255, 0.1);
+  --input: #0d0221;
 }
 
 /* 📟 TEMA HACKER (Matrix) */
@@ -313,6 +316,7 @@
   --sidebar-foreground: #00FF41;
   --footer-bg: #020802;
   --scrollbar-track: rgba(0, 255, 65, 0.1);
+  --input: #000500;
 }
 
 /* ☕ TEMA MILK & COFFEE */
@@ -392,6 +396,7 @@
   --sidebar-foreground: #3E2723;
   --footer-bg: #D7CCC8;
   --scrollbar-track: #EFEBE9;
+  --input: #FDF8F5;
 }
 
 /* 🍊 TEMA CITRIC (Citrus & Fresh Vibes) */
@@ -470,6 +475,7 @@
   --sidebar-foreground: #1A2F0F;
   --footer-bg: #F0F6D5;
   --scrollbar-track: rgba(255, 107, 0, 0.1);
+  --input: #F7FBEA;
 }
 
 /* --- EFECTOS ESPECÍFICOS --- */

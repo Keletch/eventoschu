@@ -15,6 +15,7 @@ interface HeaderProps {
   isSidebarOpen: boolean;
   isSurveyMissing?: boolean;
   setIsSurveyOpen?: (open: boolean) => void;
+  onOpenSSOOnboarding?: () => void;
 }
 
 import { ThemeToggle } from "./ui/theme-toggle";
@@ -26,7 +27,8 @@ export function Header({
   step, 
   onToggleSidebar, 
   isSurveyMissing = false,
-  setIsSurveyOpen
+  setIsSurveyOpen,
+  onOpenSSOOnboarding
 }: HeaderProps) {
   const { isSignedIn, isLoaded } = useAuth();
   const headerRef = React.useRef<HTMLDivElement>(null);
@@ -102,6 +104,7 @@ export function Header({
             step={step || null}
             isSurveyMissing={isSurveyMissing}
             setIsSurveyOpen={setIsSurveyOpen}
+            onOpenSSOOnboarding={onOpenSSOOnboarding}
           />
           <div className="header-animate-item opacity-0 flex items-center gap-2">
             <ThemeToggle />

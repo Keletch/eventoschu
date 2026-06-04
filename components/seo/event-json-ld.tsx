@@ -57,8 +57,18 @@ export function EventJsonLd({ events }: EventJsonLdProps) {
               },
           "offers": {
             "@type": "Offer",
-            "price": data.isFree ? "0" : (event.price ? (event.price.replace(/[^0-9.]/g, '') || "0") : "0"),
-            "priceCurrency": (event.price && event.price.toUpperCase().includes('MXN')) ? 'MXN' : 'USD',
+            "price": (() => {
+              const priceStr = typeof event.price === 'string'
+                ? event.price
+                : (event.price ? String(event.price) : "");
+              return data.isFree ? "0" : (priceStr ? (priceStr.replace(/[^0-9.]/g, '') || "0") : "0");
+            })(),
+            "priceCurrency": (() => {
+              const priceStr = typeof event.price === 'string'
+                ? event.price
+                : (event.price ? String(event.price) : "");
+              return (priceStr && priceStr.toUpperCase().includes('MXN')) ? 'MXN' : 'USD';
+            })(),
             "availability": event.active ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
             "url": (data.isPaid && data.externalUrl) ? data.externalUrl : baseUrl,
             "description": data.displayPrice

@@ -44,7 +44,7 @@ La plataforma ignora las esquinas afiladas. Todo el sistema geométrico se basa 
 - **Tarjetas y Formularios**: 
   - Tienen `rounded-[32px]`.
   - **Sombras Dinámicas Adaptativas**: En el tema Light se utilizan sombras elegantes e imperceptibles (`shadow-[0_8px_30px_rgb(0,0,0,0.04)]` para contenedores y `shadow-[0_20px_50px_rgba(0,0,0,0.05)]` para dar el efecto de flotación). En temas oscuros (`dark`, `synthwave`, `coffee`), las sombras se atenúan o desactivan, confiando en bordes sutiles (`border-border/50`) para delimitar profundidad. En el tema `hacker`, se reemplaza por un filtro fluorescente en hover (`filter: drop-shadow(2px_0px_0px_rgba(0,255,65,0.3))`).
-  - **Campos y Selectores Dinámicos**: Formulario de creación/edición de eventos con selector de tags en formato chips. Al seleccionar la etiqueta `"Pago"`, un contenedor animado se despliega para ingresar la URL externa de compra y el texto personalizado del botón.
+  - **Campos y Selectores Dinámicos**: Formulario de creación/edición de eventos con selector de tags en formato chips. Al seleccionar la etiqueta `"Pago"`, un contenedor animado se despliega para ingresar la URL externa de compra, el texto personalizado del botón, y configurar enlaces condicionados por tag con un campo de **Precio Especial (Opcional)** para descuentos.
   - **Layout de Filtros en Dashboard**: Diseño responsivo flexible (`flex flex-col sm:flex-row gap-4 mt-3 mb-4 w-full`) para chips de filtros activos y botones utilitarios del admin. Evita encabalgamiento de líneas y solapamiento visual en interfaces móviles y de escritorio, sincronizando la entrada estética con la animación `tab-content-anim` de GSAP.
 - **Botones y Badges**:
   - Botones principales: `rounded-2xl` (cuadrados curvos).

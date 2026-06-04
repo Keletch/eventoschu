@@ -214,6 +214,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                 setEvent={setEvent}
                 categories={categories}
                 systemTags={systemTags}
+                keapTags={keapTags}
                 isOnline={isOnline}
                 isUploading={isUploading}
                 handleFileUpload={handleFileUpload}

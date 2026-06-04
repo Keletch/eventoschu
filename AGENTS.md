@@ -20,6 +20,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## 3. 🧩 SSoT (Única Fuente de Verdad)
 - Nunca formatees fechas, ubicaciones o precios manualmente en un nuevo componente.
 - **REGLA DE ORO:** Si vas a mostrar datos de un evento, debes importar y usar obligatoriamente `transformEventForUI()` de `@/lib/event-transformers.ts`. Esto garantiza que los humanos, Google (JSON-LD) y las IAs (llms.txt) lean exactamente las mismas palabras ("Por confirmar", "Evento sin costo").
+- **Estructura de Enlaces de Pago y Precios Especiales:** Si un evento tiene enlaces de pago condicionados por Keap (`paid_links`), cada objeto debe estructurarse como `PaidLink { url, button_text?, keap_tag_id?, price? }`. El precio promocional debe guardarse ahí para que la tarjeta del evento pueda hacer la comparación de precios de forma automática.
 
 ## 4. 🗄️ Acceso a Datos
 - No crees rutas `/api/...` tradicionales para el frontend. Todo el CRUD y la interacción con la base de datos se maneja vía **Server Actions** en `app/actions/`.

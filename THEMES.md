@@ -226,6 +226,9 @@ Para añadir un nuevo tema o modificar uno existente en `themes.css`, es obligat
 ## 📝 Reglas de Oro para Diseñadores y Agentes
 
 1. **Nunca usar colores literales en componentes reutilizables**: Clases como `bg-white` o `text-gray-500` están estrictamente prohibidas en el admin y en componentes de uso general. Debe usarse `bg-card`, `bg-muted` o `text-muted-foreground`.
-2. **Efectos de Contraste en Temas Oscuros**: Al diseñar un tema oscuro, asegúrate de que `--card` sea ligeramente más claro que `--background` (ej: `#241F1C` frente a `#1A1614` en el tema Dark) para simular profundidad natural sin depender de sombras duras.
-3. **Compatibilidad WCAG**: Todo tema agregado debe cumplir con un ratio de contraste mínimo de `4.5:1` entre `--background` y `--foreground` para cumplir con las guías de accesibilidad WCAG AA.
+2. **Colores de Comparación de Precios**: Para destacar descuentos y precios especiales en la tarjeta del evento:
+   - El precio estándar tachado debe utilizar una variante atenuada como `text-muted-foreground/75` para indicar que ya no está vigente.
+   - El precio promocional debe resaltar utilizando el color de acción primario `text-primary` del tema activo.
+3. **Efectos de Contraste en Temas Oscuros**: Al diseñar un tema oscuro, asegúrate de que `--card` sea ligeramente más claro que `--background` (ej: `#241F1C` frente a `#1A1614` en el tema Dark) para simular profundidad natural sin depender de sombras duras.
+4. **Compatibilidad WCAG**: Todo tema agregado debe cumplir con un ratio de contraste mínimo de `4.5:1` entre `--background` y `--foreground` para cumplir con las guías de accesibilidad WCAG AA.
 

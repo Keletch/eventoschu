@@ -8,6 +8,7 @@ import { trackGTMEvent } from "@/lib/gtm-utils";
 import { getRegistrationsCount } from "@/app/actions/admin-registration";
 import { createRegistration, checkRegistration, updateEventSpecificData } from "@/app/actions/user-registration";
 import { getEventUIConfig } from "@/lib/event-config";
+import { getContactTagsByEmail } from "@/app/actions/keap";
 
 import { getDisplayData } from "@/components/home/utils/home-constants";
 
@@ -23,6 +24,8 @@ export function useHomeLogic(initialEvents: any[] = []) {
   const [events, setEvents] = useState<any[]>(initialEvents);
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [userData, setUserData] = useState<any>(null);
+  const [userKeapTags, setUserKeapTags] = useState<string[]>([]);
+  const [isSSOOnboardingOpen, setIsSSOOnboardingOpen] = useState(false);
   const [isLoadingEvents, setIsLoadingEvents] = useState(initialEvents.length === 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("Todos");
@@ -64,6 +67,96 @@ export function useHomeLogic(initialEvents: any[] = []) {
     surveyDataRef.current = surveyData;
     userRef.current = user;
   }, [eventStatuses, eventDataMap, userData, selectedEvents, surveyData, user]);
+
+  // 🏷️ Obtener tags del usuario en Keap CRM al iniciar sesión o gestionar temporales
+  useEffect(() => {
+    let active = true;
+    let timerId: NodeJS.Timeout | null = null;
+
+    const fetchTags = async () => {
+      if (isSignedIn && user) {
+        const emails = user.emailAddresses
+          .filter((ea: any) => ea.verification?.status === "verified")
+          .map((ea: any) => ea.emailAddress.toLowerCase().trim());
+        
+        const allTags = new Set<string>();
+        for (const email of emails) {
+          const res = await getContactTagsByEmail(email);
+          if (!active) return;
+          if (res.success && res.tags) {
+            res.tags.forEach((tagId: string) => allTags.add(tagId));
+          }
+        }
+        if (active) {
+          setUserKeapTags(Array.from(allTags));
+        }
+      } else {
+        // Si no está logueado, intentar cargar la verificación temporal de Keap
+        const cached = localStorage.getItem("chu_temp_keap_tags");
+        if (cached) {
+          try {
+            const { tags, expiresAt } = JSON.parse(cached);
+            if (Date.now() < expiresAt) {
+              if (active) {
+                setUserKeapTags(tags);
+                
+                // Programar autolimpieza para el tiempo restante
+                const remaining = expiresAt - Date.now();
+                timerId = setTimeout(() => {
+                  if (active) {
+                    setUserKeapTags([]);
+                    localStorage.removeItem("chu_temp_keap_tags");
+                    toast.info("La vinculación temporal de tu membresía ha finalizado por seguridad.");
+                  }
+                }, remaining);
+              }
+            } else {
+              localStorage.removeItem("chu_temp_keap_tags");
+              if (active) setUserKeapTags([]);
+            }
+          } catch (_e) {
+            localStorage.removeItem("chu_temp_keap_tags");
+          }
+        } else {
+          if (active) setUserKeapTags([]);
+        }
+      }
+    };
+    fetchTags();
+
+    return () => {
+      active = false;
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+    };
+  }, [isSignedIn, user]);
+
+  // Envoltura personalizada para guardar los tags temporales con expiración (5 minutos)
+  const setTemporaryKeapTags = useCallback((tags: string[] | ((prev: string[]) => string[])) => {
+    setUserKeapTags((prev) => {
+      const nextTags = typeof tags === "function" ? tags(prev) : tags;
+      if (!isSignedIn) {
+        if (nextTags.length > 0) {
+          const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutos
+          localStorage.setItem("chu_temp_keap_tags", JSON.stringify({ tags: nextTags, expiresAt }));
+        } else {
+          localStorage.removeItem("chu_temp_keap_tags");
+        }
+      }
+      return nextTags;
+    });
+  }, [isSignedIn]);
+
+  // 🚀 Mostrar modal de bienvenida sobre SSO una sola vez
+  useEffect(() => {
+    if (isPageReady) {
+      const dismissed = localStorage.getItem("chu_onboarding_dismissed");
+      if (!dismissed) {
+        setIsSSOOnboardingOpen(true);
+      }
+    }
+  }, [isPageReady]);
 
   // --- Helpers ---
   const changeStep = useCallback((newStep: number | null) => {
@@ -851,6 +944,9 @@ export function useHomeLogic(initialEvents: any[] = []) {
     events, setEvents,
     selectedEvents, setSelectedEvents,
     userData, setUserData,
+    userKeapTags,
+    isSSOOnboardingOpen,
+    setIsSSOOnboardingOpen,
     isLoadingEvents,
     isSubmitting,
     activeMonth, setActiveMonth,
@@ -873,6 +969,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     // Auth
     user, isSignedIn, isLoaded, isRegistered: !!userData,
     displayData,
+    setUserKeapTags: setTemporaryKeapTags,
 
     // Handlers
     fetchData,

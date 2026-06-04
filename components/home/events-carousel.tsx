@@ -50,6 +50,10 @@ interface EventsCarouselProps {
   availableMonths: string[];
   handleMonthChange: (month: string) => void;
   formatSafeDate: (dateStr: string) => Date | null;
+  userKeapTags?: string[];
+  isSignedIn?: boolean;
+  onVerifySuccess?: (tags: string[]) => void;
+  onOpenSSOOnboarding?: () => void;
 }
 
 export function EventsCarousel({
@@ -63,6 +67,10 @@ export function EventsCarousel({
   handleScroll,
   availableMonths,
   handleMonthChange,
+  userKeapTags = [],
+  isSignedIn = false,
+  onVerifySuccess,
+  onOpenSSOOnboarding,
 }: EventsCarouselProps) {
   const { resolvedTheme } = useTheme();
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -240,6 +248,11 @@ export function EventsCarousel({
                       isPaid={data.isPaid}
                       externalUrl={data.externalUrl}
                       externalButtonText={data.externalButtonText}
+                      paidLinks={data.paidLinks}
+                      userKeapTags={userKeapTags}
+                      isSignedIn={isSignedIn}
+                      onVerifySuccess={onVerifySuccess}
+                      onOpenSSOOnboarding={onOpenSSOOnboarding}
                       description={data.description}
                       infoUrl={data.infoUrl}
                     />

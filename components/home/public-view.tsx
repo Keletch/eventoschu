@@ -55,6 +55,9 @@ interface PublicViewProps {
   activeTag?: string;
   setActiveTag?: (tag: string) => void;
   availableTags?: any[];
+  userKeapTags?: string[];
+  onVerifySuccess?: (tags: string[]) => void;
+  onOpenSSOOnboarding?: () => void;
 }
 
 export function PublicView({
@@ -91,6 +94,9 @@ export function PublicView({
   activeTag,
   setActiveTag,
   availableTags,
+  userKeapTags = [],
+  onVerifySuccess,
+  onOpenSSOOnboarding,
 }: PublicViewProps) {
   const { openSignIn } = useClerk();
 
@@ -181,6 +187,10 @@ export function PublicView({
               availableMonths={availableMonths}
               handleMonthChange={handleMonthChange}
               formatSafeDate={formatSafeDate}
+              userKeapTags={userKeapTags}
+              isSignedIn={isSignedIn}
+              onVerifySuccess={onVerifySuccess}
+              onOpenSSOOnboarding={onOpenSSOOnboarding}
             />
 
             {/* ── Formulario de registro ──────────────────── */}

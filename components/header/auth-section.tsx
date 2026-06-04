@@ -4,7 +4,7 @@ import { UserButton, SignInButton } from '@clerk/nextjs';
 import { NotificationBell } from '@/components/notifications/notification-bell';
 import { UserIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { HeaderAlerts } from './header-alerts';
+import { HeaderAlerts, CampusSSOAlertNudge } from './header-alerts';
 import { trackGTMEvent } from '@/lib/gtm-utils';
 
 interface AuthSectionProps {
@@ -20,6 +20,7 @@ interface AuthSectionProps {
   isLoaded: boolean;
   isSurveyMissing?: boolean;
   setIsSurveyOpen?: (open: boolean) => void;
+  onOpenSSOOnboarding?: () => void;
 }
 
 /**
@@ -37,7 +38,8 @@ export function AuthSection({
   step,
   isLoaded,
   isSurveyMissing = false,
-  setIsSurveyOpen
+  setIsSurveyOpen,
+  onOpenSSOOnboarding = () => {}
 }: AuthSectionProps) {
   const [isFullyReady, setIsFullyReady] = useState(false);
 
@@ -84,6 +86,9 @@ export function AuthSection({
           </div>
         )}
       </div>
+
+      {/* Librito — campus Thinkific, junto al login */}
+      <CampusSSOAlertNudge onClick={onOpenSSOOnboarding} />
 
       {/* Slot de Usuario */}
       <div className="size-10 flex items-center justify-center">

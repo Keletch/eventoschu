@@ -21,7 +21,7 @@ export function EventProgressBar({
   const progress = isUnlimited ? 0 : Math.min((confirmedCount / capacity) * 100, 100);
 
   return (
-    <div className="pt-4 border-t border-card-border space-y-2">
+    <div className="space-y-2">
       <div className="flex items-center justify-between text-xs font-bold">
         <div className="flex items-center gap-1.5 text-card-text/60 uppercase tracking-wider">
           <Users className="w-3.5 h-3.5" />

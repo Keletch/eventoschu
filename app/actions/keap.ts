@@ -168,3 +168,32 @@ export async function processKeapStatusTransitions(
   
   return { success: true };
 }
+
+/**
+ * 🏷️ Obtiene los IDs de etiquetas asignadas a un contacto por su correo en Keap
+ */
+export async function getContactTagsByEmail(email: string) {
+  try {
+    const cleanEmail = email.toLowerCase().trim();
+    const searchRes = await keapFetch(`contacts?email=${encodeURIComponent(cleanEmail)}`);
+    if (!searchRes.ok) throw new Error("Error searching contact in Keap");
+    
+    const searchData = await searchRes.json();
+    if (!searchData.contacts || searchData.contacts.length === 0) {
+      return { success: true, tags: [] };
+    }
+
+    const contactId = searchData.contacts[0].id;
+    const tagsRes = await keapFetch(`contacts/${contactId}/tags`);
+    if (!tagsRes.ok) throw new Error("Error fetching tags for contact in Keap");
+    
+    const tagsData = await tagsRes.json();
+    const tagIds = (tagsData.tags || []).map((t: any) => t.tag.id.toString());
+    
+    return { success: true, tags: tagIds };
+  } catch (error: any) {
+    console.error("❌ Error fetching user Keap tags:", error);
+    return { success: false, error: error.message, tags: [] };
+  }
+}
+

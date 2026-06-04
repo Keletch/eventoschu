@@ -12,6 +12,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
+import { CampusSSOOnboardingDialog } from "@/components/home/campus-sso-onboarding-dialog";
 
 import { PublicView } from "@/components/home/public-view";
 const RegisteredView = dynamic(() => import("@/components/home/registered-view").then(mod => mod.RegisteredView), { ssr: false });
@@ -41,7 +42,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     getRegistrationsCount().then(res => { 
       if (res?.success && res.data) home.setEventCounts(res.data); 
     });
-    getEvents().then(res => { 
+    getEvents(true).then(res => { 
       if (res?.success) home.setEvents(res.data || []); 
     });
   });
@@ -245,6 +246,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           isSurveyMissing={isSurveyMissing}
           setIsSurveyOpen={home.setIsSurveyOpen}
+          onOpenSSOOnboarding={() => home.setIsSSOOnboardingOpen(true)}
         />
         
         <div className="flex pt-20">
@@ -303,6 +305,9 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     activeTag={home.activeTag}
                     setActiveTag={handleTagChange}
                     availableTags={home.availableTags}
+                    userKeapTags={home.userKeapTags}
+                    onVerifySuccess={home.setUserKeapTags}
+                    onOpenSSOOnboarding={() => home.setIsSSOOnboardingOpen(true)}
                   />
                 </div>
               ) : (
@@ -350,6 +355,13 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
               const email = home.userData?.email || home.user?.primaryEmailAddress?.emailAddress;
               if (email) home.revalidateStatus(email);
             }}
+          />
+        )}
+
+        {home.isLoaded && (
+          <CampusSSOOnboardingDialog
+            isOpen={home.isSSOOnboardingOpen}
+            setIsOpen={home.setIsSSOOnboardingOpen}
           />
         )}
       </TooltipProvider>

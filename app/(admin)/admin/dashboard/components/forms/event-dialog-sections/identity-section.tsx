@@ -10,12 +10,15 @@ import { EventFlag } from "@/components/ui/event-flag";
 import { AVAILABLE_ICONS } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "../event-dialog";
+import { Trash2, Plus } from "lucide-react";
+import { KeapTagPicker } from "../keap-tag-picker";
 
 interface IdentitySectionProps {
   event: any;
   setEvent: (event: any) => void;
   categories: any[];
   systemTags: any[];
+  keapTags: any[];
   isOnline: boolean;
   isUploading: boolean;
   handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
@@ -26,6 +29,7 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
   setEvent,
   categories,
   systemTags,
+  keapTags = [],
   isOnline,
   isUploading,
   handleFileUpload,
@@ -270,39 +274,143 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
           const pagoTag = systemTags.find((t: any) => t.slug === "pago");
           const isPaidEvent = pagoTag && event.tag_ids?.includes(pagoTag.id);
           if (!isPaidEvent) return null;
+
+          const paidLinks = event.paid_links || [];
+
+          const handleAddPaidLink = () => {
+            const updated = [...paidLinks, { url: "", button_text: "", keap_tag_id: "" }];
+            setEvent({ ...event, paid_links: updated });
+          };
+
+          const handleUpdatePaidLink = (index: number, field: string, value: string) => {
+            const updated = [...paidLinks];
+            updated[index] = { ...updated[index], [field]: value };
+            setEvent({ ...event, paid_links: updated });
+          };
+
+          const handleRemovePaidLink = (index: number) => {
+            const updated = paidLinks.filter((_: any, i: number) => i !== index);
+            setEvent({ ...event, paid_links: updated });
+          };
+
           return (
-            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 p-6 bg-primary/5 rounded-[24px] border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-300 mt-4">
-              <div className="md:col-span-2 space-y-1">
-                <h4 className="text-xs font-black uppercase text-primary tracking-wide">Configuración de Evento Pago</h4>
-                <p className="text-[11px] text-muted-foreground">Este evento redirigirá a un enlace externo en lugar del flujo de registro local.</p>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5">
-                  <Label className="text-xs font-black uppercase text-muted-foreground">Enlace de Compra / Redirección</Label>
-                  <span className="text-[10px] text-red-500 font-bold">*</span>
+            <div className="md:col-span-2 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300 mt-4">
+
+              {/* ── Enlace predeterminado (para todos) ── */}
+              <div className="p-5 bg-muted/30 rounded-[20px] border border-border/50 space-y-3">
+                <div className="space-y-0.5">
+                  <h4 className="text-xs font-black uppercase text-foreground tracking-wide">Enlace Predeterminado</h4>
+                  <p className="text-[11px] text-muted-foreground">Es el enlace que verán todos los usuarios sin membresía o sin tag asignado. Obligatorio si el evento es de pago.</p>
                 </div>
-                <Input
-                  required={isPaidEvent}
-                  type="url"
-                  value={event.external_url || ""}
-                  onChange={(e) => setEvent({ ...event, external_url: e.target.value })}
-                  className="rounded-xl border-border bg-background h-12 focus:bg-background transition-all shadow-sm"
-                  placeholder="https://hotmart.com/... o https://pay.chu.com/..."
-                />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="md:col-span-2 space-y-1">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">URL del enlace de compra</Label>
+                    <Input
+                      type="url"
+                      value={event.external_url || ""}
+                      onChange={(e) => setEvent({ ...event, external_url: e.target.value })}
+                      className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                      placeholder="https://hotmart.com/... o https://pay.chu.com/..."
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">Texto del Botón</Label>
+                    <Input
+                      value={event.external_button_text || ""}
+                      onChange={(e) => setEvent({ ...event, external_button_text: e.target.value })}
+                      className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                      placeholder="Adquirir entrada"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5">
-                  <Label className="text-xs font-black uppercase text-muted-foreground">Texto del Botón</Label>
+              {/* ── Links condicionados por tag de Keap ── */}
+              <div className="p-5 bg-muted/30 rounded-[20px] border border-border/50 space-y-4">
+                <div className="space-y-0.5">
+                  <h4 className="text-xs font-black uppercase text-foreground tracking-wide">Enlaces Exclusivos por Membresía (Opcional)</h4>
+                  <p className="text-[11px] text-muted-foreground">Configura enlaces adicionales con cupones o accesos especiales. Solo los verán los usuarios que tengan el tag de Keap correspondiente. Se evalúan en cascada: el último que coincida gana.</p>
                 </div>
-                <Input
-                  value={event.external_button_text || ""}
-                  onChange={(e) => setEvent({ ...event, external_button_text: e.target.value })}
-                  className="rounded-xl border-border bg-background h-12 focus:bg-background transition-all shadow-sm"
-                  placeholder="Adquiere tu entrada (Por defecto)"
-                />
-              </div>
+
+              {paidLinks.length === 0 ? (
+                <div className="text-center py-4 border border-dashed border-border rounded-xl space-y-2">
+                  <p className="text-xs text-muted-foreground">No hay enlaces condicionados configurados.</p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddPaidLink}
+                    className="rounded-xl text-xs"
+                  >
+                    <Plus className="size-3.5 mr-1" /> Agregar Enlace
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {paidLinks.map((link: any, index: number) => (
+                    <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-background/50 rounded-xl border border-border/50 items-end">
+                      <div className="md:col-span-5 space-y-2">
+                        <div className="flex items-center min-h-6">
+                          <Label className="text-[10px] font-black uppercase text-muted-foreground">URL del Enlace Exclusivo</Label>
+                        </div>
+                        <Input
+                          required
+                          type="url"
+                          value={link.url || ""}
+                          onChange={(e) => handleUpdatePaidLink(index, "url", e.target.value)}
+                          className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                          placeholder="https://hotmart.com/... o https://pay.chu.com/..."
+                        />
+                      </div>
+                      <div className="md:col-span-3 space-y-2">
+                        <div className="flex items-center min-h-6">
+                          <Label className="text-[10px] font-black uppercase text-muted-foreground">Precio Especial (Opcional)</Label>
+                        </div>
+                        <Input
+                          value={link.price || ""}
+                          onChange={(e) => handleUpdatePaidLink(index, "price", e.target.value)}
+                          className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                          placeholder="Ej: 197 USD"
+                        />
+                      </div>
+                      <div className="md:col-span-3 space-y-2">
+                        <KeapTagPicker
+                          label="Tag Requerido (Keap)"
+                          value={link.keap_tag_id || ""}
+                          onChange={(tagId) => handleUpdatePaidLink(index, "keap_tag_id", tagId)}
+                          tags={keapTags}
+                        />
+                      </div>
+
+                      <div className="md:col-span-1 flex justify-center pb-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemovePaidLink(index)}
+                          className="text-destructive hover:bg-destructive/10 rounded-xl cursor-pointer size-10"
+                          title="Eliminar enlace"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddPaidLink}
+                      className="rounded-xl text-xs"
+                    >
+                      <Plus className="size-3.5 mr-1" /> Agregar Enlace
+                    </Button>
+                  </div>
+                </div>
+              )}
+              </div>{/* end bg-muted/30 */}
             </div>
           );
         })()}

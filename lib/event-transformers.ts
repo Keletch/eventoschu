@@ -64,9 +64,14 @@ export function transformEventForUI(event: Event) {
     displayLinkUrl: isOnline ? (event.location || null) : null,
     displayLinkEnabled: isOnline ? !!event.is_virtual : false,
     // Precio
-    displayPrice: !event.price || event.price.toLowerCase().includes('sin costo') || event.price === "0"
-      ? "Evento sin costo"
-      : event.price,
+    displayPrice: (() => {
+      const priceStr = typeof event.price === 'string'
+        ? event.price
+        : (event.price ? String(event.price) : "");
+      return !priceStr || priceStr.toLowerCase().includes('sin costo') || priceStr === "0"
+        ? "Evento sin costo"
+        : priceStr;
+    })(),
     // Duración
     displayDuration: event.duration || "Aproximadamente 2 horas",
     // Metadatos técnicos para Schema.org
@@ -78,6 +83,7 @@ export function transformEventForUI(event: Event) {
     isPaid,
     externalUrl: event.external_url || null,
     externalButtonText: event.external_button_text || "Adquirir entrada",
+    paidLinks: event.paid_links || [],
     description: event.description || null,
     infoUrl: event.info_url || null
   };

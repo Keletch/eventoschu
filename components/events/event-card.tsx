@@ -2,10 +2,15 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass, ExternalLink, Plus, Minus, Info } from "lucide-react";
+import { Check, Calendar, Clock, MapPin, CircleDollarSign, Hourglass, ExternalLink, Plus, Minus, Info, Mail, Loader2, Lock, Unlock, ShieldCheck } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { trackPaidEventClick } from "@/app/actions/user-registration";
+import { getContactTagsByEmail } from "@/app/actions/keap";
+import { useClerk } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 // Modular Components
 import { EventProgressBar } from "@/components/events/event-progress-bar";
@@ -13,6 +18,13 @@ import { EventSoldOutOverlay } from "@/components/events/event-sold-out-overlay"
 import { EventFlag } from "@/components/ui/event-flag";
 
 import { getEventUIConfig } from "@/lib/event-config";
+
+interface PaidLink {
+  url: string;
+  button_text?: string;
+  keap_tag_id?: string;
+  price?: string;
+}
 
 interface EventCardProps {
   id: string;
@@ -42,6 +54,12 @@ interface EventCardProps {
   externalButtonText?: string | null;
   description?: string | null;
   infoUrl?: string | null;
+  // Nuevos: acceso por tags de Keap
+  paidLinks?: PaidLink[];
+  userKeapTags?: string[];
+  isSignedIn?: boolean;
+  onVerifySuccess?: (tags: string[]) => void;
+  onOpenSSOOnboarding?: () => void;
 }
 
 export function EventCard({
@@ -71,7 +89,13 @@ export function EventCard({
   externalButtonText,
   description,
   infoUrl,
+  paidLinks = [],
+  userKeapTags = [],
+  isSignedIn = false,
+  onVerifySuccess,
+  onOpenSSOOnboarding,
 }: EventCardProps) {
+  const { openSignIn } = useClerk();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [canExpand, setCanExpand] = useState(false);
@@ -81,6 +105,81 @@ export function EventCard({
   const [iframeLoading, setIframeLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Modal de validación manual por correo (para invitados)
+  const [isVerifyOpen, setIsVerifyOpen] = useState(false);
+  const [verifyEmail, setVerifyEmail] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  // 🔑 Lógica de cascada: el ÚLTIMO paid_link cuyo tag coincida con los del usuario gana.
+  const unlockedLink = React.useMemo(() => {
+    if (!isPaid || paidLinks.length === 0) return null;
+    // Recorremos en orden: el último que matchea tiene prioridad (cascada)
+    let matched: PaidLink | null = null;
+    for (const link of paidLinks) {
+      if (!link.keap_tag_id) {
+        // Sin restricción de tag → siempre disponible (fallback público)
+        matched = link;
+      } else if (userKeapTags.includes(link.keap_tag_id)) {
+        matched = link;
+      }
+    }
+    return matched;
+  }, [isPaid, paidLinks, userKeapTags]);
+
+  // Si tiene paid_links configurados, usarlos; si no, usar el externalUrl legacy
+  const hasPaidLinksConfig = isPaid && paidLinks.length > 0;
+  const effectiveUrl = hasPaidLinksConfig ? (unlockedLink?.url || externalUrl) : externalUrl;
+  const effectiveButtonText = hasPaidLinksConfig
+    ? (unlockedLink?.button_text || externalButtonText || "Adquirir entrada")
+    : (externalButtonText || "Adquirir entrada");
+  const isUnlocked = hasPaidLinksConfig ? !!unlockedLink : !!externalUrl;
+
+  const handleVerifyAccess = async () => {
+    if (!verifyEmail.trim()) return;
+    setIsVerifying(true);
+    try {
+      const res = await getContactTagsByEmail(verifyEmail.trim().toLowerCase());
+      const tags = res.tags || [];
+      
+      // Llamar al callback para actualizar de forma invisible el estado de tags en el front
+      if (onVerifySuccess) {
+        onVerifySuccess(tags);
+      }
+
+      // Buscamos cascada igual que en unlockedLink para determinar si hay un enlace exclusivo que le corresponda
+      let foundExclusive = false;
+      for (const link of paidLinks) {
+        if (link.keap_tag_id && tags.includes(link.keap_tag_id)) {
+          foundExclusive = true;
+          break;
+        }
+      }
+
+      setIsVerifyOpen(false);
+      setVerifyEmail("");
+
+      if (tags.length > 0) {
+        if (foundExclusive) {
+          toast.success("Membresía vinculada temporalmente con éxito. Enlaces actualizados", {
+            duration: 8000,
+          });
+        } else {
+          toast.success("Membresía vinculada temporalmente con éxito. No se encontraron eventos con promoción", {
+            duration: 8000,
+          });
+        }
+      } else {
+        toast.error("No encontramos ninguna membresía del campus vinculada a este correo electrónico", {
+          duration: 8000,
+        });
+      }
+    } catch {
+      toast.error("Error al verificar. Intenta de nuevo.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   useEffect(() => {
     if (isInfoOpen) {
@@ -159,7 +258,7 @@ export function EventCard({
           : cn(
               "bg-card transition-all duration-300",
               isPaid
-                ? "cursor-default border-card-border shadow-sm hover:shadow-md"
+                ? "cursor-default border-card-border shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1"
                 : "cursor-pointer border-card-border shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1",
               selected && !isPaid && "border-primary ring-4 ring-primary/5 shadow-md shadow-primary/20 -translate-y-0.5 hover:shadow-lg hover:shadow-primary/30"
             )
@@ -241,17 +340,7 @@ export function EventCard({
         
           <div className="flex items-center gap-2 shrink-0">
             {showInfoIcon && (
-              <>
-                <button
-                  type="button"
-                  onClick={handleInfoClick}
-                  className="size-7 md:size-8 rounded-full bg-muted/80 hover:bg-primary/20 text-muted-foreground hover:text-primary transition-all flex items-center justify-center shrink-0 border border-border shadow-sm"
-                  title="Más información"
-                >
-                  <Info className="size-4" strokeWidth={2.5} />
-                </button>
-
-                <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
+              <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
                   <DialogContent 
                     className={cn(
                       "border-none shadow-2xl bg-card text-foreground transition-all duration-300",
@@ -310,8 +399,8 @@ export function EventCard({
                               src={infoUrl!} 
                               loading="lazy" 
                               scrolling="no"
-                              sandbox="allow-scripts allow-same-origin allow-forms" 
-                              className="w-full h-[3500px] border-none pointer-events-none select-none"
+                              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-top-navigation-by-user-activation" 
+                              className="w-full h-[3500px] border-none"
                               onLoad={handleIframeLoad}
                             />
                           </div>
@@ -348,7 +437,6 @@ export function EventCard({
                     )}
                   </DialogContent>
                 </Dialog>
-              </>
             )}
 
             {!isSoldOut && !isPaid && (
@@ -395,26 +483,166 @@ export function EventCard({
             ) : (
               <EventDetailItem icon={<MapPin className="w-4 h-4 text-card-icon shrink-0" />} label="Sitio" value={location} />
             )}
-            <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-card-icon shrink-0" />} label="Precio" value={price} />
+            {unlockedLink && unlockedLink.price ? (
+              <div className="flex gap-3 items-center">
+                <CircleDollarSign className="w-4 h-4 text-card-icon shrink-0" />
+                <span className="font-bold shrink-0">Precio:</span>
+                <div className="flex items-center gap-2 truncate">
+                  <span className="line-through text-muted-foreground/75 text-xs md:text-sm">{price}</span>
+                  <span className="font-bold text-primary animate-in fade-in zoom-in-95 duration-500">{unlockedLink.price}</span>
+                </div>
+              </div>
+            ) : (
+              <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-card-icon shrink-0" />} label="Precio" value={price} />
+            )}
           </div>
         </div>
 
-        <div className="mt-auto pt-6">
+        <div className="mt-auto pt-4 border-t border-card-border h-[60px] flex flex-col justify-center">
           {isPaid ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (externalUrl) {
-                  trackPaidEventClick(id).catch((err) => console.error("Failed to track click:", err));
-                  window.open(externalUrl, "_blank", "noopener,noreferrer");
-                }
-              }}
-              className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              {externalButtonText || "Adquirir entrada"}
-              <ExternalLink className="size-3.5" strokeWidth={2.5} />
-            </button>
+            <>
+              {/* === USUARIO LOGUEADO + TAG CORRECTO → Enlace desbloqueado === */}
+              {isSignedIn && isUnlocked ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    trackPaidEventClick(id).catch((err) => console.error("Failed to track:", err));
+                    window.open(effectiveUrl!, "_blank", "noopener,noreferrer");
+                  }}
+                  className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <Unlock className="size-3.5" strokeWidth={2.5} />
+                  {effectiveButtonText}
+                </button>
+              ) : isSignedIn && !isUnlocked && hasPaidLinksConfig ? (
+                /* === LOGUEADO PERO SIN TAG → Bloqueado (no tiene membresía) === */
+                <button
+                  type="button"
+                  disabled
+                  className="w-full rounded-full bg-muted border border-border text-muted-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 cursor-not-allowed"
+                >
+                  <Lock className="size-3.5" strokeWidth={2.5} />
+                  Requiere membresía activa
+                </button>
+              ) : !hasPaidLinksConfig ? (
+                /* === Sin paid_links config → comportamiento legacy === */
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (externalUrl) {
+                      trackPaidEventClick(id).catch((err) => console.error("Failed to track:", err));
+                      window.open(externalUrl, "_blank", "noopener,noreferrer");
+                    }
+                  }}
+                  className="w-full rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  {externalButtonText || "Adquirir entrada"}
+                  <ExternalLink className="size-3.5" strokeWidth={2.5} />
+                </button>
+              ) : (
+                /* === INVITADO (no logueado) → Botón para enlace predeterminado + Botón para verificar membresía/correo === */
+                <div className="flex gap-2.5 w-full">
+                  {showInfoIcon && (
+                    <button
+                      type="button"
+                      onClick={handleInfoClick}
+                      className="size-11 shrink-0 rounded-full bg-muted hover:bg-muted-hover border border-border text-foreground hover:text-foreground font-bold flex items-center justify-center transition-all hover:scale-[1.05] active:scale-[0.95]"
+                      title="Más información"
+                    >
+                      <Info className="size-4.5" strokeWidth={2} />
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (effectiveUrl) {
+                        trackPaidEventClick(id).catch((err) => console.error("Failed to track:", err));
+                        window.open(effectiveUrl, "_blank", "noopener,noreferrer");
+                      }
+                    }}
+                    className="flex-1 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    {effectiveButtonText}
+                    <ExternalLink className="size-3.5" strokeWidth={2.5} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setIsVerifyOpen(true); }}
+                    className="size-11 shrink-0 rounded-full bg-muted hover:bg-muted-hover border border-border text-foreground hover:text-foreground font-bold flex items-center justify-center transition-all hover:scale-[1.05] active:scale-[0.95]"
+                    title="Verificar acceso / membresía"
+                  >
+                    <ShieldCheck className="size-4.5" strokeWidth={2} />
+                  </button>
+                </div>
+              )}
+
+              {/* Modal de verificación manual por correo */}
+              <Dialog open={isVerifyOpen} onOpenChange={setIsVerifyOpen}>
+                <DialogContent className="max-w-sm rounded-[32px] p-6 md:p-8 bg-card border-border shadow-2xl z-[250]">
+                  <DialogHeader className="space-y-2">
+                    <DialogTitle className="text-xl font-black text-left">¿Tienes membresía activa?</DialogTitle>
+                    <DialogDescription className="text-left text-sm text-muted-foreground font-medium leading-relaxed">
+                      Ingresa el correo con el que te registraste en el campus para verificar si tienes acceso a este evento.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="py-4 space-y-3">
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                      <Input
+                        type="email"
+                        placeholder="tu@correo.com"
+                        value={verifyEmail}
+                        onChange={(e) => setVerifyEmail(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") handleVerifyAccess(); }}
+                        className="pl-10 rounded-xl border-border bg-muted/30 h-11 text-sm"
+                        disabled={isVerifying}
+                      />
+                    </div>
+                    <div className="text-[11px] text-muted-foreground leading-relaxed flex flex-col items-center justify-center text-center gap-1">
+                      <p>
+                        💡 <span className="font-bold">Ahorra tiempo:</span> Inicia sesión/Regístrate con este correo.
+                      </p>
+                      {onOpenSSOOnboarding && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsVerifyOpen(false);
+                            onOpenSSOOnboarding();
+                          }}
+                          className="text-primary hover:underline font-bold inline-flex items-center gap-0.5 cursor-pointer"
+                        >
+                          Ver más detalles
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                   <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
+                    <Button
+                      onClick={handleVerifyAccess}
+                      disabled={isVerifying || !verifyEmail.trim()}
+                      className="w-full h-11 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 gap-2 cursor-pointer"
+                    >
+                      {isVerifying ? <Loader2 className="size-4 animate-spin" /> : null}
+                      {isVerifying ? "Verificando..." : "Verificar acceso"}
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => { setIsVerifyOpen(false); setVerifyEmail(""); }}
+                      className="w-full text-center text-xs text-muted-foreground hover:text-foreground font-medium transition-colors py-1 cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </>
           ) : (
             <EventProgressBar 
               confirmedCount={confirmedCount}

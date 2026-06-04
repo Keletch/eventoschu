@@ -107,10 +107,10 @@ export function ToggleEventDialog({
               onConfirm();
             }}
             disabled={isSubmitting}
-            className={`flex-1 rounded-2xl h-12 font-bold text-white shadow-lg transition-all border-none ${
+            className={`flex-1 rounded-2xl h-12 font-bold shadow-lg transition-all border-none ${
               isDeactivating 
-                ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/20' 
-                : 'bg-primary hover:bg-primary/90 shadow-primary/20'
+                ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/20' 
+                : 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20'
             }`}
           >
             {isSubmitting ? (

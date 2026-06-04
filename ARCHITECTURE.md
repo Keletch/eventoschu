@@ -210,6 +210,7 @@ Para operaciones de administración pesadas (como la migración o sincronizació
 ### 3. Lógica de Negocio en Inteligencia y Métricas
 *   **Cálculo SSoT**: Toda métrica de eventos extraída en el dashboard admin consume la función centralizada `transformEventForUI` para formatear de manera idéntica los títulos y nombres de ciudades virtuales (`Online`).
 *   **Manejo de Aforo Ilimitado**: Los eventos con un cupo mayor o igual a `9999` se consideran de capacidad ilimitada (`isUnlimited: true`), inyectando en la vista de rendimiento un badge de infinito `∞` que sobrescribe las barras de porcentaje y evita cálculos de ocupación incorrectos.
+*   **Precios Especiales y Promociones**: La columna `paid_links` (JSONB) admite un atributo `price` por enlace condicional de Keap. Al coincidir la membresía/tag del usuario con el del enlace, la interfaz muestra el precio original tachado y destaca el precio de promoción en la Event Card de manera adaptativa.
 
 ---
 

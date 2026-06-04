@@ -320,3 +320,14 @@ body {
 .hacker .user-button-avatar-box-custom {
   border-radius: 8px !important; /* Estética más cuadriculada para hacker */
 }
+
+/* 📥 Clerk Inputs Theme & Contrast Fixes */
+.cl-formFieldInput {
+  background-color: var(--input) !important;
+  color: var(--foreground) !important;
+}
+
+.cl-formFieldInput::placeholder {
+  color: var(--muted-foreground) !important;
+  opacity: 0.85 !important;
+}

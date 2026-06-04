@@ -38,6 +38,7 @@ El sistema implementa una separación clara de responsabilidades para maximizar 
 ## 🛠️ Gestión Operativa (Admin Dashboard)
 
 - **Métricas en Tiempo Real**: Visualización interactiva con un gráfico circular donut de tendencia (TrendChart) en split 50/50, lista de días de la semana y cálculo dinámico de interés por categorías y geolocalizaciones (Top 5 con expansión).
+- **Precios Especiales**: Capacidad de configurar un precio especial por cada enlace condicionado por Keap tag. Si el usuario califica, la tarjeta del evento muestra de forma cruzada el precio regular y el promocional con micro-animaciones dinámicas.
 - **Aforo Ilimitado**: Soporte para eventos online o con capacidad ilimitada (`capacity >= 9999`), representados visualmente con un badge e indicador `∞ Ilimitado`.
 - **Operaciones de Limpieza**: Herramientas para la eliminación segura de registros y purga de eventos, incluyendo la limpieza automática de tags en el CRM.
 - **Búsqueda Avanzada**: Sistema de filtrado inteligente de usuarios y eventos por múltiples criterios simultáneos, ordenado de forma responsiva para evitar encabalgamiento de filas.

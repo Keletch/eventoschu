@@ -12,6 +12,13 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 const EVENTS_CACHE_KEY = "events_list_v2";
 const CACHE_TTL = 3600; // 1 hora
 
+export interface PaidLink {
+  url: string;
+  button_text?: string;
+  keap_tag_id?: string;
+  price?: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -33,6 +40,7 @@ export interface Event {
   created_at?: string;
   keap_tag_id?: string;
   keap_pending_tag_id?: string;
+  paid_links?: PaidLink[] | null;
   categories?: { 
     id?: string; 
     name: string; 
@@ -58,19 +66,21 @@ export interface Event {
 /**
  * 📅 Obtiene eventos con capa de caché inteligente en Redis
  */
-export async function getEvents() {
+export async function getEvents(bypassCache = false) {
   // Obtener la fecha de hoy en formato YYYY-MM-DD
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayStr = today.toISOString().split('T')[0];
 
   try {
-    // 1. Intentar desde Cache
-    const cached = await redis.get(EVENTS_CACHE_KEY);
-    if (cached) {
-      // Filtrar también el caché por si hay eventos que caducaron mientras estaban en memoria
-      const validEvents = (cached as Event[]).filter(e => e.start_date >= todayStr);
-      return { success: true, data: validEvents, source: "cache" };
+    // 1. Intentar desde Cache (si no se pide bypass)
+    if (!bypassCache) {
+      const cached = await redis.get(EVENTS_CACHE_KEY);
+      if (cached) {
+        // Filtrar también el caché por si hay eventos que caducaron mientras estaban en memoria
+        const validEvents = (cached as Event[]).filter(e => e.start_date >= todayStr);
+        return { success: true, data: validEvents, source: "cache" };
+      }
     }
 
     // 2. Si no hay cache, ir a Supabase (solo eventos futuros/de hoy)
