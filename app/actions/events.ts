@@ -17,6 +17,13 @@ export interface PaidLink {
   button_text?: string;
   keap_tag_id?: string;
   price?: string;
+  // Campos de soporte para la etiqueta Pago con cupo en eventos cerrados
+  type?: string;
+  checkout_url?: string;
+  checkout_button_text?: string;
+  waitlist_button_text?: string;
+  use_external_waitlist?: boolean;
+  paid_waitlist_url?: string;
 }
 
 export interface Event {
@@ -26,6 +33,7 @@ export interface Event {
   city: string;
   country: string;
   start_date: string;
+  end_date?: string | null;
   active: boolean;
   time?: string;
   timezone?: string;
@@ -117,12 +125,71 @@ export async function getEvents(bypassCache = false) {
   }
 }
 
+const CONFIRMED_TAGS_WHITELIST_KEY = "keap_confirmed_tags_whitelist";
+
 /**
- * 🧹 Limpia manualmente el caché de eventos
+ * 🏷️ Obtiene la lista blanca de IDs de tags de confirmación para eventos activos con 'Pago con cupo' desde Redis
  */
-export async function clearEventsCache() {
+export async function getConfirmedTagsWhitelist(): Promise<string[]> {
   try {
-    await redis.del(EVENTS_CACHE_KEY);
+    const cached = await redis.get<string[]>(CONFIRMED_TAGS_WHITELIST_KEY);
+    if (cached && Array.isArray(cached)) return cached;
+
+    // Si no está en Redis, consultar Supabase y reconstruir
+    const { data: events } = await supabaseAdmin
+      .from('events')
+      .select('keap_tag_id, initial_status, event_tags(tags(*))')
+      .eq('active', true)
+      .eq('initial_status', 'pending')
+      .not('keap_tag_id', 'is', null);
+
+    const pagoCupoEvents = (events || []).filter(e => 
+      (e.event_tags || []).some((et: any) => et.tags?.slug === 'pago_cupo')
+    );
+
+    const tagIds = Array.from(new Set(pagoCupoEvents.map(e => e.keap_tag_id?.toString()).filter(Boolean))) as string[];
+    await redis.set(CONFIRMED_TAGS_WHITELIST_KEY, tagIds, { ex: CACHE_TTL });
+    return tagIds;
+  } catch (_e) {
+    return [];
+  }
+}
+
+/**
+ * 🔄 Actualiza la lista blanca de tags en Redis (solo eventos Pago con cupo)
+ */
+export async function refreshConfirmedTagsWhitelist() {
+  try {
+    const { data: events } = await supabaseAdmin
+      .from('events')
+      .select('keap_tag_id, initial_status, event_tags(tags(*))')
+      .eq('active', true)
+      .eq('initial_status', 'pending')
+      .not('keap_tag_id', 'is', null);
+
+    const pagoCupoEvents = (events || []).filter(e => 
+      (e.event_tags || []).some((et: any) => et.tags?.slug === 'pago_cupo')
+    );
+
+    const tagIds = Array.from(new Set(pagoCupoEvents.map(e => e.keap_tag_id?.toString()).filter(Boolean))) as string[];
+    await redis.set(CONFIRMED_TAGS_WHITELIST_KEY, tagIds, { ex: CACHE_TTL });
+    return { success: true, count: tagIds.length };
+  } catch (_e) {
+    return { success: false };
+  }
+}
+
+/**
+ * 🧹 Limpia manualmente el caché de eventos en Redis
+ * Si `refreshWhitelist` es true (por ejemplo, al crear/editar un evento con Pago con cupo), también actualiza la whitelist.
+ */
+export async function clearEventsCache(refreshWhitelist = false) {
+  try {
+    const tasks: Promise<any>[] = [redis.del(EVENTS_CACHE_KEY)];
+    if (refreshWhitelist) {
+      tasks.push(refreshConfirmedTagsWhitelist());
+    }
+    await Promise.all(tasks);
     return { success: true };
   } catch (_error) {
     return { success: false };

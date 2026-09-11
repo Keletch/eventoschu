@@ -42,7 +42,23 @@ export function useHomeLogic(initialEvents: any[] = []) {
   const [eventDataMap, setEventDataMap] = useState<Record<string, any>>({});
   const [surveyData, setSurveyData] = useState<any>(null);
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
-  const [selectedCityId, setSelectedCityId] = useState<string>("");
+  const [selectedCityId, _setSelectedCityId] = useState<string>("");
+  const setSelectedCityId = useCallback((valOrFn: string | ((prev: string) => string)) => {
+    _setSelectedCityId((prev) => {
+      const nextId = typeof valOrFn === "function" ? valOrFn(prev) : valOrFn;
+      if (nextId) {
+        try {
+          const saved = localStorage.getItem(HOME_STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            parsed.selectedCityId = nextId;
+            localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify(parsed));
+          }
+        } catch (_e) {}
+      }
+      return nextId;
+    });
+  }, []);
   const [isEditing, setIsEditing] = useState(false);
   const [editFormData, setEditFormData] = useState<any>(null);
 
@@ -550,20 +566,29 @@ export function useHomeLogic(initialEvents: any[] = []) {
         }
       }
 
-      if (activeStep) {
-        setStep(parseInt(activeStep));
-      } else if (saved) {
+      if (saved) {
         try {
           const parsed = JSON.parse(saved);
           setUserData(parsed.userData);
-          setSelectedEvents(parsed.selectedEvents);
+          setSelectedEvents(parsed.selectedEvents || []);
           setEventStatuses(parsed.eventStatuses || {});
           setEventDataMap(parsed.eventDataMap || {});
           setSurveyData(parsed.surveyData || null);
-          setStep(2);
-        } catch (_e) {
-          setStep(1);
-        }
+          const evList = parsed.selectedEvents || [];
+          // Si hay un previo válido en los eventos del usuario, usarlo; sino el más reciente (primero)
+          const initialCityId = (parsed.selectedCityId && evList.includes(parsed.selectedCityId))
+            ? parsed.selectedCityId
+            : (evList[0] || "");
+          if (initialCityId) {
+            setSelectedCityId(initialCityId);
+          }
+        } catch (_e) {}
+      }
+
+      if (activeStep) {
+        setStep(parseInt(activeStep));
+      } else if (saved) {
+        setStep(2);
       } else {
         setStep(1);
       }
@@ -642,7 +667,11 @@ export function useHomeLogic(initialEvents: any[] = []) {
               }
               
               if (result.selectedEvents?.length > 0) {
-                setSelectedCityId(prev => prev || result.selectedEvents[0]);
+                // Si hay un previo válido en la lista, conservarlo; de lo contrario seleccionar el más reciente (primero)
+                setSelectedCityId(prev => {
+                  if (prev && result.selectedEvents.includes(prev)) return prev;
+                  return result.selectedEvents[0];
+                });
               }
               
               // Solo forzamos Paso 2 si NO hay un paso definido o si estamos en el 2
@@ -651,9 +680,20 @@ export function useHomeLogic(initialEvents: any[] = []) {
               }
             }
 
+          const currentSaved = localStorage.getItem(HOME_STORAGE_KEY);
+          let prevSavedCityId = "";
+          try {
+            if (currentSaved) prevSavedCityId = JSON.parse(currentSaved).selectedCityId;
+          } catch (_e) {}
+
+          const effectiveCityId = (prevSavedCityId && result.selectedEvents?.includes(prevSavedCityId))
+            ? prevSavedCityId
+            : (result.selectedEvents?.[0] || "");
+
           localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
             userData: sanitizedUserData,
             selectedEvents: result.selectedEvents,
+            selectedCityId: effectiveCityId,
             eventStatuses: statuses,
             eventDataMap: dataMap,
             surveyData: survey
@@ -706,6 +746,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
         localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
           userData: revalidation.userData,
           selectedEvents: revalidation.selectedEvents,
+          selectedCityId: revalidation.selectedEvents?.[0] || "",
           eventStatuses: (revalidation as any).eventStatuses || {},
           eventDataMap: (revalidation as any).eventData || {},
           surveyData: validSurvey
@@ -747,6 +788,12 @@ export function useHomeLogic(initialEvents: any[] = []) {
         throw new Error(regResult.error);
       }
 
+      // 🎯 Redirección pura para lista de espera externa sin registro local (abrir en pestaña nueva)
+      if ((regResult as any).pureRedirect && (regResult as any).redirectUrl) {
+        window.open((regResult as any).redirectUrl, "_blank", "noopener,noreferrer");
+        return { success: true, pureRedirect: true } as any;
+      }
+
       // 🧠 Usar el orquestador de eventos para el mensaje de éxito
       const firstEventId = selectedEvents[0];
       const eventInfo = events.find(e => e.id === firstEventId);
@@ -785,6 +832,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
       localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
         userData: newUser,
         selectedEvents: finalSelectedEvents,
+        selectedCityId: idToSelect || "",
         eventStatuses: finalStatuses,
         eventDataMap: finalEventData,
         surveyData: finalSurvey
@@ -793,7 +841,10 @@ export function useHomeLogic(initialEvents: any[] = []) {
       window.dispatchEvent(new Event('registration-success'));
       trackGTMEvent("registration_completed");
 
-      return { success: true }; 
+      return { 
+        success: true,
+        checkoutRedirectUrl: (regResult as any).checkoutRedirectUrl || null
+      } as any; 
     } catch (error: any) {
       toast.error(error.message || "Error al procesar el registro");
       return { success: false };
@@ -819,13 +870,15 @@ export function useHomeLogic(initialEvents: any[] = []) {
         setEventStatuses(statuses);
         setEventDataMap(eventData);
         setSurveyData((result as any).surveyData || null);
-        if (result.selectedEvents && result.selectedEvents.length > 0) {
-          setSelectedCityId(result.selectedEvents[0]);
+        const cityToSelect = result.selectedEvents?.[0] || "";
+        if (cityToSelect) {
+          setSelectedCityId(cityToSelect);
         }
 
         localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
           userData: result.userData,
           selectedEvents: result.selectedEvents,
+          selectedCityId: cityToSelect,
           eventStatuses: statuses,
           eventDataMap: eventData,
           surveyData: (result as any).surveyData || null
@@ -919,9 +972,15 @@ export function useHomeLogic(initialEvents: any[] = []) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        const updatedEvents = payload.selected_events || parsed.selectedEvents;
+        const currentCityId = parsed.selectedCityId && updatedEvents?.includes(parsed.selectedCityId)
+          ? parsed.selectedCityId
+          : (updatedEvents?.[0] || "");
+
         localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
           ...parsed,
-          selectedEvents: payload.selected_events || parsed.selectedEvents,
+          selectedEvents: updatedEvents,
+          selectedCityId: currentCityId,
           eventStatuses: payload.event_statuses ? { ...parsed.eventStatuses, ...payload.event_statuses } : parsed.eventStatuses,
           eventDataMap: payload.event_data ? { ...parsed.eventDataMap, ...payload.event_data } : parsed.eventDataMap,
           userData: (payload.userData || payload.email) ? { ...parsed.userData, ...(payload.userData || payload) } : parsed.userData

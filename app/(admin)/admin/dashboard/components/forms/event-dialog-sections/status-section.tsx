@@ -15,9 +15,10 @@ import { InfoTooltip } from "../event-dialog";
 interface StatusSectionProps {
   event: any;
   setEvent: (event: any) => void;
+  systemTags?: any[];
 }
 
-export const StatusSection: React.FC<StatusSectionProps> = ({ event, setEvent }) => {
+export const StatusSection: React.FC<StatusSectionProps> = ({ event, setEvent, systemTags = [] }) => {
   return (
     <div className="space-y-6 p-6 bg-muted/30 rounded-[32px] border border-border">
       <div className="space-y-3">
@@ -30,13 +31,25 @@ export const StatusSection: React.FC<StatusSectionProps> = ({ event, setEvent })
           value={event.initial_status || "confirmed"}
           onValueChange={(v) => {
             const updates: any = { initial_status: v };
-            if (v === "pending" && event.keap_pending_tag_id === null) {
-              updates.keap_pending_tag_id = "";
+            if (v === "pending") {
+              if (event.keap_pending_tag_id === null) {
+                updates.keap_pending_tag_id = "";
+              }
+              if ((event.capacity ?? 0) >= 9999) {
+                updates.capacity = 50;
+              }
+              // En evento cerrado, la etiqueta de pago no es compatible
+              const pagoTag = systemTags.find((t: any) => t.slug === "pago");
+              if (pagoTag && event.tag_ids?.includes(pagoTag.id)) {
+                updates.tag_ids = (event.tag_ids || []).filter((id: string) => id !== pagoTag.id);
+              }
             } else if (v === "confirmed") {
               updates.keap_pending_tag_id = null;
-            }
-            if (v === "pending" && (event.capacity ?? 0) >= 9999) {
-              updates.capacity = 50;
+              // En evento abierto, la etiqueta de pago con cupo no es compatible
+              const pagoCupoTag = systemTags.find((t: any) => t.slug === "pago_cupo");
+              if (pagoCupoTag && event.tag_ids?.includes(pagoCupoTag.id)) {
+                updates.tag_ids = (event.tag_ids || []).filter((id: string) => id !== pagoCupoTag.id);
+              }
             }
             setEvent({ ...event, ...updates });
           }}

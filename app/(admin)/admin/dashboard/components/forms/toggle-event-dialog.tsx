@@ -32,7 +32,7 @@ export function ToggleEventDialog({
   isActive,
   onConfirm,
   isSubmitting,
-  removeKeapTags = true,
+  removeKeapTags = false,
   setRemoveKeapTags
 }: ToggleEventDialogProps) {
   const isDeactivating = isActive; // Si estaba activo y lo tocamos, vamos a desactivar
@@ -50,39 +50,19 @@ export function ToggleEventDialog({
             {isDeactivating ? '¿Desactivar Evento?' : '¿Reactivar Evento?'}
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground font-medium leading-relaxed">
-            {isDeactivating ? (
-              <>
-                Al desactivar <span className="font-bold text-foreground">"{eventTitle}"</span>, 
-                el evento se ocultará de la vista pública de inmediato.
-                
-                <span className="block mt-4 text-sm font-bold p-3 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-600">
-                  {removeKeapTags 
-                    ? "Los usuarios serán desvinculados en Keap (pausando correos de este evento)." 
-                    : "Las automatizaciones en Keap seguirán activas para los usuarios inscritos."}
-                </span>
-                
-                <br />
-                <span className="text-muted-foreground flex items-center justify-center gap-1 text-xs">
-                  <AlertTriangle className="w-3 h-3" /> Los registros se mantendrán intactos en Supabase.
-                </span>
-              </>
-            ) : (
-              <>
-                Al reactivar <span className="font-bold text-foreground">"{eventTitle}"</span>, 
-                el sistema restaurará automáticamente los tags de Keap a todos los usuarios 
-                que ya estaban registrados en Supabase.
-              </>
-            )}
+            {isDeactivating 
+              ? `El evento "${eventTitle}" se ocultará de la vista pública.` 
+              : `El evento "${eventTitle}" volverá a mostrarse en la web.`}
           </DialogDescription>
           
           {isDeactivating && setRemoveKeapTags && (
-            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border mt-6">
-              <div className="space-y-0.5 text-left">
+            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border mt-4">
+              <div className="space-y-0.5 text-left pr-4">
                 <Label htmlFor="remove-keap" className="font-bold text-sm cursor-pointer">
-                  Quitar Tags de Keap
+                  Quitar tags en Keap
                 </Label>
-                <p className="text-[11px] text-muted-foreground">
-                  Pausa correos relacionados con este evento en CRM.
+                <p className="text-[11px] text-muted-foreground leading-snug">
+                  Remueve los tags del evento a los usuarios inscritos.
                 </p>
               </div>
               <Switch 

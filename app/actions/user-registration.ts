@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import crypto from "crypto";
 import { registrationSchema } from "./schemas";
 import { validateTurnstileToken } from "./turnstile";
-import { syncKeapTags } from "./keap";
+import { syncKeapTags, getContactTagsByEmail } from "./keap";
 import { 
   notifyAdminNewRegistration, 
   notifyAdminSurveyCompleted, 
@@ -15,6 +15,7 @@ import { formatEventForNotification } from "./utils";
 import { broadcastToAdmins, broadcastToUser, broadcastToPublic } from "./utils-realtime";
 import { getEventUIConfig } from "@/lib/event-config";
 import { dispatchSignal } from "@/lib/services/signal-dispatcher";
+import { clearEventsCache } from "./events";
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -33,7 +34,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
     // 0. Obtener información de los eventos ANTES de decidir estados
     const { data: allEventsInfo } = await supabaseAdmin
       .from('events')
-      .select('id, title, city, country, start_date, capacity, keap_tag_id, keap_pending_tag_id, initial_status, categories(name)')
+      .select('id, title, city, country, start_date, capacity, keap_tag_id, keap_pending_tag_id, initial_status, paid_links, categories(name), event_tags(tags(*))')
       .in('id', validatedData.selected_events);
 
     const eventInfoMap: Record<string, any> = {};
@@ -54,7 +55,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
       }
     }
 
-    // Sincronización de conteos para Modo Abierto
+    // Sincronización de conteos de cupos confirmados
     const { data: currentCounts } = await supabaseAdmin.from('registrations').select('selected_events, event_statuses');
     const countsMap: Record<string, number> = {};
     currentCounts?.forEach(reg => {
@@ -62,6 +63,45 @@ export async function createRegistration(data: any, turnstileToken: string) {
         if (reg.event_statuses?.[id] === 'confirmed') countsMap[id] = (countsMap[id] || 0) + 1;
       });
     });
+
+    // 🎯 Detección de Pago con cupo para evento seleccionado
+    let checkoutRedirectUrl: string | null = null;
+    const selectedEventId = validatedData.selected_events[0];
+    const selectedEvInfo = eventInfoMap[selectedEventId];
+    const isClosedEv = selectedEvInfo?.initial_status === 'pending';
+    const isPagoCupoEv = isClosedEv && (selectedEvInfo?.event_tags || []).some((et: any) => et.tags?.slug === 'pago_cupo');
+
+    if (isPagoCupoEv) {
+      const pConfig = (selectedEvInfo?.paid_links || []).find((l: any) => l.type === 'pago_cupo_config');
+      const confirmedCount = countsMap[selectedEventId] || 0;
+      const capacity = selectedEvInfo?.capacity || 50;
+      const isFull = confirmedCount >= capacity;
+
+      const queryParams = new URLSearchParams({
+        name: `${validatedData.first_name} ${validatedData.last_name}`.trim(),
+        email: validatedData.email,
+        phone: `${validatedData.phone_code || ""}${validatedData.phone || ""}`.replace(/\s+/g, '')
+      }).toString();
+
+      // Escenario A: No hay cupos y tiene lista de espera externa activada
+      // NO se registra en Supabase ni en Keap; solo se redirige inmediatamente.
+      if (isFull && pConfig?.use_external_waitlist && pConfig?.paid_waitlist_url) {
+        const separator = pConfig.paid_waitlist_url.includes('?') ? '&' : '?';
+        const externalRedirect = `${pConfig.paid_waitlist_url}${separator}${queryParams}`;
+        return {
+          success: true,
+          pureRedirect: true,
+          redirectUrl: externalRedirect
+        };
+      }
+
+      // Escenario B: Sí hay cupos disponibles -> Se preparará checkoutRedirectUrl
+      if (!isFull && (pConfig?.checkout_url || pConfig?.url)) {
+        const rawUrl = pConfig.checkout_url || pConfig.url;
+        const separator = rawUrl.includes('?') ? '&' : '?';
+        checkoutRedirectUrl = `${rawUrl}${separator}${queryParams}`;
+      }
+    }
 
     // 2. Lógica de Actualización vs Creación
     if (existing) {
@@ -74,7 +114,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
       }
 
       const newlyAddedIds = validatedData.selected_events.filter(id => !(existing.selected_events || []).includes(id));
-      const mergedEvents = Array.from(new Set([...(existing.selected_events || []), ...validatedData.selected_events]));
+      const mergedEvents = Array.from(new Set([...validatedData.selected_events, ...(existing.selected_events || [])]));
       const updatedStatuses = { ...(existing.event_statuses || {}) };
       const updatedEventData = { ...(existing.event_data || {}) };
 
@@ -152,7 +192,8 @@ export async function createRegistration(data: any, turnstileToken: string) {
         mergedEvents: mergedEvents,
         eventStatuses: updatedStatuses,
         eventData: updatedEventData,
-        surveyData: existing.survey_data || null
+        surveyData: existing.survey_data || null,
+        checkoutRedirectUrl: checkoutRedirectUrl || undefined
       };
     } 
 
@@ -229,7 +270,8 @@ export async function createRegistration(data: any, turnstileToken: string) {
       mergedEvents: validatedData.selected_events,
       eventStatuses: initialStatuses,
       eventData: initialEventData,
-      surveyData: null
+      surveyData: null,
+      checkoutRedirectUrl: checkoutRedirectUrl || undefined
     };
 
   } catch (err: any) {
@@ -260,12 +302,65 @@ export async function checkRegistration(email: string, clerkId?: string) {
       return { success: false, error: "No tienes eventos registrados actualmente." };
     }
 
+    // 🔄 Sincronización Automática con Keap para eventos con "Pago con cupo"
+    let currentStatuses = { ...(data.event_statuses || {}) };
+    let hasStatusChanges = false;
+
+    // Obtener detalles de los eventos del usuario
+    const { data: userEvents } = await supabaseAdmin
+      .from('events')
+      .select('id, title, keap_tag_id, keap_pending_tag_id, initial_status, event_tags(tags(*))')
+      .in('id', data.selected_events);
+
+    const pagoCupoEvents = (userEvents || []).filter(e => {
+      const isClosed = e.initial_status === 'pending';
+      const hasPagoCupo = (e.event_tags || []).some((et: any) => et.tags?.slug === 'pago_cupo');
+      return isClosed && hasPagoCupo && e.keap_tag_id;
+    });
+
+    if (pagoCupoEvents.length > 0) {
+      // Consultar qué tags tiene el usuario en Keap CRM vía REST API
+      const keapResult = await getContactTagsByEmail(data.email);
+      if (keapResult.success && keapResult.tags && keapResult.tags.length > 0) {
+        const userKeapTagIds = keapResult.tags;
+
+        for (const ev of pagoCupoEvents) {
+          const userStatus = currentStatuses[ev.id];
+          // Si el usuario está en pending y ya tiene en Keap el TAG: CONFIRMADO
+          if (userStatus === 'pending' && userKeapTagIds.includes(ev.keap_tag_id)) {
+            currentStatuses[ev.id] = 'confirmed';
+            hasStatusChanges = true;
+          }
+        }
+      }
+    }
+
+    // Si hubo promociones automáticas a confirmado:
+    if (hasStatusChanges) {
+      await supabaseAdmin.from('registrations').update({
+        event_statuses: currentStatuses,
+        updated_at: new Date().toISOString()
+      }).eq('id', data.id);
+
+      data.event_statuses = currentStatuses;
+
+      // 🧹 Invalidación de caché en Redis para actualizar aforos globales
+      await clearEventsCache();
+
+      // Emitir señales en tiempo real
+      Promise.all([
+        broadcastToAdmins(null),
+        broadcastToUser(data.clerk_id || data.id, null),
+        broadcastToPublic()
+      ]).catch(err => console.error("Realtime broadcast error on payment sync:", err));
+    }
+
     return {
       success: true,
       exists: true,
       userData: data,
       selectedEvents: data.selected_events || [],
-      eventStatuses: data.event_statuses || {},
+      eventStatuses: currentStatuses,
       eventData: data.event_data || {},
       surveyData: data.survey_data || null
     };

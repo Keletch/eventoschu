@@ -41,14 +41,14 @@ export function useAdminDashboard() {
   const [deletingEvent, setDeletingEvent] = useState<any>(null);
   const [togglingEvent, setTogglingEvent] = useState<any>(null);
   const [newEvent, setNewEvent] = useState<any>({
-    title: "", city: "", country: "", category_id: "", start_date: "",
+    title: "", city: "", country: "", category_id: "", start_date: "", end_date: null,
     time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
     price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: null, flag: "PE", bg_class: "bg-sky-100", active: true,
     external_url: "", external_button_text: "", description: "", info_url: "", tag_ids: [], paid_links: []
   });
   
   // Toggles para acciones destructivas en Keap
-  const [removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle] = useState(true);
+  const [removeKeapTagsOnToggle, setRemoveKeapTagsOnToggle] = useState(false); // Por defecto NO quitar tags en Keap al pausar
   const [removeKeapTagsOnPurge, setRemoveKeapTagsOnPurge] = useState(false); // Por defecto conservamos el historial al purgar
 
   // Notification Management
@@ -254,8 +254,19 @@ export function useAdminDashboard() {
 
       // 2. Limpiamos el objeto para que no lleve relaciones virtuales que den error
       const adminEmail = session?.user?.email || "un administrador";
-      const { categories: _, event_tags: __, tag_ids: tagIdsToSave, ...eventToSave } = newEvent;
+      const { categories: _, event_tags: __, tag_ids: rawTagIds, ...eventToSave } = newEvent;
       
+      // 🛡️ Regla estricta: Cerrado solo acepta pago_cupo (nunca pago). Abierto solo acepta pago (nunca pago_cupo).
+      const isClosedMode = eventToSave.initial_status === "pending";
+      const pagoTagObj = systemTags.find((t: any) => t.slug === "pago");
+      const pagoCupoTagObj = systemTags.find((t: any) => t.slug === "pago_cupo");
+      
+      const tagIdsToSave = (rawTagIds || []).filter((tid: string) => {
+        if (isClosedMode && pagoTagObj && tid === pagoTagObj.id) return false;
+        if (!isClosedMode && pagoCupoTagObj && tid === pagoCupoTagObj.id) return false;
+        return true;
+      });
+
       const { data: savedData, error } = eventToSave.id 
         ? await supabase.from("events").update(eventToSave).eq("id", eventToSave.id).select()
         : await supabase.from("events").insert([eventToSave]).select();
@@ -311,7 +322,13 @@ export function useAdminDashboard() {
         }
       }
 
-      await clearEventsCache(); // Invalida caché de Redis
+      // 🎯 Solo refrescar la whitelist de tags en Redis si este evento involucra 'Pago con cupo'
+      const pagoCupoTag = systemTags.find(t => t.slug === "pago_cupo");
+      const hasPagoCupo = pagoCupoTag && (tagIdsToSave || []).includes(pagoCupoTag.id);
+      const hadPagoCupo = isUpdating && pagoCupoTag && (events.find(ev => ev.id === eventToSave.id)?.event_tags || []).some((et: any) => et.tags?.slug === "pago_cupo");
+      const shouldRefreshWhitelist = !!(hasPagoCupo || hadPagoCupo);
+
+      await clearEventsCache(shouldRefreshWhitelist); // Invalida caché de Redis
       toast.success(eventToSave.id ? "Evento actualizado" : "Evento creado");
       setIsDialogOpen(false);
     } catch (error: any) {
@@ -344,7 +361,9 @@ export function useAdminDashboard() {
       const { error } = await supabase.from("events").update({ active: newStatus }).eq("id", togglingEvent.id);
       if (error) throw error;
 
-      await clearEventsCache(); // Invalida caché de Redis
+      // 🎯 Solo refrescar whitelist en Redis si el evento desactivado/activado tiene 'Pago con cupo'
+      const isPagoCupo = (togglingEvent.event_tags || []).some((et: any) => et.tags?.slug === "pago_cupo");
+      await clearEventsCache(isPagoCupo); // Invalida caché de Redis
 
       const adminEmail = session?.user?.email || "Un administrador";
       await notifyAdminEventStatusChanged(adminEmail, togglingEvent, newStatus, removeKeapTagsOnToggle);
@@ -387,7 +406,10 @@ export function useAdminDashboard() {
       }
 
       if (!result.success) throw new Error(result.error);
-      await clearEventsCache();
+      
+      // 🎯 Solo refrescar whitelist en Redis si el evento purgado tenía 'Pago con cupo'
+      const isPagoCupo = (deletingEvent.event_tags || []).some((et: any) => et.tags?.slug === "pago_cupo");
+      await clearEventsCache(isPagoCupo);
       
       toast.success(removeKeapTagsOnPurge 
         ? "Evento y datos relacionados purgados (BD y Keap)" 

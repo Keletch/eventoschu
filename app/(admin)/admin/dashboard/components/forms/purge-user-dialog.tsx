@@ -48,7 +48,7 @@ export function PurgeUserDialog({
             ¿Confirmar purga total?
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground font-medium leading-relaxed">
-            Esta acción eliminará permanentemente la cuenta en <strong>Clerk</strong>, sus registros en <strong>Supabase</strong> y sus tags de eventos en <strong>Keap</strong>. <br />
+            Esta acción eliminará permanentemente la cuenta en <strong>Clerk</strong>, sus registros en <strong>Supabase</strong> y retirará los tags de los eventos de este usuario en <strong>Keap</strong> (sin afectar a otros contactos). <br />
             <span className="text-destructive font-bold">Esta acción no se puede deshacer.</span>
           </DialogDescription>
         </DialogHeader>

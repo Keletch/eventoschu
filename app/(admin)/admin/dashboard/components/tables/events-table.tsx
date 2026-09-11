@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, Copy, Edit, Trash2, Globe } from "lucide-react";
-import { formatSafeDate, formatDateToShort } from "@/lib/date-utils";
+import { formatSafeDate, formatDateRangeShort } from "@/lib/date-utils";
 import { EventFlag } from "@/components/ui/event-flag";
 import { transformEventForUI } from "@/lib/event-transformers";
 
@@ -72,7 +72,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
               });
               const clicksUnique = uniqueIdentifiers.size;
 
-              const formattedDate = formatDateToShort(formatSafeDate(event.start_date));
+              const formattedDate = formatDateRangeShort(event.start_date, event.end_date);
 
               return (
                 <TableRow key={event.id} className="group border-border hover:bg-muted/30 transition-colors table-row-anim">

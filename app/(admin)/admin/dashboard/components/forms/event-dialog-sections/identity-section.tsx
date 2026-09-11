@@ -11,6 +11,7 @@ import { AVAILABLE_ICONS } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "../event-dialog";
 import { Trash2, Plus } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { KeapTagPicker } from "../keap-tag-picker";
 
 interface IdentitySectionProps {
@@ -239,30 +240,41 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
             <InfoTooltip content="Selecciona etiquetas especiales para habilitar comportamientos del sistema (como redirecciones de pago)." />
           </div>
           <div className="flex flex-wrap gap-2">
-            {systemTags.map((tag: any) => {
-              const isSelected = event.tag_ids?.includes(tag.id);
-              return (
-                <button
-                  key={tag.id}
-                  type="button"
-                  onClick={() => {
-                    const currentTags = event.tag_ids || [];
-                    const nextTags = isSelected
-                      ? currentTags.filter((id: string) => id !== tag.id)
-                      : [...currentTags, tag.id];
-                    setEvent({ ...event, tag_ids: nextTags });
-                  }}
-                  className={cn(
-                    "px-4 py-2 rounded-full text-xs font-bold transition-all border",
-                    isSelected
-                      ? "bg-primary text-primary-foreground border-primary shadow-sm scale-105"
-                      : "bg-muted/40 hover:bg-muted/80 text-muted-foreground border-border"
-                  )}
-                >
-                  {tag.name}
-                </button>
-              );
-            })}
+            {(() => {
+              const isClosed = (event.initial_status ?? "confirmed") === "pending";
+              return systemTags.map((tag: any) => {
+                const isPagoTag = tag.slug === "pago";
+                const isPagoCupoTag = tag.slug === "pago_cupo";
+                // Pago tradicional solo para Abierto. Pago con cupo solo para Cerrado.
+                const isDisabled = (isClosed && isPagoTag) || (!isClosed && isPagoCupoTag);
+                const isSelected = event.tag_ids?.includes(tag.id) && !isDisabled;
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    disabled={isDisabled}
+                    onClick={() => {
+                      if (isDisabled) return;
+                      const currentTags = event.tag_ids || [];
+                      const nextTags = isSelected
+                        ? currentTags.filter((id: string) => id !== tag.id)
+                        : [...currentTags, tag.id];
+                      setEvent({ ...event, tag_ids: nextTags });
+                    }}
+                    className={cn(
+                      "px-4 py-2 rounded-full text-xs font-bold transition-all border",
+                      isDisabled
+                        ? "opacity-35 cursor-not-allowed bg-muted/20 text-muted-foreground/60 border-border/40"
+                        : isSelected
+                        ? "bg-primary text-primary-foreground border-primary shadow-sm scale-105 cursor-pointer"
+                        : "bg-muted/40 hover:bg-muted/80 text-muted-foreground border-border cursor-pointer"
+                    )}
+                  >
+                    {tag.name}
+                  </button>
+                );
+              });
+            })()}
             {systemTags.length === 0 && (
               <span className="text-xs italic text-muted-foreground">No hay etiquetas de sistema disponibles.</span>
             )}
@@ -271,6 +283,9 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
 
         {/* Campos condicionales para Pago */}
         {(() => {
+          const isClosed = (event.initial_status ?? "confirmed") === "pending";
+          if (isClosed) return null;
+
           const pagoTag = systemTags.find((t: any) => t.slug === "pago");
           const isPaidEvent = pagoTag && event.tag_ids?.includes(pagoTag.id);
           if (!isPaidEvent) return null;
@@ -411,6 +426,115 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
                 </div>
               )}
               </div>{/* end bg-muted/30 */}
+            </div>
+          );
+        })()}
+
+        {/* Campos condicionales para Pago con Cupo (Eventos Cerrados) */}
+        {(() => {
+          const isClosed = (event.initial_status ?? "confirmed") === "pending";
+          if (!isClosed) return null;
+
+          const pagoCupoTag = systemTags.find((t: any) => t.slug === "pago_cupo");
+          const isPagoCupoActive = pagoCupoTag && event.tag_ids?.includes(pagoCupoTag.id);
+          if (!isPagoCupoActive) return null;
+
+          const paidLinks = event.paid_links || [];
+          const currentConfig = paidLinks.find((l: any) => l.type === "pago_cupo_config") || {
+            type: "pago_cupo_config",
+            url: "",
+            checkout_url: "",
+            checkout_button_text: "Adquirir entrada",
+            waitlist_button_text: "Únete a la lista de espera",
+            use_external_waitlist: false,
+            paid_waitlist_url: ""
+          };
+
+          const updateConfig = (field: string, value: any) => {
+            const nextConfig = { ...currentConfig, [field]: value };
+            if (field === "checkout_url") {
+              nextConfig.url = value;
+            }
+            const filtered = paidLinks.filter((l: any) => l.type !== "pago_cupo_config");
+            setEvent({ ...event, paid_links: [...filtered, nextConfig] });
+          };
+
+          return (
+            <div className="md:col-span-2 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300 mt-4">
+              <div className="p-5 bg-muted/30 rounded-[20px] border border-border/50 space-y-4">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-amber-500" />
+                    <h4 className="text-xs font-black uppercase text-foreground tracking-wide">Configuración de Pago con Cupo</h4>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Define la URL de compra donde se enviarán los usuarios mientras existan cupos, el texto de los botones y la lista de espera externa en caso de cupos agotados.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="md:col-span-3 space-y-1">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">URL de Venta / Pasarela (Checkout) <span className="text-destructive">*</span></Label>
+                    <Input
+                      type="url"
+                      required
+                      value={currentConfig.checkout_url || currentConfig.url || ""}
+                      onChange={(e) => updateConfig("checkout_url", e.target.value)}
+                      className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all text-foreground"
+                      placeholder="https://pay.hotmart.com/... o https://pay.chu.com/..."
+                    />
+                  </div>
+                  <div className="md:col-span-2 space-y-1">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">Texto del Botón de Compra</Label>
+                    <Input
+                      value={currentConfig.checkout_button_text || ""}
+                      onChange={(e) => updateConfig("checkout_button_text", e.target.value)}
+                      className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all text-foreground"
+                      placeholder="Adquirir entrada"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">Texto en Lista de Espera</Label>
+                    <Input
+                      value={currentConfig.waitlist_button_text || ""}
+                      onChange={(e) => updateConfig("waitlist_button_text", e.target.value)}
+                      className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all text-foreground"
+                      placeholder="Únete a la lista de espera"
+                    />
+                  </div>
+                </div>
+
+                {/* Toggle: Lista de Espera Externa */}
+                <div className="pt-3 border-t border-border/50 flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-xs font-bold text-foreground">Redirigir a enlace externo si se agotan los cupos</Label>
+                      <p className="text-[11px] text-muted-foreground">
+                        Si se activa y el aforo está lleno, el usuario no se registrará en el sistema y será enviado directamente a la URL externa con sus datos pre-llenados.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={!!currentConfig.use_external_waitlist}
+                      onCheckedChange={(checked) => updateConfig("use_external_waitlist", checked)}
+                      className="data-[state=checked]:bg-amber-500"
+                    />
+                  </div>
+
+                  {currentConfig.use_external_waitlist && (
+                    <div className="space-y-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <Label className="text-[10px] font-black uppercase text-muted-foreground">URL Externa de Lista de Espera <span className="text-destructive">*</span></Label>
+                      <Input
+                        type="url"
+                        required
+                        value={currentConfig.paid_waitlist_url || ""}
+                        onChange={(e) => updateConfig("paid_waitlist_url", e.target.value)}
+                        className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all text-foreground"
+                        placeholder="https://hyenukchu.com/lista-de-espera o enlace de registro externo"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           );
         })()}

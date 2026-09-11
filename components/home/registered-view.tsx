@@ -33,6 +33,7 @@ interface RegisteredViewProps {
   revalidateStatus: (email: string) => Promise<void>;
   setIsSurveyOpen: (val: boolean) => void;
   surveyData: any;
+  eventCounts?: Record<string, number>;
 }
 
 export function RegisteredView({
@@ -54,14 +55,32 @@ export function RegisteredView({
   isSignedIn,
   setIsSurveyOpen,
   surveyData,
+  eventCounts = {},
 }: RegisteredViewProps) {
-  const currentStatus = eventStatuses[selectedCityId] || "pending";
-  const cityName = displayData.city || "";
+  // Validar eventos registrados
+  const registeredEvents = events.filter((e) =>
+    Object.keys(eventStatuses).includes(e.id)
+  );
+  const hasNoEvents = registeredEvents.length === 0;
+
+  // Si hay eventos registrados pero ninguno seleccionado (o ID inválido), auto-seleccionar el primero de inmediato
+  useEffect(() => {
+    if (registeredEvents.length > 0 && !registeredEvents.some(e => e.id === selectedCityId)) {
+      setSelectedCityId(registeredEvents[0].id);
+    }
+  }, [selectedCityId, registeredEvents, setSelectedCityId]);
+
+  const effectiveCityId = (selectedCityId && registeredEvents.some(e => e.id === selectedCityId))
+    ? selectedCityId
+    : (registeredEvents[0]?.id || "");
+  const currentEvent = events.find(e => e.id === effectiveCityId);
+  const currentStatus = (effectiveCityId && eventStatuses[effectiveCityId]) || "pending";
+  const cityName = displayData.city || currentEvent?.city || "";
   const _isSurveyMissing = !surveyData || Object.keys(surveyData).length === 0;
 
-  // 🎊 Efecto de Confetti elegante (cañones laterales potentes)
+  // 🎊 Efecto de Confetti elegante (solo si hay evento confirmado real y seleccionado)
   useEffect(() => {
-    if (currentStatus === "confirmed") {
+    if (!hasNoEvents && currentEvent && currentStatus === "confirmed") {
       let timeoutId: any;
       let isActive = true;
 
@@ -102,11 +121,25 @@ export function RegisteredView({
         clearTimeout(stopTimer);
       };
     }
-  }, [selectedCityId, currentStatus]);
+  }, [effectiveCityId, currentStatus, hasNoEvents, Boolean(currentEvent)]);
 
   // 🧠 Obtener configuración centralizada para el evento actual
-  const currentEvent = events.find(e => e.id === selectedCityId);
   const eventConfig = getEventUIConfig(currentEvent);
+
+  const heroTitle = hasNoEvents 
+    ? "No estás registrado\nen ningún evento"
+    : eventConfig.hero.title;
+
+  const heroDescription = hasNoEvents
+    ? "Regístrate en alguno de nuestros eventos disponibles para que aparezca aquí tu información."
+    : eventConfig.hero.description;
+
+  const isClosed = currentEvent?.initial_status === 'pending';
+  const eventTags = currentEvent?.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
+  const isPagoCupo = isClosed && eventTags.some((t: any) => t.slug === 'pago_cupo');
+  const confirmedCount = currentEvent?.id ? (eventCounts[currentEvent.id] || 0) : 0;
+  const capacity = currentEvent?.capacity || 50;
+  const isFull = confirmedCount >= capacity;
 
   return (
     <div className="step-2 bg-transparent text-foreground space-y-12 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 antialiased">
@@ -116,30 +149,34 @@ export function RegisteredView({
         status={currentStatus}
         startNewRegistration={startNewRegistration}
         eventConfig={eventConfig}
+        hasNoEvents={hasNoEvents}
+        isPagoCupo={isPagoCupo}
+        isFull={isFull}
       />
 
       {/* ── Título principal ────────────────────────────── */}
       <RegistrationHero 
-        title={eventConfig.hero.title}
-        description={eventConfig.hero.description}
+        title={heroTitle}
+        description={heroDescription}
       />
 
       {/* ── Selector de ciudades inscritas ─────────────── */}
       <CitySelector
         events={events}
         eventStatuses={eventStatuses}
-        selectedCityId={selectedCityId}
+        selectedCityId={effectiveCityId}
         setSelectedCityId={setSelectedCityId}
         isLoadingEvents={isLoadingEvents}
+        onBrowseEvents={startNewRegistration}
       />
 
       {/* ── Tarjeta de datos del usuario ───────────────── */}
       <UserDataCard
         displayData={displayData}
         status={currentStatus}
-        eventTitle={events.find(e => e.id === selectedCityId)?.title || "Evento"}
-        eventCity={events.find(e => e.id === selectedCityId)?.city || ""}
-        eventCountry={events.find(e => e.id === selectedCityId)?.country || ""}
+        eventTitle={currentEvent?.title || "Evento"}
+        eventCity={currentEvent?.city || ""}
+        eventCountry={currentEvent?.country || ""}
         isLoadingEvents={isLoadingEvents}
         isEditing={isEditing}
         editFormData={editFormData}
@@ -150,6 +187,8 @@ export function RegisteredView({
         handleUpdateRegistration={handleUpdateRegistration}
         isSignedIn={isSignedIn}
         eventConfig={eventConfig}
+        currentEvent={currentEvent}
+        eventCounts={eventCounts}
       />
 
       {/* ── ¿Qué sigue? ────────────────────────────────── */}
@@ -160,7 +199,7 @@ export function RegisteredView({
 
       {/* ── Compartir link ──────────────────────────────── */}
       <ShareSection
-        selectedCityId={selectedCityId}
+        selectedCityId={effectiveCityId}
         cityName={cityName}
         userId={userData?.user_id || userData?.id}
       />

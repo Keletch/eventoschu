@@ -197,3 +197,37 @@ export async function getContactTagsByEmail(email: string) {
   }
 }
 
+/**
+ * 👤 Obtiene el correo principal de un contacto de Keap por su contactId
+ */
+export async function getContactEmailById(contactId: string | number): Promise<string | null> {
+  try {
+    const res = await keapFetch(`contacts/${contactId}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const emailObj = (data.email_addresses || []).find((e: any) => e.field === "EMAIL1") || data.email_addresses?.[0];
+    return emailObj?.email?.toLowerCase()?.trim() || null;
+  } catch (error) {
+    console.error("❌ Error fetching contact email by id in Keap:", error);
+    return null;
+  }
+}
+
+/**
+ * 🪝 Registra el REST Hook global de tags en Keap
+ */
+export async function registerKeapTagHook(hookUrl: string) {
+  try {
+    const res = await keapFetch("hooks", {
+      method: "POST",
+      body: JSON.stringify({
+        eventKey: "contactGroup.applied",
+        hookUrl: hookUrl
+      })
+    });
+    const data = await res.json();
+    return { success: res.ok, data };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

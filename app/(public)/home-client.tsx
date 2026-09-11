@@ -98,6 +98,16 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
     return contextSafe(async () => {
       const res = await home.handleRegistration(data, token);
       if (res.success) {
+        // Si fue una redirección directa a lista de espera externa, no transicionar a paso 2
+        if ((res as any).pureRedirect) {
+          return res;
+        }
+
+        // Si es evento de pago con cupo disponible, abrir carrito de compras en nueva pestaña
+        if ((res as any).checkoutRedirectUrl) {
+          window.open((res as any).checkoutRedirectUrl, "_blank", "noopener,noreferrer");
+        }
+
         if (!home.isSignedIn) {
           toast.success("¡Registro Exitoso!", {
             description: "Tu solicitud ha sido recibida correctamente.",
@@ -288,9 +298,35 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     handleSelectEvent={(id) => {
                       const ev = home.events.find(e => e.id === id);
                       const tagsList = ev?.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
-                      const isPaid = tagsList.some((t: any) => t.slug === 'pago');
+                      const isClosed = ev?.initial_status === 'pending';
+                      const isPaid = !isClosed && tagsList.some((t: any) => t.slug === 'pago');
                       if (isPaid) return;
-                      home.setSelectedEvents(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]);
+
+                      const isPagoCupo = isClosed && tagsList.some((t: any) => t.slug === 'pago_cupo');
+
+                      home.setSelectedEvents(prev => {
+                        const isCurrentlySelected = prev.includes(id);
+                        if (isCurrentlySelected) {
+                          // Deseleccionar
+                          return prev.filter(e => e !== id);
+                        }
+
+                        // Si el evento a seleccionar es de pago con cupo, solo él puede estar seleccionado
+                        if (isPagoCupo) {
+                          return [id];
+                        }
+
+                        // Si ya había algún evento de pago con cupo seleccionado, reemplazarlo
+                        const filtered = prev.filter(prevId => {
+                          const prevEv = home.events.find(e => e.id === prevId);
+                          const prevTags = prevEv?.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
+                          const prevIsClosed = prevEv?.initial_status === 'pending';
+                          const prevIsPagoCupo = prevIsClosed && prevTags.some((t: any) => t.slug === 'pago_cupo');
+                          return !prevIsPagoCupo;
+                        });
+
+                        return [...filtered, id];
+                      });
                     }}
                     isLoadingEvents={home.isLoadingEvents}
                     eventCounts={home.eventCounts}
@@ -333,6 +369,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     revalidateStatus={home.revalidateStatus}
                     setIsSurveyOpen={home.setIsSurveyOpen}
                     surveyData={home.surveyData}
+                    eventCounts={home.eventCounts}
                   />
                 </div>
               )}

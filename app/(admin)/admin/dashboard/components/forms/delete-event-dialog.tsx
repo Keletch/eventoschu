@@ -57,23 +57,18 @@ export function DeleteEventDialog({
             ¿Eliminar evento y purgar inscritos?
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground font-medium leading-relaxed">
-            Esta es una operación masiva. Se eliminará el evento de la base de datos de manera definitiva.
-            {removeKeapTags && (
-              <span className="block mt-2 text-destructive font-bold">
-                ¡Atención! También se limpiarán los tags de Keap de todos los usuarios afectados.
-              </span>
-            )}
+            Se eliminará el evento de la base de datos de manera definitiva.
           </DialogDescription>
         </DialogHeader>
 
         {setRemoveKeapTags && (
           <div className="flex items-center justify-between p-4 bg-muted/30 rounded-2xl border border-border mx-8 mt-2">
-            <div className="space-y-0.5 text-left">
+            <div className="space-y-0.5 text-left pr-4">
               <Label htmlFor="purge-remove-keap" className="font-bold text-sm cursor-pointer">
-                Eliminar Historial en Keap
+                Quitar tags de Keap a los inscritos
               </Label>
-              <p className="text-[11px] text-muted-foreground">
-                Si activas esto, se borrarán los tags del evento en el CRM.
+              <p className="text-[11px] text-muted-foreground leading-snug">
+                Remueve las etiquetas de este evento a los usuarios en Keap.
               </p>
             </div>
             <Switch 
@@ -93,15 +88,15 @@ export function DeleteEventDialog({
               <div>
                 <p className="text-[10px] font-black uppercase text-muted-foreground tracking-wider">Impacto Estimado</p>
                 <p className="text-sm font-bold text-foreground">
-                  {registrationsCount} usuarios serán desvinculados
+                  {registrationsCount} registros desvinculados
                   <span className="block text-xs text-muted-foreground font-normal mt-0.5">
-                    {removeKeapTags ? "(En Base de Datos y Keap CRM)" : "(Solo limpieza local, sin afectar Keap)"}
+                    {removeKeapTags ? "(Borrados de Supabase y tags quitados en Keap)" : "(Borrados de Supabase sin tocar Keap)"}
                   </span>
                 </p>
               </div>
             </div>
             <Badge variant="outline" className="bg-card border-border text-muted-foreground font-bold">
-              Cascada
+              Inscritos
             </Badge>
           </div>
 

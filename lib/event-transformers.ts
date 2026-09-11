@@ -1,5 +1,5 @@
 import { Event } from "@/app/actions/events";
-import { formatSafeDate } from "./date-utils";
+import { formatSafeDate, formatDateRange } from "./date-utils";
 
 const TIMEZONE_SHORT_CODES: Record<string, string> = {
   "America/Mexico_City": "CDMX",
@@ -37,7 +37,13 @@ export function transformEventForUI(event: Event) {
   }
 
   const tagsList = event.event_tags?.map(et => et.tags).filter(Boolean) || [];
-  const isPaid = tagsList.some(tag => tag.slug === 'pago');
+  const isClosedEvent = event.initial_status === 'pending';
+  // Si es Cerrado, NUNCA es 'pago' tradicional. Si es Abierto, NUNCA es 'pago_cupo'.
+  const isPaid = !isClosedEvent && tagsList.some(tag => tag.slug === 'pago');
+  const isPagoCupo = isClosedEvent && tagsList.some(tag => tag.slug === 'pago_cupo');
+  
+  // Extraer configuración de Pago con cupo (si existe en paid_links)
+  const pagoCupoConfig = (event.paid_links || []).find((l: any) => l.type === 'pago_cupo_config') || null;
 
   return {
     category: categoryName,
@@ -47,14 +53,12 @@ export function transformEventForUI(event: Event) {
     country: isOnline ? "Online" : event.country,
     // Indicador de modalidad
     isOnline,
-    // Fecha formateada igual que en la tarjeta
+    // Fecha formateada igual que en la tarjeta (soporta fecha única o rango inicio - fin)
     displayDate: isFutureEvent 
       ? "Por confirmar" 
-      : formatSafeDate(event.start_date)?.toLocaleDateString("es-ES", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }) || "Por confirmar",
+      : formatDateRange(event.start_date, event.end_date),
+    startDate: event.start_date,
+    endDate: event.end_date || null,
     // Horario
     displayTime,
     // Ubicación exacta — para eventos presenciales
@@ -75,12 +79,14 @@ export function transformEventForUI(event: Event) {
     // Duración
     displayDuration: event.duration || "Aproximadamente 2 horas",
     // Metadatos técnicos para Schema.org
-    isFree: !isPaid && (!event.price || event.price.toLowerCase().includes('sin costo') || event.price === "0"),
+    isFree: !isPaid && !isPagoCupo && (!event.price || event.price.toLowerCase().includes('sin costo') || event.price === "0"),
     isoDuration: (!event.duration || event.duration === "Por confirmar") ? null : (event.duration.includes('2') ? 'PT2H' : 'PT1H'),
     performer: "HyenUk Chu",
     // Tags y Redirección
     tags: tagsList,
     isPaid,
+    isPagoCupo,
+    pagoCupoConfig: isPagoCupo ? pagoCupoConfig : null,
     externalUrl: event.external_url || null,
     externalButtonText: event.external_button_text || "Adquirir entrada",
     paidLinks: event.paid_links || [],

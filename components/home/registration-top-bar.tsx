@@ -10,21 +10,47 @@ interface RegistrationTopBarProps {
   status: string;
   startNewRegistration: () => void;
   eventConfig: EventUIConfig;
+  hasNoEvents?: boolean;
+  isPagoCupo?: boolean;
+  isFull?: boolean;
 }
 
-export function RegistrationTopBar({ status, startNewRegistration, eventConfig }: RegistrationTopBarProps) {
+export function RegistrationTopBar({ 
+  status, 
+  startNewRegistration, 
+  eventConfig, 
+  hasNoEvents = false,
+  isPagoCupo = false,
+  isFull = false
+}: RegistrationTopBarProps) {
   const config = STATUS_CONFIGS[(status as RegistrationStatus) ?? "pending"] ?? STATUS_CONFIGS.pending;
   
-  // 🧠 Obtener etiqueta desde la configuración centralizada
-  const displayLabel = eventConfig.statusLabels[status as RegistrationStatus] || config.label;
+  // 🧠 Obtener etiqueta desde la configuración centralizada o estados especiales
+  let displayLabel = eventConfig.statusLabels[status as RegistrationStatus] || config.label;
+  if (hasNoEvents) {
+    displayLabel = "No hay evento activo";
+  } else if (status === "pending" && isPagoCupo && isFull) {
+    displayLabel = "En lista de espera";
+  }
 
   return (
     <div className="max-w-[1372px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6 px-4">
       {/* Badge de estado de la ciudad seleccionada */}
       <div className="city-status-badge">
-        <div className={cn("inline-flex items-center gap-2.5 px-4 py-1.5 rounded-xl border transition-all duration-500", config.bg, config.border)}>
-          <div className={cn("size-2 rounded-full", config.dot)} />
-          <span className={cn("font-bold text-[15px]", config.text)}>{displayLabel}</span>
+        <div className={cn(
+          "inline-flex items-center gap-2.5 px-4 py-1.5 rounded-xl border transition-all duration-500", 
+          hasNoEvents 
+            ? "bg-muted text-muted-foreground border-border" 
+            : cn(config.bg, config.border)
+        )}>
+          <div className={cn(
+            "size-2 rounded-full", 
+            hasNoEvents ? "bg-muted-foreground/40" : config.dot
+          )} />
+          <span className={cn(
+            "font-bold text-[15px]", 
+            hasNoEvents ? "text-muted-foreground" : config.text
+          )}>{displayLabel}</span>
         </div>
       </div>
 

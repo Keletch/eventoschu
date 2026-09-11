@@ -21,11 +21,13 @@ interface RegistrationFormProps {
   onSubmit: (data: any, turnstileToken: string) => void;
   onCheckRegistration: (data: any) => void;
   isLoading?: boolean;
+  submitButtonText?: string;
 }
 
 export function RegistrationForm({ 
   onSubmit, 
-  isLoading = false 
+  isLoading = false,
+  submitButtonText = "¡Registrarme ahora!"
 }: RegistrationFormProps) {
   const { user, isSignedIn } = useUser();
 
@@ -242,7 +244,7 @@ export function RegistrationForm({
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              "¡Registrarme ahora!"
+              submitButtonText
             )}
           </Button>
         </div>

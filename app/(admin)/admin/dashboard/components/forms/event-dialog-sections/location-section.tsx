@@ -158,6 +158,38 @@ export const LocationSection: React.FC<LocationSectionProps> = ({ event, setEven
           </div>
         </div>
 
+        {/* Fecha de Finalización (Opcional) */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5">
+            <Label className="text-xs font-black uppercase text-muted-foreground">Fecha de Finalización</Label>
+            <InfoTooltip content="Opcional. Si el evento dura varios días (ej: congreso o bootcamp), indica el día que concluye. Se reflejará automáticamente como un rango en la tarjeta." />
+          </div>
+          <Input
+            type="date"
+            value={event.end_date || ""}
+            min={event.start_date && !isDateConfirm ? event.start_date : undefined}
+            onChange={(e) => setEvent({ ...event, end_date: e.target.value || null })}
+            disabled={isDateConfirm}
+            className={cn(
+              "rounded-xl h-12 transition-all border-border",
+              isDateConfirm
+                ? "bg-muted text-muted-foreground opacity-60 border-dashed"
+                : "bg-muted/50 focus:bg-background"
+            )}
+          />
+          {event.end_date && (
+            <div className="flex justify-end pt-1">
+              <button
+                type="button"
+                onClick={() => setEvent({ ...event, end_date: null })}
+                className="text-[10px] text-destructive hover:underline font-bold"
+              >
+                Limpiar fecha
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Hora con toggle "Por confirmar" */}
         <div className="space-y-2">
           <div className="flex items-center gap-1.5">

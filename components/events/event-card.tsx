@@ -11,6 +11,7 @@ import { trackPaidEventClick } from "@/app/actions/user-registration";
 import { getContactTagsByEmail } from "@/app/actions/keap";
 import { useClerk } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Modular Components
 import { EventProgressBar } from "@/components/events/event-progress-bar";
@@ -60,6 +61,8 @@ interface EventCardProps {
   isSignedIn?: boolean;
   onVerifySuccess?: (tags: string[]) => void;
   onOpenSSOOnboarding?: () => void;
+  isPagoCupo?: boolean;
+  pagoCupoConfig?: any;
 }
 
 export function EventCard({
@@ -94,6 +97,8 @@ export function EventCard({
   isSignedIn = false,
   onVerifySuccess,
   onOpenSSOOnboarding,
+  isPagoCupo = false,
+  pagoCupoConfig,
 }: EventCardProps) {
   const { openSignIn } = useClerk();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -232,7 +237,8 @@ export function EventCard({
   const isUnlimited = capacity >= 9999;
   // Los eventos en línea nunca se marcan como llenos
   const isFull = !isVirtual && !isUnlimited && confirmedCount >= capacity;
-  const isSoldOut = eventConfig.showFullCapacityOverlay && isFull;
+  // Si es Pago con Cupo, NUNCA se bloquea con el overlay gris de soldOut, pasa a lista de espera
+  const isSoldOut = !isPagoCupo && eventConfig.showFullCapacityOverlay && isFull;
 
   // Detectar si el título se trunca
   useEffect(() => {
@@ -270,6 +276,15 @@ export function EventCard({
       }}
     >
       {isSoldOut && <EventSoldOutOverlay />}
+
+      {/* 🏷️ Badge diagonal en la esquina para Pago con Cupo cuando se agota el aforo */}
+      {isPagoCupo && isFull && (
+        <div className="absolute top-0 left-0 overflow-hidden w-36 h-36 pointer-events-none z-10">
+          <div className="absolute top-[28px] -left-[38px] w-[160px] -rotate-45 bg-red-600 text-white text-center py-1.5 text-[10px] md:text-[11px] font-black uppercase tracking-wider shadow-lg border-y border-white/20">
+            Cupos Agotados
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col h-full">
         <div className="flex items-start justify-between mb-6 md:mb-8 gap-4">
@@ -649,6 +664,8 @@ export function EventCard({
               capacity={capacity}
               isSoldOut={isSoldOut}
               isOpenMode={eventConfig.type === 'OPEN'}
+              isPagoCupo={isPagoCupo}
+              waitlistText={pagoCupoConfig?.waitlist_button_text || "Únete a la lista de espera"}
             />
           )}
         </div>
@@ -658,11 +675,29 @@ export function EventCard({
 }
 
 function EventDetailItem({ icon, label, value, isMultiLine }: { icon: React.ReactNode, label: string, value: string, isMultiLine?: boolean }) {
+  const isLongText = value && value.length > 30;
+
   return (
-    <p className={cn("flex gap-3", isMultiLine ? "items-start" : "items-center")}>
+    <div className={cn("flex gap-3", isMultiLine ? "items-start" : "items-center")}>
       {icon}
       <span className="font-bold shrink-0">{label}:</span> 
-      <span className={cn(isMultiLine ? "leading-tight" : "truncate")}>{value}</span>
-    </p>
+      {isLongText ? (
+        <TooltipProvider delay={150}>
+          <Tooltip>
+            <TooltipTrigger className="truncate cursor-help text-left outline-none">
+              {value}
+            </TooltipTrigger>
+            <TooltipContent 
+              side="top" 
+              className="max-w-xs text-xs font-medium bg-popover text-popover-foreground border-border shadow-xl p-2.5 rounded-xl z-[300]"
+            >
+              {value}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <span className={cn(isMultiLine ? "leading-tight" : "truncate")}>{value}</span>
+      )}
+    </div>
   );
 }

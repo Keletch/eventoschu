@@ -35,6 +35,7 @@ export function EventJsonLd({ events }: EventJsonLdProps) {
             ? `Únete a ${data.performer} en este evento en línea. ${durationText}aprendizaje con el Club de Inversionistas.`
             : `Únete a ${data.performer} en este evento presencial en ${data.city}. ${durationText}aprendizaje con el Club de Inversionistas.`,
           "startDate": startDateTime,
+          ...(event.end_date ? { "endDate": event.end_date.split('T')[0] } : {}),
           ...(data.isoDuration ? { "duration": data.isoDuration } : {}),
           "eventStatus": "https://schema.org/EventScheduled",
           "eventAttendanceMode": data.isOnline 

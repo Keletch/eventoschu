@@ -73,7 +73,7 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
 
 
   const handleRemoveEvent = async (eventId: string) => {
-    if (!confirm("¿Estás seguro de eliminar esta inscripción? Se borrarán los tags de Keap y datos de este evento.")) return;
+    if (!confirm("¿Eliminar este evento de este usuario? Se removerán sus tags de este evento en Keap solo para este usuario.")) return;
     
     setIsProcessingEvent(eventId);
     try {

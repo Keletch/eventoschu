@@ -77,9 +77,9 @@ function CampusSSOAlertNudge({ onClick }: { onClick: () => void }) {
         <TooltipContent side="bottom" align="end" className="p-4 rounded-2xl shadow-2xl bg-card border-border z-[200] max-w-[280px]">
           <div className="space-y-3">
             <div className="space-y-1 text-left">
-              <p className="text-sm font-bold text-foreground">Vincular Campus Thinkific</p>
+              <p className="text-sm font-bold text-foreground">Beneficios de Miembro</p>
               <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">
-                Asocia tu correo del campus para desbloquear automáticamente los enlaces de tus eventos pagados.
+                Asocia tu correo del campus para desbloquear precios especiales y descuentos exclusivos en eventos seleccionados.
               </p>
             </div>
             <Button

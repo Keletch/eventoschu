@@ -13,6 +13,7 @@ interface CitySelectorProps {
   selectedCityId: string;
   setSelectedCityId: (id: string) => void;
   isLoadingEvents: boolean;
+  onBrowseEvents?: () => void;
 }
 
 export function CitySelector({
@@ -21,6 +22,7 @@ export function CitySelector({
   selectedCityId,
   setSelectedCityId,
   isLoadingEvents,
+  onBrowseEvents,
 }: CitySelectorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -69,7 +71,9 @@ export function CitySelector({
   return (
     <div ref={containerRef} className="max-w-[1372px] mx-auto bg-muted dark:bg-muted/50 rounded-[32px] py-4 md:py-6 px-6 md:px-8 flex flex-col items-center justify-center gap-6 border border-border">
       <div className="text-[17px] md:text-[20px] font-medium text-muted-foreground text-center">
-        Consulta aquí tus registros para ver más detalles:
+        {registeredEvents.length > 0 
+          ? "Consulta aquí tus registros para ver más detalles:" 
+          : "Aún no tienes registros activos"}
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 min-h-[56px]">
@@ -79,6 +83,21 @@ export function CitySelector({
             <Skeleton className="h-[52px] w-32 md:w-40 rounded-2xl" />
             <Skeleton className="h-[52px] w-32 md:w-40 rounded-2xl" />
           </>
+        ) : registeredEvents.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 py-2 text-center">
+            <p className="text-sm text-muted-foreground">
+              Explora los eventos disponibles y regístrate para asegurar tu cupo.
+            </p>
+            {onBrowseEvents && (
+              <button
+                type="button"
+                onClick={onBrowseEvents}
+                className="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                Ver eventos disponibles
+              </button>
+            )}
+          </div>
         ) : (
           registeredEvents.map((e) => {
             const isActive = selectedCityId === e.id;

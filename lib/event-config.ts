@@ -74,8 +74,24 @@ const CONFIGS: Record<EventType, EventUIConfig> = {
  * 🛠️ Helper para obtener la configuración de un evento
  */
 export function getEventUIConfig(event: any): EventUIConfig {
-  // Lógica de mapeo: confirmed -> OPEN, pending -> CLOSED
-  // (Basado en la lógica actual del dashboard)
   const type: EventType = event?.initial_status === 'confirmed' || !event?.initial_status ? 'OPEN' : 'CLOSED';
-  return CONFIGS[type];
+  const baseConfig = CONFIGS[type];
+
+  // Si es un evento cerrado con la etiqueta de pago con cupo, personalizar la etiqueta de pendiente
+  const tags = event?.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
+  const isPagoCupo = type === 'CLOSED' && tags.some((t: any) => t.slug === 'pago_cupo');
+
+  if (isPagoCupo) {
+    return {
+      ...baseConfig,
+      showFullCapacityOverlay: false,
+      allowOverCapacityRegistration: true,
+      statusLabels: {
+        ...baseConfig.statusLabels,
+        pending: "Esperando pago"
+      }
+    };
+  }
+
+  return baseConfig;
 }

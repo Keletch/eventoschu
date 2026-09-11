@@ -255,6 +255,8 @@ export function EventsCarousel({
                       onOpenSSOOnboarding={onOpenSSOOnboarding}
                       description={data.description}
                       infoUrl={data.infoUrl}
+                      isPagoCupo={data.isPagoCupo}
+                      pagoCupoConfig={data.pagoCupoConfig}
                     />
                   </div>
                 );

@@ -206,7 +206,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
 
             <form onSubmit={onSubmit} className="p-8 space-y-8 bg-card text-foreground">
               {/* ── Sección 0: Tipo de Evento ── */}
-              <StatusSection event={event} setEvent={setEvent} />
+              <StatusSection event={event} setEvent={setEvent} systemTags={systemTags} />
 
               {/* ── Sección 1: Identidad ── */}
               <IdentitySection

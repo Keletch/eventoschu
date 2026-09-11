@@ -198,11 +198,35 @@ export function PublicView({
               <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-8 -mt-0">
                 <h2 className="text-[20px] font-medium text-foreground pl-2 md:pl-6">Registro</h2>
                 <div className="bg-form-card-bg rounded-[32px] p-6 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-form-card-border">
-                  <RegistrationForm
-                    onSubmit={handleRegistration}
-                    isLoading={isSubmitting}
-                    onCheckRegistration={revalidateStatus}
-                  />
+                  {(() => {
+                    const selectedEv = selectedEvents.length > 0
+                      ? filteredEvents.find(e => e.id === selectedEvents[0])
+                      : null;
+                    const isClosed = selectedEv?.initial_status === "pending";
+                    const isPagoCupo = isClosed && (selectedEv?.event_tags || []).some((et: any) => et.tags?.slug === "pago_cupo");
+                    const config = (selectedEv?.paid_links || []).find((l: any) => l.type === "pago_cupo_config");
+                    const confirmedCount = selectedEv ? (eventCounts[selectedEv.id] || 0) : 0;
+                    const capacity = selectedEv?.capacity || 50;
+                    const isFull = confirmedCount >= capacity;
+
+                    let dynamicBtnText = "¡Registrarme ahora!";
+                    if (isPagoCupo) {
+                      if (isFull) {
+                        dynamicBtnText = config?.waitlist_button_text || "Únete a la lista de espera";
+                      } else {
+                        dynamicBtnText = config?.checkout_button_text || "¡Registrarme ahora!";
+                      }
+                    }
+
+                    return (
+                      <RegistrationForm
+                        onSubmit={handleRegistration}
+                        isLoading={isSubmitting}
+                        onCheckRegistration={revalidateStatus}
+                        submitButtonText={dynamicBtnText}
+                      />
+                    );
+                  })()}
                 </div>
 
                 {!isSignedIn && (

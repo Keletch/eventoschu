@@ -8,6 +8,8 @@ interface EventProgressBarProps {
   capacity: number;
   isSoldOut: boolean;
   isOpenMode?: boolean;
+  isPagoCupo?: boolean;
+  waitlistText?: string;
 }
 
 export function EventProgressBar({
@@ -15,6 +17,8 @@ export function EventProgressBar({
   capacity,
   isSoldOut,
   isOpenMode = true,
+  isPagoCupo = false,
+  waitlistText,
 }: EventProgressBarProps) {
   const isUnlimited = capacity >= 9999;
   const isFull = !isOpenMode && confirmedCount >= capacity;
@@ -25,7 +29,13 @@ export function EventProgressBar({
       <div className="flex items-center justify-between text-xs font-bold">
         <div className="flex items-center gap-1.5 text-card-text/60 uppercase tracking-wider">
           <Users className="w-3.5 h-3.5" />
-          <span>{isOpenMode ? "Disponibilidad del cupo" : "Inscritos"}</span>
+          <span>
+            {isPagoCupo && isFull 
+              ? (waitlistText || "Únete a la lista de espera") 
+              : isOpenMode 
+                ? "Disponibilidad del cupo" 
+                : "Inscritos"}
+          </span>
         </div>
         {!isOpenMode && !isUnlimited && (
           <span className={cn(
@@ -47,7 +57,7 @@ export function EventProgressBar({
           <div 
             className={cn(
               "h-full rounded-full transition-all duration-1000 ease-out",
-              isSoldOut ? "bg-card-text/30" : isFull ? "bg-amber-500" : "bg-primary"
+              isSoldOut ? "bg-card-text/30" : "bg-primary"
             )}
             style={{ width: `${progress}%` }}
           />

@@ -39,6 +39,71 @@ export function formatDateToLong(date: Date | null): string {
 }
 
 /**
+ * Formatea un rango de fechas (ej: "15 al 17 de octubre de 2026" o "28 de octubre al 2 de noviembre de 2026")
+ */
+export function formatDateRange(startDateStr: string | null | undefined, endDateStr: string | null | undefined): string {
+  const start = formatSafeDate(startDateStr);
+  if (!start) return "Por confirmar";
+  if (start.getFullYear() === 2099) return "Por confirmar";
+
+  const end = formatSafeDate(endDateStr);
+  if (!end || end.getFullYear() === 2099 || isNaN(end.getTime()) || end.getTime() <= start.getTime()) {
+    return formatDateToLong(start);
+  }
+
+  const startDay = start.getDate();
+  const endDay = end.getDate();
+  const startMonth = start.toLocaleDateString("es-ES", { month: "long" });
+  const endMonth = end.toLocaleDateString("es-ES", { month: "long" });
+  const startYear = start.getFullYear();
+  const endYear = end.getFullYear();
+
+  // Mismo mes y mismo año: "15 al 17 de octubre de 2026"
+  if (startMonth === endMonth && startYear === endYear) {
+    return `${startDay} al ${endDay} de ${startMonth} de ${startYear}`;
+  }
+
+  // Mismo año, distinto mes: "28 de octubre al 2 de noviembre de 2026"
+  if (startYear === endYear) {
+    return `${startDay} de ${startMonth} al ${endDay} de ${endMonth} de ${startYear}`;
+  }
+
+  // Distinto año: "28 de diciembre de 2026 al 3 de enero de 2027"
+  return `${startDay} de ${startMonth} de ${startYear} al ${endDay} de ${endMonth} de ${endYear}`;
+}
+
+/**
+ * Formato corto de rango para tablas admin (ej: "15 - 17 oct 2026")
+ */
+export function formatDateRangeShort(startDateStr: string | null | undefined, endDateStr: string | null | undefined): string {
+  const start = formatSafeDate(startDateStr);
+  if (!start) return "Sin fecha";
+  if (start.getFullYear() === 2099) return "Por confirmar";
+
+  const end = formatSafeDate(endDateStr);
+  if (!end || end.getFullYear() === 2099 || isNaN(end.getTime()) || end.getTime() <= start.getTime()) {
+    return formatDateToShort(start);
+  }
+
+  const startDay = start.getDate();
+  const endDay = end.getDate();
+  const startMonth = start.toLocaleDateString("es-ES", { month: "short" });
+  const endMonth = end.toLocaleDateString("es-ES", { month: "short" });
+  const startYear = start.getFullYear();
+  const endYear = end.getFullYear();
+
+  if (startMonth === endMonth && startYear === endYear) {
+    return `${startDay} - ${endDay} ${startMonth} ${startYear}`;
+  }
+
+  if (startYear === endYear) {
+    return `${startDay} ${startMonth} - ${endDay} ${endMonth} ${startYear}`;
+  }
+
+  return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
+}
+
+/**
  * Convierte cualquier string de fecha a YYYY-MM-DD para inputs HTML5
  */
 export function formatDateForInput(dateStr: string | null | undefined): string {
