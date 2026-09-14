@@ -16,28 +16,45 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
   const [showDescription, setShowDescription] = useState(!!event.description);
   const [showInfoUrl, setShowInfoUrl] = useState(!!event.info_url);
 
+  // Memorizar borradores para no perder lo escrito si se apaga el toggle por accidente
+  const cachedDescriptionRef = React.useRef(event.description || "");
+  const cachedInfoUrlRef = React.useRef(event.info_url || "");
+  const currentEventIdRef = React.useRef(event.id);
+
   useEffect(() => {
-    setShowDescription(!!event.description);
-    setShowInfoUrl(!!event.info_url);
-  }, [event.description, event.info_url]);
+    // Si cambió el evento que se está editando, reinicializar
+    if (event.id !== currentEventIdRef.current) {
+      currentEventIdRef.current = event.id;
+      setShowDescription(!!event.description);
+      setShowInfoUrl(!!event.info_url);
+      cachedDescriptionRef.current = event.description || "";
+      cachedInfoUrlRef.current = event.info_url || "";
+      return;
+    }
+
+    if (event.description) cachedDescriptionRef.current = event.description;
+    if (event.info_url) cachedInfoUrlRef.current = event.info_url;
+  }, [event.id, event.description, event.info_url]);
 
   const handleToggleDescription = (checked: boolean) => {
     setShowDescription(checked);
     if (!checked) {
+      if (event.description) cachedDescriptionRef.current = event.description;
       setEvent((prev: any) => ({ ...prev, description: "" }));
     } else {
-      setShowInfoUrl(false);
-      setEvent((prev: any) => ({ ...prev, description: prev.description, info_url: "" }));
+      // Restaurar lo que había guardado
+      setEvent((prev: any) => ({ ...prev, description: cachedDescriptionRef.current }));
     }
   };
 
   const handleToggleInfoUrl = (checked: boolean) => {
     setShowInfoUrl(checked);
     if (!checked) {
+      if (event.info_url) cachedInfoUrlRef.current = event.info_url;
       setEvent((prev: any) => ({ ...prev, info_url: "" }));
     } else {
-      setShowDescription(false);
-      setEvent((prev: any) => ({ ...prev, info_url: prev.info_url, description: "" }));
+      // Restaurar lo que había guardado
+      setEvent((prev: any) => ({ ...prev, info_url: cachedInfoUrlRef.current }));
     }
   };
 

@@ -129,29 +129,6 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                    !!event.is_virtual;
 
   const [isUploading, setIsUploading] = useState(false);
-  const [showDescription, setShowDescription] = useState(false);
-  const [showInfoUrl, setShowInfoUrl] = useState(false);
-
-  React.useEffect(() => {
-    if (isOpen) {
-      setShowDescription(!!event.description);
-      setShowInfoUrl(!!event.info_url);
-    }
-  }, [isOpen, event.description, event.info_url]);
-
-  const handleToggleDescription = (checked: boolean) => {
-    setShowDescription(checked);
-    if (!checked) {
-      setEvent((prev: any) => ({ ...prev, description: "" }));
-    }
-  };
-
-  const handleToggleInfoUrl = (checked: boolean) => {
-    setShowInfoUrl(checked);
-    if (!checked) {
-      setEvent((prev: any) => ({ ...prev, info_url: "" }));
-    }
-  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

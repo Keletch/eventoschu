@@ -190,7 +190,7 @@ export async function getContactTagsByEmail(email: string) {
     const tagsData = await tagsRes.json();
     const tagIds = (tagsData.tags || []).map((t: any) => t.tag.id.toString());
     
-    return { success: true, tags: tagIds };
+    return { success: true, tags: tagIds, contactId: contactId.toString() };
   } catch (error: any) {
     console.error("❌ Error fetching user Keap tags:", error);
     return { success: false, error: error.message, tags: [] };

@@ -936,10 +936,12 @@ export function useHomeLogic(initialEvents: any[] = []) {
    * 🔄 Orquestador de Sincronización Realtime (Full State)
    */
   const syncRegistrationData = useCallback((payload: any) => {
+    console.log("🔄 [syncRegistrationData] Payload recibido en cliente:", payload);
     if (!payload) return;
 
     // A. Manejo de Purga o Usuario sin eventos
     if (payload.selected_events && payload.selected_events.length === 0) {
+      console.log("🧹 [syncRegistrationData] Usuario sin eventos, reseteando a paso 1...");
       startNewRegistration();
       return;
     }
@@ -954,6 +956,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
 
     // C. Sincronización de Estados (Pendiente/Confirmado)
     if (payload.event_statuses) {
+      console.log("📊 [syncRegistrationData] Actualizando event_statuses:", payload.event_statuses);
       setEventStatuses(prev => ({ ...prev, ...payload.event_statuses }));
     }
 

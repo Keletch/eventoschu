@@ -186,8 +186,10 @@ export function EventCard({
     }
   };
 
+  const [isIframeOpen, setIsIframeOpen] = useState(false);
+
   useEffect(() => {
-    if (isInfoOpen) {
+    if (isInfoOpen || isIframeOpen) {
       setIframeLoading(true);
       setLoadingProgress(0);
       
@@ -211,7 +213,7 @@ export function EventCard({
         }
       };
     }
-  }, [isInfoOpen]);
+  }, [isInfoOpen, isIframeOpen]);
 
   const handleIframeLoad = () => {
     if (progressIntervalRef.current) {
@@ -230,7 +232,11 @@ export function EventCard({
 
   const handleInfoClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsInfoOpen(true);
+    if (hasDescription) {
+      setIsInfoOpen(true);
+    } else if (hasInfoUrl) {
+      setIsIframeOpen(true);
+    }
   };
 
   const eventConfig = getEventUIConfig({ initial_status: initialStatus });
@@ -355,103 +361,137 @@ export function EventCard({
         
           <div className="flex items-center gap-2 shrink-0">
             {showInfoIcon && (
-              <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
-                  <DialogContent 
-                    className={cn(
-                      "border-none shadow-2xl bg-card text-foreground transition-all duration-300",
-                      hasInfoUrl 
-                        ? "max-w-[1400px] w-[96vw] h-[90vh] flex flex-col p-0 gap-0 overflow-hidden rounded-[32px]" 
-                        : "max-w-md rounded-[32px] p-6 gap-4"
-                    )}
-                  >
-                    {hasInfoUrl ? (
-                      <>
-                        <DialogHeader className="px-6 py-2 md:py-2.5 shrink-0 pr-20 flex flex-col justify-end gap-0 relative">
-                          <DialogTitle className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted-foreground/80">
-                            Información del Evento
-                          </DialogTitle>
-                          <DialogDescription className="text-sm md:text-base font-bold text-foreground line-clamp-1 leading-tight">
-                            {title}
-                          </DialogDescription>
-                          <style dangerouslySetInnerHTML={{__html: `
-                            [data-slot="dialog-content"]:has(iframe) [data-slot="dialog-close"] {
-                              top: 10px !important;
-                              right: 24px !important;
-                            }
-                            @media (max-width: 768px) {
-                              [data-slot="dialog-content"]:has(iframe) [data-slot="dialog-close"] {
-                                top: 6px !important;
-                                  right: 12px !important;
-                                  transform: scale(0.8) !important;
-                              }
-                            }
-                            .no-scrollbar::-webkit-scrollbar {
-                              display: none !important;
-                            }
-                            .no-scrollbar {
-                              -ms-overflow-style: none !important;
-                              scrollbar-width: none !important;
-                            }
-                          `}} />
-                        </DialogHeader>
+              <>
+                <button
+                  type="button"
+                  onClick={handleInfoClick}
+                  className="size-7 md:size-8 rounded-full bg-muted/70 hover:bg-muted border border-border text-muted-foreground hover:text-foreground flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer"
+                  title="Más información"
+                >
+                  <Info className="size-3.5 md:size-4" strokeWidth={2.5} />
+                </button>
 
-                        {/* Progress Bar physically between Header and Iframe */}
-                        <div 
-                          className={cn(
-                            "w-full bg-primary/10 shrink-0 overflow-hidden relative transition-all duration-500 ease-in-out",
-                            iframeLoading ? "h-[3px] opacity-100" : "h-0 opacity-0 pointer-events-none"
-                          )}
-                        >
-                          <div 
-                            className="h-full bg-primary transition-all duration-300 ease-out" 
-                            style={{ width: `${loadingProgress}%` }}
-                          />
-                        </div>
+                {/* Modal de Explicación Detallada (Texto) */}
+                {hasDescription && (
+                  <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
+                    <DialogContent className="max-w-md rounded-[32px] p-6 gap-4 border-none shadow-2xl bg-card text-foreground">
+                      <DialogHeader className="space-y-2">
+                        <DialogTitle className="text-2xl font-black text-left flex items-center gap-2">
+                          <span className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
+                            <Info className="size-5" />
+                          </span>
+                          <span className="line-clamp-2 leading-tight">{title}</span>
+                        </DialogTitle>
+                        <DialogDescription className="text-left text-sm font-medium text-muted-foreground">
+                          Detalles e información adicional del evento.
+                        </DialogDescription>
+                      </DialogHeader>
 
-                        {isInfoOpen && (
-                          <div className="flex-1 w-full bg-background rounded-b-[32px] overflow-y-auto relative no-scrollbar">
-                            <iframe 
-                              src={infoUrl!} 
-                              loading="lazy" 
-                              scrolling="no"
-                              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-top-navigation-by-user-activation" 
-                              className="w-full h-[3500px] border-none"
-                              onLoad={handleIframeLoad}
-                            />
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <DialogHeader className="space-y-2">
-                          <DialogTitle className="text-2xl font-black text-left flex items-center gap-2">
-                            <span className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0">
-                              <Info className="size-5" />
-                            </span>
-                            <span className="line-clamp-2 leading-tight">{title}</span>
-                          </DialogTitle>
-                          <DialogDescription className="text-left text-sm font-medium text-muted-foreground">
-                            Detalles e información adicional del evento.
-                          </DialogDescription>
-                        </DialogHeader>
+                      <div className="py-2 text-left text-sm leading-relaxed text-foreground whitespace-pre-wrap max-h-[40vh] overflow-y-auto pr-1">
+                        {description}
+                      </div>
 
-                        <div className="py-2 text-left text-sm leading-relaxed text-foreground whitespace-pre-wrap max-h-[40vh] overflow-y-auto pr-1">
-                          {description}
-                        </div>
-
-                        <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-2">
+                      <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-2">
+                        {hasInfoUrl && (
                           <button
                             type="button"
-                            onClick={() => setIsInfoOpen(false)}
-                            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-border bg-transparent hover:bg-muted text-foreground text-xs font-bold transition-all"
+                            onClick={() => {
+                              setIsInfoOpen(false);
+                              setIsIframeOpen(true);
+                            }}
+                            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-primary/20 cursor-pointer"
                           >
-                            Cerrar
+                            Ver sitio web
+                            <ExternalLink className="size-3.5" />
                           </button>
-                        </DialogFooter>
-                      </>
-                    )}
-                  </DialogContent>
-                </Dialog>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setIsInfoOpen(false)}
+                          className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-border bg-transparent hover:bg-muted text-foreground text-xs font-bold transition-all cursor-pointer"
+                        >
+                          Cerrar
+                        </button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
+
+                {/* Modal de Landing Explicativa (Iframe) */}
+                {hasInfoUrl && (
+                  <Dialog open={isIframeOpen} onOpenChange={setIsIframeOpen}>
+                    <DialogContent className="max-w-[1400px] w-[96vw] h-[90vh] flex flex-col p-0 gap-0 overflow-hidden rounded-[32px] border-none shadow-2xl bg-card text-foreground">
+                      <DialogHeader className="px-6 py-2 md:py-2.5 shrink-0 pr-20 flex flex-col justify-end gap-0 relative">
+                        <DialogTitle className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted-foreground/80">
+                          Información del Evento
+                        </DialogTitle>
+                        <DialogDescription className="text-sm md:text-base font-bold text-foreground line-clamp-1 leading-tight">
+                          {title}
+                        </DialogDescription>
+                        <style dangerouslySetInnerHTML={{__html: `
+                          [data-slot="dialog-content"]:has(iframe) [data-slot="dialog-close"] {
+                            top: 10px !important;
+                            right: 20px !important;
+                            background: hsl(var(--muted)) !important;
+                            border-radius: 9999px !important;
+                            width: 32px !important;
+                            height: 32px !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            opacity: 0.8 !important;
+                            transition: opacity 0.2s, transform 0.2s !important;
+                          }
+                          [data-slot="dialog-content"]:has(iframe) [data-slot="dialog-close"]:hover {
+                            opacity: 1 !important;
+                            transform: scale(1.05) !important;
+                          }
+                          @media (max-width: 768px) {
+                            [data-slot="dialog-content"]:has(iframe) [data-slot="dialog-close"] {
+                              top: 6px !important;
+                              right: 12px !important;
+                              transform: scale(0.8) !important;
+                            }
+                          }
+                          .no-scrollbar::-webkit-scrollbar {
+                            display: none !important;
+                          }
+                          .no-scrollbar {
+                            -ms-overflow-style: none !important;
+                            scrollbar-width: none !important;
+                          }
+                        `}} />
+                      </DialogHeader>
+
+                      {/* Barra de progreso */}
+                      <div 
+                        className={cn(
+                          "w-full bg-primary/10 shrink-0 overflow-hidden relative transition-all duration-500 ease-in-out",
+                          iframeLoading ? "h-[3px] opacity-100" : "h-0 opacity-0 pointer-events-none"
+                        )}
+                      >
+                        <div 
+                          className="h-full bg-primary transition-all duration-300 ease-out" 
+                          style={{ width: `${loadingProgress}%` }}
+                        />
+                      </div>
+
+                      {isIframeOpen && (
+                        <div className="flex-1 w-full bg-background rounded-b-[32px] overflow-y-auto relative no-scrollbar">
+                          <iframe 
+                            src={infoUrl!} 
+                            loading="lazy" 
+                            scrolling="no"
+                            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-top-navigation-by-user-activation" 
+                            className="w-full h-[3500px] border-none"
+                            onLoad={handleIframeLoad}
+                          />
+                        </div>
+                      )}
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </>
             )}
 
             {!isSoldOut && !isPaid && (

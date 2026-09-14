@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import crypto from "crypto";
 import { registrationSchema } from "./schemas";
 import { validateTurnstileToken } from "./turnstile";
-import { syncKeapTags, getContactTagsByEmail } from "./keap";
+import { syncKeapTags, getContactTagsByEmail, keapFetch } from "./keap";
 import { 
   notifyAdminNewRegistration, 
   notifyAdminSurveyCompleted, 
@@ -323,6 +323,8 @@ export async function checkRegistration(email: string, clerkId?: string) {
       const keapResult = await getContactTagsByEmail(data.email);
       if (keapResult.success && keapResult.tags && keapResult.tags.length > 0) {
         const userKeapTagIds = keapResult.tags;
+        const contactId = keapResult.contactId;
+        const pendingTagsToRemove: string[] = [];
 
         for (const ev of pagoCupoEvents) {
           const userStatus = currentStatuses[ev.id];
@@ -330,6 +332,20 @@ export async function checkRegistration(email: string, clerkId?: string) {
           if (userStatus === 'pending' && userKeapTagIds.includes(ev.keap_tag_id)) {
             currentStatuses[ev.id] = 'confirmed';
             hasStatusChanges = true;
+            if (ev.keap_pending_tag_id) {
+              pendingTagsToRemove.push(ev.keap_pending_tag_id);
+            }
+          }
+        }
+
+        // Si se confirmó y tiene tag de pendiente en Keap, eliminarlo
+        if (contactId && pendingTagsToRemove.length > 0) {
+          for (const pTag of pendingTagsToRemove) {
+            try {
+              await keapFetch(`contacts/${contactId}/tags/${pTag}`, { method: "DELETE" });
+            } catch (delErr) {
+              console.error(`❌ [checkRegistration] Error eliminando tag pendiente ${pTag} en Keap:`, delErr);
+            }
           }
         }
       }
@@ -347,10 +363,18 @@ export async function checkRegistration(email: string, clerkId?: string) {
       // 🧹 Invalidación de caché en Redis para actualizar aforos globales
       await clearEventsCache();
 
-      // Emitir señales en tiempo real
+      // Emitir señales en tiempo real con payload completo
+      const targetUserIds = [data.id, data.clerk_id, data.email].filter(Boolean) as string[];
+      const fullRealtimePayload = {
+        event_statuses: currentStatuses,
+        selected_events: data.selected_events || [],
+        event_data: data.event_data || {},
+        userData: data
+      };
+
       Promise.all([
-        broadcastToAdmins(null),
-        broadcastToUser(data.clerk_id || data.id, null),
+        broadcastToAdmins({ type: 'EVENT_UPDATE', message: `Pago verificado para ${data.email}` }),
+        broadcastToUser(targetUserIds, fullRealtimePayload),
         broadcastToPublic()
       ]).catch(err => console.error("Realtime broadcast error on payment sync:", err));
     }

@@ -24,16 +24,25 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
 
   // Filter Logic: Events
   const filteredEvents = useMemo(() => {
-    return events.filter(event => {
-      const matchesSearch = event.title.toLowerCase().includes(eventsSearch.toLowerCase()) ||
-                          event.city.toLowerCase().includes(eventsSearch.toLowerCase());
-      const matchesCat = eventTabCatFilter === "all" || event.category_id === eventTabCatFilter;
-      const matchesStatus = eventTabStatusFilter === "all" || 
-                           (eventTabStatusFilter === "active" ? event.active : !event.active);
-      const matchesTag = eventTabTagFilter === "all" ||
-                         event.event_tags?.some((et: any) => et.tags?.id === eventTabTagFilter);
-      return matchesSearch && matchesCat && matchesStatus && matchesTag;
-    });
+    return events
+      .filter(event => {
+        const matchesSearch = event.title.toLowerCase().includes(eventsSearch.toLowerCase()) ||
+                            event.city.toLowerCase().includes(eventsSearch.toLowerCase());
+        const matchesCat = eventTabCatFilter === "all" || event.category_id === eventTabCatFilter;
+        const matchesStatus = eventTabStatusFilter === "all" || 
+                             (eventTabStatusFilter === "active" ? event.active : !event.active);
+        const matchesTag = eventTabTagFilter === "all" ||
+                           event.event_tags?.some((et: any) => et.tags?.id === eventTabTagFilter);
+        return matchesSearch && matchesCat && matchesStatus && matchesTag;
+      })
+      .sort((a, b) => {
+        // 1. Activados primero, desactivados abajo
+        if (a.active !== b.active) {
+          return a.active ? -1 : 1;
+        }
+        // 2. Por fecha: del más reciente al más viejo (descendente)
+        return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
+      });
   }, [events, eventsSearch, eventTabCatFilter, eventTabStatusFilter, eventTabTagFilter]);
 
   // Filter Logic: Registrations
