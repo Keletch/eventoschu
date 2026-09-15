@@ -121,7 +121,7 @@ export function RegisteredView({
         clearTimeout(stopTimer);
       };
     }
-  }, [effectiveCityId, currentStatus, hasNoEvents, Boolean(currentEvent)]);
+  }, [effectiveCityId, currentStatus, hasNoEvents, currentEvent]);
 
   // 🧠 Obtener configuración centralizada para el evento actual
   const eventConfig = getEventUIConfig(currentEvent);

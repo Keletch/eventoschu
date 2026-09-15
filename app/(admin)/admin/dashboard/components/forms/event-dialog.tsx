@@ -1,12 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { EventFlag } from "@/components/ui/event-flag";
 import { toast } from "sonner";
 import { uploadImage } from "@/app/actions/upload-image";
 import { convertToWebP } from "@/lib/image-utils";
-import { AVAILABLE_ICONS } from "@/lib/icons";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -16,26 +13,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Loader2, RefreshCw } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { KeapTagPicker } from "./keap-tag-picker";
+import { Loader2 } from "lucide-react";
 
 import { StatusSection } from "./event-dialog-sections/status-section";
 import { IdentitySection } from "./event-dialog-sections/identity-section";
@@ -76,25 +60,6 @@ interface EventDialogProps {
   onSubmit: (e: React.FormEvent) => void;
 }
 
-const BG_COLOR_OPTIONS = [
-  { value: "bg-sky-100", label: "Azul Cielo", preview: "bg-sky-200" },
-  { value: "bg-emerald-100", label: "Verde Esmeralda", preview: "bg-emerald-200" },
-  { value: "bg-amber-100", label: "Ámbar", preview: "bg-amber-200" },
-  { value: "bg-rose-100", label: "Rosa", preview: "bg-rose-200" },
-  { value: "bg-purple-100", label: "Púrpura", preview: "bg-purple-200" },
-  { value: "custom", label: "Personalizado", preview: "bg-gradient-to-tr from-red-400 via-green-400 to-blue-400" },
-];
-
-const TIMEZONE_LABELS: Record<string, string> = {
-  "none": "Sin huso horario",
-  "America/Mexico_City": "Ciudad de México (CDMX)",
-  "America/Bogota": "Bogotá / Lima / Quito",
-  "America/New_York": "Miami / Nueva York (EST)",
-  "America/Argentina/Buenos_Aires": "Buenos Aires (ARG)",
-  "America/Santiago": "Santiago (CHL)",
-  "Europe/Madrid": "Madrid (España)",
-};
-
 export const EventDialog: React.FC<EventDialogProps> = ({
   isOpen,
   setIsOpen,
@@ -108,12 +73,8 @@ export const EventDialog: React.FC<EventDialogProps> = ({
   isSubmitting,
   onSubmit,
 }) => {
-  const isTimeConfirm = event.time === "Por confirmar";
-  const isDateConfirm = event.start_date?.startsWith("2099");
-  const isDurationConfirm = event.duration === "Por confirmar";
   // Evento Abierto (confirmed) puede ser ilimitado. Evento Cerrado (pending) no.
   const isOpenMode = (event.initial_status ?? "confirmed") !== "pending";
-  const isUnlimited = (event.capacity ?? 0) >= 9999;
   // Detectar si la categoría seleccionada es "Eventos en linea" por su slug
   const selectedCategory = categories.find(
     (c: any) => c.id.toString() === event.category_id?.toString()

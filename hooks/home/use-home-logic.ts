@@ -169,7 +169,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     if (isPageReady) {
       const dismissed = localStorage.getItem("chu_onboarding_dismissed");
       if (!dismissed) {
-        setIsSSOOnboardingOpen(true);
+        queueMicrotask(() => setIsSSOOnboardingOpen(true));
       }
     }
   }, [isPageReady]);
@@ -479,7 +479,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } finally {
       setIsLoadingEvents(false);
     }
-  }, []);
+  }, [setSelectedCityId]);
 
   // Dynamically update URL query parameters based on active filters for easy sharing
   useEffect(() => {
@@ -541,7 +541,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     setEventDataMap({});
     setSelectedCityId("");
     setIsCheckMode(false);
-  }, [changeStep]);
+  }, [changeStep, setSelectedCityId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -594,7 +594,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
       }
     }, 0);
     return () => clearTimeout(timer);
-  }, [isLoaded, isSignedIn, startNewRegistration]);
+  }, [isLoaded, isSignedIn, startNewRegistration, setSelectedCityId]);
 
   const syncRegistration = useCallback(async () => {
     if (!isLoaded) return;
@@ -710,7 +710,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } else {
       setStep(1);
     }
-  }, [isLoaded, changeStep]);
+  }, [isLoaded, changeStep, setSelectedCityId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -718,6 +718,48 @@ export function useHomeLogic(initialEvents: any[] = []) {
     }, 0);
     return () => clearTimeout(timer);
   }, [isLoaded, user?.id, syncRegistration]);
+
+  // 🔄 Auto-revalidación instantánea al volver a la pestaña (focus / visibilitychange)
+  useEffect(() => {
+    if (!isLoaded || step !== 2) return;
+
+    let lastSync = 0;
+    const handleFocusSync = () => {
+      const now = Date.now();
+      // Debounce de 3 segundos para evitar ráfagas si el usuario alterna pestañas rápido
+      if (now - lastSync < 3000) return;
+      lastSync = now;
+
+      const clerkEmail = userRef.current?.primaryEmailAddress?.emailAddress;
+      const localEmail = userDataRef.current?.email;
+      let emailToVerify = clerkEmail || localEmail;
+
+      if (!emailToVerify) {
+        const saved = localStorage.getItem(HOME_STORAGE_KEY);
+        if (saved) {
+          try {
+            emailToVerify = JSON.parse(saved)?.userData?.email;
+          } catch (_e) {}
+        }
+      }
+
+      if (emailToVerify) {
+        syncRegistration();
+      }
+    };
+
+    window.addEventListener("focus", handleFocusSync);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        handleFocusSync();
+      }
+    });
+
+    return () => {
+      window.removeEventListener("focus", handleFocusSync);
+      document.removeEventListener("visibilitychange", handleFocusSync);
+    };
+  }, [isLoaded, step, syncRegistration]);
 
   // --- Handlers ---
   const revalidateStatus = useCallback(async (email: string) => {
@@ -774,7 +816,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } finally {
       setIsChecking(false);
     }
-  }, [user, changeStep]);
+  }, [user, changeStep, setSelectedCityId]);
 
   const handleRegistration = async (data: any, turnstileToken: string): Promise<{ success: boolean }> => {
     if (selectedEvents.length === 0) {
@@ -946,12 +988,10 @@ export function useHomeLogic(initialEvents: any[] = []) {
    * 🔄 Orquestador de Sincronización Realtime (Full State)
    */
   const syncRegistrationData = useCallback((payload: any) => {
-    console.log("🔄 [syncRegistrationData] Payload recibido en cliente:", payload);
     if (!payload) return;
 
     // A. Manejo de Purga o Usuario sin eventos
     if (payload.selected_events && payload.selected_events.length === 0) {
-      console.log("🧹 [syncRegistrationData] Usuario sin eventos, reseteando a paso 1...");
       startNewRegistration();
       return;
     }
@@ -969,7 +1009,6 @@ export function useHomeLogic(initialEvents: any[] = []) {
 
     // C. Sincronización de Estados (Pendiente/Confirmado)
     if (payload.event_statuses) {
-      console.log("📊 [syncRegistrationData] Actualizando event_statuses:", payload.event_statuses);
       setEventStatuses(prev => ({ ...prev, ...payload.event_statuses }));
     }
 

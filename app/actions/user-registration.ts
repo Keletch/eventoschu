@@ -303,7 +303,7 @@ export async function checkRegistration(email: string, clerkId?: string) {
     }
 
     // 🔄 Sincronización Automática con Keap para eventos con "Pago con cupo"
-    let currentStatuses = { ...(data.event_statuses || {}) };
+    const currentStatuses = { ...(data.event_statuses || {}) };
     let hasStatusChanges = false;
 
     // Obtener detalles de los eventos del usuario

@@ -47,7 +47,6 @@ export function usePersonalRealtime({ userId, onUpdate, onNotification }: Person
 
     const channels = cleanIds.map(id => {
       const channelName = `user-private:${id}`;
-      console.log(`🔌 [Realtime Client] Suscribiéndose a canal privado: ${channelName}`);
       
       const channel = supabase
         .channel(channelName)
@@ -56,12 +55,7 @@ export function usePersonalRealtime({ userId, onUpdate, onNotification }: Person
           { event: 'personal-update' },
           (payload) => {
             const data = payload.payload;
-            console.log(`⚡ [Realtime Client] Evento 'personal-update' recibido en ${channelName}:`, data);
-            
-            if (data.msg_id && data.msg_id === lastProcessedId.current) {
-              console.log(`⏩ [Realtime Client] msg_id ya procesado (${data.msg_id}), omitiendo.`);
-              return;
-            }
+            if (data.msg_id && data.msg_id === lastProcessedId.current) return;
             if (data.msg_id) lastProcessedId.current = data.msg_id;
 
             if (onUpdateRef.current) onUpdateRef.current(data);
@@ -72,16 +66,11 @@ export function usePersonalRealtime({ userId, onUpdate, onNotification }: Person
           { event: 'new-notification' },
           (payload) => {
             const data = payload.payload;
-            console.log(`🔔 [Realtime Client] Evento 'new-notification' recibido en ${channelName}:`, data);
-
             if (onNotificationRef.current) onNotificationRef.current(data);
           }
         );
 
-      channel.subscribe((status) => {
-        console.log(`📡 [Realtime Client] Estado de suscripción canal ${channelName}:`, status);
-      });
-      
+      channel.subscribe();
       return channel;
     });
 

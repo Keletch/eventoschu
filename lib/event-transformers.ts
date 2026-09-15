@@ -1,5 +1,5 @@
 import { Event } from "@/app/actions/events";
-import { formatSafeDate, formatDateRange } from "./date-utils";
+import { formatDateRange } from "./date-utils";
 
 const TIMEZONE_SHORT_CODES: Record<string, string> = {
   "America/Mexico_City": "CDMX",

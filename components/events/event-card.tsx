@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { trackPaidEventClick } from "@/app/actions/user-registration";
 import { getContactTagsByEmail } from "@/app/actions/keap";
-import { useClerk } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -100,7 +99,6 @@ export function EventCard({
   isPagoCupo = false,
   pagoCupoConfig,
 }: EventCardProps) {
-  const { openSignIn } = useClerk();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [canExpand, setCanExpand] = useState(false);
@@ -190,8 +188,10 @@ export function EventCard({
 
   useEffect(() => {
     if (isInfoOpen || isIframeOpen) {
-      setIframeLoading(true);
-      setLoadingProgress(0);
+      queueMicrotask(() => {
+        setIframeLoading(true);
+        setLoadingProgress(0);
+      });
       
       let currentProgress = 0;
       progressIntervalRef.current = setInterval(() => {

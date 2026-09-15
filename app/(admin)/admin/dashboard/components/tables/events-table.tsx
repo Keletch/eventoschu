@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, Copy, Edit, Trash2, Globe } from "lucide-react";
-import { formatSafeDate, formatDateRangeShort } from "@/lib/date-utils";
+import { formatDateRangeShort } from "@/lib/date-utils";
 import { EventFlag } from "@/components/ui/event-flag";
 import { transformEventForUI } from "@/lib/event-transformers";
 
