@@ -743,17 +743,27 @@ export function useHomeLogic(initialEvents: any[] = []) {
         const validSurvey = hasContent ? currentSurvey : null;
         setSurveyData(validSurvey);
 
+        const currentSaved = localStorage.getItem(HOME_STORAGE_KEY);
+        let activeCity = "";
+        try {
+          if (currentSaved) activeCity = JSON.parse(currentSaved).selectedCityId;
+        } catch (_e) {}
+
+        const targetCityId = (activeCity && revalidation.selectedEvents?.includes(activeCity))
+          ? activeCity
+          : (revalidation.selectedEvents?.[0] || "");
+
         localStorage.setItem(HOME_STORAGE_KEY, JSON.stringify({
           userData: revalidation.userData,
           selectedEvents: revalidation.selectedEvents,
-          selectedCityId: revalidation.selectedEvents?.[0] || "",
+          selectedCityId: targetCityId,
           eventStatuses: (revalidation as any).eventStatuses || {},
           eventDataMap: (revalidation as any).eventData || {},
           surveyData: validSurvey
         }));
 
-        if (revalidation.selectedEvents?.length > 0) {
-          setSelectedCityId(prev => prev || revalidation.selectedEvents[0]);
+        if (targetCityId) {
+          setSelectedCityId(prev => (prev && revalidation.selectedEvents?.includes(prev)) ? prev : targetCityId);
         }
         changeStep(2);
       } else {
@@ -949,9 +959,12 @@ export function useHomeLogic(initialEvents: any[] = []) {
     // B. Sincronización de lista de eventos y carrusel
     if (payload.selected_events) {
       setSelectedEvents(payload.selected_events);
-      if (!payload.selected_events.includes(selectedCityId)) {
-        setSelectedCityId(payload.selected_events[0]);
-      }
+      setSelectedCityId((prev: string) => {
+        if (!payload.selected_events.includes(prev)) {
+          return payload.selected_events[0] || "";
+        }
+        return prev;
+      });
     }
 
     // C. Sincronización de Estados (Pendiente/Confirmado)
@@ -966,8 +979,9 @@ export function useHomeLogic(initialEvents: any[] = []) {
     }
 
     // E. Actualización de Datos de Usuario (Perfil)
-    if (payload.userData || payload.email) {
-      setUserData((prev: any) => ({ ...prev, ...(payload.userData || payload) }));
+    const newUserData = payload.userData || (payload.email ? { email: payload.email } : null);
+    if (newUserData) {
+      setUserData((prev: any) => ({ ...prev, ...newUserData }));
     }
 
     // F. Persistencia en LocalStorage para consistencia
@@ -986,11 +1000,17 @@ export function useHomeLogic(initialEvents: any[] = []) {
           selectedCityId: currentCityId,
           eventStatuses: payload.event_statuses ? { ...parsed.eventStatuses, ...payload.event_statuses } : parsed.eventStatuses,
           eventDataMap: payload.event_data ? { ...parsed.eventDataMap, ...payload.event_data } : parsed.eventDataMap,
-          userData: (payload.userData || payload.email) ? { ...parsed.userData, ...(payload.userData || payload) } : parsed.userData
+          userData: newUserData ? { ...parsed.userData, ...newUserData } : parsed.userData
         }));
       } catch (_e) {}
     }
-  }, [selectedCityId, startNewRegistration]);
+
+    // G. Revalidar en segundo plano para sincronizar cualquier cambio adicional del servidor
+    const emailToRevalidate = payload.email || payload.userData?.email || userDataRef.current?.email || userRef.current?.primaryEmailAddress?.emailAddress;
+    if (emailToRevalidate && payload.event_statuses) {
+      revalidateStatus(emailToRevalidate);
+    }
+  }, [startNewRegistration, setSelectedCityId, revalidateStatus]);
 
   const resetAllFilters = useCallback(() => {
     setSearchQuery("");
