@@ -75,7 +75,6 @@ export function RegisteredView({
     : (registeredEvents[0]?.id || "");
   const currentEvent = events.find(e => e.id === effectiveCityId);
   const currentStatus = (effectiveCityId && eventStatuses[effectiveCityId]) || "pending";
-  const cityName = displayData.city || currentEvent?.city || "";
   const _isSurveyMissing = !surveyData || Object.keys(surveyData).length === 0;
 
   // 🎊 Efecto de Confetti elegante (solo si hay evento confirmado real y seleccionado)
@@ -200,8 +199,9 @@ export function RegisteredView({
       {/* ── Compartir link ──────────────────────────────── */}
       <ShareSection
         selectedCityId={effectiveCityId}
-        cityName={cityName}
+        eventTitle={currentEvent?.title || "Gira de HyenUk Chu"}
         userId={userData?.user_id || userData?.id}
+        userName={displayData.firstName ? `${displayData.firstName}${displayData.lastName ? ` ${displayData.lastName}` : ''}` : ""}
       />
 
       {/* ── Contacto de soporte ─────────────────────────── */}

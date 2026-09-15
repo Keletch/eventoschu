@@ -6,15 +6,38 @@ import { trackGTMEvent } from "@/lib/gtm-utils";
 
 interface ShareSectionProps {
   selectedCityId: string;
-  cityName: string;
+  eventTitle?: string;
   userId?: string;
+  userName?: string;
 }
 
-export function ShareSection({ selectedCityId, cityName, userId }: ShareSectionProps) {
+export function ShareSection({ selectedCityId, eventTitle, userId, userName }: ShareSectionProps) {
   const getShareLink = () => {
-    let link = `${window.location.origin}?city=${selectedCityId}`;
-    if (userId) {
-      link += `&ref=${userId}`;
+    // Generar slug limpio del evento a partir del título (ej. "gira-bogota-2026")
+    const cleanEventSlug = eventTitle
+      ? eventTitle
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+      : selectedCityId;
+
+    let link = `${window.location.origin}?event=${cleanEventSlug || selectedCityId}`;
+
+    // Generar referencia limpia legible (ej. "juan-perez" o fallback a ID)
+    const cleanUserSlug = userName
+      ? userName
+          .trim()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+      : userId;
+
+    if (cleanUserSlug) {
+      link += `&ref=${cleanUserSlug}`;
     }
     return link;
   };
@@ -22,8 +45,9 @@ export function ShareSection({ selectedCityId, cityName, userId }: ShareSectionP
   const handleWhatsapp = () => {
     trackGTMEvent("event_shared", { share_method: "whatsapp" });
     const link = getShareLink();
+    const titleText = eventTitle ? `"${eventTitle}"` : "la gira de HyenUk Chu";
     const text = encodeURIComponent(
-      `¡Hola! Me acabo de registrar para la gira de HyenUk Chu en ${cityName || "mi ciudad"}. Te comparto el link para que también te registres: ${link}`
+      `¡Hola! Me acabo de registrar para el evento ${titleText}. Te comparto el link para que también te registres y apartes tu cupo: ${link}`
     );
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };

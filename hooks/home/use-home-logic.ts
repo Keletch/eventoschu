@@ -379,13 +379,39 @@ export function useHomeLogic(initialEvents: any[] = []) {
 
       const params = new URLSearchParams(window.location.search);
 
-      // Handle referral link
-      const cityId = params.get('city');
-      if (cityId && eventsRes.data) {
-        const event = (eventsRes.data as any[]).find(e => e.id === cityId);
+      // Handle referral link / shared event link (supports ?event= or ?city= with clean slug or UUID)
+      const eventParam = params.get('event')?.trim();
+      const cityParam = params.get('city')?.trim();
+      const targetParam = eventParam || cityParam;
+
+      if (targetParam && eventsRes.data) {
+        const cleanParam = targetParam
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+        const event = (eventsRes.data as any[]).find(e => {
+          if (e.id === targetParam) return true;
+          const cleanTitle = (e.title || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+          const cleanCity = (e.city || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+          return cleanTitle === cleanParam || cleanCity === cleanParam || e.city?.toLowerCase() === targetParam.toLowerCase();
+        });
+
         if (event) {
-          setSelectedCityId(cityId);
-          setSelectedEvents([cityId]);
+          setSelectedCityId(event.id);
+          setSelectedEvents([event.id]);
           const date = new Date(event.start_date);
           const month = date.toLocaleDateString('es-ES', { month: 'long' });
           setActiveMonth(month.charAt(0).toUpperCase() + month.slice(1));
@@ -485,9 +511,11 @@ export function useHomeLogic(initialEvents: any[] = []) {
   useEffect(() => {
     if (!isPageReady || isLoadingEvents) return;
 
-    // Preservar parámetros no relacionados como 'city' (referencia)
+    // Preservar parámetros no relacionados como 'event', 'city' y 'ref' (referencia)
     const currentParams = new URLSearchParams(window.location.search);
+    const eventParam = currentParams.get('event');
     const cityId = currentParams.get('city');
+    const refParam = currentParams.get('ref');
 
     const filterTerms: string[] = [];
     
@@ -513,8 +541,14 @@ export function useHomeLogic(initialEvents: any[] = []) {
     // Construir la Query string de forma manual limpia sin acumulación recursiva
     const queryParts: string[] = [];
 
-    if (cityId) {
+    if (eventParam) {
+      queryParts.push(`event=${encodeURIComponent(eventParam)}`);
+    } else if (cityId) {
       queryParts.push(`city=${encodeURIComponent(cityId)}`);
+    }
+
+    if (refParam) {
+      queryParts.push(`ref=${encodeURIComponent(refParam)}`);
     }
 
     if (filterTerms.length > 0) {
