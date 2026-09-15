@@ -58,7 +58,7 @@ export default function AdminRootLayout({
           identityPreviewEditButtonIcon: "!text-primary",
           modalCloseButton: "!text-foreground/60 hover:!text-foreground transition-colors",
           badge: "bg-primary text-primary-foreground border-primary px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider",
-          logoBox: "dark:invert dark:brightness-200 synthwave:invert synthwave:brightness-200 hacker:invert hacker:brightness-200",
+          logoBox: "dark:invert dark:brightness-200 synthwave:invert synthwave:brightness-200 hacker:invert hacker:brightness-200 halloween-dark:invert halloween-dark:brightness-200",
         }
       }}
     >
@@ -79,7 +79,7 @@ export default function AdminRootLayout({
             defaultTheme="light"
             enableSystem
             disableTransitionOnChange
-            themes={["light", "dark", "synthwave", "hacker", "coffee", "citric"]}
+            themes={["light", "halloween-dark", "boreal", "synthwave", "coffee", "hacker", "citric", "dark"]}
           >
             <TooltipProvider>
               <div className="retro-grid" />

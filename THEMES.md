@@ -70,6 +70,22 @@ Los temas y sus variables están declarados en `app/globals.css` (para el tema `
 *   **Estética**: Paleta suave de tonos marrón y café con leche.
 *   **Colores clave**: `--background: #FDF8F5`, `--foreground: #3E2723`, `--primary: #6D4C41`.
 
+### 🍊 6. Tema Citric ("Fresh Citrus")
+*   **Clase HTML**: `.citric`
+*   **Estética**: Frescura de lima y naranja cítrica.
+*   **Colores clave**: `--background: #F7FBEA`, `--foreground: #1A2F0F`, `--primary: #FF6B00`, `--secondary: #65A30D`.
+
+### 🎃 7. Tema Halloween Dark ("Spooky Night")
+*   **Clase HTML**: `.halloween-dark`
+*   **Estética**: Noche tenebrosa con calabaza naranja fluorescente y toques violetas brujos.
+*   **Colores clave**: `--background: #09050E`, `--foreground: #FFF5E6`, `--primary: #FF6B00`, `--secondary: #A855F7`.
+*   **Overlay & Hover**: Activa `.grain-overlay` y resplandor naranja tenue en hover en tarjetas (`drop-shadow(0 0 16px rgba(255, 107, 0, 0.3))`). Ambos scrollbars (sidebar y main) sincronizados al color del main (`--scrollbar-sidebar-dot: #FF6B00`).
+
+### 🌲 8. Tema Bosque Boreal ("Nordic Taiga & Snow")
+*   **Clase HTML**: `.boreal`
+*   **Estética**: Atmósfera nórdica invernal con fondo azul hielo/nieve claro (`#E8F1F5`), tarjetas `#F2F8FA`, verde bosque de abeto perenne (`#0F6E52`) y acentos de azul lago glaciar (`#0284C7`).
+*   **Colores clave**: `--background: #E8F1F5`, `--foreground: #0C201A`, `--primary: #0F6E52`, `--secondary: #0284C7`.
+
 ---
 
 ## ⚡ Mapeo de Tailwind CSS v4 y Clerk

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sun, Moon, Gamepad2, Terminal, Coffee, Citrus } from "lucide-react";
+import { Sun, Moon, Gamepad2, Terminal, Coffee, Citrus, Ghost, Trees } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
@@ -17,12 +17,16 @@ export function ThemeToggle() {
   }, []);
 
   const toggleTheme = () => {
-    // Ciclo: light -> dark -> synthwave -> hacker -> coffee -> citric -> light
-    if (theme === "light") setTheme("dark");
-    else if (theme === "dark") setTheme("synthwave");
-    else if (theme === "synthwave") setTheme("hacker");
-    else if (theme === "hacker") setTheme("coffee");
-    else if (theme === "coffee") setTheme("citric");
+    // Ciclo alternado (Oscuro / Claro):
+    // 1. light (Claro) -> 2. halloween-dark (Oscuro) -> 3. boreal (Claro) -> 4. synthwave (Oscuro) ->
+    // 5. coffee (Claro) -> 6. hacker (Oscuro) -> 7. citric (Claro) -> 8. dark (Oscuro) -> light
+    if (theme === "light") setTheme("halloween-dark");
+    else if (theme === "halloween-dark") setTheme("boreal");
+    else if (theme === "boreal") setTheme("synthwave");
+    else if (theme === "synthwave") setTheme("coffee");
+    else if (theme === "coffee") setTheme("hacker");
+    else if (theme === "hacker") setTheme("citric");
+    else if (theme === "citric") setTheme("dark");
     else setTheme("light"); 
   };
 
@@ -48,6 +52,8 @@ export function ThemeToggle() {
       {theme === "hacker" && <Terminal className="h-[1.2rem] w-[1.2rem] text-primary animate-in zoom-in" />}
       {theme === "coffee" && <Coffee className="h-[1.2rem] w-[1.2rem] text-primary animate-in zoom-in" />}
       {theme === "citric" && <Citrus className="h-[1.2rem] w-[1.2rem] text-primary animate-in zoom-in" />}
+      {theme === "halloween-dark" && <Ghost className="h-[1.2rem] w-[1.2rem] text-primary animate-in zoom-in" />}
+      {theme === "boreal" && <Trees className="h-[1.2rem] w-[1.2rem] text-primary animate-in zoom-in" />}
       <span className="sr-only">Alternar tema</span>
     </Button>
   );

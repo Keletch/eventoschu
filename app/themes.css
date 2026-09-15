@@ -478,6 +478,164 @@
   --input: #F7FBEA;
 }
 
+/* 🎃 TEMA HALLOWEEN DARK (Spooky Night / Jack-o'-Lantern) */
+.halloween-dark {
+  /* Base */
+  --background: #09050e;
+  --foreground: #fff5e6;
+  --surface: #140b1d;
+  --surface-foreground: #fff5e6;
+  --surface-border: rgba(255, 107, 0, 0.25);
+  --border: #321844;
+  --ring: #ff6b00;
+  --radius: 32px;
+  --card: #160c22;
+  --card-foreground: #fff5e6;
+  --logo-color: #ff6b00;
+  --popover: #160c22;
+  --popover-foreground: #fff5e6;
+
+  /* Hero */
+  --hero-badge-bg: rgba(255, 107, 0, 0.15);
+  --hero-badge-text: #ff851b;
+  --hero-badge-border: rgba(255, 107, 0, 0.35);
+  --hero-title: #ffffff;
+  --hero-desc: #d5c8e2;
+  --hero-btn-bg: #ff6b00;
+  --hero-btn-text: #09050e;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #ff6b00;
+  --tab-active-text: #09050e;
+  --category-tab-active-bg: #ff6b00;
+  --category-tab-active-text: #09050e;
+  --tab-inactive-bg: #140b1d;
+  --tab-inactive-text: #b359ff;
+  --tab-border: #321844;
+
+  /* Event Cards (Step 1) */
+  --card-border: #321844;
+  --card-title: #ffffff;
+  --card-text: #d5c8e2;
+  --card-icon: #ff6b00;
+  --card-badge-text: #b359ff;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #140b1d;
+  --form-card-border: rgba(255, 107, 0, 0.25);
+  --form-label: #fff5e6;
+  --form-input-bg: #09050e;
+  --form-input-border: #321844;
+  --form-input-text: #ffffff;
+  --form-btn-bg: #ff6b00;
+  --form-btn-text: #09050e;
+
+  /* Footer & Socials */
+  --footer-text-primary: #fff5e6;
+  --footer-text-secondary: rgba(255, 245, 230, 0.45);
+  --social-bg: rgba(255, 107, 0, 0.15);
+  --social-color: #ff851b;
+  --social-hover-bg: #ff6b00;
+  --social-hover-color: #09050e;
+
+  /* Global Fallbacks */
+  --primary: #ff6b00;
+  --primary-foreground: #09050e;
+  --secondary: #a855f7;
+  --secondary-foreground: #ffffff;
+  --muted: #160c22;
+  --muted-foreground: #d5c8e2;
+  --accent: #321844;
+  --accent-foreground: #ff6b00;
+  --scrollbar-dot: #ff6b00;
+  --scrollbar-dot-muted: rgba(255, 107, 0, 0.25);
+  --scrollbar-sidebar-dot: #ff6b00;
+  --sidebar-bg: #0e0717;
+  --sidebar-foreground: #fff5e6;
+  --footer-bg: #0e0717;
+  --scrollbar-track: rgba(255, 107, 0, 0.08);
+  --input: #09050e;
+}
+
+/* 🌲 TEMA BOSQUE BOREAL (Boreal Forest / Nordic Taiga & Snow) */
+.boreal {
+  /* Base */
+  --background: #e8f1f5;
+  --foreground: #0c201a;
+  --surface: #d8e7ed;
+  --surface-foreground: #0c201a;
+  --surface-border: rgba(15, 76, 58, 0.18);
+  --border: #bfd8df;
+  --ring: #0f6e52;
+  --radius: 32px;
+  --card: #f2f8fa;
+  --card-foreground: #0c201a;
+  --logo-color: #0f6e52;
+  --popover: #f2f8fa;
+  --popover-foreground: #0c201a;
+
+  /* Hero */
+  --hero-badge-bg: #cde4ec;
+  --hero-badge-text: #0f6e52;
+  --hero-badge-border: #aed1dd;
+  --hero-title: #071712;
+  --hero-desc: #33534a;
+  --hero-btn-bg: #0f6e52;
+  --hero-btn-text: #ffffff;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #0f6e52;
+  --tab-active-text: #ffffff;
+  --category-tab-active-bg: #0f6e52;
+  --category-tab-active-text: #ffffff;
+  --tab-inactive-bg: #f2f8fa;
+  --tab-inactive-text: #0284c7;
+  --tab-border: #bfd8df;
+
+  /* Event Cards (Step 1) */
+  --card-border: #c8e0e6;
+  --card-title: #0c201a;
+  --card-text: #33534a;
+  --card-icon: #0f6e52;
+  --card-badge-text: #0284c7;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #f2f8fa;
+  --form-card-border: #bfd8df;
+  --form-label: #0c201a;
+  --form-input-bg: #e8f1f5;
+  --form-input-border: #bfd8df;
+  --form-input-text: #0c201a;
+  --form-btn-bg: #0f6e52;
+  --form-btn-text: #ffffff;
+
+  /* Footer & Socials */
+  --footer-text-primary: #0c201a;
+  --footer-text-secondary: rgba(12, 32, 26, 0.45);
+  --social-bg: #cde4ec;
+  --social-color: #0f6e52;
+  --social-hover-bg: #0f6e52;
+  --social-hover-color: #ffffff;
+
+  /* Global Fallbacks */
+  --primary: #0f6e52;
+  --primary-foreground: #ffffff;
+  --secondary: #0284c7;
+  --secondary-foreground: #ffffff;
+  --muted: #d8e7ed;
+  --muted-foreground: #33534a;
+  --accent: #bfd8df;
+  --accent-foreground: #0f6e52;
+  --scrollbar-dot: #0f6e52;
+  --scrollbar-dot-muted: rgba(15, 110, 82, 0.25);
+  --scrollbar-sidebar-dot: #0f6e52;
+  --sidebar-bg: #d8e7ed;
+  --sidebar-foreground: #0c201a;
+  --footer-bg: #d8e7ed;
+  --scrollbar-track: rgba(15, 110, 82, 0.08);
+  --input: #e8f1f5;
+}
+
 /* --- EFECTOS ESPECÍFICOS --- */
 .synthwave .retro-grid {
   display: block;
@@ -494,7 +652,36 @@
   z-index: -1;
 }
 
-.dark .grain-overlay, .synthwave .grain-overlay {
+.halloween-dark .retro-grid {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(ellipse 65% 50% at 50% 0%, rgba(255, 107, 0, 0.12), transparent 70%),
+    radial-gradient(circle at 10% 40%, rgba(168, 85, 247, 0.12), transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(255, 107, 0, 0.08), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.boreal .retro-grid {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(22, 101, 52, 0.08), transparent 70%),
+    radial-gradient(circle at 85% 30%, rgba(2, 132, 199, 0.07), transparent 55%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dark .grain-overlay, 
+.synthwave .grain-overlay,
+.halloween-dark .grain-overlay {
   display: block;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
@@ -502,4 +689,29 @@
 .hacker .event-card-wrapper:hover {
   filter: drop-shadow(2px 0px 0px rgba(0, 255, 65, 0.3));
   transition: filter 0.2s ease;
+}
+
+.halloween-dark .event-card-wrapper:hover {
+  filter: drop-shadow(0 0 16px rgba(255, 107, 0, 0.3));
+  transition: filter 0.2s ease;
+}
+
+/* Armonía de botones activos del Sidebar en Halloween Dark */
+.halloween-dark aside a.bg-sidebar-foreground {
+  background-color: #ff6b00 !important;
+  color: #09050e !important;
+  box-shadow: 0 0 15px rgba(255, 107, 0, 0.35) !important;
+}
+.halloween-dark aside a.bg-sidebar-foreground svg {
+  color: #09050e !important;
+}
+
+/* Armonía de botones activos del Sidebar en Bosque Boreal */
+.boreal aside a.bg-sidebar-foreground {
+  background-color: #166534 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(22, 101, 52, 0.25) !important;
+}
+.boreal aside a.bg-sidebar-foreground svg {
+  color: #ffffff !important;
 }

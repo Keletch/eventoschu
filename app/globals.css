@@ -6,6 +6,8 @@
 @custom-variant synthwave (&:is(.synthwave *));
 @custom-variant hacker (&:is(.hacker *));
 @custom-variant citric (&:is(.citric *));
+@custom-variant halloween-dark (&:is(.halloween-dark *));
+@custom-variant boreal (&:is(.boreal *));
 
 @theme inline {
   --color-background: var(--background);
@@ -183,7 +185,8 @@
 
 .dark img[alt="Club de Inversionistas"], 
 .synthwave img[alt="Club de Inversionistas"],
-.hacker img[alt="Club de Inversionistas"] {
+.hacker img[alt="Club de Inversionistas"],
+.halloween-dark img[alt="Club de Inversionistas"] {
   filter: brightness(0) invert(1) !important;
 }
 

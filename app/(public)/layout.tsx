@@ -86,39 +86,33 @@ export default function RootLayout({
           identityPreviewEditButtonIcon: "!text-primary",
           modalCloseButton: "!text-foreground/60 hover:!text-foreground transition-colors",
           badge: "bg-primary text-primary-foreground border-primary px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider",
-          logoBox: "dark:invert dark:brightness-200 synthwave:invert synthwave:brightness-200 hacker:invert hacker:brightness-200",
+          logoBox: "dark:invert dark:brightness-200 synthwave:invert synthwave:brightness-200 hacker:invert hacker:brightness-200 halloween-dark:invert halloween-dark:brightness-200",
         }
       }}
     >
       <html lang="es" className={`${raleway.variable} antialiased`} suppressHydrationWarning>
         <head>
           <link rel="manifest" href="/manifest.webmanifest" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+          <meta name="apple-mobile-web-app-title" content="HyenUk Chu" />
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="theme-color" content="#3154DC" />
+          <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+          <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
+          <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png" />
           <script dangerouslySetInnerHTML={{
             __html: `
-              window.addEventListener('beforeinstallprompt', function(e) {
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+              window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 window.deferredPWAPrompt = e;
               });
-              // 🧹 Limpieza automática de Service Workers huérfanos en modo dev
-              if (${process.env.NODE_ENV === 'development'} && 'serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                  for (var registration of registrations) {
-                    registration.unregister();
-                  }
-                });
-              } else if ('serviceWorker' in navigator) {
-                // Registrar Service Worker en producción / build local
-                var registerSW = function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function(err) {
-                    console.error('Service Worker registration failed:', err);
-                  });
-                };
-                if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                  registerSW();
-                } else {
-                  window.addEventListener('load', registerSW);
-                }
-              }
             `
           }} />
         </head>
@@ -128,7 +122,7 @@ export default function RootLayout({
             defaultTheme="light"
             enableSystem
             disableTransitionOnChange
-            themes={["light", "dark", "synthwave", "hacker", "coffee", "citric"]}
+            themes={["light", "halloween-dark", "boreal", "synthwave", "coffee", "hacker", "citric", "dark"]}
           >
             <TooltipProvider>
               <div className="retro-grid" />

@@ -47,7 +47,7 @@ export function ShareSection({ selectedCityId, eventTitle, userId, userName }: S
     const link = getShareLink();
     const titleText = eventTitle ? `"${eventTitle}"` : "la gira de HyenUk Chu";
     const text = encodeURIComponent(
-      `¡Hola! Me acabo de registrar para el evento ${titleText}. Te comparto el link para que también te registres y apartes tu cupo: ${link}`
+      `¡Hola! Me acabo de registrar en el evento ${titleText}. Te comparto el link para que también te registres y apartes tu cupo: ${link}`
     );
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };
