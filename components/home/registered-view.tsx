@@ -154,10 +154,20 @@ export function RegisteredView({
       />
 
       {/* ── Título principal ────────────────────────────── */}
-      <RegistrationHero 
-        title={heroTitle}
-        description={heroDescription}
-      />
+      {(() => {
+        const waConfig = (currentEvent?.paid_links || []).find((l: any) => l.type === "whatsapp_config");
+        const waUrl = currentEvent?.whatsapp_url || waConfig?.whatsapp_url || null;
+        const waBtnText = currentEvent?.whatsapp_button_text || waConfig?.whatsapp_button_text || "Unirme a la comunidad de WhatsApp";
+
+        return (
+          <RegistrationHero 
+            title={heroTitle}
+            description={heroDescription}
+            whatsappUrl={waUrl}
+            whatsappButtonText={waBtnText}
+          />
+        );
+      })()}
 
       {/* ── Selector de ciudades inscritas ─────────────── */}
       <CitySelector

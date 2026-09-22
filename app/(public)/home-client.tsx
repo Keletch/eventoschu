@@ -6,7 +6,6 @@ import { Footer } from "@/components/footer";
 import { getRegistrationsCount } from "@/app/actions/admin-registration";
 import { getEvents, Event } from "@/app/actions/events";
 import { formatSafeDate } from "@/lib/date-utils";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { SurveyModal } from "@/components/registration/survey-modal";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -248,16 +247,15 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
 
   return (
     <main ref={containerRef} className="min-h-screen bg-background relative selection:bg-primary/10">
-      <TooltipProvider>
-        <Header 
-          registrationId={home.userData?.id} 
-          step={home.step} 
-          isSidebarOpen={isSidebarOpen}
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-          isSurveyMissing={isSurveyMissing}
-          setIsSurveyOpen={home.setIsSurveyOpen}
-          onOpenSSOOnboarding={() => home.setIsSSOOnboardingOpen(true)}
-        />
+      <Header 
+        registrationId={home.userData?.id} 
+        step={home.step} 
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        isSurveyMissing={isSurveyMissing}
+        setIsSurveyOpen={home.setIsSurveyOpen}
+        onOpenSSOOnboarding={() => home.setIsSSOOnboardingOpen(true)}
+      />
         
         <div className="flex pt-20">
           <Sidebar isOpen={isSidebarOpen} />
@@ -401,7 +399,6 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
             setIsOpen={home.setIsSSOOnboardingOpen}
           />
         )}
-      </TooltipProvider>
     </main>
   );
 }

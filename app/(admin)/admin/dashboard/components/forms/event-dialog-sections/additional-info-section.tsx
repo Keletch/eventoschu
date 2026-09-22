@@ -327,14 +327,14 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
             <div className="space-y-2">
               <div className="flex items-center gap-1.5">
                 <Label className="text-xs font-black uppercase text-muted-foreground">Texto del Botón</Label>
-                <InfoTooltip content="Texto que aparecerá en el botón verde de acción (por defecto: Unirse a la comunidad de WhatsApp)." />
+                <InfoTooltip content="Texto que aparecerá en el botón verde de acción (por defecto: Unirse al grupo de WhatsApp)." />
               </div>
               <Input
                 type="text"
                 value={event.whatsapp_button_text || ""}
                 onChange={(e) => handleUpdateWhatsappField("whatsapp_button_text", e.target.value)}
                 className="rounded-xl border-border bg-background h-12 focus:bg-background transition-all shadow-sm"
-                placeholder="Unirse a la comunidad de WhatsApp"
+                placeholder="Unirse al grupo de WhatsApp"
               />
             </div>
 
@@ -342,13 +342,13 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
             <div className="space-y-2">
               <div className="flex items-center gap-1.5">
                 <Label className="text-xs font-black uppercase text-muted-foreground">Texto Explicativo del Paso 3</Label>
-                <InfoTooltip content="Mensaje descriptivo que leerá el usuario sobre por qué unirse a la comunidad." />
+                <InfoTooltip content="Mensaje descriptivo que leerá el usuario sobre por qué unirse al grupo de este evento." />
               </div>
               <Textarea
                 value={event.whatsapp_description || ""}
                 onChange={(e) => handleUpdateWhatsappField("whatsapp_description", e.target.value)}
                 className="rounded-xl border-border bg-background min-h-[80px] focus:bg-background transition-all shadow-sm"
-                placeholder="Únete a nuestro grupo oficial para recibir información, novedades y contenido exclusivo del evento."
+                placeholder="Únete al grupo de WhatsApp de este evento para recibir avisos importantes, recordatorios y contenido exclusivo."
               />
             </div>
           </div>

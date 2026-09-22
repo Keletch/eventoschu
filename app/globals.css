@@ -178,16 +178,25 @@
   --popover-foreground: #00030C;
   --card: #FFFFFF;
   --card-foreground: #00030C;
+  --logo-color: #3154DC;
 }
 
 @import "./themes.css";
 
 
-.dark img[alt="Club de Inversionistas"], 
-.synthwave img[alt="Club de Inversionistas"],
-.hacker img[alt="Club de Inversionistas"],
-.halloween-dark img[alt="Club de Inversionistas"] {
-  filter: brightness(0) invert(1) !important;
+/* Logo camaleónico según tema (Pure CSS - sin hydration mismatch) */
+.logo-light-img {
+  display: block;
+}
+.logo-mask-theme {
+  display: none;
+}
+
+html:not(.light):not([data-theme="light"]) .logo-light-img {
+  display: none !important;
+}
+html:not(.light):not([data-theme="light"]) .logo-mask-theme {
+  display: block !important;
 }
 
 .grain-overlay {
@@ -333,4 +342,13 @@ body {
 .cl-formFieldInput::placeholder {
   color: var(--muted-foreground) !important;
   opacity: 0.85 !important;
+}
+
+/* 📜 Ocultar barra de scroll nativa */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

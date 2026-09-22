@@ -100,6 +100,7 @@ export function Sidebar({ isOpen }: SidebarProps) {
                 <a
                   key={lIdx}
                   href={link.href}
+                  suppressHydrationWarning
                   target={link.isExternal ? "_blank" : undefined}
                   className={cn(
                     "flex items-center justify-between px-4 py-2.5 rounded-xl transition-all group",
@@ -122,12 +123,6 @@ export function Sidebar({ isOpen }: SidebarProps) {
       </div>
       
       <SidebarScrollbar scrollContainerRef={scrollContainerRef} />
-
-      <style jsx global>{`
-        .scrollbar-none::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </aside>
   );
 }

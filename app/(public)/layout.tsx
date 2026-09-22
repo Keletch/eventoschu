@@ -102,21 +102,27 @@ export default function RootLayout({
           <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
           <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
           <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png" />
-          <script dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js');
+          <script
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js');
+                  });
+                }
+                window.addEventListener('beforeinstallprompt', (e) => {
+                  e.preventDefault();
+                  window.deferredPWAPrompt = e;
                 });
-              }
-              window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                window.deferredPWAPrompt = e;
-              });
-            `
-          }} />
+              `
+            }} 
+          />
         </head>
-        <body className="flex flex-col font-sans bg-background text-foreground transition-colors duration-300 min-h-screen">
+        <body 
+          className="flex flex-col font-sans bg-background text-foreground transition-colors duration-300 min-h-screen"
+          suppressHydrationWarning
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="light"

@@ -24,8 +24,8 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen, currentEvent }: Ne
   // Extraer configuración de Paso 3: Comunidad / WhatsApp
   const waConfig = (currentEvent?.paid_links || []).find((l: any) => l.type === "whatsapp_config");
   const whatsappUrl = currentEvent?.whatsapp_url || waConfig?.whatsapp_url || "";
-  const whatsappButtonText = currentEvent?.whatsapp_button_text || waConfig?.whatsapp_button_text || "Unirme a la comunidad de WhatsApp";
-  const whatsappDescription = currentEvent?.whatsapp_description || waConfig?.whatsapp_description || "Únete a nuestro grupo oficial para recibir información, novedades y contenido exclusivo del evento.";
+  const whatsappButtonText = currentEvent?.whatsapp_button_text || waConfig?.whatsapp_button_text || "Unirme al grupo de WhatsApp";
+  const whatsappDescription = currentEvent?.whatsapp_description || waConfig?.whatsapp_description || "Únete al grupo de WhatsApp de este evento para recibir avisos importantes, recordatorios y contenido exclusivo.";
   const hasStep3 = !!whatsappUrl && whatsappUrl.trim().length > 0;
 
   // Medición dinámica y precisa de distancias entre nodos
@@ -188,7 +188,7 @@ export function NextStepsPanel({ surveyData, setIsSurveyOpen, currentEvent }: Ne
                 <div className="flex-1 space-y-6 text-center sm:text-left pt-2">
                   <div className="space-y-2">
                     <h4 className="text-xl md:text-[24px] font-bold text-foreground">
-                      Únete a nuestra comunidad
+                      Únete al grupo del evento
                     </h4>
                     <p className="text-lg md:text-[21px] text-muted-foreground font-light leading-relaxed whitespace-pre-line">
                       {whatsappDescription}
