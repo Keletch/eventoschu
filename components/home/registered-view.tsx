@@ -194,6 +194,7 @@ export function RegisteredView({
       <NextStepsPanel
         surveyData={surveyData}
         setIsSurveyOpen={setIsSurveyOpen}
+        currentEvent={currentEvent}
       />
 
       {/* ── Compartir link ──────────────────────────────── */}

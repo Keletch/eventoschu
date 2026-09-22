@@ -103,6 +103,16 @@ export async function createRegistration(data: any, turnstileToken: string) {
       }
     }
 
+    // 🎯 Detección de Enlace Alternativo al Paso 2 (TYP Externa)
+    // Aplica para eventos abiertos y cerrados sin pago cupo: registra normal y abre TYP externa en nueva pestaña
+    if (!checkoutRedirectUrl && selectedEvInfo) {
+      const typConfig = (selectedEvInfo?.paid_links || []).find((l: any) => l.type === 'typ_config');
+      const altTypUrl = typConfig?.external_typ_url || selectedEvInfo?.external_typ_url;
+      if (altTypUrl && typeof altTypUrl === 'string' && altTypUrl.trim()) {
+        checkoutRedirectUrl = altTypUrl.trim();
+      }
+    }
+
     // 2. Lógica de Actualización vs Creación
     if (existing) {
       const alreadyRegisteredIds = validatedData.selected_events.filter(id => (existing.selected_events || []).includes(id));

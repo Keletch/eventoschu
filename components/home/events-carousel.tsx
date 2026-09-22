@@ -213,7 +213,7 @@ export function EventsCarousel({
           >
             <div
               ref={cardsRef}
-              className="flex gap-8 min-h-[460px] h-auto items-stretch transition-all duration-300 ease-in-out"
+              className="flex gap-8 min-h-[500px] md:min-h-[460px] h-auto items-stretch transition-all duration-300 ease-in-out"
             >
               {monthEvents.map((event: any) => {
                 const data = transformEventForUI(event);
@@ -221,7 +221,7 @@ export function EventsCarousel({
                   <div
                     key={event.id}
                     id={`event-${event.id}`}
-                    className="event-card-wrapper h-full w-[calc(100vw-48px)] md:w-[400px] snap-center transform backface-visibility-hidden"
+                    className="event-card-wrapper h-full w-[calc(100vw-48px)] md:w-[400px] snap-center transform backface-visibility-hidden flex flex-col"
                   >
                     <EventCard
                       id={event.id}

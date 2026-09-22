@@ -44,6 +44,7 @@ export default function AdminDashboard() {
     regsDateFilter, setRegsDateFilter,
     regsClerkFilter, setRegsClerkFilter,
     currentPage, setCurrentPage, pageSize, setPageSize, totalPages, paginatedRegs, filteredRegs,
+    eventsCurrentPage, setEventsCurrentPage, eventsPageSize, setEventsPageSize, eventsTotalPages, paginatedEvents,
     isDialogOpen, setIsDialogOpen,
     isRegDialogOpen, setIsRegDialogOpen, isPurgeDialogOpen, setIsPurgeDialogOpen,
     isDeleteEventDialogOpen, setIsDeleteEventDialogOpen,
@@ -447,9 +448,64 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="tab-content-anim pt-2">
+              <div className="tab-content-anim space-y-4 pt-2">
+                {/* 🔢 Paginación Eventos */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-4 border-b border-border">
+                  <div className="flex items-center gap-4">
+                    <div className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest">
+                      Mostrar
+                    </div>
+                    <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border">
+                      {[10, 20, 50, 100].map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setEventsPageSize(size)}
+                          className={cn(
+                            "px-3 py-1.5 text-xs font-black rounded-lg transition-all cursor-pointer",
+                            eventsPageSize === size 
+                              ? "bg-background text-primary shadow-sm" 
+                              : "text-muted-foreground/60 hover:text-muted-foreground"
+                          )}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-6 ml-auto">
+                    <div className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-widest">
+                      Mostrando <span className="text-foreground font-black">{filteredEvents.length > 0 ? Math.min((eventsCurrentPage - 1) * eventsPageSize + 1, filteredEvents.length) : 0}</span> - <span className="text-foreground font-black">{Math.min(eventsCurrentPage * eventsPageSize, filteredEvents.length)}</span> de <span className="text-foreground font-black">{filteredEvents.length}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={eventsCurrentPage === 1}
+                        onClick={() => setEventsCurrentPage(prev => Math.max(1, prev - 1))}
+                        className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-foreground disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer"
+                      >
+                        <ChevronLeft className="size-4" />
+                      </button>
+                      
+                      <div className="flex items-center gap-1 bg-muted px-2 py-1.5 rounded-xl border border-border">
+                        <span className="text-xs font-black text-primary px-2">{eventsCurrentPage}</span>
+                        <span className="text-xs font-bold text-muted-foreground/30">/</span>
+                        <span className="text-xs font-bold text-muted-foreground/60 px-2">{eventsTotalPages || 1}</span>
+                      </div>
+
+                      <button
+                        disabled={eventsCurrentPage >= eventsTotalPages}
+                        onClick={() => setEventsCurrentPage(prev => Math.min(eventsTotalPages, prev + 1))}
+                        className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-foreground disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer"
+                      >
+                        <ChevronRight className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <EventsTable
-                  events={filteredEvents}
+                  events={paginatedEvents}
                   isLoading={isDataLoading}
                   registrations={registrations}
                   eventClicks={eventClicks}

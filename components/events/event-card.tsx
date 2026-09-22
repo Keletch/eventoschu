@@ -312,13 +312,17 @@ export function EventCard({
               <div className="relative group/title mt-1">
                 <div className={cn(
                   "overflow-hidden transition-[max-height] duration-300 ease-in-out relative",
-                  isExpanded ? "max-h-[120px]" : "max-h-[22px] md:max-h-[28px]"
+                  /* En móvil permitimos que salte renglón completo con min-h unificado; en md+ se expande con el botón */
+                  "max-h-[140px] md:max-h-[28px]",
+                  isExpanded && "md:max-h-[120px]"
                 )}>
                   <h3 
                     ref={titleRef}
                     className={cn(
-                      "text-xl md:text-2xl font-bold text-card-title leading-[1.1] text-left w-full",
-                      (!isExpanded && !isTransitioning) && "truncate"
+                      "text-lg sm:text-xl md:text-2xl font-bold text-card-title leading-[1.2] md:leading-[1.1] text-left w-full",
+                      /* Salto de renglón en móvil, truncate en desktop si no está expandido */
+                      "break-words md:truncate",
+                      (isExpanded || isTransitioning) && "md:whitespace-normal"
                     )}
                   >
                     {title}
@@ -326,7 +330,7 @@ export function EventCard({
                 </div>
               </div>
               
-              <div className="text-sm md:text-base font-medium text-card-text flex items-center gap-1.5 truncate text-left w-full mt-1">
+              <div className="text-sm md:text-base font-medium text-card-text flex flex-wrap md:flex-nowrap items-center gap-1.5 md:truncate text-left w-full mt-1">
                 <span>{city}</span>
                 <span className="w-1 h-1 rounded-full bg-border mx-1" />
                 <span>{country}</span>
@@ -334,7 +338,7 @@ export function EventCard({
                 {canExpand && (
                   <span 
                     className={cn(
-                      "ml-2 transition-all duration-300 inline-flex items-center",
+                      "ml-2 transition-all duration-300 hidden md:inline-flex items-center",
                       "opacity-100",
                       isTransitioning && "opacity-50 pointer-events-none"
                     )}
@@ -510,14 +514,14 @@ export function EventCard({
           </div>
         </div>
 
-        <div className="space-y-4 text-sm md:text-[16px] leading-relaxed text-card-text">
+        <div className="space-y-4 text-sm md:text-[16px] leading-relaxed text-card-text flex-1">
           <div className="space-y-3">
-            <EventDetailItem icon={<Calendar className="w-4 h-4 text-card-icon shrink-0" />} label="Fecha" value={date} />
-            <EventDetailItem icon={<Clock className="w-4 h-4 text-card-icon shrink-0" />} label="Hora" value={time} />
-            <EventDetailItem icon={<Hourglass className="w-4 h-4 text-card-icon shrink-0" />} label="Duración" value={duration} />
+            <EventDetailItem icon={<Calendar className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />} label="Fecha" value={date} />
+            <EventDetailItem icon={<Clock className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />} label="Hora" value={time} />
+            <EventDetailItem icon={<Hourglass className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />} label="Duración" value={duration} />
             {isVirtual ? (
-              <div className="flex gap-3 items-center">
-                <ExternalLink className="w-4 h-4 text-card-icon shrink-0" />
+              <div className="flex gap-3 items-start md:items-center">
+                <ExternalLink className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />
                 <span className="font-bold shrink-0">Plataforma:</span>
                 {linkEnabled && linkUrl ? (
                   <a
@@ -525,30 +529,30 @@ export function EventCard({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="text-primary hover:text-primary/80 underline underline-offset-2 truncate font-medium transition-colors"
+                    className="text-primary hover:text-primary/80 underline underline-offset-2 break-words md:truncate font-medium transition-colors"
                   >
                     {linkTitle || "Acceder al evento"}
                   </a>
                 ) : (
-                  <span className="truncate">
+                  <span className="break-words md:truncate">
                     {linkTitle || "Por confirmar"}
                   </span>
                 )}
               </div>
             ) : (
-              <EventDetailItem icon={<MapPin className="w-4 h-4 text-card-icon shrink-0" />} label="Sitio" value={location} />
+              <EventDetailItem icon={<MapPin className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />} label="Sitio" value={location} />
             )}
             {unlockedLink && unlockedLink.price ? (
-              <div className="flex gap-3 items-center">
-                <CircleDollarSign className="w-4 h-4 text-card-icon shrink-0" />
+              <div className="flex gap-3 items-start md:items-center">
+                <CircleDollarSign className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />
                 <span className="font-bold shrink-0">Precio:</span>
-                <div className="flex items-center gap-2 truncate">
+                <div className="flex items-center gap-2 break-words md:truncate">
                   <span className="line-through text-muted-foreground/75 text-xs md:text-sm">{price}</span>
                   <span className="font-bold text-primary animate-in fade-in zoom-in-95 duration-500">{unlockedLink.price}</span>
                 </div>
               </div>
             ) : (
-              <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-card-icon shrink-0" />} label="Precio" value={price} />
+              <EventDetailItem icon={<CircleDollarSign className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />} label="Precio" value={price} />
             )}
           </div>
         </div>
@@ -718,13 +722,14 @@ function EventDetailItem({ icon, label, value, isMultiLine }: { icon: React.Reac
   const isLongText = value && value.length > 30;
 
   return (
-    <div className={cn("flex gap-3", isMultiLine ? "items-start" : "items-center")}>
+    <div className={cn("flex gap-3", (isMultiLine || isLongText) ? "items-start md:items-center" : "items-center")}>
       {icon}
       <span className="font-bold shrink-0">{label}:</span> 
       {isLongText ? (
         <TooltipProvider delay={150}>
           <Tooltip>
-            <TooltipTrigger className="truncate cursor-help text-left outline-none">
+            {/* En desktop tiene truncate y muestra el tooltip justo sobre el texto; en móvil rompe líneas y se lee completo */}
+            <TooltipTrigger className="cursor-help text-left outline-none truncate hidden md:inline-block">
               {value}
             </TooltipTrigger>
             <TooltipContent 
@@ -734,9 +739,12 @@ function EventDetailItem({ icon, label, value, isMultiLine }: { icon: React.Reac
               {value}
             </TooltipContent>
           </Tooltip>
+          <span className="md:hidden break-words text-left leading-snug">
+            {value}
+          </span>
         </TooltipProvider>
       ) : (
-        <span className={cn(isMultiLine ? "leading-tight" : "truncate")}>{value}</span>
+        <span className={cn(isMultiLine ? "leading-tight break-words md:truncate" : "break-words md:truncate")}>{value}</span>
       )}
     </div>
   );

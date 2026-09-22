@@ -44,7 +44,9 @@ export function useAdminDashboard() {
     title: "", city: "", country: "", category_id: "", start_date: "", end_date: null,
     time: "19:00", duration: "Aproximadamente 2 horas", location: "Por definir",
     price: "30 USD", capacity: 50, keap_tag_id: "", keap_pending_tag_id: null, flag: "PE", bg_class: "bg-sky-100", active: true,
-    external_url: "", external_button_text: "", description: "", info_url: "", tag_ids: [], paid_links: []
+    external_url: "", external_button_text: "", external_typ_url: "",
+    whatsapp_url: "", whatsapp_button_text: "", whatsapp_description: "",
+    description: "", info_url: "", tag_ids: [], paid_links: []
   });
   
   // Toggles para acciones destructivas en Keap
@@ -254,7 +256,33 @@ export function useAdminDashboard() {
 
       // 2. Limpiamos el objeto para que no lleve relaciones virtuales que den error
       const adminEmail = session?.user?.email || "un administrador";
-      const { categories: _, event_tags: __, tag_ids: rawTagIds, ...eventToSave } = newEvent;
+      const { 
+        categories: _, 
+        event_tags: __, 
+        tag_ids: rawTagIds,
+        whatsapp_button_text: waBtnText,
+        whatsapp_description: waDesc,
+        ...eventToSave 
+      } = newEvent;
+      
+      // Sincronizamos en paid_links para compatibilidad y caché
+      const existingPaidLinks = (eventToSave.paid_links || []).filter(
+        (l: any) => l.type !== "typ_config" && l.type !== "whatsapp_config"
+      );
+      
+      if (eventToSave.external_typ_url && eventToSave.external_typ_url.trim()) {
+        existingPaidLinks.push({ type: "typ_config", external_typ_url: eventToSave.external_typ_url.trim() });
+      }
+      
+      if (eventToSave.whatsapp_url && eventToSave.whatsapp_url.trim()) {
+        existingPaidLinks.push({
+          type: "whatsapp_config",
+          whatsapp_url: eventToSave.whatsapp_url.trim(),
+          whatsapp_button_text: waBtnText || "",
+          whatsapp_description: waDesc || ""
+        });
+      }
+      eventToSave.paid_links = existingPaidLinks;
       
       // 🛡️ Regla estricta: Cerrado solo acepta pago_cupo (nunca pago). Abierto solo acepta pago (nunca pago_cupo).
       const isClosedMode = eventToSave.initial_status === "pending";
@@ -496,11 +524,20 @@ export function useAdminDashboard() {
     fetchData, fetchTags, handleClearCache, handleCreateEvent, handleDeleteEvent, handleConfirmEventPurge,
     toggleEventStatus, handleConfirmToggleStatus, handleUpdateReg, handleDeleteReg, handleConfirmPurge,
     handleEditEvent: (event: any) => { 
+      const typUrl = event.external_typ_url || (event.paid_links || []).find((l: any) => l.type === 'typ_config')?.external_typ_url || "";
+      const waConfig = (event.paid_links || []).find((l: any) => l.type === 'whatsapp_config');
+      const waUrl = event.whatsapp_url || waConfig?.whatsapp_url || "";
+      const waBtnText = event.whatsapp_button_text || waConfig?.whatsapp_button_text || "";
+      const waDesc = event.whatsapp_description || waConfig?.whatsapp_description || "";
       setNewEvent({
         ...event,
         start_date: formatDateForInput(event.start_date),
         external_url: event.external_url || "",
         external_button_text: event.external_button_text || "",
+        external_typ_url: typUrl,
+        whatsapp_url: waUrl,
+        whatsapp_button_text: waBtnText,
+        whatsapp_description: waDesc,
         description: event.description || "",
         info_url: event.info_url || "",
         paid_links: event.paid_links || [],
@@ -517,6 +554,10 @@ export function useAdminDashboard() {
         initial_status: "confirmed",
         external_url: "",
         external_button_text: "",
+        external_typ_url: "",
+        whatsapp_url: "",
+        whatsapp_button_text: "",
+        whatsapp_description: "",
         description: "",
         info_url: "",
         tag_ids: [],
@@ -526,6 +567,11 @@ export function useAdminDashboard() {
     },
     handleDuplicateEvent: async (event: any) => {
       const { id: _id, created_at: _created_at, categories: _categories, event_tags: _event_tags, ...rest } = event;
+      const typUrl = rest.external_typ_url || (event.paid_links || []).find((l: any) => l.type === 'typ_config')?.external_typ_url || "";
+      const waConfig = (event.paid_links || []).find((l: any) => l.type === 'whatsapp_config');
+      const waUrl = rest.whatsapp_url || waConfig?.whatsapp_url || "";
+      const waBtnText = rest.whatsapp_button_text || waConfig?.whatsapp_button_text || "";
+      const waDesc = rest.whatsapp_description || waConfig?.whatsapp_description || "";
       setNewEvent({ 
         ...rest, 
         title: `${rest.title} (Copia)`, 
@@ -533,6 +579,10 @@ export function useAdminDashboard() {
         start_date: formatDateForInput(rest.start_date),
         external_url: rest.external_url || "",
         external_button_text: rest.external_button_text || "",
+        external_typ_url: typUrl,
+        whatsapp_url: waUrl,
+        whatsapp_button_text: waBtnText,
+        whatsapp_description: waDesc,
         description: rest.description || "",
         info_url: rest.info_url || "",
         paid_links: event.paid_links || [],

@@ -22,6 +22,10 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
+  // Events Pagination
+  const [eventsCurrentPage, setEventsCurrentPage] = useState(1);
+  const [eventsPageSize, setEventsPageSize] = useState(20);
+
   // Filter Logic: Events
   const filteredEvents = useMemo(() => {
     return events
@@ -44,6 +48,20 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
         return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
       });
   }, [events, eventsSearch, eventTabCatFilter, eventTabStatusFilter, eventTabTagFilter]);
+
+  // Reset events page when event filters change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setEventsCurrentPage(1);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [eventsSearch, eventTabCatFilter, eventTabStatusFilter, eventTabTagFilter]);
+
+  const eventsTotalPages = Math.ceil(filteredEvents.length / eventsPageSize);
+  const paginatedEvents = useMemo(() => {
+    const start = (eventsCurrentPage - 1) * eventsPageSize;
+    return filteredEvents.slice(start, start + eventsPageSize);
+  }, [filteredEvents, eventsCurrentPage, eventsPageSize]);
 
   // Filter Logic: Registrations
   const filteredRegs = useMemo(() => {
@@ -121,6 +139,10 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
     pageSize, setPageSize,
     totalPages,
     filteredEvents,
+    paginatedEvents,
+    eventsCurrentPage, setEventsCurrentPage,
+    eventsPageSize, setEventsPageSize,
+    eventsTotalPages,
     filteredRegs,
     paginatedRegs,
     resetRegsFilters: () => {
@@ -142,6 +164,7 @@ export function useDashboardFilters(events: any[], registrations: any[]) {
       setEventTabCatFilter("all");
       setEventTabStatusFilter("all");
       setEventTabTagFilter("all");
+      setEventsCurrentPage(1);
     }
   };
 }

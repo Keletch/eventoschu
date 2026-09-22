@@ -24,6 +24,12 @@ export interface PaidLink {
   waitlist_button_text?: string;
   use_external_waitlist?: boolean;
   paid_waitlist_url?: string;
+  // Enlace alternativo a Paso 2 (TYP externa)
+  external_typ_url?: string;
+  // Paso 3: Comunidad / WhatsApp
+  whatsapp_url?: string;
+  whatsapp_button_text?: string;
+  whatsapp_description?: string;
 }
 
 export interface Event {
@@ -61,6 +67,10 @@ export interface Event {
   info_url?: string | null;
   external_url?: string | null;
   external_button_text?: string | null;
+  external_typ_url?: string | null;
+  whatsapp_url?: string | null;
+  whatsapp_button_text?: string | null;
+  whatsapp_description?: string | null;
   event_tags?: {
     tags: {
       id: string;

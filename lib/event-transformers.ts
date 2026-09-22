@@ -91,6 +91,11 @@ export function transformEventForUI(event: Event) {
     externalButtonText: event.external_button_text || "Adquirir entrada",
     paidLinks: event.paid_links || [],
     description: event.description || null,
-    infoUrl: event.info_url || null
+    infoUrl: event.info_url || null,
+    externalTypUrl: event.external_typ_url || (event.paid_links || []).find((l: any) => l.type === 'typ_config')?.external_typ_url || null,
+    // Paso 3: Comunidad / WhatsApp
+    whatsappUrl: event.whatsapp_url || (event.paid_links || []).find((l: any) => l.type === 'whatsapp_config')?.whatsapp_url || null,
+    whatsappButtonText: event.whatsapp_button_text || (event.paid_links || []).find((l: any) => l.type === 'whatsapp_config')?.whatsapp_button_text || null,
+    whatsappDescription: event.whatsapp_description || (event.paid_links || []).find((l: any) => l.type === 'whatsapp_config')?.whatsapp_description || null
   };
 }

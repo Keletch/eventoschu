@@ -165,7 +165,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
               <CapacityPriceSection event={event} setEvent={setEvent} isOpenMode={isOpenMode} />
 
               {/* ── Sección 3.5: Información Adicional (Opcional) ── */}
-              <AdditionalInfoSection event={event} setEvent={setEvent} />
+              <AdditionalInfoSection event={event} setEvent={setEvent} systemTags={systemTags} />
 
               {/* ── Sección 4: Visual ── */}
               <VisualSection event={event} setEvent={setEvent} />
