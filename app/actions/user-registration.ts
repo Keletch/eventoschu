@@ -239,7 +239,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
       // Sincronización inteligente para nuevo registro
       const tagsToAdd: string[] = [];
       allEventsInfo?.forEach(e => {
-        const status = e.initial_status || 'confirmed';
+        const status = initialStatuses[e.id] || e.initial_status || 'confirmed';
         const tag = status === 'pending' ? e.keap_pending_tag_id : e.keap_tag_id;
         if (tag) tagsToAdd.push(tag);
       });

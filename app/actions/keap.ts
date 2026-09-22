@@ -32,16 +32,43 @@ export async function getOrCreateContact(userData: any) {
   try {
     const searchRes = await keapFetch(`contacts?email=${encodeURIComponent(userData.email)}`);
     const searchData = await searchRes.json();
+    const optInReason = "El usuario se registró voluntariamente en el formulario web de Eventos HyenUk Chu.";
+    const fullPhone = `${userData.phoneCode || userData.phone_code || ""}${userData.phone || ""}`.replace(/\s+/g, '');
     
     if (searchData.contacts && searchData.contacts.length > 0) {
-      return { success: true, contactId: searchData.contacts[0].id };
+      const contactId = searchData.contacts[0].id;
+      // 🚀 Asegurar que el contacto existente quede como Marketable para recibir correos de confirmación
+      try {
+        await keapFetch(`contacts/${contactId}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            opt_in_reason: optInReason,
+            email_addresses: [
+              {
+                email: userData.email,
+                field: "EMAIL1",
+                opt_in_reason: optInReason
+              }
+            ]
+          })
+        });
+      } catch (optErr) {
+        console.warn("⚠️ No se pudo actualizar opt_in_reason en contacto existente:", optErr);
+      }
+      return { success: true, contactId };
     }
 
-    const fullPhone = `${userData.phoneCode || userData.phone_code || ""}${userData.phone || ""}`.replace(/\s+/g, '');
     const createRes = await keapFetch("contacts", {
       method: "POST",
       body: JSON.stringify({
-        email_addresses: [{ email: userData.email, field: "EMAIL1" }],
+        email_addresses: [
+          { 
+            email: userData.email, 
+            field: "EMAIL1",
+            opt_in_reason: optInReason
+          }
+        ],
+        opt_in_reason: optInReason,
         given_name: userData.firstName || userData.first_name || "Inscrito",
         family_name: userData.lastName || userData.last_name || "Chu",
         phone_numbers: [{ number: fullPhone, field: "PHONE1" }],
