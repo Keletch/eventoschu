@@ -107,12 +107,8 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
           window.open((res as any).checkoutRedirectUrl, "_blank", "noopener,noreferrer");
         }
 
-        if (!home.isSignedIn) {
-          toast.success("¡Registro Exitoso!", {
-            description: "Tu solicitud ha sido recibida correctamente.",
-            duration: 8000,
-          });
-        }
+        // Toast dinámico de éxito manejado centralizadamente por Supabase Realtime (EDA)
+        // para garantizar título del evento y evitar doble notificación simultánea.
 
         gsap.to(ANIM_SELECTORS.step1, { 
           opacity: 0, 

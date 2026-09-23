@@ -88,9 +88,7 @@ export default function AdminRootLayout({
                 position="bottom-right" 
                 expand={true} 
                 richColors 
-                toastOptions={{
-                  className: "!bg-card !text-foreground !border-border !rounded-[20px] !shadow-xl font-sans",
-                }}
+                closeButton
               />
 
             </TooltipProvider>

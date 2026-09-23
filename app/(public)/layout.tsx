@@ -137,16 +137,13 @@ export default function RootLayout({
               <GTMProvider />
               <VercelAnalytics />
               <VercelSpeedInsights />
-                            <Toaster 
+              <div className="grain-overlay" />
+              <Toaster 
                 position="bottom-right" 
                 expand={true} 
                 richColors 
-                toastOptions={{
-                  className: "!bg-card !text-foreground !border-border !rounded-[20px] !shadow-xl font-sans",
-                }}
+                closeButton
               />
-
-            <div className="grain-overlay" />
             </TooltipProvider>
           </ThemeProvider>
         </body>
