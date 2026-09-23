@@ -20,7 +20,8 @@ import {
   Mail,
   MessageCircle,
   CheckCircle2,
-  Globe
+  Globe,
+  Clock
 } from "lucide-react";
 import { 
   Tooltip, 
@@ -30,7 +31,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { formatSafeDate, formatDateToShort } from "@/lib/date-utils";
+import { formatDateTimeShort } from "@/lib/date-utils";
 import { ADMIN_STATUS_CONFIGS, AdminRegistrationStatus } from "../../utils/admin-constants";
 import { EventFlag } from "@/components/ui/event-flag";
 
@@ -199,9 +200,22 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                   })()}
                 </TableCell>
                 <TableCell>
-                  <div className="text-xs font-medium text-muted-foreground/60">
-                    {formatDateToShort(formatSafeDate(reg.created_at))}
-                  </div>
+                  {(() => {
+                    const { date, time } = formatDateTimeShort(reg.created_at);
+                    return (
+                      <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-foreground">
+                          {date}
+                        </span>
+                        {time && (
+                          <span className="text-[11px] font-medium text-muted-foreground/70 flex items-center gap-1 mt-0.5">
+                            <Clock className="w-3 h-3 opacity-60" />
+                            {time}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </TableCell>
                 <TableCell className="text-right pr-6">
                   <div className="flex items-center justify-end gap-1">

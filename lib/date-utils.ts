@@ -28,6 +28,33 @@ export function formatDateToShort(date: Date | null): string {
   });
 }
 
+/**
+ * Formatea fecha y hora en formato legible para tablas admin (ej: "15 oct 2026, 14:30")
+ */
+export function formatDateTimeShort(dateStr: string | null | undefined): { date: string; time: string } {
+  if (!dateStr) return { date: "Sin fecha", time: "" };
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return { date: "Sin fecha", time: "" };
+    
+    const dateFormatted = d.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+
+    const timeFormatted = d.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    return { date: dateFormatted, time: timeFormatted };
+  } catch (_e) {
+    return { date: "Sin fecha", time: "" };
+  }
+}
+
 export function formatDateToLong(date: Date | null): string {
   if (!date) return "Sin fecha";
   if (date.getFullYear() === 2099) return "Por confirmar";

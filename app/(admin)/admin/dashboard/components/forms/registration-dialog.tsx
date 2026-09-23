@@ -16,13 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Mail, MapPin, User, Info, Phone, Trash2, PlusCircle } from "lucide-react";
+import { Loader2, Mail, MapPin, User, Info, Phone, Trash2, PlusCircle, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { EventFlag } from "@/components/ui/event-flag";
 import { adminAddEventToUser, adminRemoveEventFromUser } from "@/app/actions/admin-mass-ops";
 import { toast } from "sonner";
 import { SearchablePicker } from "@/components/ui/searchable-picker";
+import { formatDateTimeShort } from "@/lib/date-utils";
 
 
 interface RegistrationDialogProps {
@@ -99,9 +100,20 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
             <User className="w-32 h-32" />
           </div>
           <div className="relative z-10 flex flex-col gap-2">
-            <Badge className="w-fit bg-primary-foreground/20 text-primary-foreground border-none px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-              Ficha del Usuario
-            </Badge>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge className="w-fit bg-primary-foreground/20 text-primary-foreground border-none px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                Ficha del Usuario
+              </Badge>
+              {reg.created_at && (() => {
+                const { date, time } = formatDateTimeShort(reg.created_at);
+                return (
+                  <Badge className="w-fit bg-primary-foreground/10 text-primary-foreground/90 border-none px-3 py-1 rounded-full text-[10px] font-bold tracking-tight flex items-center gap-1.5">
+                    <Clock className="w-3 h-3 opacity-70" />
+                    Registrado: {date} {time ? `· ${time}` : ''}
+                  </Badge>
+                );
+              })()}
+            </div>
             <DialogTitle className="text-4xl font-black break-words overflow-hidden">
               {reg.first_name ? `${reg.first_name} ${reg.last_name || ''}` : ((Object.values(reg.event_data || {}) as any[]).find((d: any) => d.first_name)?.first_name || 'Gestión de Registro')}
             </DialogTitle>
