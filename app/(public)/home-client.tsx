@@ -61,6 +61,11 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
         home.setStep(1);
       }
       if (notif.is_notification || notif.title) {
+        // Evitar duplicar el toast de registro que ya se mostró inmediatamente con la respuesta HTTP
+        if (notif.action === 'REFRESH_UI' && notif.template_id === 'REGISTRATION_SUCCESS') {
+          return;
+        }
+
         const toastFn = (toast as any)[notif.type] || toast.success;
         toastFn(notif.title || "Notificación", {
           id: notif.id ? `notif-${notif.id}` : undefined,

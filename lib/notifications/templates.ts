@@ -19,14 +19,14 @@ export interface NotificationTemplate {
 export const USER_TEMPLATES: Record<string, NotificationTemplate> = {
   REGISTRATION_SUCCESS: {
     id: 'REGISTRATION_SUCCESS',
-    title: (data) => data.isWaitingList ? 'Lista de Espera' : '¡Registro Exitoso!',
+    title: (data) => data.isWaitingList ? 'Lista de Espera' : 'Registro Exitoso',
     message: (data) => `Tu solicitud ha sido recibida para: ${data.eventNames}`,
     type: 'success',
     action: 'REFRESH_UI'
   },
   EVENT_CONFIRMED: {
     id: 'EVENT_CONFIRMED',
-    title: '¡Cupo Confirmado!',
+    title: 'Cupo Confirmado',
     message: (data) => `Tu lugar ha sido asegurado para: ${data.eventNames}`,
     type: 'success',
     action: 'REFRESH_UI'

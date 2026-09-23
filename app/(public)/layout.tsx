@@ -142,7 +142,6 @@ export default function RootLayout({
                 position="bottom-right" 
                 expand={true} 
                 richColors 
-                closeButton
               />
             </TooltipProvider>
           </ThemeProvider>

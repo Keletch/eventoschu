@@ -171,7 +171,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
         await notifyAdminNewRegistration(validatedData.email, newlyAddedEvents);
 
         // 📢 Notificar al Usuario (Dispatcher EDA)
-        const isWaitingList = newlyAddedEvents.some(e => getEventUIConfig(e).type === 'OPEN');
+        const isWaitingList = newlyAddedEvents.every(e => updatedStatuses[e.id] === 'pending');
         const eventNames = newlyAddedEvents.map(e => formatEventForNotification(e)).join(', ');
 
         await dispatchSignal('REGISTRATION_SUCCESS', {
@@ -248,7 +248,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
       await notifyAdminNewRegistration(validatedData.email, allEventsInfo || []);
       
       // 📢 Notificación inicial (Dispatcher EDA)
-      const isWaitingList = allEventsInfo?.some(e => getEventUIConfig(e).type === 'OPEN');
+      const isWaitingList = Object.values(initialStatuses).every(s => s === 'pending');
       const eventNames = allEventsInfo?.map(e => formatEventForNotification(e)).join(', ');
 
       await dispatchSignal('REGISTRATION_SUCCESS', {

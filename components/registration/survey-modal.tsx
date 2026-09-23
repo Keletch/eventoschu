@@ -54,7 +54,7 @@ export function SurveyModal({ isOpen, onOpenChange, email, onSuccess }: SurveyMo
       const res = await saveSurveyData(email, literalPayload);
       if (res.success) {
         onSuccess(literalPayload);
-        toast.success("¡Formulario enviado correctamente!");
+        toast.success("Formulario enviado correctamente.");
         onOpenChange(false);
       } else {
         toast.error("Error al enviar: " + (res as any).error);

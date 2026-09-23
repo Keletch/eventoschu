@@ -880,18 +880,37 @@ export function useHomeLogic(initialEvents: any[] = []) {
         return { success: true, pureRedirect: true } as any;
       }
 
-      // 🧠 Usar el orquestador de eventos para el mensaje de éxito
-      const firstEventId = selectedEvents[0];
-      const eventInfo = events.find(e => e.id === firstEventId);
-      const _eventConfig = getEventUIConfig(eventInfo);
-
-      // 💡 NOTA: El toast de éxito ahora se maneja centralizadamente vía Realtime/Notification
-      // para evitar duplicidad y mantener consistencia con el sistema premium.
-      
       const finalStatuses = (regResult as any).eventStatuses || {};
       const finalEventData = (regResult as any).eventData || {};
       const finalSurvey = (regResult as any).surveyData || null;
       const finalSelectedEvents = (regResult as any).mergedEvents || selectedEvents;
+
+      // 🧠 Notificación Dinámica Enriquecida según el estado real obtenido
+      const registeredEventTitles = selectedEvents
+        .map(id => events.find(e => e.id === id)?.title)
+        .filter(Boolean)
+        .join(', ');
+
+      const allStatuses = Object.values(finalStatuses);
+      const isAllPending = allStatuses.length > 0 && allStatuses.every(s => s === 'pending');
+      const hasPagoCupo = (regResult as any).checkoutRedirectUrl;
+
+      let toastTitle = "Registro Exitoso";
+      let toastDesc = `Tu lugar ha sido asegurado para: ${registeredEventTitles || "tu evento seleccionado"}.`;
+
+      if (hasPagoCupo) {
+        toastTitle = "Pre-registro Exitoso";
+        toastDesc = `Completando redirección a pago para: ${registeredEventTitles || "tu evento seleccionado"}.`;
+      } else if (isAllPending) {
+        toastTitle = "Registrado en Lista de Espera";
+        toastDesc = `Tu solicitud está en revisión para: ${registeredEventTitles || "tu evento seleccionado"}. Te notificaremos cuando se libere tu cupo.`;
+      }
+
+      toast.success(toastTitle, {
+        id: `reg-success-${(regResult as any).id || Date.now()}`,
+        description: toastDesc,
+        duration: 8000,
+      });
 
       const newUser = {
         ...data,

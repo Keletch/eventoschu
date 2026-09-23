@@ -88,7 +88,6 @@ export default function AdminRootLayout({
                 position="bottom-right" 
                 expand={true} 
                 richColors 
-                closeButton
               />
 
             </TooltipProvider>

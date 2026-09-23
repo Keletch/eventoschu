@@ -56,7 +56,7 @@ export function ShareSection({ selectedCityId, eventTitle, userId, userName }: S
     trackGTMEvent("event_shared", { share_method: "copy_link" });
     const link = getShareLink();
     navigator.clipboard.writeText(link).then(() => {
-      toast.success("¡Enlace copiado al portapapeles!");
+      toast.success("Enlace copiado al portapapeles");
     });
   };
 
