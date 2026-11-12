@@ -1,21 +1,17 @@
-'use server';
+import "server-only";
 
-import { auth } from "@clerk/nextjs/server";
-import { syncKeapTags } from "./keap";
-import { notifyAdminEmailSynced, notifyAdminAccountLinked } from "./admin-notifications";
+import { syncKeapTags } from "@/lib/keap";
+import { notifyAdminEmailSynced, notifyAdminAccountLinked } from "@/lib/notifications/admin-notifications";
 import { dispatchSignal } from "@/lib/services/signal-dispatcher";
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 /**
  * 📧 Sincroniza el cambio de email de Clerk hacia Supabase y Keap
+ * Solo se invoca desde el webhook firmado de Clerk.
  */
-export async function updateUserEmail(clerkId: string, newEmail: string, fromWebhook = false) {
+export async function updateUserEmail(clerkId: string, newEmail: string) {
   try {
-    if (!fromWebhook) {
-      const { userId } = await auth();
-      if (!userId || userId !== clerkId) throw new Error("No autorizado");
-    }
 
     const emailFormatted = newEmail.toLowerCase().trim();
 
@@ -101,13 +97,10 @@ export async function updateUserEmail(clerkId: string, newEmail: string, fromWeb
 
 /**
  * 🔗 Vincula una cuenta de Clerk con un registro de Supabase existente por email
+ * Solo se invoca desde el webhook firmado de Clerk (email ya verificado por Clerk).
  */
-export async function linkClerkAccount(email: string, clerkId: string, fromWebhook = false) {
+export async function linkClerkAccount(email: string, clerkId: string) {
   try {
-    if (!fromWebhook) {
-      const { userId } = await auth();
-      if (!userId || userId !== clerkId) throw new Error("No autorizado");
-    }
 
     const { error } = await supabaseAdmin.from('registrations').update({
       clerk_id: clerkId,
@@ -123,22 +116,3 @@ export async function linkClerkAccount(email: string, clerkId: string, fromWebho
     return { success: false, error: err.message };
   }
 }
-
-/**
- * 🆔 Obtiene el ID de registro de Supabase a partir del Clerk ID
- */
-export async function getRegistrationId(clerkId: string) {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('registrations')
-      .select('id')
-      .eq('clerk_id', clerkId)
-      .single();
-    
-    if (error || !data) return null;
-    return data.id;
-  } catch {
-    return null;
-  }
-}
-

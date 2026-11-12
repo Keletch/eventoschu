@@ -1,11 +1,11 @@
 'use server';
 
 import { createSupabaseServer } from "@/lib/supabase-server";
-import { processKeapStatusTransitions, syncKeapTags } from "./keap";
+import { processKeapStatusTransitions, syncKeapTags } from "@/lib/keap";
 import { 
   notifyAdminRegistrationModified, 
   notifyAdminWaitlistActivated 
-} from "./admin-notifications";
+} from "@/lib/notifications/admin-notifications";
 import { formatEventForNotification } from "./utils";
 import { broadcastToUser, broadcastToPublic } from "./utils-realtime";
 import { dispatchSignal } from "@/lib/services/signal-dispatcher";

@@ -51,7 +51,7 @@ export function useNotifications(isAdmin = true, ids?: { clerkId?: string, regis
   }, [ids?.clerkId, ids?.registrationId, isAdmin]);
 
   const handleMarkAsRead = async (id: string) => {
-    const res = await markAsRead(id, isAdmin);
+    const res = await markAsRead(id, isAdmin, ids || {});
     if (res.success) {
       setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
       setUnreadCount(prev => Math.max(0, prev - 1));
@@ -69,7 +69,7 @@ export function useNotifications(isAdmin = true, ids?: { clerkId?: string, regis
   };
 
   const handleDeleteNotification = async (id: string) => {
-    const res = await deleteNotification(id, isAdmin);
+    const res = await deleteNotification(id, isAdmin, ids || {});
     if (res.success) {
       setNotifications(prev => {
         const filtered = prev.filter(n => n.id !== id);

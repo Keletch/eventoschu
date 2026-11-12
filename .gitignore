@@ -45,10 +45,10 @@ next-env.d.ts
 .gemini/
 skills-lock.json
 
- #   s e r w i s t 
- / p u b l i c / s w . j s 
- / p u b l i c / s w . j s . m a p 
- / p u b l i c / s w e - w o r k e r - * . j s  
- 
+# serwist
+/public/sw.js
+/public/sw.js.map
+/public/swe-worker-*.js
+
 # graphify
 graphify-out/

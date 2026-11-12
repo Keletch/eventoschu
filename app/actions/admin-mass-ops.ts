@@ -1,22 +1,18 @@
 "use server";
 
-import { createClerkClient } from "@clerk/nextjs/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
-import { getOrCreateContact, syncKeapTags, keapFetch } from "./keap";
-import { 
-  notifyAdminEventPurged, 
-  notifyAdminMassStatusUpdate, 
-  notifyAdminRegistrationDeleted,
+import { getOrCreateContact, syncKeapTags, keapFetch } from "@/lib/keap";
+import {
+  notifyAdminEventPurged,
+  notifyAdminMassStatusUpdate,
   notifyAdminEventAddedToUser,
   notifyAdminEventRemovedFromUser
-} from "./admin-notifications";
+} from "@/lib/notifications/admin-notifications";
 import { formatEventForNotification } from "./utils";
-import { broadcastToUser } from "./utils-realtime";
 import { dispatchSignal } from "@/lib/services/signal-dispatcher";
-import { clearEventsCache } from "./events";
+import { clearEventsCache } from "@/lib/events-cache";
 import { verifyAdminPermission } from "./admin-check";
-
-const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+import { purgeRegistration } from "@/lib/registration-purge";
 
 
 
@@ -150,6 +146,9 @@ export async function migrateEventTags(data: {
   eventTitle: string,
   operationId?: string
 }) {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   let progressChannel: any = null;
   const { eventId, oldTags, newTags, operationId } = data;
 
@@ -465,112 +464,23 @@ export async function massUpdateRegistrationStatus(eventId: string, newStatus: '
 
 /**
  * 🗑️ Elimina un registro permanentemente (Purga Selectiva)
+ * La lógica vive en `lib/registration-purge.ts` (compartida con el webhook de Clerk).
  */
 export async function deleteRegistration(id: string) {
-  const { isAdmin } = await verifyAdminPermission();
+  const { isAdmin, email } = await verifyAdminPermission();
   if (!isAdmin) return { success: false, error: "No tienes permisos" };
-
-  try {
-    const { data: reg } = await supabaseAdmin
-      .from('registrations')
-      .select('email, clerk_id, selected_events, first_name, last_name')
-      .eq('id', id)
-      .single();
-      
-    if (!reg) throw new Error("Registro no encontrado");
-
-    // 1. Quitar TODOS los tags relacionados en Keap (Confirmados y Pendientes)
-    if (reg.selected_events?.length > 0) {
-      const { data: events } = await supabaseAdmin
-        .from('events')
-        .select('keap_tag_id, keap_pending_tag_id')
-        .in('id', reg.selected_events);
-        
-      if (events) {
-        const tagsToRemove = [
-          ...events.map(e => e.keap_tag_id),
-          ...events.map(e => e.keap_pending_tag_id)
-        ].filter(Boolean) as string[];
-        
-        if (tagsToRemove.length > 0) {
-          await syncKeapTags(
-            { email: reg.email, firstName: reg.first_name, lastName: reg.last_name }, 
-            tagsToRemove, // oldTagIds (quitar)
-            [] // newTagIds (poner)
-          );
-        }
-      }
-    }
-
-    // 2. Eliminar de Clerk (si tiene cuenta vinculada)
-    if (reg.clerk_id) {
-      try {
-        await clerk.users.deleteUser(reg.clerk_id);
-      } catch (clerkError: any) {
-        console.error("⚠️ Error al borrar usuario de Clerk (posiblemente ya no existe):", clerkError.message);
-      }
-    }
-
-    // 3. Eliminar Notificaciones en Supabase
-    if (reg.clerk_id) {
-      await supabaseAdmin.from('notifications').delete().eq('clerk_id', reg.clerk_id);
-    }
-
-    // 4. Eliminar Registro en Supabase
-    await supabaseAdmin.from('registrations').delete().eq('id', id);
-
-    // 5. Obtener detalles de eventos para la notificación (antes de borrar)
-    const { data: eventsData } = await supabaseAdmin
-      .from('events')
-      .select('title, city, country, start_date, categories(name)')
-      .in('id', reg.selected_events || []);
-
-    // 6. Notificar a los administradores
-    const supabase = await createSupabaseServer();
-    const { data: { user } } = await supabase.auth.getUser();
-    const adminEmail = user?.email || "un administrador";
-    await notifyAdminRegistrationDeleted(adminEmail, reg.email, eventsData || []);
-
-    // 7. 📢 Notificar al Usuario en TIEMPO REAL (Reset completo)
-    await broadcastToUser([id, reg.clerk_id, reg.email].filter(Boolean) as string[], {
-      type: 'notification',
-      title: "Registro Removido",
-      message: "Tu registro ha sido eliminado por un administrador.",
-      selected_events: [] // 🚀 Esto activará el reset en el cliente
-    });
-
-    return { success: true };
-  } catch (err: any) {
-    console.error("❌ Error en Purga de Usuario:", err);
-    return { success: false, error: err.message };
-  }
+  return purgeRegistration(id, email || "un administrador");
 }
 
-/**
- * 🗑️ Elimina un registro basado en el clerk_id (usado por webhooks)
- */
-export async function deleteRegistrationByClerkId(clerkId: string) {
-  try {
-    const { data: reg } = await supabaseAdmin
-      .from('registrations')
-      .select('id')
-      .eq('clerk_id', clerkId)
-      .single();
-      
-    if (!reg) return { success: true }; // Ya no existe
-    return await deleteRegistration(reg.id);
-  } catch (err: any) {
-    return { success: false, error: err.message };
-  }
-}
 /**
  * ➕ Agrega un evento a un usuario de forma administrativa (Fuerza Bruta)
  */
 export async function adminAddEventToUser(registrationId: string, eventId: string) {
+  const { isAdmin, email } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
-    const supabase = await createSupabaseServer();
-    const { data: { user } } = await supabase.auth.getUser();
-    const adminEmail = user?.email || "un administrador";
+    const adminEmail = email || "un administrador";
 
     // 1. Obtener datos actuales del registro y del evento
     const { data: reg } = await supabaseAdmin.from('registrations').select('*').eq('id', registrationId).single();
@@ -642,10 +552,11 @@ export async function adminAddEventToUser(registrationId: string, eventId: strin
  * ➖ Elimina un evento de un usuario de forma administrativa (Limpieza Total)
  */
 export async function adminRemoveEventFromUser(registrationId: string, eventId: string) {
+  const { isAdmin, email } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
-    const supabase = await createSupabaseServer();
-    const { data: { user } } = await supabase.auth.getUser();
-    const adminEmail = user?.email || "un administrador";
+    const adminEmail = email || "un administrador";
 
     // 1. Obtener datos actuales
     const { data: reg } = await supabaseAdmin.from('registrations').select('*').eq('id', registrationId).single();

@@ -1,115 +1,55 @@
 'use server';
 
+import { auth } from "@clerk/nextjs/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { broadcastToAdmins, broadcastToUser } from "./utils-realtime";
+import { verifyAdminPermission } from "./admin-check";
+
+type NotificationIds = { clerkId?: string, registrationId?: string };
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * 🏢 Base para insertar en la tabla de admin_notifications (Auditoría)
+ * 🛡️ Resuelve el alcance permitido de la consulta.
+ * - Admin: exige sesión de admin verificada en servidor (el flag del cliente no basta).
+ * - Usuario: el clerkId sale de la sesión de Clerk (nunca del cliente). El registrationId (UUID)
+ *   se acepta del cliente porque es el identificador de los invitados sin cuenta.
+ * Devuelve el filtro PostgREST para `.or()` o null si no hay identidad válida.
  */
-export async function insertAdminNotification(data: {
-  title: string;
-  message: string;
-  type?: 'info' | 'success' | 'warning' | 'error';
-  admin_email?: string;
-  metadata?: any;
-}) {
-  try {
-    const { data: newNotif, error } = await supabaseAdmin.from('admin_notifications').insert([{
-      title: data.title,
-      message: data.message,
-      type: data.type || 'info',
-      admin_email: data.admin_email,
-      metadata: data.metadata || {},
-      read: false
-    }]).select().single();
-
-    if (error) throw error;
-
-    // 📢 Notificar en tiempo real (Canal Administrativo)
-    await broadcastToAdmins(newNotif);
-
-  } catch (err) {
-    console.error("❌ Admin Notification Error:", err);
+async function resolveScope(ids: NotificationIds = {}, isAdmin: boolean): Promise<{ table: string, filter: string | null } | null> {
+  if (isAdmin) {
+    const { isAdmin: ok } = await verifyAdminPermission();
+    return ok ? { table: 'admin_notifications', filter: null } : null;
   }
-}
 
-/**
- * 👤 Base para insertar en la tabla de notifications (Usuario)
- */
-export async function insertNotification(data: {
-  user_id?: string; // Clerk ID
-  registration_id?: string; // Supabase UUID
-  title: string;
-  message: string;
-  type?: 'info' | 'success' | 'warning';
-  event_statuses?: any; // 🚀 Estados opcionales para sincronización RT
-  selected_events?: string[]; // 🚀 Lista de eventos actualizada
-}) {
-  try {
-    const { data: newNotif, error } = await supabaseAdmin.from('notifications').insert([{
-      user_id: data.user_id,
-      registration_id: data.registration_id,
-      title: data.title,
-      message: data.message,
-      is_admin: false,
-      type: data.type || 'info',
-      read: false
-    }]).select().single();
-
-    if (error) throw error;
-
-    // 📢 Notificar en tiempo real (Canal Privado de Usuario)
-    const targets = [data.registration_id, data.user_id].filter(Boolean) as string[];
-    if (targets.length > 0) {
-      await broadcastToUser(targets, { 
-        ...newNotif, 
-        event_statuses: data.event_statuses, // 💡 Adjuntamos los estados al broadcast
-        selected_events: data.selected_events // 💡 Adjuntamos la lista de eventos actualizada
-      });
-    }
-
-    return { success: true, data: newNotif };
-  } catch (err) {
-    console.error("❌ User Notification Error:", err);
-    return { success: false, error: err };
+  const { userId } = await auth();
+  const conditions: string[] = [];
+  if (userId) conditions.push(`user_id.eq.${userId}`);
+  if (ids.registrationId && UUID_REGEX.test(ids.registrationId)) {
+    conditions.push(`registration_id.eq.${ids.registrationId}`);
   }
+
+  return conditions.length > 0 ? { table: 'notifications', filter: conditions.join(',') } : null;
 }
 
 /**
  * 📥 Obtener notificaciones
  */
-export async function getNotifications(ids: { clerkId?: string, registrationId?: string }, isAdmin = false) {
+export async function getNotifications(ids: NotificationIds, isAdmin = false) {
   try {
-    const tableName = isAdmin ? 'admin_notifications' : 'notifications';
+    const scope = await resolveScope(ids, isAdmin);
+    if (!scope) return isAdmin ? { success: false, error: "No tienes permisos" } : { success: true, data: [] };
+
     let query = supabaseAdmin
-      .from(tableName)
+      .from(scope.table)
       .select('*')
       .order('created_at', { ascending: false })
       .limit(30);
 
-    if (!isAdmin) {
-      const conditions = [];
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-      if (ids.clerkId) {
-        conditions.push(`user_id.eq.${ids.clerkId}`);
-      }
-      
-      if (ids.registrationId && uuidRegex.test(ids.registrationId)) {
-        conditions.push(`registration_id.eq.${ids.registrationId}`);
-      }
-
-      if (conditions.length > 0) {
-        query = query.or(conditions.join(','));
-      } else if (!ids.clerkId && !ids.registrationId) {
-        // Si no hay IDs en modo usuario, devolvemos vacío por seguridad
-        return { success: true, data: [] };
-      }
-    }
+    if (scope.filter) query = query.or(scope.filter);
 
     const { data, error } = await query;
     if (error) throw error;
-    
+
     return { success: true, data: data || [] };
   } catch (err: any) {
     console.error(`❌ Error fetching notifications [${isAdmin ? 'ADMIN' : 'USER'}]:`, err);
@@ -120,14 +60,19 @@ export async function getNotifications(ids: { clerkId?: string, registrationId?:
 /**
  * 📥 Marcar como leída
  */
-export async function markAsRead(notificationId: string, isAdmin = false) {
+export async function markAsRead(notificationId: string, isAdmin = false, ids: NotificationIds = {}) {
   try {
-    const tableName = isAdmin ? 'admin_notifications' : 'notifications';
-    const { error } = await supabaseAdmin
-      .from(tableName)
+    const scope = await resolveScope(ids, isAdmin);
+    if (!scope) return { success: false, error: "No autorizado" };
+
+    let query = supabaseAdmin
+      .from(scope.table)
       .update({ read: true })
       .eq('id', notificationId);
 
+    if (scope.filter) query = query.or(scope.filter);
+
+    const { error } = await query;
     if (error) throw error;
     return { success: true };
   } catch (err: any) {
@@ -138,29 +83,17 @@ export async function markAsRead(notificationId: string, isAdmin = false) {
 /**
  * 📥 Marcar todas como leídas
  */
-export async function markAllAsRead(ids: { clerkId?: string, registrationId?: string }, isAdmin = false) {
+export async function markAllAsRead(ids: NotificationIds, isAdmin = false) {
   try {
-    const tableName = isAdmin ? 'admin_notifications' : 'notifications';
+    const scope = await resolveScope(ids, isAdmin);
+    if (!scope) return isAdmin ? { success: false, error: "No autorizado" } : { success: true };
+
     let query = supabaseAdmin
-      .from(tableName)
+      .from(scope.table)
       .update({ read: true })
       .eq('read', false);
 
-    if (!isAdmin) {
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      const hasValidClerk = !!ids.clerkId;
-      const hasValidUUID = ids.registrationId && uuidRegex.test(ids.registrationId);
-
-      if (hasValidClerk && hasValidUUID) {
-        query = query.or(`user_id.eq.${ids.clerkId},registration_id.eq.${ids.registrationId}`);
-      } else if (hasValidClerk) {
-        query = query.eq('user_id', ids.clerkId);
-      } else if (hasValidUUID) {
-        query = query.eq('registration_id', ids.registrationId);
-      } else {
-        return { success: true };
-      }
-    }
+    if (scope.filter) query = query.or(scope.filter);
 
     const { error } = await query;
     if (error) throw error;
@@ -173,14 +106,19 @@ export async function markAllAsRead(ids: { clerkId?: string, registrationId?: st
 /**
  * 🗑️ Eliminar notificación
  */
-export async function deleteNotification(notificationId: string, isAdmin = false) {
+export async function deleteNotification(notificationId: string, isAdmin = false, ids: NotificationIds = {}) {
   try {
-    const tableName = isAdmin ? 'admin_notifications' : 'notifications';
-    const { error } = await supabaseAdmin
-      .from(tableName)
+    const scope = await resolveScope(ids, isAdmin);
+    if (!scope) return { success: false, error: "No autorizado" };
+
+    let query = supabaseAdmin
+      .from(scope.table)
       .delete()
       .eq('id', notificationId);
 
+    if (scope.filter) query = query.or(scope.filter);
+
+    const { error } = await query;
     if (error) throw error;
     return { success: true };
   } catch (err: any) {

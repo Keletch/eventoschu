@@ -1,21 +1,21 @@
 'use server';
 
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import crypto from "crypto";
 import { registrationSchema } from "./schemas";
 import { validateTurnstileToken } from "./turnstile";
-import { syncKeapTags, getContactTagsByEmail, keapFetch } from "./keap";
+import { syncKeapTags, getContactTagsByEmail, keapFetch } from "@/lib/keap";
 import { 
   notifyAdminNewRegistration, 
   notifyAdminSurveyCompleted, 
   notifyAdminSpecificDataUpdate 
-} from "./admin-notifications";
+} from "@/lib/notifications/admin-notifications";
 import { formatEventForNotification } from "./utils";
 import { broadcastToAdmins, broadcastToUser, broadcastToPublic } from "./utils-realtime";
 import { getEventUIConfig } from "@/lib/event-config";
 import { dispatchSignal } from "@/lib/services/signal-dispatcher";
-import { clearEventsCache } from "./events";
+import { clearEventsCache } from "@/lib/events-cache";
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -30,6 +30,16 @@ export async function createRegistration(data: any, turnstileToken: string) {
     const validatedData = registrationSchema.parse(data);
     const { userId } = await auth();
     const isAuthenticated = !!userId;
+
+    // 🔐 Solo vinculamos la cuenta de Clerk si el email del formulario es uno VERIFICADO de esa cuenta.
+    // Evita que un usuario logueado se apropie del registro de otra persona escribiendo su email.
+    let canLinkClerk = false;
+    if (isAuthenticated) {
+      const clerkUser = await currentUser();
+      canLinkClerk = !!clerkUser?.emailAddresses.some(e =>
+        e.verification?.status === 'verified' && e.emailAddress.toLowerCase().trim() === validatedData.email
+      );
+    }
 
     // 0. Obtener información de los eventos ANTES de decidir estados
     const { data: allEventsInfo } = await supabaseAdmin
@@ -50,7 +60,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
     if (!existing) {
       const { data: byEmail } = await supabaseAdmin.from('registrations').select('*').eq('email', validatedData.email).maybeSingle();
       existing = byEmail;
-      if (existing && isAuthenticated && !existing.clerk_id) {
+      if (existing && canLinkClerk && !existing.clerk_id) {
         await supabaseAdmin.from('registrations').update({ clerk_id: userId }).eq('id', existing.id);
       }
     }
@@ -175,7 +185,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
         const eventNames = newlyAddedEvents.map(e => formatEventForNotification(e)).join(', ');
 
         await dispatchSignal('REGISTRATION_SUCCESS', {
-          targetIds: [existing.id, userId || existing.clerk_id],
+          targetIds: [existing.id, existing.clerk_id || (canLinkClerk ? userId : undefined)],
           metadata: {
             email: validatedData.email, // 🚀 Canal de emergencia activado
             eventNames,
@@ -227,7 +237,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
 
     const { data: inserted, error: insertError } = await supabaseAdmin.from('registrations').insert([{
       ...validatedData,
-      clerk_id: userId,
+      clerk_id: canLinkClerk ? userId : null,
       event_statuses: initialStatuses,
       event_data: initialEventData
     }]).select('id').single();
@@ -252,7 +262,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
       const eventNames = allEventsInfo?.map(e => formatEventForNotification(e)).join(', ');
 
       await dispatchSignal('REGISTRATION_SUCCESS', {
-        targetIds: [newRegId, userId || undefined],
+        targetIds: [newRegId, canLinkClerk ? userId! : undefined],
         metadata: {
           email: validatedData.email, // 🚀 Canal de emergencia activado
           eventNames,

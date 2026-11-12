@@ -1,8 +1,8 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { getConfirmedTagsWhitelist, clearEventsCache } from '@/app/actions/events';
-import { getContactEmailById, keapFetch } from '@/app/actions/keap';
+import { getConfirmedTagsWhitelist, clearEventsCache } from "@/lib/events-cache";
+import { getContactEmailById, keapFetch, contactHasTag } from "@/lib/keap";
 import { broadcastToAdmins, broadcastToPublic } from '@/app/actions/utils-realtime';
 import { dispatchSignal } from '@/lib/services/signal-dispatcher';
 
@@ -62,6 +62,10 @@ export async function POST(req: Request) {
       const whitelist = await getConfirmedTagsWhitelist();
       const isWhitelisted = whitelist.includes(tagId);
       if (!isWhitelisted) continue;
+
+      // 🔐 El payload no viene firmado: confirmamos en Keap que el tag realmente está aplicado
+      // antes de dar un cupo de pago (evita confirmaciones falsificadas con POST directo).
+      if (!(await contactHasTag(contactId, tagId))) continue;
 
       // 3. Obtener el email del contacto desde Keap
       const contactEmail = await getContactEmailById(contactId);

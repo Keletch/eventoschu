@@ -2,9 +2,13 @@
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
-import { clearEventsCache } from "@/app/actions/events";
+import { clearEventsCache } from "@/lib/events-cache";
+import { verifyAdminPermission } from "./admin-check";
 
 export async function createCategory(name: string, parent_category_id: string | null = null, icon: string | null = null, slug?: string) {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     const { data, error } = await supabaseAdmin
       .from("categories")
@@ -31,6 +35,9 @@ export async function createCategory(name: string, parent_category_id: string | 
 }
 
 export async function deleteCategory(id: string) {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     const { error } = await supabaseAdmin
       .from("categories")
@@ -49,6 +56,9 @@ export async function deleteCategory(id: string) {
 }
 
 export async function updateCategory(id: string, name: string, parent_category_id: string | null = null, icon: string | null = null, slug?: string) {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     const { data, error } = await supabaseAdmin
       .from("categories")

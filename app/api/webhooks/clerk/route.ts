@@ -1,8 +1,8 @@
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
-import { updateUserEmail, linkClerkAccount } from '@/app/actions/auth-actions';
-import { deleteRegistrationByClerkId } from '@/app/actions/admin-mass-ops';
+import { updateUserEmail, linkClerkAccount } from '@/lib/auth-sync';
+import { deleteRegistrationByClerkId } from '@/lib/registration-purge';
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       const emailObj = evt.data.email_addresses?.[0];
       const email = emailObj?.email_address;
       if (email && clerkId) {
-        await linkClerkAccount(email, clerkId, true);
+        await linkClerkAccount(email, clerkId);
       }
     }
 
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
       const newEmail = primaryEmailObj?.email_address;
 
       if (newEmail && clerkId) {
-        const result = await updateUserEmail(clerkId, newEmail, true);
+        const result = await updateUserEmail(clerkId, newEmail);
         if (!result.success) {
           console.error("❌ Fallo al actualizar email en Supabase/Keap:", result.error);
           return new Response(result.error, { status: 500 });

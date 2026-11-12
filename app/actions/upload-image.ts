@@ -1,8 +1,20 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { verifyAdminPermission } from "./admin-check";
+
+const ALLOWED_IMAGE_TYPES: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+};
 
 export async function uploadImage(formData: FormData) {
+  const { isAdmin } = await verifyAdminPermission();
+  if (!isAdmin) return { success: false, error: "No tienes permisos" };
+
   try {
     const file = formData.get("file") as File | null;
     if (!file) {
@@ -14,7 +26,11 @@ export async function uploadImage(formData: FormData) {
       return { success: false, error: "La imagen no debe superar los 2MB." };
     }
 
-    const fileExt = file.name.split('.').pop();
+    // La extensión sale del MIME permitido, no del nombre (evita subir .html/.svg al bucket público)
+    const fileExt = ALLOWED_IMAGE_TYPES[file.type];
+    if (!fileExt) {
+      return { success: false, error: "Formato no permitido. Usa PNG, JPG, WEBP, GIF o AVIF." };
+    }
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
     const filePath = `uploads/${fileName}`;
 
@@ -23,6 +39,7 @@ export async function uploadImage(formData: FormData) {
       .upload(filePath, file, {
         cacheControl: "3600",
         upsert: false,
+        contentType: file.type,
       });
 
     if (error) {
