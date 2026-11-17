@@ -691,7 +691,7 @@ export function EventCard({
                   <DialogHeader className="space-y-2">
                     <DialogTitle className="text-xl font-black text-left">¿Tienes membresía activa?</DialogTitle>
                     <DialogDescription className="text-left text-sm text-muted-foreground font-medium leading-relaxed">
-                      Ingresa el correo con el que te registraste en el campus para verificar si tienes algún descuento especial.
+                      Ingresa el correo con el que te registraste en el campus para verificar si cuentas con algún descuento.
                     </DialogDescription>
                   </DialogHeader>
 
