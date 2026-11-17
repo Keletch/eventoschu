@@ -53,6 +53,7 @@ export const KeapTagPicker: React.FC<KeapTagPickerProps> = ({
             type="button"
             variant="outline"
             className="w-full justify-between rounded-xl h-12 font-normal bg-muted/30 border-border text-xs hover:bg-muted transition-all text-foreground"
+            title={selectedTag?.name}
           >
             <span className={cn("truncate", !selectedTag && "text-muted-foreground")}>
               {selectedTag ? selectedTag.name : "Seleccionar tag..."}

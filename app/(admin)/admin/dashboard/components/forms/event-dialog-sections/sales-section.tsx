@@ -116,7 +116,7 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                 <div className="space-y-4">
                   {paidLinks.map((link: any, index: number) => (
                     <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-background/50 rounded-xl border border-border/50 items-end">
-                      <div className="md:col-span-5 space-y-2">
+                      <div className="md:col-span-12 space-y-2">
                         <div className="flex items-center min-h-6">
                           <Label className="text-[10px] font-black uppercase text-muted-foreground">URL del Enlace Exclusivo</Label>
                         </div>
@@ -139,7 +139,7 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                           placeholder="Ej: 197 USD"
                         />
                       </div>
-                      <div className="md:col-span-3 space-y-2">
+                      <div className="md:col-span-8 space-y-2">
                         <KeapTagPicker
                           label="Tag Requerido (Keap)"
                           value={link.keap_tag_id || ""}
