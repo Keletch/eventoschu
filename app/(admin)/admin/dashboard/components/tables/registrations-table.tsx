@@ -52,8 +52,9 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
 }) => {
   return (
     <Card className="rounded-3xl border border-border overflow-hidden bg-card shadow-sm">
-      <Table>
-        <TableHeader className="bg-muted/30">
+      {/* En móvil cada fila se pinta como tarjeta (grid); desde lg vuelve a ser tabla */}
+      <Table className="block lg:table">
+        <TableHeader className="hidden lg:table-header-group bg-muted/30">
           <TableRow className="hover:bg-transparent border-border">
             <TableHead className="w-[340px] font-bold text-muted-foreground uppercase text-[10px] tracking-wider pl-6">Usuario / Contacto</TableHead>
             <TableHead className="font-bold text-muted-foreground uppercase text-[10px] tracking-wider">Selección</TableHead>
@@ -62,11 +63,11 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
             <TableHead className="text-right pr-6 font-bold text-muted-foreground uppercase text-[10px] tracking-wider">Acciones</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="block lg:table-row-group">
           {!isLoading && registrations.length > 0 ? (
             registrations.map((reg) => (
-              <TableRow key={reg.id} className="group border-border hover:bg-muted/30 transition-colors table-row-anim">
-                <TableCell className="pl-6 py-4">
+              <TableRow key={reg.id} className="group border-border hover:bg-muted/30 transition-colors table-row-anim grid grid-cols-2 gap-x-3 gap-y-3 px-5 py-4 lg:table-row lg:p-0">
+                <TableCell className="col-span-2 p-0 lg:p-2 lg:pl-6 lg:py-4 whitespace-normal lg:whitespace-nowrap min-w-0">
                   <div className="flex flex-col space-y-1">
                     <span className="font-bold text-foreground text-[15px] flex items-center gap-2">
                       <span>
@@ -86,7 +87,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                       )}
                     </span>
                     <div className="flex flex-col gap-0.5 mt-1">
-                      <div className="text-xs font-medium text-primary flex items-center gap-1.5"><Mail className="w-3 h-3 text-muted-foreground/60" /> {reg.email}</div>
+                      <div className="text-xs font-medium text-primary flex items-center gap-1.5 break-all"><Mail className="w-3 h-3 shrink-0 text-muted-foreground/60" /> {reg.email}</div>
                       {(reg.phone || reg.phone_code) && (
                         <div className="text-[11px] text-muted-foreground flex items-center gap-1.5"><MessageCircle className="w-3 h-3 text-muted-foreground/60" /> {reg.phone_code} {reg.phone}</div>
                       )}
@@ -98,7 +99,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="col-span-2 p-0 lg:p-2 whitespace-normal">
                   <div className="flex flex-wrap gap-1.5 max-w-[400px]">
                     {reg.selected_events?.map((eventId: string) => {
                       const event = events.find((e: any) => e.id === eventId);
@@ -154,7 +155,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                     })}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-0 lg:p-2">
                   {(() => {
                     const statuses = reg.selected_events?.map((id: string) => reg.event_statuses?.[id] || 'pending') || [];
                     const hasPending = statuses.includes('pending') || statuses.length === 0;
@@ -199,7 +200,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                     );
                   })()}
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-0 lg:p-2 text-right lg:text-left [&>div]:items-end lg:[&>div]:items-start">
                   {(() => {
                     const { date, time } = formatDateTimeShort(reg.created_at);
                     return (
@@ -217,7 +218,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
                     );
                   })()}
                 </TableCell>
-                <TableCell className="text-right pr-6">
+                <TableCell className="col-span-2 p-0 lg:p-2 text-right lg:pr-6 border-t border-border/50 pt-2 lg:border-0 lg:pt-2">
                   <div className="flex items-center justify-end gap-1">
                     <Button 
                       variant="ghost" 
@@ -267,7 +268,7 @@ export const RegistrationsTable: React.FC<RegistrationsTableProps> = ({
               </TableRow>
             ))
           ) : (
-            <TableRow>
+            <TableRow className="block lg:table-row">
               <TableCell colSpan={5} className="h-40 text-center text-muted-foreground font-medium">
                 {isLoading ? "Cargando usuarios..." : "No se encontraron usuarios."}
               </TableCell>

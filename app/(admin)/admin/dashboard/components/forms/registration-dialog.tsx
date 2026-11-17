@@ -289,7 +289,7 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
                         </div>
                       </div>
                       
-                      <div className="flex flex-col gap-3 min-w-[280px] flex-1">
+                      <div className="flex flex-col gap-3 min-w-0 sm:min-w-[280px] flex-1">
                         <SearchablePicker
                           options={availableEventsToAdd.map(e => ({
                             id: e.id,
@@ -376,7 +376,7 @@ export const RegistrationDialog: React.FC<RegistrationDialogProps> = ({
             )}
           </div>
 
-          <DialogFooter className="flex sm:justify-center items-center p-8 gap-4 sm:space-x-0 bg-muted/30 border-t border-border">
+          <DialogFooter className="mx-0 mb-0 flex sm:justify-center items-stretch sm:items-center p-5 sm:p-8 gap-3 sm:gap-4 sm:space-x-0 bg-muted/30 border-t border-border">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} className="rounded-2xl h-14 px-8 font-bold text-muted-foreground hover:bg-muted transition-all">
               Cerrar sin guardar
             </Button>

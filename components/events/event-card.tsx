@@ -115,11 +115,13 @@ export function EventCard({
   const [isVerifying, setIsVerifying] = useState(false);
 
   // 🔑 Lógica de cascada: el ÚLTIMO paid_link cuyo tag coincida con los del usuario gana.
+  // Solo enlaces por membresía: los que traen `type` son configuraciones (typ/whatsapp/pago_cupo), no enlaces
+  const membershipLinks = React.useMemo(() => paidLinks.filter((l: any) => !l.type), [paidLinks]);
   const unlockedLink = React.useMemo(() => {
-    if (!isPaid || paidLinks.length === 0) return null;
+    if (!isPaid || membershipLinks.length === 0) return null;
     // Recorremos en orden: el último que matchea tiene prioridad (cascada)
     let matched: PaidLink | null = null;
-    for (const link of paidLinks) {
+    for (const link of membershipLinks) {
       if (!link.keap_tag_id) {
         // Sin restricción de tag → siempre disponible (fallback público)
         matched = link;
@@ -128,15 +130,16 @@ export function EventCard({
       }
     }
     return matched;
-  }, [isPaid, paidLinks, userKeapTags]);
+  }, [isPaid, membershipLinks, userKeapTags]);
 
-  // Si tiene paid_links configurados, usarlos; si no, usar el externalUrl legacy
-  const hasPaidLinksConfig = isPaid && paidLinks.length > 0;
+  // Con enlaces por membresía: el del miembro gana; sin coincidencia se usa el enlace general.
+  // Sin enlace general ("Solo miembros") no hay a dónde ir y el botón queda bloqueado.
+  const hasPaidLinksConfig = isPaid && membershipLinks.length > 0;
   const effectiveUrl = hasPaidLinksConfig ? (unlockedLink?.url || externalUrl) : externalUrl;
   const effectiveButtonText = hasPaidLinksConfig
     ? (unlockedLink?.button_text || externalButtonText || "Adquirir entrada")
     : (externalButtonText || "Adquirir entrada");
-  const isUnlocked = hasPaidLinksConfig ? !!unlockedLink : !!externalUrl;
+  const isUnlocked = !!effectiveUrl;
 
   const handleVerifyAccess = async () => {
     if (!verifyEmail.trim()) return;
@@ -614,20 +617,30 @@ export function EventCard({
                     </button>
                   )}
 
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (effectiveUrl) {
+                  {effectiveUrl ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
                         trackPaidEventClick(id).catch((err) => console.error("Failed to track:", err));
                         window.open(effectiveUrl, "_blank", "noopener,noreferrer");
-                      }
-                    }}
-                    className="flex-1 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    {effectiveButtonText}
-                    <ExternalLink className="size-3.5" strokeWidth={2.5} />
-                  </button>
+                      }}
+                      className="flex-1 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 transition-all shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      {effectiveButtonText}
+                      <ExternalLink className="size-3.5" strokeWidth={2.5} />
+                    </button>
+                  ) : (
+                    /* "Solo miembros" sin enlace general: el invitado verifica su correo con el botón del escudo */
+                    <button
+                      type="button"
+                      disabled
+                      className="flex-1 rounded-full bg-muted text-muted-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 cursor-not-allowed border border-border"
+                    >
+                      <Lock className="size-3.5" strokeWidth={2.5} />
+                      Solo miembros
+                    </button>
+                  )}
 
                   <button
                     type="button"

@@ -39,7 +39,7 @@ export function PurgeUserDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] bg-card rounded-[32px] p-8 border-none shadow-2xl text-foreground">
+      <DialogContent className="sm:max-w-[500px] bg-card rounded-[32px] p-6 sm:p-8 border-none shadow-2xl text-foreground">
         <DialogHeader className="space-y-4">
           <div className="size-16 bg-destructive/10 rounded-2xl flex items-center justify-center text-destructive mx-auto">
             <AlertTriangle className="size-8" />

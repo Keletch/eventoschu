@@ -238,7 +238,7 @@ export const LocationSection: React.FC<LocationSectionProps> = ({ event, setEven
               "rounded-xl h-12 border-border w-full truncate pr-2",
               isTimeConfirm ? "bg-muted text-muted-foreground opacity-60 border-dashed" : "bg-muted/50 focus:bg-background transition-all"
             )}>
-              <SelectValue placeholder="Zona Horaria">
+              <SelectValue className="block min-w-0 truncate whitespace-nowrap" placeholder="Zona Horaria">
                 {TIMEZONE_LABELS[event.timezone || "none"] || "Zona Horaria"}
               </SelectValue>
             </SelectTrigger>

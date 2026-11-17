@@ -41,8 +41,9 @@ export const EventsTable: React.FC<EventsTableProps> = ({
 }) => {
   return (
     <Card className="rounded-3xl border border-border overflow-hidden bg-card shadow-sm">
-      <Table>
-        <TableHeader className="bg-muted/30">
+      {/* En móvil cada fila se pinta como tarjeta (grid); desde lg vuelve a ser tabla */}
+      <Table className="block lg:table">
+        <TableHeader className="hidden lg:table-header-group bg-muted/30">
           <TableRow className="hover:bg-transparent border-border">
             <TableHead className="w-[300px] font-bold text-muted-foreground uppercase text-[10px] tracking-wider pl-6">Evento / Ciudad</TableHead>
             <TableHead className="font-bold text-muted-foreground uppercase text-[10px] tracking-wider">Fecha</TableHead>
@@ -51,7 +52,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
             <TableHead className="text-right pr-6 font-bold text-muted-foreground uppercase text-[10px] tracking-wider">Acciones</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="block lg:table-row-group">
           {!isLoading && events.length > 0 ? (
             events.map((event) => {
               const data = transformEventForUI(event);
@@ -75,8 +76,8 @@ export const EventsTable: React.FC<EventsTableProps> = ({
               const formattedDate = formatDateRangeShort(event.start_date, event.end_date);
 
               return (
-                <TableRow key={event.id} className="group border-border hover:bg-muted/30 transition-colors table-row-anim">
-                  <TableCell className="pl-6 py-4">
+                <TableRow key={event.id} className="group border-border hover:bg-muted/30 transition-colors table-row-anim grid grid-cols-2 gap-x-3 gap-y-3 px-5 py-4 lg:table-row lg:p-0">
+                  <TableCell className="col-span-2 p-0 lg:p-2 lg:pl-6 lg:py-4 whitespace-normal lg:whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <EventFlag 
                         flag={event.flag} 
@@ -84,7 +85,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                         bgClass={event.bg_class || "bg-muted"} 
                         className="w-10 h-10"
                        />
-                      <div>
+                      <div className="min-w-0">
                         <div className="font-bold text-foreground">{event.title}</div>
                         <div className="text-xs text-muted-foreground flex items-center gap-1">
                           {data.isOnline ? (
@@ -96,10 +97,10 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm font-medium">
+                  <TableCell className="p-0 lg:p-2 text-sm font-medium self-center">
                     {formattedDate}
                   </TableCell>
-                   <TableCell className="text-center font-bold">
+                   <TableCell className="p-0 lg:p-2 text-right lg:text-center font-bold self-center">
                     {isPaid ? (
                       <Badge variant="secondary" className="bg-primary/10 text-primary border-none" title="Clics únicos / clics totales">
                         💳 {clicksUnique} ún. / {clicksTotal} tot.
@@ -110,13 +111,14 @@ export const EventsTable: React.FC<EventsTableProps> = ({
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="p-0 lg:p-2 lg:text-center self-center">
+                    <span className="lg:hidden mr-2 text-xs font-bold text-muted-foreground align-middle">Visible</span>
                     <Switch
                       checked={event.active}
                       onCheckedChange={() => toggleEventStatus(event)}
                     />
                   </TableCell>
-                  <TableCell className="text-right pr-6">
+                  <TableCell className="p-0 lg:p-2 text-right lg:pr-6 self-center">
                     <div className="flex justify-end gap-1">
                       <Button
                         variant="ghost"
@@ -151,7 +153,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({
               );
             })
           ) : (
-            <TableRow>
+            <TableRow className="block lg:table-row">
               <TableCell colSpan={5} className="h-40 text-center text-muted-foreground font-medium">
                 {isLoading ? "Cargando eventos..." : "No se encontraron eventos con esos filtros."}
               </TableCell>

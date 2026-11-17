@@ -187,6 +187,9 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
   const isClosed = (event.initial_status ?? "confirmed") === "pending";
   const pagoCupoTag = systemTags.find((t: any) => t.slug === "pago_cupo");
   const isPagoCupo = isClosed && pagoCupoTag && event.tag_ids?.includes(pagoCupoTag.id);
+  // Venta externa: no hay registro, así que agradecimiento y WhatsApp nunca se muestran
+  const pagoTag = systemTags.find((t: any) => t.slug === "pago");
+  const isVenta = !isClosed && pagoTag && event.tag_ids?.includes(pagoTag.id);
 
   return (
     <section className="space-y-6 p-6 bg-muted/20 rounded-[32px] border border-border/80">
@@ -255,7 +258,7 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
         )}
 
         {/* Toggle para Enlace Alternativo a Paso 2 (TYP Externa) */}
-        {!isPagoCupo && (
+        {!isPagoCupo && !isVenta && (
           <>
             <div className="flex items-center justify-between pt-4 border-t border-border/30">
               <div className="space-y-0.5">
@@ -290,7 +293,8 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
           </>
         )}
 
-        {/* Toggle para Paso 3: Comunidad / WhatsApp */}
+        {/* Toggle para Paso 3: Comunidad / WhatsApp (no aplica a venta externa: no hay registro) */}
+        {!isVenta && (<>
         <div className="flex items-center justify-between pt-4 border-t border-border/30">
           <div className="space-y-0.5">
             <Label className="text-sm font-bold text-foreground">Habilitar Paso 3: Comunidad / WhatsApp</Label>
@@ -353,6 +357,7 @@ export const AdditionalInfoSection: React.FC<AdditionalInfoSectionProps> = ({ ev
             </div>
           </div>
         )}
+        </>)}
       </div>
     </section>
   );

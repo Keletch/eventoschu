@@ -8,6 +8,7 @@ import { RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "../event-dialog";
 import { KeapTagPicker } from "../keap-tag-picker";
+import { EventKind } from "../../../utils/event-kind";
 
 interface KeapSectionProps {
   event: any;
@@ -15,6 +16,7 @@ interface KeapSectionProps {
   keapTags: any[];
   isTagsLoading: boolean;
   onRefreshTags: () => void;
+  kind: EventKind;
 }
 
 export const KeapSection: React.FC<KeapSectionProps> = ({
@@ -23,7 +25,10 @@ export const KeapSection: React.FC<KeapSectionProps> = ({
   keapTags,
   isTagsLoading,
   onRefreshTags,
+  kind,
 }) => {
+  // Sin cupo nadie queda en espera: el tag de pendiente no tendría uso
+  const showPending = kind !== "libre";
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between border-b border-border/50 pb-2">
@@ -42,7 +47,8 @@ export const KeapSection: React.FC<KeapSectionProps> = ({
           <span className="text-[10px] font-bold uppercase">Sincronizar Tags</span>
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className={cn("grid grid-cols-1 gap-5", showPending && "md:grid-cols-2")}>
+        {showPending && (
         <div className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <Label className="text-xs font-black uppercase text-muted-foreground">
@@ -82,6 +88,7 @@ export const KeapSection: React.FC<KeapSectionProps> = ({
             <p className="text-[10px] text-destructive font-bold animate-pulse px-1">Debes seleccionar un tag para el modo cerrado</p>
           )}
         </div>
+        )}
         <div className="space-y-3">
           <div className="flex items-center min-h-[24px] px-1">
             <Label className="text-xs font-black uppercase text-muted-foreground">Tag: Confirmado <span className="text-destructive">*</span></Label>

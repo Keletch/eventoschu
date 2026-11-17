@@ -227,26 +227,26 @@ export default function AdminDashboard() {
         }
       `}</style>
       <TooltipProvider>
-        <div ref={headerRef} className="bg-card border-b border-border pt-10 pb-10 mb-8 shadow-sm">
-          <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-            <div className="flex items-center gap-6">
-              <Logo />
-              <div className="h-10 w-px bg-border" />
-              <div>
-                <h1 className="text-2xl font-black text-foreground tracking-tight">Panel de Gestión</h1>
-                <p className="text-muted-foreground font-medium mt-1">Control centralizado de eventos e inscripciones.</p>
+        <div ref={headerRef} className="bg-card border-b border-border py-5 sm:py-10 mb-6 sm:mb-8 shadow-sm">
+          <div className="max-w-7xl mx-auto px-5 sm:px-8 flex justify-between items-center gap-3">
+            <div className="flex items-center gap-3 sm:gap-6 min-w-0">
+              <div className="shrink-0"><Logo /></div>
+              <div className="hidden sm:block h-10 w-px bg-border" />
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-2xl font-black text-foreground tracking-tight leading-tight">Panel de Gestión</h1>
+                <p className="hidden md:block text-muted-foreground font-medium mt-1">Control centralizado de eventos e inscripciones.</p>
               </div>
             </div>
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col items-end">
+            <div className="flex items-center gap-3 sm:gap-6 shrink-0">
+              <div className="hidden lg:flex flex-col items-end">
                 <p className="text-[10px] font-black uppercase text-primary tracking-widest">Estado del Sistema</p>
                 <p className="text-sm font-bold text-foreground flex items-center gap-2">
                   <span className="size-2 bg-emerald-500 rounded-full animate-pulse" />
                   Operativo (Realtime)
                 </p>
               </div>
-              <div className="h-8 w-px bg-border" />
-              <div className="flex items-center gap-3">
+              <div className="hidden lg:block h-8 w-px bg-border" />
+              <div className="flex items-center gap-1 sm:gap-3">
                 <ThemeToggle />
                 <NotificationBell 
                   notifications={notifications}
@@ -260,7 +260,8 @@ export default function AdminDashboard() {
                 <Button 
                   variant="ghost" 
                   onClick={handleLogout}
-                  className="rounded-xl h-11 px-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10 font-bold transition-all gap-2"
+                  className="rounded-xl h-11 px-3 sm:px-4 text-muted-foreground hover:text-destructive hover:bg-destructive/10 font-bold transition-all gap-2"
+                  title="Cerrar Sesión"
                 >
                   <LogOut className="w-5 h-5" />
                   <span className="hidden sm:inline">Cerrar Sesión</span>
@@ -270,7 +271,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <main ref={mainRef} className="max-w-7xl mx-auto px-6 space-y-8">
+        <main ref={mainRef} className="max-w-7xl mx-auto px-5 sm:px-8 space-y-6 sm:space-y-8">
           {/* Metrics Section */}
           <div className="animate-stat">
             <StatsGrid
@@ -313,17 +314,24 @@ export default function AdminDashboard() {
             onValueChange={setActiveTab}
             className="space-y-6 animate-content"
           >
-            <TabsList className="bg-muted/30 p-1.5 rounded-2xl border border-border h-auto shadow-sm">
-              <TabsTrigger value="events" className="rounded-xl px-8 py-2.5 font-bold data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">Gestión de Eventos</TabsTrigger>
-              <TabsTrigger value="registrations" className="rounded-xl px-8 py-2.5 font-bold data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">Usuarios Registrados</TabsTrigger>
-              <TabsTrigger value="metrics" className="rounded-xl px-8 py-2.5 font-bold data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">Inteligencia y Métricas</TabsTrigger>
+            <TabsList className="bg-muted/30 p-1.5 rounded-2xl border border-border h-auto group-data-horizontal/tabs:h-auto shadow-sm w-full sm:w-auto grid grid-cols-3 sm:inline-flex">
+              <TabsTrigger value="events" className="rounded-xl px-2 sm:px-8 py-2.5 font-bold text-xs sm:text-sm whitespace-normal leading-tight data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">
+                <span className="sm:hidden">Eventos</span><span className="hidden sm:inline">Gestión de Eventos</span>
+              </TabsTrigger>
+              <TabsTrigger value="registrations" className="rounded-xl px-2 sm:px-8 py-2.5 font-bold text-xs sm:text-sm whitespace-normal leading-tight data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">
+                <span className="sm:hidden">Usuarios</span><span className="hidden sm:inline">Usuarios Registrados</span>
+              </TabsTrigger>
+              <TabsTrigger value="metrics" className="rounded-xl px-2 sm:px-8 py-2.5 font-bold text-xs sm:text-sm whitespace-normal leading-tight data-active:bg-primary/10 data-active:text-primary data-active:shadow-none transition-all">
+                <span className="sm:hidden">Métricas</span><span className="hidden sm:inline">Inteligencia y Métricas</span>
+              </TabsTrigger>
             </TabsList>
 
             {/* TAB: EVENTS */}
             <TabsContent value="events" className="space-y-6 outline-none">
               <div className="tab-content-anim relative flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-4 rounded-3xl border border-border shadow-sm">
-                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
                   <SearchInput
+                    className="col-span-2 min-w-0 sm:min-w-[200px]"
                     placeholder="Buscar evento..."
                     value={eventsSearch}
                     onChange={setEventsSearch}
@@ -335,35 +343,35 @@ export default function AdminDashboard() {
                     onSelect={setEventTabCatFilter}
                     options={categoryOptions}
                     placeholder="Categorías"
-                    triggerClassName="w-44"
+                    triggerClassName="w-full sm:w-44"
                   />
                   <SearchablePicker
                     value={eventTabStatusFilter}
                     onSelect={setEventTabStatusFilter}
                     options={[{ id: 'all', label: 'Estados' }, { id: 'active', label: 'Activos' }, { id: 'inactive', label: 'Inactivos' }]}
                     placeholder="Estados"
-                    triggerClassName="w-40"
+                    triggerClassName="w-full sm:w-40"
                   />
                   <SearchablePicker
                     value={eventTabTagFilter}
                     onSelect={setEventTabTagFilter}
                     options={tagOptions}
                     placeholder="Etiquetas"
-                    triggerClassName="w-40"
+                    triggerClassName="w-full sm:w-40"
                   />
                 </div>
-                
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setIsCategoriesDialogOpen(true)} 
+
+                <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsCategoriesDialogOpen(true)}
                     className="rounded-xl h-11 px-4 text-muted-foreground hover:text-primary border-border bg-card gap-2 font-bold"
                     title="Gestionar Categorías"
                   >
                     <Users className="w-4 h-4" /> {/* Reuse Users or use FolderTree if imported */}
                     <span className="hidden lg:inline">Categorías</span>
                   </Button>
-                  <Button onClick={handleNewEvent} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-11 px-6 font-bold shadow-lg shadow-primary/20 transition-all gap-2 border-none">
+                  <Button onClick={handleNewEvent} className="flex-1 md:flex-none bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-11 px-6 font-bold shadow-lg shadow-primary/20 transition-all gap-2 border-none">
                     <Plus className="w-5 h-5" /> Nuevo Evento
                   </Button>
                 </div>
@@ -473,7 +481,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6 ml-auto">
+                  <div className="flex items-center gap-3 sm:gap-6 md:ml-auto">
                     <div className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-widest">
                       Mostrando <span className="text-foreground font-black">{filteredEvents.length > 0 ? Math.min((eventsCurrentPage - 1) * eventsPageSize + 1, filteredEvents.length) : 0}</span> - <span className="text-foreground font-black">{Math.min(eventsCurrentPage * eventsPageSize, filteredEvents.length)}</span> de <span className="text-foreground font-black">{filteredEvents.length}</span>
                     </div>
@@ -519,8 +527,9 @@ export default function AdminDashboard() {
 
             <TabsContent value="registrations" className="space-y-6 outline-none">
               <div className="tab-content-anim relative flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card p-4 rounded-3xl border border-border shadow-sm">
-                <div className="flex flex-wrap items-center gap-3 w-full">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3 w-full">
                   <SearchInput
+                    className="col-span-2 min-w-0 sm:min-w-[200px]"
                     placeholder="Buscar usuario..."
                     value={regsSearch}
                     onChange={setRegsSearch}
@@ -532,21 +541,21 @@ export default function AdminDashboard() {
                     onSelect={setRegsCategoryFilter}
                     options={categoryOptions}
                     placeholder="Categorías"
-                    triggerClassName="w-44"
+                    triggerClassName="w-full sm:w-44"
                   />
                   <SearchablePicker
                     value={regsEventFilter}
                     onSelect={setRegsEventFilter}
                     options={[{ id: 'all', label: 'Todos los Eventos' }, ...events.map(e => ({ id: e.id.toString(), label: e.title }))]}
                     placeholder="Todos los Eventos"
-                    triggerClassName="min-w-[200px]"
+                    triggerClassName="w-full sm:w-auto sm:min-w-[200px]"
                   />
                   <SearchablePicker
                     value={regsStatusFilter}
                     onSelect={setRegsStatusFilter}
                     options={[{ id: 'all', label: 'Estados' }, { id: 'pending', label: 'Pendientes' }, { id: 'confirmed', label: 'Confirmados' }, { id: 'cancelled', label: 'Cancelados' }]}
                     placeholder="Estados"
-                    triggerClassName="w-40"
+                    triggerClassName="w-full sm:w-40"
                   />
                   <SearchablePicker
                     value={regsCountryFilter}
@@ -557,7 +566,7 @@ export default function AdminDashboard() {
                       ...Array.from(new Set(registrations.map(r => r.residence_country).filter(Boolean))).sort().map(c => ({ id: c, label: c }))
                     ]}
                     placeholder="Países"
-                    triggerClassName="w-44"
+                    triggerClassName="w-full sm:w-44"
                   />
                   <SearchablePicker
                     value={regsSurveyCompleteFilter}
@@ -568,7 +577,7 @@ export default function AdminDashboard() {
                       { id: 'pending', label: 'Sin Formulario' }
                     ]}
                     placeholder="Formulario"
-                    triggerClassName="w-44"
+                    triggerClassName="w-full sm:w-44"
                   />
                 </div>
               </div>
@@ -774,7 +783,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
  
-                  <div className="flex items-center gap-6 ml-auto">
+                  <div className="flex items-center gap-3 sm:gap-6 md:ml-auto">
                     <div className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-widest">
                       Mostrando <span className="text-foreground font-black">{Math.min((currentPage - 1) * pageSize + 1, filteredRegs.length)}</span> - <span className="text-foreground font-black">{Math.min(currentPage * pageSize, filteredRegs.length)}</span> de <span className="text-foreground font-black">{filteredRegs.length}</span>
                     </div>

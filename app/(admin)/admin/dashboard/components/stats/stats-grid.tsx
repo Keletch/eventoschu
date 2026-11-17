@@ -28,7 +28,7 @@ export const StatsGrid: React.FC<StatsGridProps> = ({
   onCancelledClick,
 }) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 [&>*:last-child]:col-span-2 md:[&>*:last-child]:col-span-1">
       <StatCard
         label="Eventos activos"
         value={activeEventsCount}

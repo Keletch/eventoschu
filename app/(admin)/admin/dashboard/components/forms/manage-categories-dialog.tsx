@@ -187,7 +187,7 @@ export function ManageCategoriesDialog({ isOpen, setIsOpen, categories, onCatego
                   <Label className="text-xs font-black uppercase text-muted-foreground">Categoría Padre</Label>
                   <Select value={parentId} onValueChange={(val) => setParentId(val || "none")}>
                     <SelectTrigger className="h-12 rounded-xl bg-background border-border truncate pr-2">
-                      <SelectValue placeholder="Ninguna">
+                      <SelectValue className="block min-w-0 truncate whitespace-nowrap" placeholder="Ninguna">
                         {parentId === "none" 
                           ? "Ninguna" 
                           : parentCategories.find(c => c.id === parentId)?.name || parentId}

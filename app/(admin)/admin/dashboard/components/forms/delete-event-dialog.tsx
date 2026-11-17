@@ -48,7 +48,7 @@ export function DeleteEventDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[550px] bg-card rounded-[40px] p-8 border-none shadow-2xl text-foreground">
+      <DialogContent className="sm:max-w-[550px] bg-card rounded-[40px] p-6 sm:p-8 border-none shadow-2xl text-foreground">
         <DialogHeader className="space-y-4">
           <div className="size-20 bg-destructive/10 rounded-3xl flex items-center justify-center text-destructive mx-auto shadow-sm">
             <AlertTriangle className="size-10" />

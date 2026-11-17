@@ -39,7 +39,7 @@ export function ToggleEventDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="rounded-[32px] p-8 max-w-md border-none shadow-2xl bg-card text-foreground">
+      <DialogContent className="rounded-[32px] p-6 sm:p-8 max-w-md border-none shadow-2xl bg-card text-foreground">
         <DialogHeader className="space-y-4">
           <div className="flex justify-center">
             <div className={`p-4 rounded-3xl ${isDeactivating ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'}`}>

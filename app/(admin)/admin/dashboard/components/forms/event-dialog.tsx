@@ -28,6 +28,8 @@ import { CapacityPriceSection } from "./event-dialog-sections/capacity-price-sec
 import { AdditionalInfoSection } from "./event-dialog-sections/additional-info-section";
 import { VisualSection } from "./event-dialog-sections/visual-section";
 import { KeapSection } from "./event-dialog-sections/keap-section";
+import { SalesSection } from "./event-dialog-sections/sales-section";
+import { EventKind, applyEventKind, getEventKind, isVentaKind, missingForKind } from "../../utils/event-kind";
 
 /** Ícono circular "i" con tooltip para guiar a nuevos admins */
 export function InfoTooltip({ content }: { content: string }) {
@@ -73,8 +75,20 @@ export const EventDialog: React.FC<EventDialogProps> = ({
   isSubmitting,
   onSubmit,
 }) => {
-  // Evento Abierto (confirmed) puede ser ilimitado. Evento Cerrado (pending) no.
-  const isOpenMode = (event.initial_status ?? "confirmed") !== "pending";
+  // El tipo se guarda en estado (no se re-deriva en cada tecla): "Precio para miembros" y "Solo miembros"
+  // solo se distinguen por el enlace general, que está vacío mientras se escribe. Se recalcula al abrir.
+  const [kind, setKind] = useState<EventKind>(() => getEventKind(event, systemTags));
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
+    if (isOpen) setKind(getEventKind(event, systemTags));
+  }
+  const handleKindChange = (next: EventKind) => {
+    setKind(next);
+    setEvent(applyEventKind(event, next, systemTags));
+  };
+  // Sin categoría la BD rechaza el guardado con "invalid input syntax for type uuid" (category_id es UUID)
+  const missing = [...(event.category_id ? [] : ["Categoría"]), ...missingForKind(event, kind)];
   // Detectar si la categoría seleccionada es "Eventos en linea" por su slug
   const selectedCategory = categories.find(
     (c: any) => c.id.toString() === event.category_id?.toString()
@@ -130,10 +144,10 @@ export const EventDialog: React.FC<EventDialogProps> = ({
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden rounded-[32px] border-none shadow-2xl p-0 dialog-content-anim">
           <div className="overflow-y-auto max-h-[90vh] no-scrollbar">
             {/* Header */}
-            <DialogHeader className="p-8 bg-secondary text-secondary-foreground relative overflow-hidden shrink-0 border-b border-border">
+            <DialogHeader className="p-5 sm:p-8 bg-secondary text-secondary-foreground relative overflow-hidden shrink-0 border-b border-border">
               <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] brightness-0 invert" />
               <div className="relative z-10">
-                <DialogTitle className="text-3xl font-black">
+                <DialogTitle className="text-2xl sm:text-3xl font-black">
                   {event.id ? "Editar Evento" : "Crear Nuevo Evento"}
                 </DialogTitle>
                 <DialogDescription className="text-secondary-foreground/70 font-medium">
@@ -142,27 +156,27 @@ export const EventDialog: React.FC<EventDialogProps> = ({
               </div>
             </DialogHeader>
 
-            <form onSubmit={onSubmit} className="p-8 space-y-8 bg-card text-foreground">
+            <form onSubmit={onSubmit} className="p-5 sm:p-8 space-y-6 sm:space-y-8 bg-card text-foreground">
               {/* ── Sección 0: Tipo de Evento ── */}
-              <StatusSection event={event} setEvent={setEvent} systemTags={systemTags} />
+              <StatusSection event={event} setEvent={setEvent} kind={kind} onKindChange={handleKindChange} />
 
-              {/* ── Sección 1: Identidad ── */}
+              {/* ── Sección 1: Lo que depende del tipo, justo debajo del selector para que el cambio se vea ── */}
+              <CapacityPriceSection event={event} setEvent={setEvent} kind={kind} />
+              <SalesSection event={event} setEvent={setEvent} systemTags={systemTags} keapTags={keapTags} kind={kind} />
+
+              {/* ── Sección 2: Identidad ── */}
               <IdentitySection
                 event={event}
                 setEvent={setEvent}
                 categories={categories}
                 systemTags={systemTags}
-                keapTags={keapTags}
                 isOnline={isOnline}
                 isUploading={isUploading}
                 handleFileUpload={handleFileUpload}
               />
 
-              {/* ── Sección 2: Lugar y Fecha ── */}
+              {/* ── Sección 3: Lugar y Fecha ── */}
               <LocationSection event={event} setEvent={setEvent} isOnline={isOnline} />
-
-              {/* ── Sección 3: Capacidad y Precio ── */}
-              <CapacityPriceSection event={event} setEvent={setEvent} isOpenMode={isOpenMode} />
 
               {/* ── Sección 3.5: Información Adicional (Opcional) ── */}
               <AdditionalInfoSection event={event} setEvent={setEvent} systemTags={systemTags} />
@@ -170,16 +184,25 @@ export const EventDialog: React.FC<EventDialogProps> = ({
               {/* ── Sección 4: Visual ── */}
               <VisualSection event={event} setEvent={setEvent} />
 
-              {/* ── Sección 5: Integración Keap ── */}
-              <KeapSection
-                event={event}
-                setEvent={setEvent}
-                keapTags={keapTags}
-                isTagsLoading={isTagsLoading}
-                onRefreshTags={onRefreshTags}
-              />
+              {/* ── Sección 5: Integración Keap (venta externa no registra a nadie) ── */}
+              {!isVentaKind(kind) && (
+                <KeapSection
+                  event={event}
+                  setEvent={setEvent}
+                  keapTags={keapTags}
+                  isTagsLoading={isTagsLoading}
+                  onRefreshTags={onRefreshTags}
+                  kind={kind}
+                />
+              )}
 
-              <DialogFooter className="pt-2 gap-3 p-8 bg-muted/30 border-t border-border">
+              {missing.length > 0 && (
+                <p role="status" className="text-xs font-bold text-amber-500 px-1">
+                  Falta para guardar: {missing.join(" · ")}
+                </p>
+              )}
+
+              <DialogFooter className="pt-2 gap-3 p-5 sm:p-8 bg-muted/30 border-t border-border">
                 <Button
                   type="button"
                   variant="ghost"
@@ -190,7 +213,7 @@ export const EventDialog: React.FC<EventDialogProps> = ({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isSubmitting || (event.initial_status === "pending" && !event.keap_pending_tag_id) || !event.keap_tag_id}
+                  disabled={isSubmitting || missing.length > 0}
                   className="rounded-xl h-12 px-8 bg-primary hover:bg-primary/90 text-primary-foreground font-black shadow-lg shadow-primary/20 transition-all gap-2"
                 >
                   {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}

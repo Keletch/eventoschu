@@ -574,8 +574,11 @@ export function useAdminDashboard() {
       const waDesc = rest.whatsapp_description || waConfig?.whatsapp_description || "";
       setNewEvent({ 
         ...rest, 
-        title: `${rest.title} (Copia)`, 
+        title: `${rest.title} (Copia)`,
         active: false,
+        // Sin tags de Keap: dos eventos con el mismo tag harían que un pago confirme al usuario en ambos
+        keap_tag_id: "",
+        keap_pending_tag_id: rest.keap_pending_tag_id === null ? null : "",
         start_date: formatDateForInput(rest.start_date),
         external_url: rest.external_url || "",
         external_button_text: rest.external_button_text || "",

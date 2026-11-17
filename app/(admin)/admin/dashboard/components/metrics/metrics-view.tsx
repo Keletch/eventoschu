@@ -75,7 +75,7 @@ export function MetricsView({
         )}
       </div>
       {/* 🚀 Top KPIs Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 [&>*:last-child]:col-span-2 md:[&>*:last-child]:col-span-1">
         <MetricKpiCard 
           label="Tasa de Conversión" 
           value={`${stats.global.globalConversionRate.toFixed(1)}%`} 
