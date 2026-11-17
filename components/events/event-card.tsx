@@ -678,7 +678,7 @@ export function EventCard({
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setIsVerifyOpen(true); }}
                     className="size-11 shrink-0 rounded-full bg-muted hover:bg-muted-hover border border-border text-foreground hover:text-foreground font-bold flex items-center justify-center transition-all hover:scale-[1.05] active:scale-[0.95]"
-                    title="Verificar acceso / membresía"
+                    title={externalUrl ? "Verificar descuento de miembro" : "Verificar acceso / membresía"}
                   >
                     <ShieldCheck className="size-4.5" strokeWidth={2} />
                   </button>
@@ -691,7 +691,7 @@ export function EventCard({
                   <DialogHeader className="space-y-2">
                     <DialogTitle className="text-xl font-black text-left">¿Tienes membresía activa?</DialogTitle>
                     <DialogDescription className="text-left text-sm text-muted-foreground font-medium leading-relaxed">
-                      Ingresa el correo con el que te registraste en el campus para verificar si tienes acceso a este evento.
+                      Ingresa el correo con el que te registraste en el campus para verificar si tienes algún descuento especial.
                     </DialogDescription>
                   </DialogHeader>
 
@@ -734,7 +734,7 @@ export function EventCard({
                       className="w-full h-11 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 gap-2 cursor-pointer"
                     >
                       {isVerifying ? <Loader2 className="size-4 animate-spin" /> : null}
-                      {isVerifying ? "Verificando..." : "Verificar acceso"}
+                      {isVerifying ? "Verificando..." : "Verificar"}
                     </Button>
                     <button
                       type="button"
