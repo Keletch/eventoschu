@@ -126,9 +126,9 @@ export default function RootLayout({
           <ThemeProvider
             attribute="class"
             defaultTheme="navidad-noche"
-            enableSystem
             disableTransitionOnChange
-            themes={["navidad-noche", "navidad", "light", "halloween-dark", "boreal", "synthwave", "coffee", "hacker", "citric", "dark"]}
+            // Temporada decembrina: solo los temas de navidad (oscuro y claro). Para reabrir el resto, volver a listarlos aquí.
+            themes={["navidad-noche", "navidad"]}
           >
             <TooltipProvider>
               <div className="retro-grid" />

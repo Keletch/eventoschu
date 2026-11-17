@@ -9,6 +9,8 @@ export interface PaidLink {
   button_text?: string;
   keap_tag_id?: string;
   price?: string;
+  // Solo admin: agrupa filas consecutivas (mismo enlace/precio, distinto tag) para editarlas juntas
+  group_id?: string;
   // Campos de soporte para la etiqueta Pago con cupo en eventos cerrados
   type?: string;
   checkout_url?: string;

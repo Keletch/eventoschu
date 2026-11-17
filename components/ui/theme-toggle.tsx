@@ -6,8 +6,10 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const { setTheme, theme } = useTheme();
+  const { setTheme, theme, themes } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  // El ciclo sigue el orden de `themes` del ThemeProvider de cada layout (público: solo navidad).
+  const cycle = themes.filter((t) => t !== "system");
 
   React.useEffect(() => {
     const handle = requestAnimationFrame(() => {
@@ -16,21 +18,16 @@ export function ThemeToggle() {
     return () => cancelAnimationFrame(handle);
   }, []);
 
+  // Tema guardado que este layout ya no ofrece (ej. "hacker" desde el admin) → primer tema del ciclo.
+  React.useEffect(() => {
+    if (!mounted || !theme || !cycle.length || cycle.includes(theme)) return;
+    document.documentElement.classList.remove(theme); // next-themes solo limpia los temas listados
+    setTheme(cycle[0]);
+  }, [mounted, theme, cycle, setTheme]);
+
   const toggleTheme = () => {
-    // Ciclo (temporada navideña primero; navidad-noche es el tema inicial en los layouts):
-    // 1. navidad-noche (Oscuro) -> 2. navidad (Claro) -> 3. light (Claro) -> 4. halloween-dark (Oscuro) ->
-    // 5. boreal (Claro) -> 6. synthwave (Oscuro) -> 7. coffee (Claro) -> 8. hacker (Oscuro) ->
-    // 9. citric (Claro) -> 10. dark (Oscuro) -> navidad-noche
-    if (theme === "navidad-noche") setTheme("navidad");
-    else if (theme === "navidad") setTheme("light");
-    else if (theme === "light") setTheme("halloween-dark");
-    else if (theme === "halloween-dark") setTheme("boreal");
-    else if (theme === "boreal") setTheme("synthwave");
-    else if (theme === "synthwave") setTheme("coffee");
-    else if (theme === "coffee") setTheme("hacker");
-    else if (theme === "hacker") setTheme("citric");
-    else if (theme === "citric") setTheme("dark");
-    else setTheme("navidad-noche");
+    const i = cycle.indexOf(theme ?? "");
+    setTheme(cycle[(i + 1) % cycle.length]);
   };
 
   if (!mounted) {

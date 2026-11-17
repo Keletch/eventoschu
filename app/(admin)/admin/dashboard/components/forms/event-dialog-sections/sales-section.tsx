@@ -6,8 +6,36 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Trash2, Plus } from "lucide-react";
-import { KeapTagPicker } from "../keap-tag-picker";
+import { KeapTagMultiPicker } from "../keap-tag-multi-picker";
 import { EventKind, membershipLinks } from "../../../utils/event-kind";
+
+type LinkGroup = { link: any; tagIds: string[] };
+const sameLink = (a: any, b: any) =>
+  (a.url || "") === (b.url || "") && (a.price || "") === (b.price || "") && (a.button_text || "") === (b.button_text || "");
+
+/**
+ * Filas consecutivas del mismo grupo → un grupo con varios tags. `group_id` (se guarda en paid_links)
+ * mantiene el grupo estable al editar; filas antiguas sin él se agrupan por enlace/precio/texto iguales.
+ */
+function groupLinks(links: any[]): LinkGroup[] {
+  const groups: LinkGroup[] = [];
+  for (const { keap_tag_id, ...link } of links) {
+    const last = groups[groups.length - 1];
+    const sameGroup = last && (link.group_id
+      ? link.group_id === last.link.group_id
+      : !last.link.group_id && keap_tag_id && last.tagIds.length && sameLink(last.link, link));
+    if (sameGroup) last.tagIds.push(String(keap_tag_id));
+    else groups.push({ link, tagIds: keap_tag_id ? [String(keap_tag_id)] : [] });
+  }
+  return groups;
+}
+
+/** Inverso de groupLinks: un PaidLink por tag (sin tags → una fila sin tag, como antes). */
+const expandGroups = (groups: LinkGroup[]) =>
+  groups.flatMap(({ link: l, tagIds }) => {
+    const link = { ...l, group_id: l.group_id || crypto.randomUUID() };
+    return tagIds.length ? tagIds.map((id) => ({ ...link, keap_tag_id: id })) : [{ ...link, keap_tag_id: "" }];
+  });
 
 interface SalesSectionProps {
   event: any;
@@ -35,22 +63,30 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
           if (!isPaidEvent) return null;
 
           // Solo enlaces por membresía; las configuraciones (typ/whatsapp/pago_cupo) se conservan aparte
-          const paidLinks = membershipLinks(event);
+          // En BD cada enlace lleva un solo tag; aquí se agrupan las filas consecutivas con el mismo
+          // enlace/precio/texto para editar varios tags a la vez. Consecutivas = no altera la cascada.
+          const paidLinks = groupLinks(membershipLinks(event));
           const configs = (event.paid_links || []).filter((l: any) => l.type);
-          const savePaidLinks = (updated: any[]) => setEvent({ ...event, paid_links: [...configs, ...updated] });
+          const savePaidLinks = (updated: LinkGroup[]) => setEvent({ ...event, paid_links: [...configs, ...expandGroups(updated)] });
 
           const handleAddPaidLink = () => {
-            savePaidLinks([...paidLinks, { url: "", button_text: "", keap_tag_id: "" }]);
+            savePaidLinks([...paidLinks, { link: { url: "", button_text: "", price: "", group_id: crypto.randomUUID() }, tagIds: [] }]);
           };
 
           const handleUpdatePaidLink = (index: number, field: string, value: string) => {
             const updated = [...paidLinks];
-            updated[index] = { ...updated[index], [field]: value };
+            updated[index] = { ...updated[index], link: { ...updated[index].link, [field]: value } };
+            savePaidLinks(updated);
+          };
+
+          const handleUpdateTags = (index: number, tagIds: string[]) => {
+            const updated = [...paidLinks];
+            updated[index] = { ...updated[index], tagIds };
             savePaidLinks(updated);
           };
 
           const handleRemovePaidLink = (index: number) => {
-            savePaidLinks(paidLinks.filter((_: any, i: number) => i !== index));
+            savePaidLinks(paidLinks.filter((_, i) => i !== index));
           };
 
           return (
@@ -114,8 +150,8 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {paidLinks.map((link: any, index: number) => (
-                    <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-background/50 rounded-xl border border-border/50 items-end">
+                  {paidLinks.map(({ link, tagIds }, index) => (
+                    <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-background/50 rounded-xl border border-border/50 items-start">
                       <div className="md:col-span-12 space-y-2">
                         <div className="flex items-center min-h-6">
                           <Label className="text-[10px] font-black uppercase text-muted-foreground">URL del Enlace Exclusivo</Label>
@@ -140,15 +176,15 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                         />
                       </div>
                       <div className="md:col-span-8 space-y-2">
-                        <KeapTagPicker
-                          label="Tag Requerido (Keap)"
-                          value={link.keap_tag_id || ""}
-                          onChange={(tagId) => handleUpdatePaidLink(index, "keap_tag_id", tagId)}
+                        <KeapTagMultiPicker
+                          label="Tags Requeridos (Keap)"
+                          value={tagIds}
+                          onChange={(ids) => handleUpdateTags(index, ids)}
                           tags={keapTags}
                         />
                       </div>
 
-                      <div className="md:col-span-1 flex justify-center pb-1">
+                      <div className="md:col-span-1 flex justify-center md:mt-[34px]">
                         <Button
                           type="button"
                           variant="ghost"
