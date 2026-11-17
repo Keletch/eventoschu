@@ -87,7 +87,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
 
   // 🎭 Footer Reveal Orchestration
   useGSAP(() => {
-    if (home.isLoaded) {
+    if (home.step !== null) {
       gsap.to(".footer-reveal", {
         opacity: 1,
         y: 0,
@@ -96,20 +96,51 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
         ease: "power2.out"
       });
     }
-  }, [home.isLoaded, home.step]);
+  }, [home.step]);
+
+  // ¿El registro va a mandar a otra página? (checkout, lista de espera externa o página de agradecimiento)
+  const willRedirect = () => home.selectedEvents.some((id) => {
+    const ev: any = home.events.find((e) => e.id === id);
+    if (!ev) return false;
+    const links = ev.paid_links || [];
+    const isPagoCupo = ev.initial_status === "pending" && (ev.event_tags || []).some((et: any) => et.tags?.slug === "pago_cupo");
+    if (isPagoCupo) {
+      const cfg = links.find((l: any) => l.type === "pago_cupo_config");
+      const isFull = (home.eventCounts[id] || 0) >= (ev.capacity || 50);
+      return isFull ? !!cfg?.use_external_waitlist : !!(cfg?.checkout_url || cfg?.url);
+    }
+    return !!(links.find((l: any) => l.type === "typ_config")?.external_typ_url || ev.external_typ_url);
+  });
 
   const handleRegistrationSubmit = async (data: any, token: string) => {
+    // La pestaña se abre YA, dentro del clic: si se abre después de esperar al servidor,
+    // Safari/iOS y los bloqueadores de pop-ups la bloquean y la persona nunca llega a pagar.
+    const popup = willRedirect() ? window.open("", "_blank") : null;
+    if (popup) popup.document.title = "Redirigiendo…";
+
     return contextSafe(async () => {
       const res = await home.handleRegistration(data, token);
+      const url = (res as any).redirectUrl || (res as any).checkoutRedirectUrl || (res as any).thankYouUrl;
+
+      if (res.success && url) {
+        if (popup) {
+          popup.opener = null;
+          popup.location.href = url;
+        } else if ((res as any).pureRedirect) {
+          // Sin pestaña (bloqueada): la lista de espera externa reemplaza esta página, aquí no hay nada más que mostrar
+          window.location.href = url;
+        } else {
+          // Último intento; si también se bloquea, el paso 2 muestra el botón "Completar pago"
+          window.open(url, "_blank", "noopener,noreferrer");
+        }
+      } else {
+        popup?.close();
+      }
+
       if (res.success) {
         // Si fue una redirección directa a lista de espera externa, no transicionar a paso 2
         if ((res as any).pureRedirect) {
           return res;
-        }
-
-        // Si es evento de pago con cupo disponible, abrir carrito de compras en nueva pestaña
-        if ((res as any).checkoutRedirectUrl) {
-          window.open((res as any).checkoutRedirectUrl, "_blank", "noopener,noreferrer");
         }
 
         // Toast dinámico de éxito manejado centralizadamente por Supabase Realtime (EDA)
@@ -243,7 +274,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
   };
 
   const isSurveyMissing = (home.step === 2 || home.isSignedIn) && 
-    home.isLoaded && 
+    home.step !== null && 
     (!home.surveyData || Object.keys(home.surveyData).length === 0);
 
   return (
@@ -267,7 +298,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
           )}>
             {/* Contenedor con flex-1 para empujar el footer */}
             <div className="max-w-[1512px] w-full mx-auto px-4 md:px-8 lg:px-12 flex-1 flex flex-col">
-              {!home.isLoaded || home.step === null ? (
+              {home.step === null ? (
                 <div className="flex-1" />
               ) : home.step === 1 ? (
                 <div className="step-1 pt-8">
@@ -353,8 +384,8 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
                     eventStatuses={home.eventStatuses}
                     selectedCityId={home.selectedCityId}
                     setSelectedCityId={home.setSelectedCityId}
-                    events={home.events}
-                    isLoadingEvents={home.isLoadingEvents}
+                    events={[...home.events, ...home.registeredEvents.filter((re: any) => !home.events.some((e) => e.id === re.id))]}
+                    isLoadingEvents={home.isLoadingEvents || !home.hasSynced}
                     startNewRegistration={handleBackToStep1}
                     eventDataMap={home.eventDataMap}
                     isEditing={home.isEditing}
@@ -374,7 +405,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
               )}
             </div>
             
-            {home.isLoaded && (
+            {home.step !== null && (
               <div className="footer-reveal opacity-0 translate-y-10 relative z-[100]">
                 <Footer />
               </div>
@@ -382,7 +413,7 @@ export function HomeClient({ initialEvents }: HomeClientProps) {
           </div>
         </div>
 
-        {home.isLoaded && (
+        {home.step !== null && (
           <SurveyModal
             isOpen={home.isSurveyOpen}
             onOpenChange={home.setIsSurveyOpen}

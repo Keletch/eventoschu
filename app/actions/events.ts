@@ -1,7 +1,7 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { redis, EVENTS_CACHE_KEY, CACHE_TTL, clearEventsCache as clearCache } from "@/lib/events-cache";
+import { redis, withRedisTimeout, EVENTS_CACHE_KEY, CACHE_TTL, clearEventsCache as clearCache } from "@/lib/events-cache";
 import { verifyAdminPermission } from "./admin-check";
 
 export interface PaidLink {
@@ -85,7 +85,7 @@ export async function getEvents(bypassCache = false) {
   try {
     // 1. Intentar desde Cache (si no se pide bypass)
     if (!bypassCache) {
-      const cached = await redis.get(EVENTS_CACHE_KEY);
+      const cached = await withRedisTimeout(redis.get(EVENTS_CACHE_KEY));
       if (cached) {
         // Filtrar también el caché por si hay eventos que caducaron mientras estaban en memoria
         const validEvents = (cached as Event[]).filter(e => e.start_date >= todayStr);
@@ -105,12 +105,13 @@ export async function getEvents(bypassCache = false) {
 
     // 3. Guardar en Cache
     if (data && data.length > 0) {
-      await redis.set(EVENTS_CACHE_KEY, data, { ex: CACHE_TTL });
+      await withRedisTimeout(redis.set(EVENTS_CACHE_KEY, data, { ex: CACHE_TTL }));
     }
 
     return { success: true, data: data as Event[], source: "supabase" };
   } catch (error: any) {
-    console.error("❌ getEvents Error:", error);
+    // Advertencia y no error: la página sigue funcionando con Supabase directo (p. ej. si Redis/Upstash no responde)
+    console.warn("⚠️ getEvents: caché no disponible, se usa Supabase directo:", error?.message || error);
     
     // Fallback: Supabase directo sin cache
     try {

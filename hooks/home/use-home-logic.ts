@@ -22,6 +22,10 @@ export function useHomeLogic(initialEvents: any[] = []) {
   // --- States ---
   const [step, setStep] = useState<number | null>(null);
   const [events, setEvents] = useState<any[]>(initialEvents);
+  // Eventos del inscrito aunque ya hayan pasado o estén pausados (los trae checkRegistration)
+  const [registeredEvents, setRegisteredEvents] = useState<any[]>([]);
+  // ¿Ya terminó la primera búsqueda del registro? Mientras no, el paso 2 muestra "cargando" en vez de "No estás registrado"
+  const [hasSynced, setHasSynced] = useState(false);
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [userData, setUserData] = useState<any>(null);
   const [userKeapTags, setUserKeapTags] = useState<string[]>([]);
@@ -163,16 +167,6 @@ export function useHomeLogic(initialEvents: any[] = []) {
       return nextTags;
     });
   }, [isSignedIn]);
-
-  // 🚀 Mostrar modal de bienvenida sobre SSO una sola vez
-  useEffect(() => {
-    if (isPageReady) {
-      const dismissed = localStorage.getItem("chu_onboarding_dismissed");
-      if (!dismissed) {
-        queueMicrotask(() => setIsSSOOnboardingOpen(true));
-      }
-    }
-  }, [isPageReady]);
 
   // --- Helpers ---
   const changeStep = useCallback((newStep: number | null) => {
@@ -631,9 +625,11 @@ export function useHomeLogic(initialEvents: any[] = []) {
   }, [isLoaded, isSignedIn, startNewRegistration, setSelectedCityId]);
 
   const syncRegistration = useCallback(async () => {
-    if (!isLoaded) return;
-    
     const saved = localStorage.getItem(HOME_STORAGE_KEY);
+    // Con un correo guardado se busca YA, sin esperar a que cargue Clerk (antes tardaba segundos).
+    // Si después resulta que hay sesión, el efecto se vuelve a ejecutar con el correo de Clerk.
+    if (!isLoaded && !saved) return;
+
     const clerkEmail = userRef.current?.primaryEmailAddress?.emailAddress;
     let emailToVerify = clerkEmail;
 
@@ -650,6 +646,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
       try {
         const result = await checkRegistration(emailToVerify, userRef.current?.id);
         if (result.success) {
+          setRegisteredEvents((result as any).registeredEvents || []);
           const statuses = (result as any).eventStatuses || {};
           const dataMap = (result as any).eventData || {};
           const survey = (result as any).surveyData || null;
@@ -744,6 +741,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     } else {
       setStep(1);
     }
+    setHasSynced(true);
   }, [isLoaded, changeStep, setSelectedCityId]);
 
   useEffect(() => {
@@ -782,16 +780,17 @@ export function useHomeLogic(initialEvents: any[] = []) {
       }
     };
 
+    // Mismo handler para registrar y quitar: antes se registraba una función anónima que nunca se quitaba,
+    // se acumulaban listeners y cada cambio de pestaña disparaba varias búsquedas a la vez
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") handleFocusSync();
+    };
     window.addEventListener("focus", handleFocusSync);
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
-        handleFocusSync();
-      }
-    });
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       window.removeEventListener("focus", handleFocusSync);
-      document.removeEventListener("visibilitychange", handleFocusSync);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [isLoaded, step, syncRegistration]);
 
@@ -802,6 +801,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     try {
       const revalidation = await checkRegistration(email, user?.id);
       if (revalidation.success) {
+        setRegisteredEvents((revalidation as any).registeredEvents || []);
         // Mantener prioridad de Clerk
         const finalUserData = {
           ...revalidation.userData,
@@ -868,6 +868,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
         phone_code: data.phoneCode,
         residence_country: data.country,
         selected_events: selectedEvents,
+        privacy_accepted: data.privacyAccepted === true,
       }, turnstileToken);
 
       if (!regResult.success) {
@@ -875,9 +876,13 @@ export function useHomeLogic(initialEvents: any[] = []) {
       }
 
       // 🎯 Redirección pura para lista de espera externa sin registro local (abrir en pestaña nueva)
+      // La pestaña la abre quien recibió el clic (home-client), para que el navegador no la bloquee
       if ((regResult as any).pureRedirect && (regResult as any).redirectUrl) {
-        window.open((regResult as any).redirectUrl, "_blank", "noopener,noreferrer");
-        return { success: true, pureRedirect: true } as any;
+        toast.info("Los lugares se agotaron", {
+          description: "Te llevamos a la lista de espera en una pestaña nueva.",
+          duration: 8000,
+        });
+        return { success: true, pureRedirect: true, redirectUrl: (regResult as any).redirectUrl } as any;
       }
 
       const finalStatuses = (regResult as any).eventStatuses || {};
@@ -946,10 +951,11 @@ export function useHomeLogic(initialEvents: any[] = []) {
       window.dispatchEvent(new Event('registration-success'));
       trackGTMEvent("registration_completed");
 
-      return { 
+      return {
         success: true,
-        checkoutRedirectUrl: (regResult as any).checkoutRedirectUrl || null
-      } as any; 
+        checkoutRedirectUrl: (regResult as any).checkoutRedirectUrl || null,
+        thankYouUrl: (regResult as any).thankYouUrl || null
+      } as any;
     } catch (error: any) {
       toast.error(error.message || "Error al procesar el registro");
       return { success: false };
@@ -968,6 +974,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     try {
       const result = await checkRegistration(email, user?.id);
       if (result.success) {
+        setRegisteredEvents((result as any).registeredEvents || []);
         const statuses = (result as any).eventStatuses || {};
         const eventData = (result as any).eventData || {};
         setUserData(result.userData);
@@ -1116,6 +1123,7 @@ export function useHomeLogic(initialEvents: any[] = []) {
     // States
     step, setStep: changeStep,
     events, setEvents,
+    registeredEvents, hasSynced,
     selectedEvents, setSelectedEvents,
     userData, setUserData,
     userKeapTags,

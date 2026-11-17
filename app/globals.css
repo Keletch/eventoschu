@@ -8,6 +8,8 @@
 @custom-variant citric (&:is(.citric *));
 @custom-variant halloween-dark (&:is(.halloween-dark *));
 @custom-variant boreal (&:is(.boreal *));
+@custom-variant navidad (&:is(.navidad *));
+@custom-variant navidad-noche (&:is(.navidad-noche *));
 
 @theme inline {
   --color-background: var(--background);

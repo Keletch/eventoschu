@@ -715,3 +715,240 @@
 .boreal aside a.bg-sidebar-foreground svg {
   color: #ffffff !important;
 }
+
+/* 🎄 TEMA NAVIDAD (claro: nieve, rojo carmesí, verde pino y dorado) */
+.navidad {
+  /* Base */
+  --background: #fbf8f3;
+  --foreground: #1f1a17;
+  --surface: #f3ece3;
+  --surface-foreground: #1f1a17;
+  --surface-border: rgba(179, 18, 46, 0.15);
+  --border: #e7d9c9;
+  --ring: #b3122e;
+  --radius: 32px;
+  --card: #ffffff;
+  --card-foreground: #1f1a17;
+  --logo-color: #b3122e;
+  --popover: #ffffff;
+  --popover-foreground: #1f1a17;
+  --snow: rgba(140, 160, 185, 0.45);
+
+  /* Hero */
+  --hero-badge-bg: #f7e3e6;
+  --hero-badge-text: #b3122e;
+  --hero-badge-border: #efc6cd;
+  --hero-title: #1f1a17;
+  --hero-desc: #5a4b42;
+  --hero-btn-bg: #b3122e;
+  --hero-btn-text: #ffffff;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #b3122e;
+  --tab-active-text: #ffffff;
+  --category-tab-active-bg: #1b6b3a;
+  --category-tab-active-text: #ffffff;
+  --tab-inactive-bg: #ffffff;
+  --tab-inactive-text: #1b6b3a;
+  --tab-border: #e7d9c9;
+
+  /* Event Cards (Step 1) */
+  --card-border: #efe3d6;
+  --card-title: #1f1a17;
+  --card-text: #5a4b42;
+  --card-icon: #b3122e;
+  --card-badge-text: #1b6b3a;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #ffffff;
+  --form-card-border: #e7d9c9;
+  --form-label: #1f1a17;
+  --form-input-bg: #fbf8f3;
+  --form-input-border: #e7d9c9;
+  --form-input-text: #1f1a17;
+  --form-btn-bg: #b3122e;
+  --form-btn-text: #ffffff;
+
+  /* Footer & Socials */
+  --footer-text-primary: #1f1a17;
+  --footer-text-secondary: rgba(31, 26, 23, 0.5);
+  --social-bg: #f7e3e6;
+  --social-color: #b3122e;
+  --social-hover-bg: #b3122e;
+  --social-hover-color: #ffffff;
+
+  /* Global Fallbacks */
+  --primary: #b3122e;
+  --primary-foreground: #ffffff;
+  --secondary: #1b6b3a;
+  --secondary-foreground: #ffffff;
+  --muted: #f3ece3;
+  --muted-foreground: #5a4b42;
+  --accent: #efe3d6;
+  --accent-foreground: #b3122e;
+  --scrollbar-dot: #b3122e;
+  --scrollbar-dot-muted: rgba(179, 18, 46, 0.25);
+  --scrollbar-sidebar-dot: #1b6b3a;
+  --sidebar-bg: #f3ece3;
+  --sidebar-foreground: #1f1a17;
+  --footer-bg: #f3ece3;
+  --scrollbar-track: rgba(179, 18, 46, 0.08);
+  --input: #fbf8f3;
+}
+
+/* 🌟 TEMA NOCHE BUENA (oscuro: pino nocturno, rojo y dorado) */
+.navidad-noche {
+  /* Base */
+  --background: #07130f;
+  --foreground: #f5f1e8;
+  --surface: #0d1f18;
+  --surface-foreground: #f5f1e8;
+  --surface-border: rgba(227, 179, 65, 0.25);
+  --border: #1e3a2e;
+  --ring: #e3b341;
+  --radius: 32px;
+  --card: #0f231b;
+  --card-foreground: #f5f1e8;
+  --logo-color: #e3b341;
+  --popover: #0f231b;
+  --popover-foreground: #f5f1e8;
+  --snow: rgba(255, 255, 255, 0.55);
+
+  /* Hero */
+  --hero-badge-bg: rgba(227, 179, 65, 0.15);
+  --hero-badge-text: #e3b341;
+  --hero-badge-border: rgba(227, 179, 65, 0.35);
+  --hero-title: #ffffff;
+  --hero-desc: #c9d6cc;
+  --hero-btn-bg: #c8102e;
+  --hero-btn-text: #ffffff;
+
+  /* Tabs Navigation */
+  --tab-active-bg: #c8102e;
+  --tab-active-text: #ffffff;
+  --category-tab-active-bg: #e3b341;
+  --category-tab-active-text: #07130f;
+  --tab-inactive-bg: #0d1f18;
+  --tab-inactive-text: #e3b341;
+  --tab-border: #1e3a2e;
+
+  /* Event Cards (Step 1) */
+  --card-border: #1e3a2e;
+  --card-title: #ffffff;
+  --card-text: #c9d6cc;
+  --card-icon: #e3b341;
+  --card-badge-text: #8fd9ad;
+
+  /* Registration Form (Step 2) */
+  --form-card-bg: #0d1f18;
+  --form-card-border: rgba(227, 179, 65, 0.25);
+  --form-label: #f5f1e8;
+  --form-input-bg: #07130f;
+  --form-input-border: #1e3a2e;
+  --form-input-text: #ffffff;
+  --form-btn-bg: #c8102e;
+  --form-btn-text: #ffffff;
+
+  /* Footer & Socials */
+  --footer-text-primary: #f5f1e8;
+  --footer-text-secondary: rgba(245, 241, 232, 0.5);
+  --social-bg: rgba(227, 179, 65, 0.15);
+  --social-color: #e3b341;
+  --social-hover-bg: #c8102e;
+  --social-hover-color: #ffffff;
+
+  /* Global Fallbacks */
+  --primary: #c8102e;
+  --primary-foreground: #ffffff;
+  --secondary: #e3b341;
+  --secondary-foreground: #07130f;
+  --muted: #0f231b;
+  --muted-foreground: #c9d6cc;
+  --accent: #1e3a2e;
+  --accent-foreground: #e3b341;
+  --scrollbar-dot: #e3b341;
+  --scrollbar-dot-muted: rgba(227, 179, 65, 0.25);
+  --scrollbar-sidebar-dot: #e3b341;
+  --sidebar-bg: #091811;
+  --sidebar-foreground: #f5f1e8;
+  --footer-bg: #091811;
+  --scrollbar-track: rgba(227, 179, 65, 0.08);
+  --input: #07130f;
+}
+
+/* Fondo navideño: resplandores suaves + nieve que cae (sin animación si el sistema pide reducir movimiento) */
+.navidad .retro-grid,
+.navidad-noche .retro-grid {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+.navidad .retro-grid {
+  background-image:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(179, 18, 46, 0.07), transparent 70%),
+    radial-gradient(circle at 88% 35%, rgba(27, 107, 58, 0.07), transparent 55%);
+}
+.navidad-noche .retro-grid {
+  background-image:
+    radial-gradient(ellipse 65% 50% at 50% 0%, rgba(200, 16, 46, 0.14), transparent 70%),
+    radial-gradient(circle at 12% 45%, rgba(227, 179, 65, 0.09), transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(27, 107, 58, 0.18), transparent 60%);
+}
+/* Nieve por encima del contenido (pointer-events: none no bloquea clics); modales y toasts (z ≥ 250) quedan encima */
+.navidad body::after,
+.navidad-noche body::after {
+  content: "";
+  position: fixed;
+  inset: -260px 0 0 0;
+  pointer-events: none;
+  z-index: 200;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, var(--snow) 50%, transparent 51%),
+    radial-gradient(2.5px 2.5px at 120px 90px, var(--snow) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 210px 160px, var(--snow) 50%, transparent 51%),
+    radial-gradient(2px 2px at 70px 210px, var(--snow) 50%, transparent 51%),
+    radial-gradient(3px 3px at 170px 240px, var(--snow) 50%, transparent 51%);
+  background-size: 260px 260px;
+  animation: navidad-snowfall 22s linear infinite;
+}
+@keyframes navidad-snowfall {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(30px, 260px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navidad body::after,
+  .navidad-noche body::after { animation: none; }
+}
+
+.navidad-noche .grain-overlay {
+  display: block;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.navidad .event-card-wrapper:hover {
+  filter: drop-shadow(0 8px 18px rgba(179, 18, 46, 0.15));
+  transition: filter 0.2s ease;
+}
+.navidad-noche .event-card-wrapper:hover {
+  filter: drop-shadow(0 0 16px rgba(227, 179, 65, 0.28));
+  transition: filter 0.2s ease;
+}
+
+/* Botón activo del Sidebar en los temas navideños */
+.navidad aside a.bg-sidebar-foreground {
+  background-color: #b3122e !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(179, 18, 46, 0.25) !important;
+}
+.navidad aside a.bg-sidebar-foreground svg { color: #ffffff !important; }
+.navidad-noche aside a.bg-sidebar-foreground {
+  background-color: #c8102e !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 15px rgba(200, 16, 46, 0.35) !important;
+}
+.navidad-noche aside a.bg-sidebar-foreground svg { color: #ffffff !important; }

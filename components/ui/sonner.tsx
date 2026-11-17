@@ -8,7 +8,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const { resolvedTheme, theme } = useTheme()
   // Sonner solo entiende 'light' | 'dark' | 'system'
   const isDark = resolvedTheme === "dark" || 
-    ["dark", "halloween-dark", "boreal", "synthwave", "coffee", "hacker"].includes(theme || "");
+    ["dark", "halloween-dark", "boreal", "synthwave", "coffee", "hacker", "navidad-noche"].includes(theme || "");
   const sonnerTheme = isDark ? "dark" : "light";
 
   return (

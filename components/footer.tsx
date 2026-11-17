@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useRef } from "react";
+import Link from "next/link";
 import { SOCIAL_LINKS } from "@/lib/constants";
+import { LEGAL_DOCS } from "@/lib/legal";
 import { SocialIcon } from "./footer/social-icon";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -37,6 +39,17 @@ export function Footer() {
         <p className="text-[9px] font-medium text-footer-text-secondary italic">
           Educación financiera y trading de alto nivel
         </p>
+        <nav aria-label="Legales" className="flex items-center gap-3 mt-2 md:mt-0">
+          {LEGAL_DOCS.map((doc) => (
+            <Link
+              key={doc.href}
+              href={doc.href}
+              className="text-[10px] font-semibold text-footer-text-secondary hover:text-footer-text-primary underline-offset-2 hover:underline transition-colors"
+            >
+              {doc.label}
+            </Link>
+          ))}
+        </nav>
       </div>
 
       <div className="flex items-center gap-3">

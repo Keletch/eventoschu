@@ -58,7 +58,7 @@ export default function AdminRootLayout({
           identityPreviewEditButtonIcon: "!text-primary",
           modalCloseButton: "!text-foreground/60 hover:!text-foreground transition-colors",
           badge: "bg-primary text-primary-foreground border-primary px-2.5 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider",
-          logoBox: "dark:invert dark:brightness-200 synthwave:invert synthwave:brightness-200 hacker:invert hacker:brightness-200 halloween-dark:invert halloween-dark:brightness-200",
+          logoBox: "dark:invert dark:brightness-200 synthwave:invert synthwave:brightness-200 hacker:invert hacker:brightness-200 halloween-dark:invert halloween-dark:brightness-200 navidad-noche:invert navidad-noche:brightness-200",
         }
       }}
     >
@@ -79,10 +79,10 @@ export default function AdminRootLayout({
         <body className="flex flex-col font-sans bg-background text-foreground transition-colors duration-300 min-h-screen">
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
+            defaultTheme="navidad-noche"
             enableSystem
             disableTransitionOnChange
-            themes={["light", "halloween-dark", "boreal", "synthwave", "coffee", "hacker", "citric", "dark"]}
+            themes={["navidad-noche", "navidad", "light", "halloween-dark", "boreal", "synthwave", "coffee", "hacker", "citric", "dark"]}
           >
             <TooltipProvider>
               <div className="retro-grid" />

@@ -16,12 +16,6 @@ export interface EventUIConfig {
     description: string;
   };
   showSyncConfirmationToast: boolean;
-  // Labels
-  statusLabels: {
-    confirmed: string;
-    pending: string;
-    cancelled: string;
-  };
   // Copy
   hero: {
     title: string;
@@ -39,11 +33,6 @@ const CONFIGS: Record<EventType, EventUIConfig> = {
       description: "Has sido registrado a la lista de espera."
     },
     showSyncConfirmationToast: false,
-    statusLabels: {
-      confirmed: "Registro exitoso",
-      pending: "Validando cupo",
-      cancelled: "Registro cancelado"
-    },
     hero: {
       title: "¡Ya estás\ndentro!",
       description: "Te notificaremos por correo todos los detalles"
@@ -58,17 +47,75 @@ const CONFIGS: Record<EventType, EventUIConfig> = {
       description: "Tu registro se ha procesado correctamente."
     },
     showSyncConfirmationToast: true,
-    statusLabels: {
-      confirmed: "Registro exitoso",
-      pending: "Validando cupo",
-      cancelled: "Registro cancelado"
-    },
     hero: {
       title: "¡Ya estás\ndentro!",
       description: "Te notificaremos por correo todos los detalles"
     }
   }
 };
+
+export interface RegistrationStatusCopy {
+  /** Texto corto de la insignia (barra superior y tarjeta) */
+  badge: string;
+  /** Explicación bajo la insignia de la tarjeta */
+  description: string;
+  /** Título grande del paso 2 */
+  title: string;
+  heroDescription: string;
+}
+
+/**
+ * 🎉 ÚNICA fuente de los textos de estado del paso 2 (insignia, tarjeta y título).
+ * Dependen del estado Y del tipo de evento: "en espera" no significa lo mismo en un evento
+ * con cupo (lista de espera automática), con aprobación manual (en revisión) o de pago con cupo (falta pagar).
+ */
+export function getRegistrationStatusCopy(
+  status: string,
+  event: { isClosed?: boolean; isPagoCupo?: boolean; isFull?: boolean } = {}
+): RegistrationStatusCopy {
+  if (status === "confirmed") {
+    return {
+      badge: "Confirmado",
+      description: "Tu lugar está asegurado. Te enviaremos los detalles por correo.",
+      title: "¡Ya estás\ndentro!",
+      heroDescription: "Te notificaremos por correo todos los detalles",
+    };
+  }
+  if (status === "cancelled") {
+    return {
+      badge: "Cancelado",
+      description: "Tu registro para este evento fue cancelado.",
+      title: "Tu registro fue\ncancelado",
+      heroDescription: "Si crees que es un error, escríbenos desde el contacto de soporte.",
+    };
+  }
+  // Pendiente
+  if (event.isPagoCupo && !event.isFull) {
+    return {
+      badge: "Pago pendiente",
+      description: "Completa tu pago para asegurar tu lugar. Se confirma en automático al pagar.",
+      title: "Te falta\nun paso",
+      heroDescription: "Completa tu pago para asegurar tu lugar.",
+    };
+  }
+  if (event.isClosed && !event.isPagoCupo) {
+    return {
+      badge: "En revisión",
+      description: "Estamos revisando tu solicitud, te avisaremos pronto.",
+      title: "Tu solicitud está\nen revisión",
+      heroDescription: "Te avisaremos por correo cuando confirmemos tu lugar.",
+    };
+  }
+  // Evento con cupo (lista de espera automática) o pago con cupo ya lleno
+  return {
+    badge: "Lista de espera",
+    description: event.isPagoCupo
+      ? "Los lugares se agotaron. Te avisaremos si se libera uno."
+      : "El cupo se llenó. Te avisaremos por correo si se libera un lugar.",
+    title: "Estás en la\nlista de espera",
+    heroDescription: "Te avisaremos por correo en cuanto se libere un lugar para ti.",
+  };
+}
 
 /**
  * 🛠️ Helper para obtener la configuración de un evento
@@ -86,10 +133,6 @@ export function getEventUIConfig(event: any): EventUIConfig {
       ...baseConfig,
       showFullCapacityOverlay: false,
       allowOverCapacityRegistration: true,
-      statusLabels: {
-        ...baseConfig.statusLabels,
-        pending: "Esperando pago"
-      }
     };
   }
 

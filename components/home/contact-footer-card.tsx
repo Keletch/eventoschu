@@ -1,9 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-
-const SUPPORT_EMAIL = "soporte@elclubdeinversionistas.com";
-const SUPPORT_WHATSAPP = "573164770410";
+import { SUPPORT_EMAIL, SUPPORT_WHATSAPP } from "@/lib/constants";
 
 export function ContactFooterCard() {
   const handleEmail = () => {

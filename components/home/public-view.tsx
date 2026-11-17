@@ -100,6 +100,10 @@ export function PublicView({
 }: PublicViewProps) {
   const { openSignIn } = useClerk();
 
+  // Sin eventos: si hay filtros activos se ofrece quitarlos; si no, no hay nada publicado y el formulario sobra
+  const hasActiveFilters = !!searchQuery.trim() || activeCategory !== "Todos" || (activeSubcategory || "Todos") !== "Todos" || (activeTag || "Todos") !== "Todos";
+  const noEventsAtAll = !isLoadingEvents && filteredEvents.length === 0 && !hasActiveFilters;
+
   const filterBarWrapperRef = React.useRef<HTMLDivElement>(null);
   const hasInteractedRef = React.useRef(false);
 
@@ -191,10 +195,12 @@ export function PublicView({
               isSignedIn={isSignedIn}
               onVerifySuccess={onVerifySuccess}
               onOpenSSOOnboarding={onOpenSSOOnboarding}
+              hasActiveFilters={hasActiveFilters}
+              onResetFilters={resetAllFilters}
             />
 
-            {/* ── Formulario de registro ──────────────────── */}
-            {activeCategory !== "Pago" ? (
+            {/* ── Formulario de registro (oculto si no hay ningún evento publicado) ── */}
+            {noEventsAtAll ? null : activeCategory !== "Pago" ? (
               <div className="registration-form-container animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300 space-y-8 -mt-0">
                 <h2 className="text-[20px] font-medium text-foreground pl-2 md:pl-6">Registro</h2>
                 <div className="bg-form-card-bg rounded-[32px] p-6 md:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-form-card-border">

@@ -9,6 +9,7 @@ import { useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { checkRegistration } from "@/app/actions/user-registration";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { COUNTRY_CODES } from "@/lib/constants";
 import { trackGTMEvent } from "@/lib/gtm-utils";
 
@@ -51,6 +52,15 @@ export function RegistrationForm({
   const [isOtherCountry, setIsOtherCountry] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>("");
   const [turnstileKey, setTurnstileKey] = useState(0);
+  // Ley 1581 (Colombia): la autorización de tratamiento de datos debe ser previa y expresa
+  // Si su cuenta de Clerk ya registró la aceptación (legalAcceptedAt), la casilla aparece marcada
+  const clerkAccepted = !!user?.legalAcceptedAt;
+  const [acceptedPolicy, setAcceptedPolicy] = useState(clerkAccepted);
+  const [prevClerkAccepted, setPrevClerkAccepted] = useState(clerkAccepted);
+  if (clerkAccepted !== prevClerkAccepted) {
+    setPrevClerkAccepted(clerkAccepted);
+    if (clerkAccepted) setAcceptedPolicy(true);
+  }
 
   const fetchSupabaseData = useCallback(async (email: string) => {
     try {
@@ -136,6 +146,10 @@ export function RegistrationForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!acceptedPolicy) {
+      toast.error("Debes autorizar el tratamiento de tus datos para registrarte.");
+      return;
+    }
     if (!turnstileToken) {
       toast.error("Por favor completa la verificación de seguridad.");
       return;
@@ -143,7 +157,7 @@ export function RegistrationForm({
 
 
     // Ejecutar el onSubmit del padre (que es asíncrono)
-    const result = await (onSubmit as any)(formData, turnstileToken);
+    const result = await (onSubmit as any)({ ...formData, privacyAccepted: acceptedPolicy }, turnstileToken);
     
 
 
@@ -235,10 +249,10 @@ export function RegistrationForm({
         <div className="flex flex-col gap-2">
           <Button
             type="submit"
-            disabled={isLoading || !turnstileToken}
+            disabled={isLoading || !turnstileToken || !acceptedPolicy}
             className={cn(
               "w-full h-[44px] bg-form-btn-bg hover:opacity-90 text-form-btn-text font-bold rounded-xl text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-form-btn-bg/20",
-              (isLoading || !turnstileToken) && "opacity-40 cursor-not-allowed active:scale-100"
+              (isLoading || !turnstileToken || !acceptedPolicy) && "opacity-40 cursor-not-allowed active:scale-100"
             )}
           >
             {isLoading ? (
@@ -247,6 +261,25 @@ export function RegistrationForm({
               submitButtonText
             )}
           </Button>
+          <label className="flex items-start gap-2.5 text-[11px] leading-snug text-muted-foreground cursor-pointer">
+            <Checkbox
+              checked={acceptedPolicy}
+              onCheckedChange={(checked) => setAcceptedPolicy(checked === true)}
+              className="mt-0.5"
+              aria-required="true"
+            />
+            <span>
+              Autorizo el tratamiento de mis datos personales según el{" "}
+              <a href="/legal/privacidad" target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-foreground">
+                Aviso de Privacidad
+              </a>{" "}
+              y acepto los{" "}
+              <a href="/legal/terminos" target="_blank" rel="noopener" className="underline underline-offset-2 hover:text-foreground">
+                Términos y Condiciones
+              </a>
+              .
+            </span>
+          </label>
         </div>
       </div>
 

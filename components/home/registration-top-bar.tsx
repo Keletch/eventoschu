@@ -4,34 +4,24 @@ import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { STATUS_CONFIGS, RegistrationStatus } from "@/components/home/utils/home-constants";
-import { EventUIConfig } from "@/lib/event-config";
 
 interface RegistrationTopBarProps {
   status: string;
   startNewRegistration: () => void;
-  eventConfig: EventUIConfig;
   hasNoEvents?: boolean;
-  isPagoCupo?: boolean;
-  isFull?: boolean;
+  /** Texto del estado, de getRegistrationStatusCopy (mismo que la tarjeta y el título) */
+  statusLabel: string;
 }
 
-export function RegistrationTopBar({ 
-  status, 
-  startNewRegistration, 
-  eventConfig, 
+export function RegistrationTopBar({
+  status,
+  startNewRegistration,
   hasNoEvents = false,
-  isPagoCupo = false,
-  isFull = false
+  statusLabel,
 }: RegistrationTopBarProps) {
+  // Los colores dependen solo del estado; el texto viene de la fuente única
   const config = STATUS_CONFIGS[(status as RegistrationStatus) ?? "pending"] ?? STATUS_CONFIGS.pending;
-  
-  // 🧠 Obtener etiqueta desde la configuración centralizada o estados especiales
-  let displayLabel = eventConfig.statusLabels[status as RegistrationStatus] || config.label;
-  if (hasNoEvents) {
-    displayLabel = "No hay evento activo";
-  } else if (status === "pending" && isPagoCupo && isFull) {
-    displayLabel = "En lista de espera";
-  }
+  const displayLabel = hasNoEvents ? "No hay evento activo" : statusLabel;
 
   return (
     <div className="max-w-[1372px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6 px-4">

@@ -28,22 +28,17 @@ export function CampusSSOOnboardingDialog({
     setIsOpen(false);
   };
 
-  const handleDismissForever = () => {
-    localStorage.setItem("chu_onboarding_dismissed", "true");
-    setIsOpen(false);
-  };
-
   const handleSignIn = () => {
     trackGTMEvent("clerk_auth_initiated_onboarding");
-    localStorage.setItem("chu_onboarding_dismissed", "true");
     setIsOpen(false);
     openSignIn({});
   };
 
+  // Solo se abre a pedido (aviso de la cabecera o botón de las tarjetas de pago) y se cierra como cualquier modal:
+  // Esc, tocando fuera o con ✕. Antes se abría solo en cada visita, tapaba el paso 2 y obligaba a elegir.
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
-        showCloseButton={false}
         className="max-w-[720px] w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] mx-auto rounded-[24px] sm:rounded-[32px] p-0 bg-card text-foreground border-border shadow-2xl z-[250] outline-none flex flex-col max-h-[85vh] sm:max-h-[90vh]"
       >
         {/* Área scrollable sin scrollbar */}
@@ -148,17 +143,6 @@ export function CampusSSOOnboardingDialog({
             >
               Iniciar Sesión / Registrarse
             </Button>
-          </div>
-
-          {/* Dismiss permanente */}
-          <div className="flex justify-center mt-2 sm:mt-4">
-            <button
-              type="button"
-              onClick={handleDismissForever}
-              className="text-[11px] text-muted-foreground/60 hover:text-muted-foreground underline underline-offset-2 transition-colors py-1"
-            >
-              Ya entendí, no volver a mostrar este aviso
-            </button>
           </div>
         </div>
       </DialogContent>

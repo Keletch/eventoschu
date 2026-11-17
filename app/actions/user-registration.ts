@@ -1,6 +1,8 @@
 'use server';
 
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
+import { after } from "next/server";
+import { LEGAL_LAST_UPDATE } from "@/lib/legal";
 import { headers } from "next/headers";
 import crypto from "crypto";
 import { registrationSchema } from "./schemas";
@@ -27,6 +29,13 @@ export async function createRegistration(data: any, turnstileToken: string) {
     const verification = await validateTurnstileToken(turnstileToken);
     if (!verification.success) return { success: false, error: "Fallo de verificación de seguridad." };
 
+    // Ley 1581 (Colombia): sin autorización expresa no se tratan los datos
+    if (data?.privacy_accepted !== true) {
+      return { success: false, error: "Debes autorizar el tratamiento de tus datos para registrarte." };
+    }
+    // Prueba de la autorización: se guarda junto a los datos de cada evento (event_data), con la versión aceptada
+    const consent = { privacy_accepted_at: new Date().toISOString(), privacy_version: LEGAL_LAST_UPDATE };
+
     const validatedData = registrationSchema.parse(data);
     const { userId } = await auth();
     const isAuthenticated = !!userId;
@@ -39,6 +48,14 @@ export async function createRegistration(data: any, turnstileToken: string) {
       canLinkClerk = !!clerkUser?.emailAddresses.some(e =>
         e.verification?.status === 'verified' && e.emailAddress.toLowerCase().trim() === validatedData.email
       );
+      // Con cuenta, la aceptación también queda en Clerk (legalAcceptedAt) y la casilla aparece ya marcada después
+      if (clerkUser && !clerkUser.legalAcceptedAt) {
+        after(() =>
+          clerkClient()
+            .then(c => c.users.updateUser(userId!, { legalAcceptedAt: new Date(consent.privacy_accepted_at) }))
+            .catch(err => console.warn("Clerk legalAcceptedAt:", err?.message))
+        );
+      }
     }
 
     // 0. Obtener información de los eventos ANTES de decidir estados
@@ -76,6 +93,8 @@ export async function createRegistration(data: any, turnstileToken: string) {
 
     // 🎯 Detección de Pago con cupo para evento seleccionado
     let checkoutRedirectUrl: string | null = null;
+    // Página de agradecimiento externa: va aparte del checkout para no mostrar avisos de pago en eventos gratis
+    let thankYouUrl: string | null = null;
     const selectedEventId = validatedData.selected_events[0];
     const selectedEvInfo = eventInfoMap[selectedEventId];
     const isClosedEv = selectedEvInfo?.initial_status === 'pending';
@@ -119,7 +138,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
       const typConfig = (selectedEvInfo?.paid_links || []).find((l: any) => l.type === 'typ_config');
       const altTypUrl = typConfig?.external_typ_url || selectedEvInfo?.external_typ_url;
       if (altTypUrl && typeof altTypUrl === 'string' && altTypUrl.trim()) {
-        checkoutRedirectUrl = altTypUrl.trim();
+        thankYouUrl = altTypUrl.trim();
       }
     }
 
@@ -152,7 +171,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
             updatedStatuses[id] = 'pending';
           }
           
-          updatedEventData[id] = { ...validatedData };
+          updatedEventData[id] = { ...validatedData, ...consent };
         }
       });
 
@@ -213,7 +232,8 @@ export async function createRegistration(data: any, turnstileToken: string) {
         eventStatuses: updatedStatuses,
         eventData: updatedEventData,
         surveyData: existing.survey_data || null,
-        checkoutRedirectUrl: checkoutRedirectUrl || undefined
+        checkoutRedirectUrl: checkoutRedirectUrl || undefined,
+        thankYouUrl: thankYouUrl || undefined
       };
     } 
 
@@ -232,7 +252,7 @@ export async function createRegistration(data: any, turnstileToken: string) {
         initialStatuses[id] = 'pending';
       }
       
-      initialEventData[id] = { ...validatedData };
+      initialEventData[id] = { ...validatedData, ...consent };
     });
 
     const { data: inserted, error: insertError } = await supabaseAdmin.from('registrations').insert([{
@@ -291,7 +311,8 @@ export async function createRegistration(data: any, turnstileToken: string) {
       eventStatuses: initialStatuses,
       eventData: initialEventData,
       surveyData: null,
-      checkoutRedirectUrl: checkoutRedirectUrl || undefined
+      checkoutRedirectUrl: checkoutRedirectUrl || undefined,
+      thankYouUrl: thankYouUrl || undefined
     };
 
   } catch (err: any) {
@@ -399,6 +420,13 @@ export async function checkRegistration(email: string, clerkId?: string) {
       ]).catch(err => console.error("Realtime broadcast error on payment sync:", err));
     }
 
+    // Eventos del inscrito aunque ya hayan pasado o estén pausados: el paso 2 los necesita para no decir
+    // "No estás registrado" (la lista pública solo trae eventos activos y futuros)
+    const { data: registeredEvents } = await supabaseAdmin
+      .from('events')
+      .select('*, categories(*, parent_category:parent_category_id(id, name, icon)), event_tags(tags(*))')
+      .in('id', data.selected_events);
+
     return {
       success: true,
       exists: true,
@@ -406,7 +434,8 @@ export async function checkRegistration(email: string, clerkId?: string) {
       selectedEvents: data.selected_events || [],
       eventStatuses: currentStatuses,
       eventData: data.event_data || {},
-      surveyData: data.survey_data || null
+      surveyData: data.survey_data || null,
+      registeredEvents: registeredEvents || []
     };
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -414,14 +443,34 @@ export async function checkRegistration(email: string, clerkId?: string) {
 }
 
 /**
+ * 🔐 ¿La sesión actual es dueña del registro?
+ * Regla del negocio: cualquiera puede registrarse, pero solo quien tiene cuenta de Clerk puede modificar.
+ * Dueño = sesión vinculada al registro, o sesión con un correo VERIFICADO igual al del registro
+ * (cubre el caso en que el webhook de Clerk aún no vinculó la cuenta).
+ */
+async function isRegistrationOwner(reg: { email: string; clerk_id: string | null }) {
+  const { userId } = await auth();
+  if (!userId) return false;
+  if (reg.clerk_id) return reg.clerk_id === userId;
+  const user = await currentUser();
+  return !!user?.emailAddresses.some(e =>
+    e.verification?.status === 'verified' && e.emailAddress.toLowerCase().trim() === reg.email.toLowerCase().trim()
+  );
+}
+
+/**
  * 📝 Guarda los datos de la encuesta general
+ * Un invitado puede contestarla una sola vez (paso 2 tras registrarse); cambiarla requiere ser el dueño con sesión.
  */
 export async function saveSurveyData(email: string, surveyData: any) {
   try {
     const { userId } = await auth();
-    const { data: reg } = await supabaseAdmin.from('registrations').select('clerk_id').eq('email', email.toLowerCase().trim()).single();
-    
-    if (reg?.clerk_id && reg.clerk_id !== userId) throw new Error("No autorizado");
+    const { data: reg } = await supabaseAdmin.from('registrations').select('email, clerk_id, survey_data').eq('email', email.toLowerCase().trim()).single();
+    if (!reg) throw new Error("Registro no encontrado");
+
+    const hasSurvey = !!reg.survey_data && Object.keys(reg.survey_data).length > 0;
+    const guestFirstTime = !reg.clerk_id && !hasSurvey;
+    if (!guestFirstTime && !(await isRegistrationOwner(reg))) throw new Error("No autorizado");
 
     await supabaseAdmin.from('registrations').update({ survey_data: surveyData }).eq('email', email.toLowerCase().trim());
     await notifyAdminSurveyCompleted(email);
@@ -446,9 +495,10 @@ export async function saveSurveyData(email: string, surveyData: any) {
 export async function updateEventSpecificData(email: string, eventId: string, newData: any) {
   try {
     const { userId } = await auth();
-    const { data: existing } = await supabaseAdmin.from('registrations').select('event_data, clerk_id').eq('email', email.toLowerCase().trim()).single();
-    
-    if (existing?.clerk_id && existing.clerk_id !== userId) throw new Error("No autorizado");
+    const { data: existing } = await supabaseAdmin.from('registrations').select('email, event_data, clerk_id').eq('email', email.toLowerCase().trim()).single();
+
+    // Editar datos es solo para el dueño con sesión de Clerk (la UI ya pide iniciar sesión)
+    if (!existing || !(await isRegistrationOwner(existing))) throw new Error("No autorizado");
 
     const updatedEventData = {
       ...(existing?.event_data || {}),

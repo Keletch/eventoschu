@@ -245,7 +245,8 @@ export function EventCard({
   const eventConfig = getEventUIConfig({ initial_status: initialStatus });
   const isUnlimited = capacity >= 9999;
   // Los eventos en línea nunca se marcan como llenos
-  const isFull = !isVirtual && !isUnlimited && confirmedCount >= capacity;
+  // Un evento en línea con cupo también se llena (antes se excluía con !isVirtual y nunca mostraba "Agotado")
+  const isFull = !isUnlimited && confirmedCount >= capacity;
   // Si es Pago con Cupo, NUNCA se bloquea con el overlay gris de soldOut, pasa a lista de espera
   const isSoldOut = !isPagoCupo && eventConfig.showFullCapacityOverlay && isFull;
 

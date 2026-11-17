@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getEvents } from '@/app/actions/events';
+import { LEGAL_DOCS } from '@/lib/legal';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,5 +22,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1,
     },
+    ...LEGAL_DOCS.map((doc) => ({
+      url: `${baseUrl}${doc.href}`,
+      changeFrequency: 'yearly' as const,
+      priority: 0.2,
+    })),
   ];
 }

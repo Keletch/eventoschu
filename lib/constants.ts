@@ -21,6 +21,9 @@ export const COUNTRY_CODES = [
   { code: "+1", country: "Puerto Rico", flag: "🇵🇷" },
 ];
 
+export const SUPPORT_EMAIL = "soporte@elclubdeinversionistas.com";
+export const SUPPORT_WHATSAPP = "573164770410";
+
 export const SOCIAL_LINKS = [
   { name: "Facebook", href: "https://www.facebook.com/somoscdi?utm_source=eventos_cdi&utm_medium=footer_social&utm_campaign=ecosistema_cdi&utm_content=facebook" },
   { name: "Instagram", href: "https://www.instagram.com/elclubdeinversionistas?utm_source=eventos_cdi&utm_medium=footer_social&utm_campaign=ecosistema_cdi&utm_content=instagram" },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 import { RegistrationTopBar } from "@/components/home/registration-top-bar";
 import { RegistrationHero } from "@/components/home/registration-hero";
@@ -10,7 +10,7 @@ import { NextStepsPanel } from "@/components/home/next-steps-panel";
 import { ShareSection } from "@/components/home/share-section";
 import { ContactFooterCard } from "@/components/home/contact-footer-card";
 import { SocialMediaPanel } from "@/components/home/social-media-panel";
-import { getEventUIConfig } from "@/lib/event-config";
+import { getEventUIConfig, getRegistrationStatusCopy } from "@/lib/event-config";
 
 interface RegisteredViewProps {
   userData: any;
@@ -77,61 +77,30 @@ export function RegisteredView({
   const currentStatus = (effectiveCityId && eventStatuses[effectiveCityId]) || "pending";
   const _isSurveyMissing = !surveyData || Object.keys(surveyData).length === 0;
 
-  // 🎊 Efecto de Confetti elegante (solo si hay evento confirmado real y seleccionado)
+  // 🎊 Confeti al ver un registro confirmado: una ráfaga corta, una vez por evento en esta visita,
+  // y nada si el sistema pide reducir movimiento. (Antes: 7 s de ráfagas que se reiniciaban con cada refresco de datos.)
+  const celebratedRef = useRef<Set<string>>(new Set());
+  const hasCurrentEvent = !!currentEvent;
   useEffect(() => {
-    if (!hasNoEvents && currentEvent && currentStatus === "confirmed") {
-      let timeoutId: any;
-      let isActive = true;
+    if (hasNoEvents || !hasCurrentEvent || currentStatus !== "confirmed" || !effectiveCityId) return;
+    if (celebratedRef.current.has(effectiveCityId)) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    celebratedRef.current.add(effectiveCityId);
 
-      const fireBurst = () => {
-        if (!isActive) return;
+    const colors = ["#3154DC", "#0F9700", "#FFD700", "#FF0000", "#00FF00", "#FFFFFF"];
+    const fire = (x: number, angle: number) =>
+      confetti({ particleCount: 80, angle, spread: 55, origin: { x, y: 0.75 }, startVelocity: 65, gravity: 0.8, ticks: 300, colors, zIndex: 100 });
+    const timers = [
+      setTimeout(() => { fire(0, 55); fire(1, 125); }, 400),
+      setTimeout(() => fire(0, 60), 1100),
+      setTimeout(() => fire(1, 120), 1500),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [effectiveCityId, currentStatus, hasNoEvents, hasCurrentEvent]);
 
-        const isLeft = Math.random() > 0.5;
-        
-        confetti({
-          particleCount: 80,
-          angle: isLeft ? 55 : 125, // Ángulo potente hacia el centro
-          spread: 50,
-          origin: { x: isLeft ? 0 : 1, y: 0.75 },
-          startVelocity: 70, // Muy fuerte para cruzar la pantalla
-          gravity: 0.8, // Caída un poco más lenta y elegante
-          ticks: 400, // Más tiempo en pantalla
-          colors: ["#3154DC", "#0F9700", "#FFD700", "#FF0000", "#00FF00", "#FFFFFF"],
-          zIndex: 100,
-        });
 
-        // Programar el siguiente disparo en ~1.5 segundos
-        const nextDelay = 1200 + Math.random() * 800;
-        timeoutId = setTimeout(fireBurst, nextDelay);
-      };
-
-      // Iniciar después de un pequeño delay inicial
-      timeoutId = setTimeout(fireBurst, 500);
-
-      // Detener el ciclo después de 7 segundos para que no sea infinito
-      const stopTimer = setTimeout(() => {
-        isActive = false;
-        clearTimeout(timeoutId);
-      }, 7000);
-
-      return () => {
-        isActive = false;
-        clearTimeout(timeoutId);
-        clearTimeout(stopTimer);
-      };
-    }
-  }, [effectiveCityId, currentStatus, hasNoEvents, currentEvent]);
-
-  // 🧠 Obtener configuración centralizada para el evento actual
+  // 🧠 Configuración centralizada del evento actual
   const eventConfig = getEventUIConfig(currentEvent);
-
-  const heroTitle = hasNoEvents 
-    ? "No estás registrado\nen ningún evento"
-    : eventConfig.hero.title;
-
-  const heroDescription = hasNoEvents
-    ? "Regístrate en alguno de nuestros eventos disponibles para que aparezca aquí tu información."
-    : eventConfig.hero.description;
 
   const isClosed = currentEvent?.initial_status === 'pending';
   const eventTags = currentEvent?.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
@@ -140,6 +109,17 @@ export function RegisteredView({
   const capacity = currentEvent?.capacity || 50;
   const isFull = confirmedCount >= capacity;
 
+  // Textos de estado según estado + tipo de evento (misma fuente para título, barra superior y tarjeta)
+  const statusCopy = getRegistrationStatusCopy(currentStatus, { isClosed, isPagoCupo, isFull });
+  // Mientras se busca el registro no afirmamos "No estás registrado" (se veía unos segundos antes de encontrarlo)
+  const isSearching = hasNoEvents && isLoadingEvents;
+  const heroTitle = isSearching ? "Buscando\ntu registro…" : hasNoEvents ? "No estás registrado\nen ningún evento" : statusCopy.title;
+  const heroDescription = isSearching
+    ? "Un momento, estamos consultando tus eventos."
+    : hasNoEvents
+      ? "Regístrate en alguno de nuestros eventos disponibles para que aparezca aquí tu información."
+      : statusCopy.heroDescription;
+
   return (
     <div className="step-2 bg-transparent text-foreground space-y-12 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 antialiased">
 
@@ -147,10 +127,8 @@ export function RegisteredView({
       <RegistrationTopBar
         status={currentStatus}
         startNewRegistration={startNewRegistration}
-        eventConfig={eventConfig}
         hasNoEvents={hasNoEvents}
-        isPagoCupo={isPagoCupo}
-        isFull={isFull}
+        statusLabel={statusCopy.badge}
       />
 
       {/* ── Título principal ────────────────────────────── */}
@@ -198,6 +176,7 @@ export function RegisteredView({
         eventConfig={eventConfig}
         currentEvent={currentEvent}
         eventCounts={eventCounts}
+        statusCopy={statusCopy}
       />
 
       {/* ── ¿Qué sigue? ────────────────────────────────── */}

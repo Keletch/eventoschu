@@ -86,6 +86,20 @@ Los temas y sus variables están declarados en `app/globals.css` (para el tema `
 *   **Estética**: Atmósfera nórdica invernal con fondo azul hielo/nieve claro (`#E8F1F5`), tarjetas `#F2F8FA`, verde bosque de abeto perenne (`#0F6E52`) y acentos de azul lago glaciar (`#0284C7`).
 *   **Colores clave**: `--background: #E8F1F5`, `--foreground: #0C201A`, `--primary: #0F6E52`, `--secondary: #0284C7`.
 
+### 🌟 9. Tema Noche Buena (`navidad-noche`) — tema inicial
+*   **Clase HTML**: `.navidad-noche`
+*   **Estética**: Noche navideña: verde pino nocturno, rojo y dorado, con nieve que cae.
+*   **Colores clave**: `--background: #07130F`, `--foreground: #F5F1E8`, `--primary: #C8102E`, `--secondary: #E3B341`.
+*   **Overlay**: `.retro-grid` con resplandores rojo/dorado y nieve animada (`--snow`, se detiene con *reducir movimiento*); `.grain-overlay` activo.
+*   **Por defecto**: es el `defaultTheme` de ambos layouts y el primero del ciclo del `theme-toggle` (Noche Buena → Navidad → Claro → …).
+
+### 🎄 10. Tema Navidad (`navidad`)
+*   **Clase HTML**: `.navidad`
+*   **Estética**: Navidad clara: crema nieve, rojo carmesí, verde pino y dorado, con nieve suave.
+*   **Colores clave**: `--background: #FBF8F3`, `--foreground: #1F1A17`, `--primary: #B3122E`, `--secondary: #1B6B3A`.
+
+Ambos cumplen WCAG AA (contraste mínimo medido 5.88:1). Para quitarlos al terminar la temporada: borrar sus bloques en `themes.css`, sus `@custom-variant` en `globals.css`, sus nombres en los `themes`/`defaultTheme` de ambos layouts, en `sonner.tsx` y en el ciclo de `theme-toggle.tsx`.
+
 ---
 
 ## ⚡ Mapeo de Tailwind CSS v4 y Clerk

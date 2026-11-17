@@ -10,6 +10,12 @@ const TIMEZONE_SHORT_CODES: Record<string, string> = {
   "Europe/Madrid": "Madrid",
 };
 
+/** El precio es texto libre: "0", "Sin costo", "Gratis", "Evento gratuito"… cuentan como evento sin costo. */
+const isFreePriceText = (price: unknown) => {
+  const str = typeof price === "string" ? price : price ? String(price) : "";
+  return !str.trim() || str.trim() === "0" || /sin costo|gratis|gratuit/i.test(str);
+};
+
 /**
  * 🛠️ Orquestador de Verdad: Transforma un evento de BD en datos listos para el usuario/IA.
  * Esta es la ÚNICA fuente de verdad para la visualización.
@@ -72,14 +78,12 @@ export function transformEventForUI(event: Event) {
       const priceStr = typeof event.price === 'string'
         ? event.price
         : (event.price ? String(event.price) : "");
-      return !priceStr || priceStr.toLowerCase().includes('sin costo') || priceStr === "0"
-        ? "Evento sin costo"
-        : priceStr;
+      return isFreePriceText(priceStr) ? "Evento sin costo" : priceStr;
     })(),
     // Duración
     displayDuration: event.duration || "Aproximadamente 2 horas",
     // Metadatos técnicos para Schema.org
-    isFree: !isPaid && !isPagoCupo && (!event.price || event.price.toLowerCase().includes('sin costo') || event.price === "0"),
+    isFree: !isPaid && !isPagoCupo && isFreePriceText(event.price),
     isoDuration: (!event.duration || event.duration === "Por confirmar") ? null : (event.duration.includes('2') ? 'PT2H' : 'PT1H'),
     performer: "HyenUk Chu",
     // Tags y Redirección

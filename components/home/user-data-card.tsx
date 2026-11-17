@@ -8,7 +8,7 @@ import { SignInButton } from "@clerk/nextjs";
 import { trackGTMEvent } from "@/lib/gtm-utils";
 import { cn } from "@/lib/utils";
 import { STATUS_CONFIGS, RegistrationStatus } from "@/components/home/utils/home-constants";
-import { EventUIConfig } from "@/lib/event-config";
+import { EventUIConfig, RegistrationStatusCopy } from "@/lib/event-config";
 
 interface UserDataCardProps {
   displayData: {
@@ -36,6 +36,8 @@ interface UserDataCardProps {
   eventConfig: EventUIConfig;
   currentEvent?: any;
   eventCounts?: Record<string, number>;
+  /** Textos de estado (getRegistrationStatusCopy): misma fuente que la barra superior y el título */
+  statusCopy: RegistrationStatusCopy;
 }
 
 export function UserDataCard({
@@ -55,11 +57,10 @@ export function UserDataCard({
   isSignedIn,
   currentEvent,
   eventCounts = {},
+  statusCopy,
 }: UserDataCardProps) {
+  // Colores e ícono según el estado; los textos vienen de la fuente única (statusCopy)
   const badgeConfig = STATUS_CONFIGS[(status as RegistrationStatus) || "pending"] ?? STATUS_CONFIGS.pending;
-
-  // 🧠 Para la tarjeta de datos, usamos las etiquetas simplificadas (Activo, Pendiente, Cancelado)
-  const displayLabel = badgeConfig.label;
 
   return (
     <div className="max-w-[1372px] mx-auto bg-card rounded-[32px] p-8 md:p-12 lg:p-16 relative user-data-container border-[3px] border-border shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] transform backface-visibility-hidden antialiased">
@@ -111,38 +112,13 @@ export function UserDataCard({
             </div>
           ) : (
             <div className="flex flex-col items-center md:items-end gap-2">
-              {(() => {
-                const isClosed = currentEvent?.initial_status === 'pending';
-                const eventTags = currentEvent?.event_tags?.map((et: any) => et.tags).filter(Boolean) || [];
-                const isPagoCupo = isClosed && eventTags.some((t: any) => t.slug === 'pago_cupo');
-                const confirmedCount = eventCounts[currentEvent?.id] || 0;
-                const capacity = currentEvent?.capacity || 50;
-                const isFull = confirmedCount >= capacity;
-
-                const cardBadgeLabel = (status === 'pending' && isPagoCupo && isFull)
-                  ? "Lista de espera"
-                  : displayLabel;
-
-                const descriptionText = (status === 'pending' && isPagoCupo)
-                  ? (isFull 
-                      ? "Cupos llenos. Te notificaremos si se abre un lugar disponible." 
-                      : "Esperando pago para confirmar tu cupo")
-                  : badgeConfig.description;
-
-                return (
-                  <>
-                    <div className={cn("px-4 py-1.5 rounded-xl font-bold text-[15px] flex items-center gap-2 transition-all duration-500 transform backface-visibility-hidden", badgeConfig.bg, badgeConfig.text, badgeConfig.border, "border")}>
-                      {badgeConfig.icon}
-                      {cardBadgeLabel}
-                    </div>
-                    {descriptionText && (
-                      <p className={cn("text-[13px] font-medium animate-in fade-in slide-in-from-top-1", badgeConfig.descriptionColor || "text-muted-foreground/80")}>
-                        {descriptionText}
-                      </p>
-                    )}
-                  </>
-                );
-              })()}
+              <div className={cn("px-4 py-1.5 rounded-xl font-bold text-[15px] flex items-center gap-2 transition-all duration-500 transform backface-visibility-hidden", badgeConfig.bg, badgeConfig.text, badgeConfig.border, "border")}>
+                {badgeConfig.icon}
+                {statusCopy.badge}
+              </div>
+              <p className={cn("text-[13px] font-medium animate-in fade-in slide-in-from-top-1", badgeConfig.descriptionColor || "text-muted-foreground/80")}>
+                {statusCopy.description}
+              </p>
             </div>
           )}
         </div>

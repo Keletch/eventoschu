@@ -10,6 +10,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ANIM_SELECTORS } from "@/lib/animations";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { EventsEmptyState } from "@/components/home/events-empty-state";
 import { transformEventForUI } from "@/lib/event-transformers";
 
 // Skeleton de carga de tarjeta de evento
@@ -54,6 +55,9 @@ interface EventsCarouselProps {
   isSignedIn?: boolean;
   onVerifySuccess?: (tags: string[]) => void;
   onOpenSSOOnboarding?: () => void;
+  /** Para el estado vacío: si hay filtros activos se ofrece quitarlos */
+  hasActiveFilters?: boolean;
+  onResetFilters?: () => void;
 }
 
 export function EventsCarousel({
@@ -71,6 +75,8 @@ export function EventsCarousel({
   isSignedIn = false,
   onVerifySuccess,
   onOpenSSOOnboarding,
+  hasActiveFilters = false,
+  onResetFilters,
 }: EventsCarouselProps) {
   const { resolvedTheme } = useTheme();
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -187,9 +193,11 @@ export function EventsCarousel({
 
   return (
     <div className="space-y-2">
-      <h2 className="text-[20px] font-medium text-foreground leading-tight pl-2 md:pl-6">
-        Selecciona el evento en el que te gustaría participar
-      </h2>
+      {(isLoadingEvents || monthEvents.length > 0) && (
+        <h2 className="text-[20px] font-medium text-foreground leading-tight pl-2 md:pl-6">
+          Selecciona el evento en el que te gustaría participar
+        </h2>
+      )}
 
       {isLoadingEvents ? (
         <div className="flex gap-8 overflow-hidden pb-4 min-h-[460px] h-auto">
@@ -199,6 +207,8 @@ export function EventsCarousel({
             </div>
           ))}
         </div>
+      ) : monthEvents.length === 0 ? (
+        <EventsEmptyState hasActiveFilters={hasActiveFilters} onResetFilters={onResetFilters} />
       ) : (
         <div className="relative group/carousel">
           {/* Carrusel de tarjetas - Restaurada la fluidez nativa y navegación fija */}
