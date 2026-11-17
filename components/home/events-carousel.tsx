@@ -257,6 +257,8 @@ export function EventsCarousel({
                       linkEnabled={data.displayLinkEnabled}
                       isPaid={data.isPaid}
                       externalUrl={data.externalUrl}
+                      couponPrice={data.couponPrice}
+                      couponBadge={data.couponBadge}
                       externalButtonText={data.externalButtonText}
                       paidLinks={data.paidLinks}
                       userKeapTags={userKeapTags}

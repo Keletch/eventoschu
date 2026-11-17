@@ -25,6 +25,7 @@ interface PaidLink {
   button_text?: string;
   keap_tag_id?: string;
   price?: string;
+  badge?: string;
 }
 
 interface EventCardProps {
@@ -53,6 +54,9 @@ interface EventCardProps {
   isPaid?: boolean;
   externalUrl?: string | null;
   externalButtonText?: string | null;
+  // Cupón del enlace predeterminado (ya aplicado en externalUrl por transformEventForUI)
+  couponPrice?: string | null;
+  couponBadge?: string | null;
   description?: string | null;
   infoUrl?: string | null;
   // Nuevos: acceso por tags de Keap
@@ -90,6 +94,8 @@ export function EventCard({
   isPaid = false,
   externalUrl,
   externalButtonText,
+  couponPrice,
+  couponBadge,
   description,
   infoUrl,
   paidLinks = [],
@@ -141,6 +147,12 @@ export function EventCard({
     ? (unlockedLink?.button_text || externalButtonText || "Adquirir entrada")
     : (externalButtonText || "Adquirir entrada");
   const isUnlocked = !!effectiveUrl;
+  // El cupón solo vale para el enlace general: un miembro con su propio enlace no lo ve.
+  const usesDefaultLink = !hasPaidLinksConfig || !toLinkUrl(unlockedLink?.url);
+  const showCouponPrice = usesDefaultLink && !!couponPrice;
+  // Cinta: la del cupón en el enlace general, o la opcional del enlace de miembro
+  const ribbonText = (usesDefaultLink ? couponBadge : unlockedLink?.badge?.trim()) || null;
+  const showCouponBadge = !!ribbonText;
 
   const handleVerifyAccess = async () => {
     if (!verifyEmail.trim()) return;
@@ -297,8 +309,17 @@ export function EventCard({
         </div>
       )}
 
+      {/* 🏷️ Cinta diagonal del cupón (esquina superior derecha) */}
+      {showCouponBadge && !isSoldOut && (
+        <div className="absolute top-0 right-0 overflow-hidden w-36 h-36 pointer-events-none z-10">
+          <div className="absolute top-[28px] -right-[38px] w-[160px] rotate-45 bg-primary text-primary-foreground text-center py-1.5 text-[10px] md:text-[11px] font-black uppercase tracking-wider shadow-lg border-y border-white/20 truncate px-6">
+            {ribbonText}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col h-full">
-        <div className="flex items-start justify-between mb-6 md:mb-8 gap-4">
+        <div className={cn("flex items-start justify-between mb-6 md:mb-8 gap-4", showCouponBadge && "pr-12")}>
           <div className="flex items-start gap-3 md:gap-4 overflow-hidden w-full">
             <EventFlag 
               flag={flag} 
@@ -547,13 +568,13 @@ export function EventCard({
             ) : (
               <EventDetailItem icon={<MapPin className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />} label="Sitio" value={location} />
             )}
-            {unlockedLink && unlockedLink.price ? (
+            {(unlockedLink && unlockedLink.price) || showCouponPrice ? (
               <div className="flex gap-3 items-start md:items-center">
                 <CircleDollarSign className="w-4 h-4 text-card-icon shrink-0 mt-0.5 md:mt-0" />
                 <span className="font-bold shrink-0">Precio:</span>
                 <div className="flex items-center gap-2 break-words md:truncate">
                   <span className="line-through text-muted-foreground/75 text-xs md:text-sm">{price}</span>
-                  <span className="font-bold text-primary animate-in fade-in zoom-in-95 duration-500">{unlockedLink.price}</span>
+                  <span className="font-bold text-primary animate-in fade-in zoom-in-95 duration-500">{unlockedLink?.price || couponPrice}</span>
                 </div>
               </div>
             ) : (

@@ -15,6 +15,26 @@ const TIMEZONE_SHORT_CODES: Record<string, string> = {
 export const toLinkUrl = (u: unknown): string | null =>
   typeof u === "string" && /^https?:\/\/\S+/i.test(u.trim()) ? u.trim() : null;
 
+/** Parámetro de cupón en el enlace de compra (ThriveCart: ?coupon=CODIGO). */
+export const COUPON_PARAM = "coupon";
+
+/** Cupón escrito en la URL (ej. ...?coupon=TT2026-30&utm_source=...) o "" si no trae. */
+export const getUrlCoupon = (u: unknown): string => {
+  try { return new URL(String(u).trim()).searchParams.get(COUPON_PARAM) || ""; } catch { return ""; }
+};
+
+/** Pone (o quita, si code está vacío) el cupón en la URL conservando el resto del query (utm, etc.). */
+export const withCoupon = (u: string, code: string): string => {
+  try {
+    const url = new URL(u.trim());
+    if (code.trim()) url.searchParams.set(COUPON_PARAM, code.trim());
+    else url.searchParams.delete(COUPON_PARAM);
+    return url.toString();
+  } catch {
+    return u;
+  }
+};
+
 const isFreePriceText = (price: unknown) => {
   const str = typeof price === "string" ? price : price ? String(price) : "";
   return !str.trim() || str.trim() === "0" || /sin costo|gratis|gratuit/i.test(str);
@@ -54,6 +74,13 @@ export function transformEventForUI(event: Event) {
   
   // Extraer configuración de Pago con cupo (si existe en paid_links)
   const pagoCupoConfig = (event.paid_links || []).find((l: any) => l.type === 'pago_cupo_config') || null;
+
+  // Cupón del enlace predeterminado. Sin coupon_config (eventos previos) la URL se respeta tal cual.
+  const couponConfig: any = (event.paid_links || []).find((l: any) => l.type === 'coupon_config') || null;
+  const couponCode = (couponConfig?.code || "").trim();
+  const baseUrl = toLinkUrl(event.external_url);
+  const externalUrl = baseUrl && couponConfig ? withCoupon(baseUrl, couponCode) : baseUrl;
+  const couponActive = isPaid && !!couponCode && !!externalUrl;
 
   return {
     category: categoryName,
@@ -95,7 +122,10 @@ export function transformEventForUI(event: Event) {
     isPaid,
     isPagoCupo,
     pagoCupoConfig: isPagoCupo ? pagoCupoConfig : null,
-    externalUrl: toLinkUrl(event.external_url),
+    externalUrl,
+    // Cupón activo: precio con descuento (se tacha el general) y texto de la cinta (ej. "30% desc")
+    couponPrice: couponActive ? (couponConfig.price || "").trim() || null : null,
+    couponBadge: couponActive ? (couponConfig.badge || "").trim() || null : null,
     externalButtonText: event.external_button_text || "Adquirir entrada",
     paidLinks: event.paid_links || [],
     description: event.description || null,

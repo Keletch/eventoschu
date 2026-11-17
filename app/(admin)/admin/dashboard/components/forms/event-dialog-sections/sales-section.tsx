@@ -8,10 +8,11 @@ import { Switch } from "@/components/ui/switch";
 import { Trash2, Plus } from "lucide-react";
 import { KeapTagMultiPicker } from "../keap-tag-multi-picker";
 import { EventKind, membershipLinks } from "../../../utils/event-kind";
+import { getUrlCoupon, withCoupon } from "@/lib/event-transformers";
 
 type LinkGroup = { link: any; tagIds: string[] };
 const sameLink = (a: any, b: any) =>
-  (a.url || "") === (b.url || "") && (a.price || "") === (b.price || "") && (a.button_text || "") === (b.button_text || "");
+  (a.url || "") === (b.url || "") && (a.price || "") === (b.price || "") && (a.button_text || "") === (b.button_text || "") && (a.badge || "") === (b.badge || "");
 
 /**
  * Filas consecutivas del mismo grupo → un grupo con varios tags. `group_id` (se guarda en paid_links)
@@ -85,6 +86,25 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
             savePaidLinks(updated);
           };
 
+          // 🎟️ Cupón del enlace predeterminado: vive en paid_links como { type: "coupon_config", code, price, badge }
+          // y transformEventForUI lo inyecta como ?coupon= en la URL. Eventos previos sin config: el cupón se lee de la URL.
+          const couponConfig = (event.paid_links || []).find((l: any) => l.type === "coupon_config");
+          const coupon = couponConfig || { code: getUrlCoupon(event.external_url), price: "", badge: "" };
+          const saveCoupon = (patch: Record<string, string>, externalUrl = event.external_url || "") => {
+            const others = (event.paid_links || []).filter((l: any) => l.type !== "coupon_config");
+            setEvent({
+              ...event,
+              external_url: withCoupon(externalUrl, ""), // el código se guarda aparte, no dentro de la URL
+              paid_links: [...others, { ...coupon, ...patch, type: "coupon_config" }],
+            });
+          };
+          // Si pegan un enlace que ya trae ?coupon=, se mueve al campo Cupón
+          const handleExternalUrlChange = (url: string) => {
+            const fromUrl = getUrlCoupon(url);
+            if (fromUrl) saveCoupon({ code: fromUrl }, url);
+            else setEvent({ ...event, external_url: url });
+          };
+
           const handleRemovePaidLink = (index: number) => {
             savePaidLinks(paidLinks.filter((_, i) => i !== index));
           };
@@ -104,7 +124,7 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                     <Label className="text-[10px] font-black uppercase text-muted-foreground">URL del enlace de compra</Label>
                     <Input
                       value={event.external_url || ""}
-                      onChange={(e) => setEvent({ ...event, external_url: e.target.value })}
+                      onChange={(e) => handleExternalUrlChange(e.target.value)}
                       className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
                       placeholder="https://hotmart.com/... o # si aún no hay enlace"
                     />
@@ -119,6 +139,41 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                     />
                   </div>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">Cupón (opcional)</Label>
+                    <Input
+                      value={coupon.code || ""}
+                      onChange={(e) => saveCoupon({ code: e.target.value.trim() })}
+                      className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                      placeholder="Ej: TT2026-30"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">Precio con cupón</Label>
+                    <Input
+                      value={coupon.price || ""}
+                      onChange={(e) => saveCoupon({ price: e.target.value })}
+                      disabled={!coupon.code}
+                      className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                      placeholder="Ej: 139 USD"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-black uppercase text-muted-foreground">Cinta de descuento (opcional)</Label>
+                    <Input
+                      value={coupon.badge || ""}
+                      onChange={(e) => saveCoupon({ badge: e.target.value })}
+                      disabled={!coupon.code}
+                      maxLength={14}
+                      className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                      placeholder="Ej: 30% desc"
+                    />
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  El cupón se agrega solo al enlace como <code>?coupon=</code>. Bórralo para desactivarlo: el precio vuelve al normal y la cinta desaparece.
+                </p>
               </div>
               )}
 
@@ -167,7 +222,17 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                       <div className="md:col-span-3 space-y-2">
                         <div className="flex items-center min-h-6">
                           <Label className="text-[10px] font-black uppercase text-muted-foreground">Precio Especial (Opcional)</Label>
+                          <div className="flex items-center min-h-6">
+                          <Label className="text-[10px] font-black uppercase text-muted-foreground">Cinta (Opcional)</Label>
                         </div>
+                        <Input
+                          value={link.badge || ""}
+                          onChange={(e) => handleUpdatePaidLink(index, "badge", e.target.value)}
+                          maxLength={14}
+                          className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                          placeholder="Ej: 30% desc"
+                        />
+                      </div>
                         <Input
                           value={link.price || ""}
                           onChange={(e) => handleUpdatePaidLink(index, "price", e.target.value)}
