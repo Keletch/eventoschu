@@ -207,10 +207,8 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                 <div className="space-y-4">
                   {paidLinks.map(({ link, tagIds }, index) => (
                     <div key={index} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-background/50 rounded-xl border border-border/50 items-start">
-                      <div className="md:col-span-12 space-y-2">
-                        <div className="flex items-center min-h-6">
-                          <Label className="text-[10px] font-black uppercase text-muted-foreground">URL del Enlace Exclusivo</Label>
-                        </div>
+                      <div className="md:col-span-11 space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-muted-foreground">URL del Enlace Exclusivo</Label>
                         <Input
                           required
                           value={link.url || ""}
@@ -219,37 +217,7 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                           placeholder="https://hotmart.com/... o # si aún no hay enlace"
                         />
                       </div>
-                      <div className="md:col-span-3 space-y-2">
-                        <div className="flex items-center min-h-6">
-                          <Label className="text-[10px] font-black uppercase text-muted-foreground">Precio Especial (Opcional)</Label>
-                          <div className="flex items-center min-h-6">
-                          <Label className="text-[10px] font-black uppercase text-muted-foreground">Cinta (Opcional)</Label>
-                        </div>
-                        <Input
-                          value={link.badge || ""}
-                          onChange={(e) => handleUpdatePaidLink(index, "badge", e.target.value)}
-                          maxLength={14}
-                          className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
-                          placeholder="Ej: 30% desc"
-                        />
-                      </div>
-                        <Input
-                          value={link.price || ""}
-                          onChange={(e) => handleUpdatePaidLink(index, "price", e.target.value)}
-                          className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
-                          placeholder="Ej: 197 USD"
-                        />
-                      </div>
-                      <div className="md:col-span-8 space-y-2">
-                        <KeapTagMultiPicker
-                          label="Tags Requeridos (Keap)"
-                          value={tagIds}
-                          onChange={(ids) => handleUpdateTags(index, ids)}
-                          tags={keapTags}
-                        />
-                      </div>
-
-                      <div className="md:col-span-1 flex justify-center md:mt-[34px]">
+                      <div className="md:col-span-1 flex justify-center md:mt-[27px]">
                         <Button
                           type="button"
                           variant="ghost"
@@ -260,6 +228,33 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                         >
                           <Trash2 className="w-4 h-4 text-red-500" />
                         </Button>
+                      </div>
+                      <div className="md:col-span-6 space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-muted-foreground">Precio Especial (Opcional)</Label>
+                        <Input
+                          value={link.price || ""}
+                          onChange={(e) => handleUpdatePaidLink(index, "price", e.target.value)}
+                          className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                          placeholder="Ej: 197 USD"
+                        />
+                      </div>
+                      <div className="md:col-span-6 space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-muted-foreground">Cinta (Opcional)</Label>
+                        <Input
+                          value={link.badge || ""}
+                          onChange={(e) => handleUpdatePaidLink(index, "badge", e.target.value)}
+                          maxLength={14}
+                          className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
+                          placeholder="Ej: 30% desc"
+                        />
+                      </div>
+                      <div className="md:col-span-12">
+                        <KeapTagMultiPicker
+                          label="Tags Requeridos (Keap)"
+                          value={tagIds}
+                          onChange={(ids) => handleUpdateTags(index, ids)}
+                          tags={keapTags}
+                        />
                       </div>
                     </div>
                   ))}
