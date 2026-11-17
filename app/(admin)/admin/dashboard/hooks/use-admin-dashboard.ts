@@ -532,6 +532,7 @@ export function useAdminDashboard() {
       setNewEvent({
         ...event,
         start_date: formatDateForInput(event.start_date),
+        end_date: formatDateForInput(event.end_date) || null,
         external_url: event.external_url || "",
         external_button_text: event.external_button_text || "",
         external_typ_url: typUrl,
@@ -580,6 +581,7 @@ export function useAdminDashboard() {
         keap_tag_id: "",
         keap_pending_tag_id: rest.keap_pending_tag_id === null ? null : "",
         start_date: formatDateForInput(rest.start_date),
+        end_date: formatDateForInput(rest.end_date) || null,
         external_url: rest.external_url || "",
         external_button_text: rest.external_button_text || "",
         external_typ_url: typUrl,
