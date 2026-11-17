@@ -67,11 +67,10 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                   <div className="md:col-span-2 space-y-1">
                     <Label className="text-[10px] font-black uppercase text-muted-foreground">URL del enlace de compra</Label>
                     <Input
-                      type="url"
                       value={event.external_url || ""}
                       onChange={(e) => setEvent({ ...event, external_url: e.target.value })}
                       className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
-                      placeholder="https://hotmart.com/... o https://pay.chu.com/..."
+                      placeholder="https://hotmart.com/... o # si aún no hay enlace"
                     />
                   </div>
                   <div className="space-y-1">
@@ -123,11 +122,10 @@ export const SalesSection: React.FC<SalesSectionProps> = ({ event, setEvent, sys
                         </div>
                         <Input
                           required
-                          type="url"
                           value={link.url || ""}
                           onChange={(e) => handleUpdatePaidLink(index, "url", e.target.value)}
                           className="rounded-xl border-border h-12 text-xs bg-muted/50 focus:bg-background transition-all"
-                          placeholder="https://hotmart.com/... o https://pay.chu.com/..."
+                          placeholder="https://hotmart.com/... o # si aún no hay enlace"
                         />
                       </div>
                       <div className="md:col-span-3 space-y-2">

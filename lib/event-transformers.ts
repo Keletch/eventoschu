@@ -11,6 +11,10 @@ const TIMEZONE_SHORT_CODES: Record<string, string> = {
 };
 
 /** El precio es texto libre: "0", "Sin costo", "Gratis", "Evento gratuito"… cuentan como evento sin costo. */
+/** Solo enlaces http(s) reales; "#" o "Por definir" = todavía sin enlace. */
+export const toLinkUrl = (u: unknown): string | null =>
+  typeof u === "string" && /^https?:\/\/\S+/i.test(u.trim()) ? u.trim() : null;
+
 const isFreePriceText = (price: unknown) => {
   const str = typeof price === "string" ? price : price ? String(price) : "";
   return !str.trim() || str.trim() === "0" || /sin costo|gratis|gratuit/i.test(str);
@@ -91,7 +95,7 @@ export function transformEventForUI(event: Event) {
     isPaid,
     isPagoCupo,
     pagoCupoConfig: isPagoCupo ? pagoCupoConfig : null,
-    externalUrl: event.external_url || null,
+    externalUrl: toLinkUrl(event.external_url),
     externalButtonText: event.external_button_text || "Adquirir entrada",
     paidLinks: event.paid_links || [],
     description: event.description || null,

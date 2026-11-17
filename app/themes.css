@@ -918,7 +918,8 @@
 }
 @keyframes navidad-snowfall {
   from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(30px, 260px, 0); }
+  /* Mover exactamente un tamaño de patrón (260px) en cada eje: así el reinicio del ciclo no se nota */
+  to { transform: translate3d(0, 260px, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .navidad body::after,

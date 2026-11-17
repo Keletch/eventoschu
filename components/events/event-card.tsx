@@ -18,6 +18,7 @@ import { EventSoldOutOverlay } from "@/components/events/event-sold-out-overlay"
 import { EventFlag } from "@/components/ui/event-flag";
 
 import { getEventUIConfig } from "@/lib/event-config";
+import { toLinkUrl } from "@/lib/event-transformers";
 
 interface PaidLink {
   url: string;
@@ -135,7 +136,7 @@ export function EventCard({
   // Con enlaces por membresía: el del miembro gana; sin coincidencia se usa el enlace general.
   // Sin enlace general ("Solo miembros") no hay a dónde ir y el botón queda bloqueado.
   const hasPaidLinksConfig = isPaid && membershipLinks.length > 0;
-  const effectiveUrl = hasPaidLinksConfig ? (unlockedLink?.url || externalUrl) : externalUrl;
+  const effectiveUrl = hasPaidLinksConfig ? (toLinkUrl(unlockedLink?.url) || externalUrl) : externalUrl;
   const effectiveButtonText = hasPaidLinksConfig
     ? (unlockedLink?.button_text || externalButtonText || "Adquirir entrada")
     : (externalButtonText || "Adquirir entrada");
@@ -587,6 +588,15 @@ export function EventCard({
                 >
                   <Lock className="size-3.5" strokeWidth={2.5} />
                   Requiere membresía activa
+                </button>
+              ) : !hasPaidLinksConfig && !externalUrl ? (
+                /* === Enlace aún "#" / "Por definir" → botón visible pero sin acción === */
+                <button
+                  type="button"
+                  disabled
+                  className="w-full rounded-full bg-muted border border-border text-muted-foreground font-bold h-11 text-xs flex items-center justify-center gap-1.5 cursor-not-allowed"
+                >
+                  Enlace por definir
                 </button>
               ) : !hasPaidLinksConfig ? (
                 /* === Sin paid_links config → comportamiento legacy === */

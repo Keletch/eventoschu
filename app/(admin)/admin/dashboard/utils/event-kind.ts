@@ -73,13 +73,15 @@ export function applyEventKind(event: any, kind: EventKind, systemTags: any[]) {
 }
 
 const isUrl = (v: any) => typeof v === "string" && /^https?:\/\/\S+/.test(v.trim());
+// Enlaces de compra: se permite "#" o "Por definir" mientras no exista el enlace (la tarjeta lo muestra sin abrir nada)
+const isFilled = (v: any) => typeof v === "string" && v.trim().length > 0;
 
 /** Qué falta para poder guardar, según el tipo. Vacío = listo. */
 export function missingForKind(event: any, kind: EventKind): string[] {
   const missing: string[] = [];
   if (isVentaKind(kind)) {
-    if (kind !== "venta_exclusiva" && !isUrl(event.external_url)) missing.push("Enlace de compra");
-    if (kind !== "venta" && !membershipLinks(event).some((l: any) => isUrl(l.url) && l.keap_tag_id)) {
+    if (kind !== "venta_exclusiva" && !isFilled(event.external_url)) missing.push("Enlace de compra");
+    if (kind !== "venta" && !membershipLinks(event).some((l: any) => isFilled(l.url) && l.keap_tag_id)) {
       missing.push("Al menos un enlace para miembros (tag de Keap + enlace)");
     }
     return missing; // sin registro: Keap no se usa para inscritos
